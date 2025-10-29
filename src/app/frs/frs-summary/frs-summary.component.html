@@ -1,0 +1,570 @@
+<div style="padding-top: 3%;" class="container" *ngIf="edit_sumary">
+    <h2 style="text-align:center;">Non Interest Income {{edit_sumary ? 'Summary' : 'Edit'}}</h2>
+    <div>
+        <div>
+            <form [formGroup]="frs_search">
+                <div>
+                    <div class="row col-md-12">
+                        <!-- <div class="col-md-3">
+                        <mat-form-field   (click)="getbranchcode()" appearance="outline">
+                            <mat-label>Branch</mat-label>
+                            <input type="text" #branchInput matInput formControlName="branch"
+                            [matAutocomplete]="branch" (keyup)="getbranchcode()">
+                            <mat-autocomplete #branch="matAutocomplete" (opened)="autocompletebranchcodeScroll()"
+                                [displayWith]="branch_code_display">
+                                <mat-option *ngFor="let branch of branch_code_list" [value]="branch">
+                                    {{branch.name}}-{{branch.code}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field> 
+                    </div> -->
+
+                        <div class="col-md-3">
+                            <mat-form-field (click)="payment_type()" matTooltip="{{allocationfrom_Input.value}}"
+                                style="width: 180px;">
+                                <mat-label>Payment Type</mat-label>
+                                <input #allocationfrom_Input placeholder="Payment" matInput formControlName="payment"
+                                    [matAutocomplete]="payment">
+                                <mat-autocomplete #payment="matAutocomplete" [displayWith]="payment_display">
+                                    <mat-option *ngFor="let pay of payment_list" [value]="pay">
+                                        {{pay.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <!-- <mat-form-field (click)="payment_type()"  class="nopadding" appearance="outline" >
+                            <mat-label>Payment Type</mat-label>
+                            <input type="text" matInput formControlName="payment"
+                            [matAutocomplete]="payment" >
+                            <mat-autocomplete #payment="matAutocomplete"
+                                [displayWith]="payment_display">
+                                <mat-option *ngFor="let pay of payment_list" [value]="pay">
+                                    {{pay.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="transcation_type()" style="width: 180px;">
+                                <mat-label>Transaction Type</mat-label>
+                                <input type="text" matInput formControlName="transaction"
+                                    [matAutocomplete]="transaction">
+                                <mat-autocomplete #transaction="matAutocomplete" [displayWith]="transaction_display">
+                                    <mat-option *ngFor="let transaction of transaction_list" [value]="transaction">
+                                        {{transaction.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="width: 180px;">
+                                <mat-label>Code</mat-label>
+                                <input matInput placeholder="" formControlName="code" autocomplete="off">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="Statusvalue()" style="width: 180px;">
+                                <mat-label>Status</mat-label>
+                                <input type="text" matInput formControlName="status_value" [matAutocomplete]="statuss">
+                                <mat-autocomplete #statuss="matAutocomplete" [displayWith]="status_display">
+                                    <mat-option *ngFor="let statu of status_list" [value]="statu">
+                                        {{statu.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <!-- <mat-form-field appearance="outline" >
+                            <mat-label>From  date</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="from_date"> 
+                            <mat-hint>MM/DD/YYYY</mat-hint>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker">                               
+                             </mat-datepicker-toggle>
+                            <mat-datepicker #picker ></mat-datepicker>
+                          </mat-form-field> -->
+                            <mat-form-field style="width: 180px;">
+                                <mat-label>From Date</mat-label>
+                                <input matInput [matDatepicker]="picker" [max]="futureDays" formControlName="from_date"
+                                    (dateChange)="from_date_rest()">
+                                <mat-datepicker-toggle matSuffix [for]="picker">
+                                    <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+
+                        </div>
+                        <div class="col-md-3">
+                            <!-- <mat-form-field appearance="outline" >
+                            <mat-label>To date</mat-label>
+                            <input matInput [matDatepicker]="pickers" formControlName="to_date">
+                             <mat-hint>MM/DD/YYYY</mat-hint> 
+                            <mat-datepicker-toggle matIconSuffix [for]="pickers">
+                                <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #pickers></mat-datepicker>
+                          </mat-form-field> -->
+                            <mat-form-field style="width: 180px;">
+                                <mat-label>To Date</mat-label>
+                                <input matInput [min]="frs_search.value.from_date" [max]="futureDays"
+                                    [matDatepicker]="pickers" formControlName="to_date">
+                                <mat-datepicker-toggle matSuffix [for]="pickers">
+                                    <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #pickers></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-lg-3">
+                            <mat-form-field>
+                                <mat-label>CBS Status</mat-label>
+                                <input matInput formControlName="status" [matAutocomplete]="aws_status">
+                                <mat-autocomplete #aws_status="matAutocomplete" [displayWith]="displayStatus">
+                                    <mat-option *ngFor="let status of cbsstatus_list" [value]="status">
+                                        {{status.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <!-- <div style="margin-left: 1%; margin-right: 5%; margin-top: 2%;">
+                            <mat-checkbox class="example-margin" (change)="serach_data($event)">History</mat-checkbox>
+                        </div> -->
+                        <div class="col-md-3">
+                            <button type="button" style="border-radius: 40px;margin-left: 30px; margin-top: 10px;"
+                                class="btn btn-outline-primary" (click)="frs_summary(frs_search.value)">Search</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" style="border-radius: 40px;margin-left: 10px; margin-top: 20px;"
+                                class="btn btn-outline-primary" (click)="frs_reset()">Reset</button>
+                        </div>
+                        <div class="col-md-2" style="margin-top: 2%;">
+                            <button matTooltip="Download" class="btn btn-outline-primary"
+                                style="border-radius: 40px;max-height: 85%;"
+                                (click)="adminscreendownload(frs_search.value)"><i
+                                    class="material-icons">file_download</i></button>
+                        </div>
+                        <div class="col-md-2">
+                            <div>
+                                <button *ngIf="is_approver==false" type="button"
+                                    style="border-radius: 40px;margin-left: 10px; margin-top: 20px;"
+                                    class="btn btn-outline-primary" (click)="frs_transaction('')">
+                                    <!-- <span class="fa fa-plus"></span> -->Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div>
+            <div class="tableFixHead">
+                <table class="table table-bordered" fixed-header id="datatable">
+                    <thead class="table_header" style=" top: 0;position: sticky;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Branch Code</th>
+                            <th>Department</th>
+                            <!-- <th>Branch</th>
+                            <th>Customer Type</th> -->
+                            <th>Transaction Type</th>
+                            <th>Payment Type</th>
+                            <th>Status</th>
+                            <th>CBS Status</th>
+                            <th>Created Date</th>
+                            <th>Action</th>
+                            <th>History</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let summary of summary_list;let i=index">
+                            <td>{{(presentpage-1)*10+i + 1 }}</td>
+                            <!-- <td>{{summary.branch_id != null ? summary.branch_id.name : '--'}}-{{summary.branch_id.code}} </td>-->
+                            <!-- <td>{{summary.customer_type != null ? summary.customer_type.name : '--' }}</td>  -->
+                            <td>{{summary.code != null ? summary.code : '--'}}</td>
+                            <td>{{summary.branch.code}}-{{summary.branch.name}}</td>
+                            <td>{{summary.department}}</td>
+                            <td>{{summary.transaction_type != null ? summary.transaction_type.name : '--'}}</td>
+                            <td>{{summary.payment_type != null ? summary.payment_type.name : '--' }}</td>
+                            <td>{{summary.status.name}}</td>
+                            <td>{{summary.cbs_status}}</td>
+                            <td>{{summary.created_date != null ? summary.created_date : '--'}}</td>
+                            <td>
+                                <!-- <div >
+                                <button  data-toggle="modal" style="display: none ;" data-target=".bd-view_frs-modal-lg" #open_frs ></button>
+                                    <button mat-icon-button matTooltip="view"  class="iconbutton" color="primary" style="color: green;" (click)="frs_details(summary)">
+                                    <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                </button>
+                                </div> -->
+                                <div class="row" style="flex-direction: row;  align-items: flex-start;margin-left: 5%;">
+                                    <!-- <button mat-icon-button matTooltip="Edit" class="iconbutton"  color="primary"
+                                        style="color: green;" (click)="frs_transaction(summary)">
+                                        <mat-icon  class="enabled_icon" aria-label="view">edit</mat-icon>
+                                    </button> -->
+                                    <!-- <button > -->
+                                    <i class="material-icons" matTooltip="Edit" (click)="frs_transaction(summary)"
+                                        style="color: green;margin-left: 4px;cursor: pointer;">mode_edit</i>
+                                    <!-- </button> -->
+                                    <!-- <button  data-toggle="modal" style="display: none ;"  data-target=".bd-view_frs-modal-lg"></button>
+                                    <button mat-icon-button matTooltip="view"  class="iconbutton" color="primary" data-toggle="modal" data-target="#exampleModal1" style="color: green;" >
+                                    <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon> -->
+                                    <!-- <button  mat-icon-button matTooltip="Document"   class="iconbutton" data-toggle="modal"
+                                        data-target="#exampleModal1" color="primary" (click)="documents(summary)"  style="margin-left: 1%;">
+                                        <mat-icon class="enabled_icon"  style="margin-right: 25%;">description</mat-icon>
+                                    </button> -->
+                                    <!-- <button > -->
+                                    <!-- <i class="fa fa-solid fa-file" aria-hidden="true" style="margin-right: 25%;color: green;"></i>                               -->
+                                    <i class="material-icons" matTooltip="Document" data-toggle="modal"
+                                        data-target="#exampleModal1" color="primary" (click)="documents(summary)"
+                                        style=" color:green ;margin-left: 5%;cursor: pointer;">description</i>
+                                    <!-- </button> -->
+
+                                </div>
+                            </td>
+                            <td>
+                                <!-- <button mat-icon-button matTooltip="History" class="iconbutton" data-toggle="modal"
+                                    data-target="#exampleModal" color="primary" (click)="histry(summary)">
+                                    <mat-icon class="enabled_icon">history</mat-icon>
+                                </button> -->
+                                <!-- <button  > -->
+                                <!-- <i class="fa fa-rotate-left" aria-hidden="true"></i> -->
+                                <i class="material-icons" matTooltip="History" data-toggle="modal"
+                                    data-target="#exampleModal" color="primary" style=" color:green ;cursor: pointer;"
+                                    (click)="histry(summary)">history</i>
+                                <!-- </button> -->
+
+                            </td>
+                            <td>
+                                <!-- <button [disabled]="summary.status?.id !== 1" (click)="delete_rows(summary)" style="border: none;background: white;">
+                                <mat-icon  style=" color:green ;cursor: pointer;">delete</mat-icon>
+                                </button> -->
+                                <button [disabled]="!(summary.status?.id === 1 || summary.status?.id === 8)"
+                                (click)="delete_rows(summary)"
+                                [matTooltip]="!(summary.status?.id === 1 || summary.status?.id === 8) ? 'Deleted' : ''"
+                                    [ngStyle]="{border: 'none',background: 'white', cursor: !(summary.status?.id === 1 || summary.status?.id === 8) ? 'not-allowed' : 'pointer'}">
+                                    <mat-icon
+                                        [style.color]="!(summary.status?.id === 1 || summary.status?.id === 8) ? 'gray' : 'green'">delete</mat-icon>
+                                </button>
+
+                            </td>
+                            <!-- <span *ngIf="summary.value== 'Approver' && 'Maker' ">[hidden] <span> *ngIf="((Approver_maker == 'Approver' && summary.status == 'Pending')||(Approver_maker == 'Maker' && summary.status == 'Rejected'))?edits_value:false"</span> -->
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="text-align: center;" *ngIf="!datass_found">No data Found...</p>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                        (click)="previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpage}}
+                    <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade bd-view_frs-modal-lg" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+            tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabels">
+            <div class="modal-dialog modal-lg"
+                style="max-width: 100%;max-height: 100%;width: 100%; height: 100%;border-radius: 0;  width: 100%;height: 100%;padding-left: 20px;padding-bottom: -264px; padding-right: 19px;display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Non Interest Income View</h2>
+                        <button type="button" class="close" (click)="closepopup_frs()" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div>
+                        <div *ngIf="!tranempty_data">
+                            <div class="tableFixHead">
+                                <h2>Transaction Details</h2>
+                                <table class="table table-bordered" fixed-header>
+                                    <thead style="background-color: #00800021;">
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Account No</th>
+                                            <th>Debit GL</th>
+                                            <th>Credit GL</th>
+                                            <th>Customer Type</th>
+                                            <th>Debit Account Type</th>
+                                            <th>GSTIN</th>
+                                            <th>Income Details</th>
+                                            <th>Invoice No</th>
+                                            <th>State Code</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let tran of trancation_datails;let ind=index">
+                                            <td>{{ind + 1}}</td>
+                                            <td>{{tran.account_no !=null ? tran.account_no : '--'}}</td>
+                                            <td>{{tran.debit_gl !=null ? tran.debit_gl : '--'}}</td>
+                                            <td>{{tran.credit_gl !=null ? tran.credit_gl : '--'}}</td>
+                                            <td>{{tran.customer_type !=null ? tran.customer_type.name : '--'}}</td>
+                                            <td>{{tran.debitaccount_type !=null ? tran.debitaccount_type : '--'}}</td>
+                                            <td>{{tran.gstin !=null ? tran.gstin : '--'}}</td>
+                                            <td>{{tran.incomedetails !=null ? tran.incomedetails : '--'}}</td>
+                                            <td>{{tran.invoice_no != null ? tran.invoice_no : '--'}}</td>
+                                            <td>{{ tran.state_code.name != null ? tran.state_code.name : '--'
+                                                }}-{{tran.state_code.code}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <p *ngIf="tranempty_data==true" style="text-align: center;">No Data Found...</p>
+                            </div>
+                        </div>
+                        <div *ngIf="!billempty_data">
+                            <div class="tableFixHead">
+                                <h2>Billing Details</h2>
+                                <table class="table table-bordered" fixed-header>
+                                    <thead style="background-color: #00800021;">
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Bill Amount/Charges(excl.GST)</th>
+                                            <th>GST Amount</th>
+                                            <th>Narration</th>
+                                            <th>Product Type</th>
+                                            <th>Total Amount Payable / Receivable</th>
+                                            <th>Total Bill Amount / Charges</th>
+                                            <th>Transaction Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let tran of billing_details;let ind=index">
+                                            <td>{{ind + 1}}</td>
+                                            <td>{{tran.billamount_gst !=null && tran.billamount_gst !="None" ?
+                                                tran.billamount_gst : '--'}}</td>
+                                            <td>{{tran.gst_amount !=null && tran.gst_amount !="None" ? tran.gst_amount :
+                                                '--'}}</td>
+                                            <td>{{tran.narration !=null && tran.narration !="None" ? tran.narration :
+                                                '--'}}</td>
+                                            <td>{{tran.product_type !=null && tran.product_type !="None" ?
+                                                tran.product_type : '--'}}</td>
+                                            <td>{{tran.totalamount_pr !=null && tran.totalamount_pr !="None" ?
+                                                tran.totalamount_pr : '--'}}</td>
+                                            <td>{{tran.totalbill_amount !=null && tran.totalbill_amount !="None" ?
+                                                tran.totalbill_amount : '--'}}</td>
+                                            <td>{{tran.transactiontype !=null && tran.transactiontype !="None" ?
+                                                tran.transactiontype : '--'}}</td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <p *ngIf="((tranempty_data==true) && (billempty_data==true))"
+                                    style="text-align: center;">No Data Found...</p>
+                            </div>
+                        </div>
+                        <div *ngIf="!walkempty_data">
+                            <div class="tableFixHead">
+                                <h2>Walk-In Details</h2>
+                                <table class="table table-bordered" fixed-header>
+                                    <thead style="background-color: #00800021;">
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Customer Name</th>
+                                            <th>Address</th>
+                                            <th>Mobile Number</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let tran of walkin_details;let ind=index">
+                                            <td>{{ind + 1}}</td>
+                                            <td>{{tran.customer_name !=null ? tran.customer_name : '--'}}</td>
+                                            <td>{{tran.address !=null ? tran.address : '--'}}</td>
+                                            <td>{{tran.mobile_number !=null ? tran.mobile_number : '--'}}</td>
+                                            <td>{{tran.email !=null ? tran.email : '--'}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div>
+                                    <p *ngIf="((tranempty_data==true) && (billempty_data == true) && (walkempty_data == true))"
+                                        style="text-align: center;">No Data Found...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div *ngIf="!edit_sumary">
+    <app-frs-transaction [show]="view_edit_frs" [item]="edit_frs_summary"></app-frs-transaction>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 600px;">
+            <div class="modal-header" style="width: 600px; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;">
+                    <b>Transaction History</b>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tr style="background-color: #00800021">
+                        <th>S.No</th>
+                        <th>Employee Name</th>
+                        <th>Action Date</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                    <tr *ngFor="let history of histry_list;let i=index">
+                        <td>{{i + 1 }}</td>
+                        <td>{{history.approved_by.name}}-{{history.approved_by.code}} </td>
+                        <td>{{history.approved_date }}</td>
+                        <td>{{history.type.name}}</td>
+                        <td><button mat-icon-button class="iconbutton" data-toggle="modal" data-target="#exampleModal2"
+                                color="primary" (click)="Reject(history.remarks)">
+                                <mat-icon class="enabled_icon">visibility</mat-icon>
+                            </button></td>
+                    </tr>
+                </table>
+                <p style="text-align: center;" *ngIf="!data_found">No data Found...</p>
+            </div>
+            <div style="margin-bottom: 1%;font-size: small;text-align:right; border-radius: 40px;">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">
+                    Close
+                </button>
+                <button mat-icon-button [disabled]="hass_previous === false" color="primary" (click)="previoussClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentspage}}
+                <button mat-icon-button [disabled]="hass_next === false" color="primary" (click)="nextsClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header" style="width: 900px; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;">
+                    <b>Remarks</b>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="Approve">
+                    <div style="margin-left: 50px;width:90%;height: 100%;">
+                        <div>
+                            <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                                (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                                formControlName="content">
+                                <!-- <input > -->
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-outline-primary"  (optionSelected)="status_summary($event)"style="border-radius: 40px;" >OK</button>     -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 700px;">
+            <div class="modal-header" style="width: 700px; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: left; font-size: large;"><b>Document
+                        Details</b>
+                    <div>
+                        <div class="row">
+                            <form [formGroup]="FileAttachement" style="margin-left: 5%;">
+
+                                <div>
+                                    <input type="file" id="upload" #fileInput (change)="files($event)"
+                                        class="file-input" style="border-bottom-style: hidden;" formControlName="file"
+                                        type="file" name="uploadFile" multiple hidden />
+                                    <!-- <input type="file" id="upload" hidden/> -->
+                                    <label class="filedata" style="background-color: #686fc5;border-radius: 40px;"
+                                        for="upload">Choose file</label>
+                                    <div *ngFor="let files of file_data; let index = index">
+                                        {{index+1}}.{{files?.name}}
+
+                                        <mat-icon class="enabled_icon"
+                                            (click)="deleteInlineFile( index)">delete</mat-icon>
+                                    </div>
+
+                                    <!-- <button mat-icon-button type="button"> -->
+                                    <!-- <mat-icon style="color: rgb(114, 42, 42);" aria-label="Edit" (click)="deleteUpload(files, index)">
+                                <i class="bi bi-x"></i></mat-icon> -->
+                                    <!-- </button> -->
+                                </div>
+                            </form>
+                            <div style="margin-left:25%; position: absolute;margin-top: 2%;">
+                                <button type="submit" style="border-radius: 40px;" [disabled]="pending_status"
+                                    class="btn btn-outline-primary" (click)="submit_document()">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" #closepopup aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tr style="background-color: #00800021">
+                        <th>S.No</th>
+                        <th>File Name</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr *ngFor="let document of document_list;let i=index">
+                        <td>{{i + 1 }}</td>
+                        <td>{{document.file_name}}</td>
+                        <td>
+                            <button type="button" mat-icon-button matTooltip="Download" class="iconbutton"
+                                color="primary" (click)="downloadfiledocument(document,'download')"
+                                style="border-radius:40px;">
+                                <mat-icon class="enabled_icon">download</mat-icon>
+                            </button>
+                            <button mat-icon-button matTooltip="delete" class="iconbutton"
+                                (click)="delete_document(document)">
+                                <mat-icon class="enabled_icon">delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <p style="text-align: center;" *ngIf="datanot_found">No data Found...</p>
+            </div>
+            <div>
+                <button mat-icon-button [disabled]="hasdoc_previous === false" color="primary"
+                    (click)="previousdocClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentdocpage}}
+                <button mat-icon-button [disabled]="hasdoc_next === false" color="primary" (click)="nextsdocClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="NiiDocument">
+    <app-frs-document></app-frs-document>
+</div>

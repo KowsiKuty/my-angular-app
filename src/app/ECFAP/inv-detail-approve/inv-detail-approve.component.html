@@ -1,0 +1,711 @@
+<div style="width: 100%;">
+    <mat-card style="margin-top: 13px;margin-left: 20px;margin-right: 20px;margin-bottom: 20px;">
+        <div *ngIf="showinvoicediv">
+            <h2 style="font-weight:bold;">Invoice Header ({{crno}})  </h2>
+            <form [formGroup]="frmInvHdr">  
+                <table>
+                <div>
+                <tr>
+                <td>
+                    <mat-form-field>
+                        <input type="text" matInput formControlName="rsrEmp" readonly placeholder="Raisor Employee" id="inv-detail-approve-0006">
+                        <mat-label>Employee</mat-label>
+                    </mat-form-field>
+                </td>
+                
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="invNo" readonly placeholder="Invoice No" id="inv-detail-approve-0007">
+                        <mat-label>Invoice No</mat-label>
+                    </mat-form-field>
+                </td> 
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="branchGST" readonly placeholder="Branch GST" id="inv-detail-approve-0008">
+                        <mat-label>Branch GST</mat-label>
+                    </mat-form-field>
+                </td>
+                <td *ngIf="aptypeid != 4">
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="gst" readonly placeholder="GST Applicable" id="inv-detail-approve-0009">
+                        <mat-label>GST Applicable</mat-label>
+                    </mat-form-field>
+                </td>    
+            </tr>    
+            <tr>
+                <td>
+                    <mat-form-field>
+                        <input type="text" matInput formControlName="supCode" readonly placeholder="Supplier Code" id="inv-detail-approve-0010">
+                        <mat-label>Supplier Code</mat-label>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="supName" readonly placeholder="Supplier Name" id="inv-detail-approve-0011">
+                        <mat-label>Supplier Name</mat-label>
+                    </mat-form-field>
+                </td>
+               
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="supGST" readonly placeholder="Supplier GST" id="inv-detail-approve-0012">
+                        <mat-label>Supplier GST</mat-label>
+                    </mat-form-field>
+                </td> 
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="status" readonly placeholder="Status" id="inv-detail-approve-0013">
+                        <mat-label>Status</mat-label>
+                    </mat-form-field>
+                </td> 
+            </tr>
+            <tr >
+                <td>
+                    <mat-form-field >
+                        <input type="text" matInput formControlName="invDate" readonly placeholder="Invoice Date" id="inv-detail-approve-0014">
+                        <mat-label>Invoice Date</mat-label>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="taxableAmt" readonly placeholder="Taxable Amount" style="text-align: right;" id="inv-detail-approve-0015">
+                        <mat-label>Taxable Amount</mat-label>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" matInput formControlName="invAmt" readonly placeholder="Invoice Amount" style="text-align: right;" id="inv-detail-approve-0016">
+                        <mat-label>Invoice Amount</mat-label>
+                    </mat-form-field>
+                </td>     
+            </tr>     
+            </div>  
+        </table>
+        </form>
+             <!-- ----------Debit detail if aptype is advance--------- -->
+        
+             <div>
+                <h2 style="font-weight:bold;">Debit Details</h2>
+                <td style="margin-left: 700;">
+                    <button type="button" class="btn btn-outline-primary" style="margin-left: 500px;border-radius:50px; font-size:medium;"
+                    data-toggle="modal" data-target="#inv-detail-approve-0002" (click)="getquestion()"   id="inv-detail-approve-0017">Audit Checklist
+                                                  </button> 
+                </td>
+                <td style="margin-left: 10;">
+                    <button type="button" class="btn btn-outline-primary" style="margin-left: 10px;border-radius:50px;font-size: medium;"
+                    data-toggle="modal" data-target="#data" (click)="getdedup()" id="inv-detail-approve-0018">Dedupe Check
+                    </button> 
+                </td>
+        
+                
+                <div>
+                    <form [formGroup]="DebitDetailForm">
+                        <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                            <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                <thead class="table_header" style="text-align: center;">
+                                    <tr>
+                               <th>S.No</th>
+                                <th>Category</th>
+                                <th>Sub Category </th>
+                                <th>GL Number</th>
+                                <th>BS </th>
+                                <th>CC</th>
+                                <th>CCBS Percentage</th>
+                                <th>Amount</th>
+                                <th>Adjust Amount</th>
+                                <th>Debit Amount</th> 
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let dbt of debitdata;index as i">
+                             <td>{{i+1}}</td>
+                             <td>{{dbt?.category_code?.name}}</td>
+                             <td>{{dbt?.subcategory_code?.name}}</td>
+                             <td>{{dbt?.glno}} - {{dbt?.subcategory_code?.gl_description}}</td>
+                             <td>{{dbt?.bs_code?.name}}</td>
+                             <td>{{dbt?.cc_code?.name}}</td>
+                             <td style="text-align:center">{{dbt?.ccbspercentage}}</td>
+                             <td style="text-align:right">{{dbt?.amount | currency:'INR'}}</td>
+                             <td style="text-align:right">{{dbt?.deductionamount | currency:'INR'}}</td>
+                             <td style="text-align:right">{{dbt?.amount | currency:'INR'}}</td>
+                            </tr>
+                        </tbody>
+                        <tr>
+                            <td class="totaldisplay" colspan="9"
+                                style="font-family: 'Times New Roman', Times, serif;;font-size:15px;text-align: right;">Net Amount:
+                            </td>
+                            <td style ="text-align: right;">{{debitsum | currency:'INR'}}</td>
+                        </tr>
+                    </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+             <!-- -------------- -->
+            
+             <form [formGroup]="InvoiceDetailForm">
+                <!-- ----------Invoice detail if aptype other than advance--------- -->
+        
+                <div>
+                   <h2 style="font-weight:bold;">Invoice Details</h2>
+                   <td style="margin-left: 700;">
+                       <button type="button" class="btn btn-outline-primary" style="margin-left: 500px;border-radius:50px; font-size:medium;"
+                       data-toggle="modal" data-target="#inv-detail-approve-0002" (click)="getquestion()"   id="inv-detail-approve-0019">Audit Checklist
+                                                     </button> 
+                   </td>
+                   <td style="margin-left: 10;">
+                       <button type="button" class="btn btn-outline-primary" style="margin-left: 10px;border-radius:50px;font-size: medium;"
+                       data-toggle="modal" data-target="#inv-detail-approve-0001" (click)="getdedup()" id="inv-detail-approve-0020">Dedupe Check
+                       </button> 
+                   </td>
+           
+                                    <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                                        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                            <thead class="table_header" style="text-align: center;">
+                                            <tr>
+                                    <th>S.No</th> 
+                                    <th>Particulars</th>                           
+                                    <th>Product Name</th>
+                                    <!-- <th>Is RCM</th> -->
+                                    <th>UOM</th>
+                                    <th *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">HSN Code</th>  
+                                    <th *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">HSN %</th>          
+                                    <th>Unit Price</th>                
+                                    <th>Quantity</th>
+                                    <th>Amount</th>             
+                                    <th *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">CGST</th>
+                                    <th *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">SGST</th>                
+                                    <th *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">IGST</th>
+                                    <th *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">Tax Amount</th>
+                                    <th *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">Discount</th>                
+                                    <th>Total Amount</th> 
+                            <th>Is Capitalized</th>  
+                            <th>View Debit</th>      
+                                </tr>
+                            </thead>      
+        
+                            <tbody>
+                                <tr *ngFor = "let dtl of invDetailList;index as i">
+                                   <td>{{i+1}}</td>
+                                   <td matTooltip={{dtl?.description}} matTooltipClass="custom-tooltipnew">{{dtl?.description}}</td> 
+                                   <td >
+                                    <div style="width: 220px;;overflow: hidden">
+                                    {{dtl?.productname}}                      
+                                    <h3>Is RCM :<span [ngStyle]=" dtl?.is_rcmproduct == 'Y'?{'color':'green','font-weight':'bold'}: {'color': 'red','font-weight':'bold'}">{{dtl?.is_rcmproduct}}</span>&nbsp;&nbsp;Is Blocked:<span [ngStyle]=" dtl?.product_isblocked == 'Y'?{'color':'green','font-weight':'bold'}: {'color': 'red','font-weight':'bold'}">{{dtl?.product_isblocked}}</span></h3>
+                                    </div> 
+                                    </td>
+                                   <!-- <td>{{dtl?.is_rcmproduct}}</td> -->
+                                   <td>{{dtl?.uom}}</td>
+                                   <td  *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">{{dtl?.hsn?.code}}</td>
+                                   <td  *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">{{dtl?.hsn_percentage}}</td>
+                                   <td style="text-align:right">{{dtl?.unitprice | currency:'INR'}}</td>
+                                   <td style="text-align: center;">{{dtl?.quantity}}</td>
+                                   <td style="text-align:right">{{dtl?.amount | currency:'INR'}}</td>
+                                   <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">{{dtl?.cgst | currency:'INR'}}</td>
+                                    <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">{{dtl?.sgst | currency:'INR'}}</td>                
+                                    <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">{{dtl?.igst | currency:'INR'}}</td>
+                                    <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">{{dtl?.taxamount | currency:'INR'}}</td>
+                                    <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">{{dtl?.discount | currency:'INR'}}</td> 
+                                    <td style="text-align:right">{{dtl?.totalamount | currency:'INR'}}</td>  
+                                    <td *ngIf="dtl?.is_capitalized == true || dtl?.is_capitalized == 1" style="text-align: center;">Yes</td>
+                                           <td *ngIf="dtl?.is_capitalized == false || dtl?.is_capitalized ==0" style="text-align: center;">No</td>
+                                           <td style="text-align:center">
+        
+                                        <span matTooltip="view" matTooltipClass="custom-tooltipnew" class=" fa fa-eye create "
+                                            style="color: black;cursor: pointer;" (click)="adddebits(dtl)"></span>
+                                            
+                                       
+        
+                                    </td>        
+                                </tr>
+                                <tr>
+                                        
+                                    <td class="totaldisplay" colspan="15"   *ngIf="this.aptypeid != 3 && this.aptypeid !=4 && this.aptypeid != 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                        Other Amount:</td>
+                                    <td class="totaldisplay" colspan="7"   *ngIf="this.aptypeid == 3 || this.aptypeid ==4 || this.aptypeid == 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Other Amount:</td>
+                                    <td style="text-align:right">{{OtherAmount| currency:'INR'}}</td>
+                                </tr>
+                                <tr>
+                                        
+                                    <td class="totaldisplay" colspan="15"   *ngIf="this.aptypeid != 3 && this.aptypeid !=4 && this.aptypeid != 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                        Rounding Off:</td>
+                                    <td class="totaldisplay" colspan="7"   *ngIf="this.aptypeid == 3 || this.aptypeid ==4 || this.aptypeid == 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                        Rounding Off:</td>
+                                    <td style="text-align:right">{{Roundoffamount| currency:'INR'}}</td>
+                                </tr>
+                                <tr >
+                                    <td class="totaldisplay" colspan="15"  *ngIf="this.aptypeid != 3 && this.aptypeid !=4 && this.aptypeid != 8"
+                                        style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                        Net Amount:</td>
+                                    <td class="totaldisplay" colspan="7"  *ngIf="this.aptypeid == 3 || this.aptypeid ==4 || this.aptypeid == 8"
+                                        style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                        Net Amount:</td>
+                                    <td style="text-align:right">{{INVsum | currency:'INR'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="invDetailList?.length == 0" style="margin-left: 42%;">
+                            <h3>Sorry data not found!.. </h3>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        
+            <!-- ----------credit detail --------- -->
+        
+            <br><br>
+            <h2 style="font-weight:bold;">Credit Details</h2>
+            <!-- <form [formGroup]="creditdetForm">            
+            </form> -->
+          
+                            <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                    <thead class="table_header" style="text-align: center;">
+                                    <tr>
+                                    <th>S.No</th>
+                                    <th>Paymode</th>
+                                    <th>Account Detail/GL</th>
+                                    <th>Transaction Branch</th>
+                                    <th>Ref No</th>
+                                    <th>Bank Name</th>
+                                    <th>Branch Name</th>
+                                    <th>IFSC Code</th>
+                                    <th>Beneficiary Name</th>
+                                    <th>Tax Type</th>
+                                    <th>Tax Rate</th>
+                                    <th>TDS Excempt</th>
+                                    <th>Taxable Amount</th>
+                                    <th>GL No</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>        
+                           <tbody>
+                            <tr *ngFor="let cdt of invCreditList;index as i">
+                                <td>{{i+1}}</td>
+                                <td>{{cdt?.paymode?.name}}</td>
+                                <td>{{cdt?.refno}}</td>
+                                <td style="text-align: center;">-</td>
+                                <td>{{cdt?.refno}}</td>
+                                
+                                <td *ngIf="this.paytoid == 'S'"><ng-container *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.bank_id?.name}}</ng-container></td>
+                                <td *ngIf="this.paytoid == 'S'"><ng-container *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.branch_id?.name}}</ng-container></td>
+                                <td *ngIf="this.paytoid == 'S'"><ng-container *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.branch_id?.ifsccode}}</ng-container></td>
+                                <td *ngIf="this.paytoid == 'S'"><ng-container *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.beneficiary}}</ng-container></td>
+        
+                                <!-- <td *ngIf="this.paytoid == 'E'"><ng-container *ngFor="let cdtdtl of cdt?.employeeaccount_details?.data">{{cdtdtl?.bank_name}}</ng-container></td>
+                                <td *ngIf="this.paytoid == 'E'"><ng-container *ngFor="let cdtdtl of cdt?.employeeaccount_details?.data">{{cdtdtl?.bankbranch?.name}}</ng-container></td>
+                                <td *ngIf="this.paytoid == 'E'"><ng-container *ngFor="let cdtdtl of cdt?.employeeaccount_details?.data">{{cdtdtl?.bankbranch?.ifsccode}}</ng-container></td>
+                                <td *ngIf="this.paytoid == 'E'"><ng-container *ngFor="let cdtdtl of cdt?.employeeaccount_details?.data">{{cdtdtl?.beneficiary_name}}</ng-container></td> -->
+                                <td *ngIf="this.paytoid == 'E'">{{cdt?.employeeaccount_details?.bank_name}}</td>
+                                <td *ngIf="this.paytoid == 'E'">{{cdt?.employeeaccount_details?.bankbranch?.name}}</td>
+                                <td *ngIf="this.paytoid == 'E'">{{cdt?.employeeaccount_details?.bankbranch?.ifsccode}}</td>
+                                <td *ngIf="this.paytoid == 'E'">{{cdt?.employeeaccount_details?.beneficiary_name}}</td>
+        
+                                <td *ngIf="this.paytoid == 'B'">KARUR VYSYA BANK</td>
+                                <td *ngIf="this.paytoid == 'B'">EXPENSES MANAGEMENT CELL</td>
+                                <td *ngIf="this.paytoid == 'B'">KVBL0001903</td>
+                                <td *ngIf="this.paytoid == 'B'">EXPENSES MANAGEMENT CELL</td>
+                                <td>{{cdt?.suppliertaxtype}}</td>
+                                <td>{{cdt?.suppliertaxrate == "0.0" ? "-" :cdt?.suppliertaxrate }}</td>
+
+                                <td>{{cdt?.taxexcempted}}</td>
+                                <td >{{cdt?.taxableamount == "0.0" ? "-":cdt?.taxableamount| currency:'INR'}}</td>
+
+                                <td>{{cdt?.glno}}</td>
+                                <td style="text-align:right">{{cdt?.amount | currency:'INR'}}</td>
+                                
+                            </tr>
+                           </tbody>
+                                <tr>
+                                    <td class="totaldisplay" colspan="14"
+                                        style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                        Net Amount:</td>
+                                    <td style="text-align:right">{{cdtsum | currency:'INR'}}</td>
+                                </tr>
+                 </table>
+                 <div *ngIf="invCreditList?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+            </div>
+            <br>
+            <div *ngIf="(invoiceheaderstatus == 1 || invoiceheaderstatus == 12)"  style="margin-bottom: 3%;">
+                <form [formGroup]="SubmitAPApproverForm">
+              
+                    <mat-form-field style="width: 250px;font-family: 'Times New Roman', Times, serif;margin-left: 350px;">
+                        <input matInput placeholder="Remarks" formControlName="remarks" autocomplete="off" required id="inv-detail-approve-0021">
+                    </mat-form-field>
+                <button type="button"
+                                        style="border-radius:40px;margin-left:25px;font-family: 'Times New Roman', Times, serif;margin-bottom: 0px;"
+                                        class="btn btn-outline-success" (click)="apApprove()" id="inv-detail-approve-0022">
+                                        Approve</button>
+                                        <!-- <button type="button"
+                                        style="border-radius:40px;margin-left:10px;font-family: 'Times New Roman', Times, serif;margin-bottom: 0px;"
+                                        class="btn btn-outline-danger" (click)="apReject()" id="inv-detail-approve-0023">
+                                        Reject</button> -->
+                                        <button type="button" style="border-radius:40px;margin-left: 10px;margin-bottom: 0px;"
+                class="btn btn-outline-primary" (click)="overallback()" id="inv-detail-approve-0024">
+                Back</button>
+                </form>
+            </div>      
+            <div *ngIf="!(invoiceheaderstatus == 1 || invoiceheaderstatus == 12)" style="margin-bottom: 5%;">
+                <button type="button" style="border-radius:40px;margin-left: 600px;margin-bottom: 0px;"
+                class="btn btn-outline-primary" (click)="overallback()" id="inv-detail-approve-0025">
+                Back</button>
+            </div>
+            <!-- <div *ngIf="(invoiceheaderstatus == 1 || invoiceheaderstatus == 12) && comefrom =='apapprove'" style="margin-bottom: 3%;">
+                <form [formGroup]="SubmitAPApproverForm">
+              
+                    <mat-form-field style="width: 250px;font-family: 'Times New Roman', Times, serif;margin-left: 350px;">
+                        <input matInput placeholder="Remarks" formControlName="remarks" autocomplete="off" required id="inv-detail-approve-0026">
+                    </mat-form-field>
+                <button type="button"
+                                        style="border-radius:40px;margin-left:25px;font-family: 'Times New Roman', Times, serif;margin-bottom: 0px;"
+                                        class="btn btn-outline-success" (click)="apApprove()" id="inv-detail-approve-0027">
+                                        Approve</button>
+                                        <button type="button"
+                                        style="border-radius:40px;margin-left:10px;font-family: 'Times New Roman', Times, serif;margin-bottom: 0px;"
+                                        class="btn btn-outline-danger" (click)="apReject()" id="inv-detail-approve-0028">
+                                        Reject</button>
+                                        <button type="button" style="border-radius:40px;margin-left: 10px;margin-bottom: 0px;"
+                class="btn btn-outline-primary" (click)="overallback()" id="inv-detail-approve-0029">
+                Back</button>
+                </form>
+            </div>       -->
+            <!-- <div *ngIf="invoiceheaderstatus != 14 && comefrom == 'preparepay'" style="margin-bottom: 3%;">
+                <form [formGroup]="SubmitAPApproverForm">
+              
+                    <mat-form-field style="width: 250px;font-family: 'Times New Roman', Times, serif;margin-left: 350px;">
+                        <input matInput placeholder="Remarks" formControlName="remarks" autocomplete="off" required id="inv-detail-approve-0030">
+                    </mat-form-field>
+                    <button type="button"
+                    style="border-radius:40px;margin-left:25px;font-family: 'Times New Roman', Times, serif;margin-bottom: 0px;"
+                    class="btn btn-outline-primary" (click)="preparePay()" id="inv-detail-approve-0031">
+                    Prepare Payment</button>
+                                     
+                                        <button type="button" style="border-radius:40px;margin-left: 10px;margin-bottom: 0px;"
+                class="btn btn-outline-primary" (click)="overallback()" id="inv-detail-approve-0032">
+                Back</button>
+                </form>
+            </div> 
+            <div *ngIf="(invoiceheaderstatus == 14 && comefrom == 'preparepay') || (invoiceheaderstatus != 1 && invoiceheaderstatus != 12 && comefrom =='apapprove')" style="margin-bottom: 3%;margin-left:600px;">
+                <form [formGroup]="SubmitAPApproverForm">
+                    <button type="button" style="border-radius:40px;margin-bottom: 0px;"
+                    class="btn btn-outline-primary" (click)="overallback()" id="inv-detail-approve-0033">
+                    Back</button>
+                </form>
+            </div>   -->
+        </div>
+           
+            <!-- Debit Div starts---- -->
+            <div *ngIf="showdebitdiv">
+               
+                <br>
+                <h2 style="font-weight:bold ;">Debit Details (Total Amount :
+                    {{invtotamount | currency:'INR'}})</h2>
+        
+                <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+        
+                <div>
+                    <form [formGroup]="DebitDetailForm">
+                                        <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                                            <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                                <thead class="table_header" style="text-align: center;">
+                                                <tr>
+                                        <th>S.No</th>
+                                        <th>Category</th>
+                                        <th>Sub Category </th>
+                                        <th>GL Number</th>
+                                        <th>BS </th>
+                                        <th>CC</th>
+                                        <th>CCBS Percentage</th>
+                                        <th>Amount</th>
+                                        <th>Adjust Amount</th>
+                                        <th>Debit Amount</th>  
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let dbt of debitdata;index as i">
+                                     <td>{{i+1}}</td>
+                                     <td>{{dbt?.category_code?.name}}</td>
+                                     <td>{{dbt?.subcategory_code?.name}}</td>
+                                     <td>{{dbt?.glno}} -  {{dbt?.subcategory_code?.gl_description}}</td>
+                                     <td>{{dbt?.bs_code?.name}}</td>
+                                     <td>{{dbt?.cc_code?.name}}</td>
+                                     <td style="text-align:center">{{dbt?.ccbspercentage}}</td>
+                                     <td style="text-align:right">{{dbt?.amount | currency:'INR'}}</td>
+                                     <td style="text-align:right">{{dbt?.deductionamount | currency:'INR'}}</td>
+                                     <td style="text-align:right">{{dbt?.amount | currency:'INR'}}</td>
+                                    </tr>
+                                </tbody>
+                                <tr>
+                                    <td class="totaldisplay" colspan="9"
+                                        style="font-family: 'Times New Roman', Times, serif;;font-size:15px;text-align: end;">Net Amount:
+                                    </td>
+                                    <td style="text-align:right">{{debitsum | currency:'INR'}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="10">
+                                        <button type="button" #debitclosebtn
+                                            style="border-radius:40px;margin-left:625px;font-family: 'Times New Roman', Times, serif;"
+                                            class="btn btn-outline-primary" (click)="debitbacks()" id="inv-detail-approve-0034">
+                                            Back</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div> 
+            
+            
+            <!-- Debit div ends -->
+          </mat-card>
+        </div>
+        
+
+
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true" id="inv-detail-approve-0001">
+            <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h2 class="modal-title" style="text-align:center;margin-left:45%">Dedupe</h2>
+                    <button class="close" type="button" data-dismiss="modal" id="inv-detail-approve-0035">x</button>                
+                    </div>
+                    <div class="modal-body">
+                        <pre>EXACT_MATCH</pre>
+                        <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                            <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                                <thead class="table_header " fixed-header>
+                                    <tr>
+                                        <th>S.No</th> 
+                                        <th>Invoice Number</th>                             
+                                        <th>Invoice Header Amount</th>
+                                        <th>Status</th>          
+                                        <th>CR No</th>                
+                                        <th>Supplier Name</th>
+                                        <th>Branch Name</th>             
+                                        <th>Employee Name</th>                                      
+                                    </tr>
+                                </thead>
+                                <tbody>                    
+                                    <tr *ngFor="let value of exactList; index as i;">
+                                        <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                        <td>{{value.invoiceno}}</td>
+                                        <td style="text-align: right;">{{value.invoiceamount | currency:'INR'}}</td>     
+                                        <td>{{value['status'].text}}</td>
+                                        <td>{{value.crno}}</td>                         
+                                        <td>{{value['supplier'].name}}</td>
+                                        <td>{{value['branch'].name}}</td>
+                                        <td>{{value.raised_empname}}</td>    
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="exactList ?.length == 0" style="margin-left: 42%;">
+                                <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                            </div>
+                        </div>
+                        <br>
+        
+                        <pre>WITHOUT_SUPPLIER</pre>
+                        <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                            <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                                <thead class="table_header " fixed-header>
+                                    <tr>
+                                        <th>S.No</th> 
+                                        <th>Invoice Number</th>                             
+                                        <th>Invoice Header Amount</th>
+                                        <th>Status</th>          
+                                        <th>CR No</th>                
+                                        <th>Supplier Name</th>
+                                        <th>Branch Name</th>             
+                                        <th>Employee Name</th>                                      
+                                    </tr>
+                                </thead>
+                                <tbody>                    
+                                    <tr *ngFor="let value of withoutSuppList; index as i;">
+                                        <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                        <td>{{value.invoiceno}}</td>
+                                        <td style="text-align: right;">{{value.invoiceamount | currency:'INR'}}</td>     
+                                        <td>{{value['status'].text}}</td>
+                                        <td>{{value.crno}}</td>                         
+                                        <td>{{value['supplier'].name}}</td>
+                                        <td>{{value['branch'].name}}</td>
+                                        <td>{{value.raised_empname}}</td>    
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="withoutSuppList ?.length == 0" style="margin-left: 42%;">
+                                <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                            </div>
+                        </div>
+                        <br>
+        
+                        <pre>WITHOUT_INVOICE_AMOUNT</pre>
+                        <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                            <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                                <thead class="table_header " fixed-header>
+                                    <tr>
+                                        <th>S.No</th> 
+                                        <th>Invoice Number</th>                             
+                                        <th>Invoice Header Amount</th>
+                                        <th>Status</th>          
+                                        <th>CR No</th>                
+                                        <th>Supplier Name</th>
+                                        <th>Branch Name</th>             
+                                        <th>Employee Name</th>                                      
+                                    </tr>
+                                </thead>
+                                <tbody>                    
+                                    <tr *ngFor="let value of withoutInvAmtList; index as i;">
+                                        <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                        <td>{{value.invoiceno}}</td>
+                                        <td style="text-align: right;">{{value.invoiceamount | currency:'INR'}}</td>     
+                                        <td>{{value['status'].text}}</td>
+                                        <td>{{value.crno}}</td>                         
+                                        <td>{{value['supplier'].name}}</td>
+                                        <td>{{value['branch'].name}}</td>
+                                        <td>{{value.raised_empname}}</td>    
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="withoutInvAmtList ?.length == 0" style="margin-left: 42%;">
+                                <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                            </div>
+                        </div>
+                        <br>
+        
+                        <pre>WITHOUT_INVOICE_NUMBER</pre>
+                        <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                            <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                                <thead class="table_header " fixed-header>
+                                    <tr>
+                                        <th>S.No</th> 
+                                        <th>Invoice Number</th>                             
+                                        <th>Invoice Header Amount</th>
+                                        <th>Status</th>          
+                                        <th>CR No</th>                
+                                        <th>Supplier Name</th>
+                                        <th>Branch Name</th>             
+                                        <th>Employee Name</th>                                      
+                                    </tr>
+                                </thead>
+                                <tbody>                    
+                                    <tr *ngFor="let value of withoutInvNoList; index as i;">
+                                        <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                        <td>{{value.invoiceno}}</td>
+                                        <td style="text-align: right;">{{value.invoiceamount | currency:'INR'}}</td>     
+                                        <td>{{value['status'].text}}</td>
+                                        <td>{{value.crno}}</td>                         
+                                        <td>{{value['supplier'].name}}</td>
+                                        <td>{{value['branch'].name}}</td>
+                                        <td>{{value.raised_empname}}</td>    
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="withoutInvNoList ?.length == 0" style="margin-left: 42%;">
+                                <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                            </div>
+                        </div>
+                        <br>
+        
+                        <pre>WITHOUT_INVOICE_DATE</pre>
+                        <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                            <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                                <thead class="table_header " fixed-header>
+                                    <tr>
+                                        <th>S.No</th> 
+                                        <th>Invoice Number</th>                             
+                                        <th>Invoice Header Amount</th>
+                                        <th>Status</th>          
+                                        <th>CR No</th>                
+                                        <th>Supplier Name</th>
+                                        <th>Branch Name</th>             
+                                        <th>Employee Name</th>                                      
+                                    </tr>
+                                </thead>
+                                <tbody>                    
+                                    <tr *ngFor="let value of withoutInvDtList; index as i;">
+                                        <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                        <td>{{value.invoiceno}}</td>
+                                        <td style="text-align: right;">{{value.invoiceamount | currency:'INR'}}</td>     
+                                        <td>{{value['status'].text}}</td>
+                                        <td>{{value.crno}}</td>                         
+                                        <td>{{value['supplier'].name}}</td>
+                                        <td>{{value['branch'].name}}</td>
+                                        <td>{{value.raised_empname}}</td>    
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="withoutInvDtList ?.length == 0" style="margin-left: 42%;">
+                                <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer"  class="col-md-12 text-center" style="margin-bottom: 2%;">
+                        <button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;text-align:center ;" data-dismiss="modal"  id="inv-detail-approve-0036">Back</button>
+                    </div>
+        
+                </div>
+            </div>
+        
+        </div>
+        <!-- Auditchecklist -->
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true" 
+             id="inv-detail-approve-0002">
+             <div class="modal-dialog modal-xl " style="width: 85%;">
+                 <div class="modal-content">
+                     <div class="modal-header" style="text-align:center">
+                         <h2 class="modal-title" style="text-align:center;margin-left:36%">Audit Checklist</h2>
+                         <button type="button" class="close" #auditclose data-dismiss="modal" aria-label="Close" id="inv-detail-approve-0037">
+                             <span aria-hidden="true">&times;</span>
+                         </button>
+                     </div>
+                     <div>
+                         <table class="table table-bordered" style="width: 100%;text-align: center;">
+                             <thead class="table_header">
+                             <tr>
+                                 <th>S.No</th>
+                                 <th>Question</th>
+                                 <th>Ok/Not.Ok</th>
+                             </tr>
+                             </thead>
+                             <tr *ngFor="let dt of checklist;let i=index">
+                             <td>{{i+1}}</td>
+                             <td>{{dt.question}}</td>
+                             <td>  <div class="btn-group btn-group-toggle" data-toggle="buttons"  >
+                                 <label class="btn btn-outline-success" [ngClass]="(dt.value==1)? 'active': ''">
+                                   <input type="radio" name="options" id="option1" autocomplete="off"   (click)="ok(i,dt)" > Ok
+                                   </label>
+                                 <label class="btn btn-outline-danger ">
+                                   <input type="radio" name="options" id="option2" autocomplete="off" checked   (click)="notok(i,dt)"> Not-OK
+                                 </label>
+                                 <label class="btn btn-outline-secondary">
+                                   <input type="radio" name="options" id="option3"  autocomplete="off"  (click)="nap(i,dt)"> N/A
+                                 </label>
+                               </div> </td>
+                         </tr>
+                         </table>
+                     </div>
+                     <div>
+                    <div>
+                     <mat-form-field style="width: 20rem;margin-left: 30px; ">
+                         <mat-label>Remarks</mat-label>
+                         <input matInput [formControl]="rem" autocomplete="off" required id="inv-detail-approve-0038">
+                     </mat-form-field>
+                     <button type="submit" data-dismiss="modal" [disabled]="((rem.invalid==true) || (cli==true))" class="btn btn-outline-danger"  style="border-radius:35px;height: 40px;margin-left: 10px;" (click)="bounce()" id="inv-detail-approve-0039">Bounce</button> 
+                    
+                     <button  class="btn btn-outline-primary" style="border-radius:35px;height: 40px;margin-left: 100px;" [disabled] = "disables()" (click)="submitted()" id="inv-detail-approve-0040">Submit</button>
+                     <button  data-dismiss="modal" class="btn btn-outline-primary" style="border-radius:35px;height: 40px;margin-left: 10px;" id="inv-detail-approve-0041">Back</button> 
+                    </div>
+             </div>
+             </div>
+             </div>
+        </div>
+        
+        

@@ -1,0 +1,169 @@
+<div  *ngIf="drssummry">
+    <form *ngIf='report_view_flag==false' [formGroup]="report_summary" style="margin-left: 3%; width: 95%;">
+        <h2 style="text-align: center; margin-top: 2%;">DRS Summary</h2>
+        <div class="row" style="margin-top: 2%; margin-left: 15%;">
+            <!-- <tr> -->
+                <!-- <th> -->
+                    <!-- <div  class="col-md-3">
+                        <mat-form-field (click)="reportmasterdrop()" style="margin-left: 15px;">
+                            <mat-label>Report Name</mat-label>
+                            <input matInput formControlName="file_name" [matAutocomplete]="report_name">
+                            <mat-autocomplete #report_name="matAutocomplete" [displayWith]="reportmaster_display">
+                                <mat-option *ngFor="let reportgroupcreates of reportmaster_list"
+                                    [value]="reportgroupcreates">
+                                    {{reportgroupcreates.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div> -->
+                    <div class="col-md-3">
+                        <mat-form-field style="margin-left: 15px;"  (click)="report_drop()">
+                            <mat-label>Report Name</mat-label>
+                            <input #branchsumInput matInput placeholder="Report Name" formControlName="file_name"
+                                autocomplete="off" #reportContactInput [matAutocomplete]="reportsum">
+                            <mat-autocomplete #reportsum="matAutocomplete" [displayWith]="displayfnreportsum"
+                                (opened)="autocompletereportsumScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <!-- <mat-option *ngFor="let branchsums of brasum_list_sum" (click)="branch_clear()"
+                                        [value]="branchsums">{{branchsums.code}}-{{branchsums.name}} </mat-option> -->
+                                    <mat-option *ngFor="let reportgroupcreates of reportmaster_list"
+                                        [value]="reportgroupcreates">{{reportgroupcreates.name}} </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                   
+                <!-- </th> -->
+                <!-- <th> -->
+                    <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>Created Date</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="create_date" [max]="current_date">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                <!-- </th>
+                <th> -->
+                    <div class="col-md-1">
+                        <button type="button" style="border-radius: 30px; margin-top: 15%; margin-left: 40%;"
+                            class="btn btn-outline-primary" (click)="drs_report_summary(report_summary.value)"><i
+                                class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                <!-- </th> -->
+                <div class="col-md-1">
+                    <button type="button" (click)="clear_summary()" style="border-radius: 40px; margin-top: 15%; margin-left: 40%;"
+                        class="btn btn-outline-primary">Clear</button>
+                </div>
+
+            <!-- </tr> -->
+        </div>
+        <div class="tablescroll" style="margin-top: 2%;width: 95%;margin-left: 30px;overflow: auto;">
+            <div class="tableFixHead">
+                <table class="table table-bordered" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Created Date</th>
+                            <th>View</th>
+                            <!-- <th>Download</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container matColumnDef="position">
+                            <tr *ngFor="let report of report_data_list;let i=index">
+                                <td>{{ (presentpage-1)*10+i+1}}</td>
+                                <td>{{report.code}}</td>
+                                <td>{{report.name}}</td>
+                                <td>{{report.created_date | date:'dd-MM-yyyy'}}</td>
+                                <td>
+                                    <div>
+                                        <button mat-icon-button matTooltip="View" class="iconbutton" color="primary"
+                                            style="color: green;" (click)="report_header_list(report)">
+                                            <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <mat-icon [ngStyle]="{'color': 'green', 'cursor': 'pointer'}"
+                                        [matTooltip]="'Download Excel'" aria-label="Download Excel"
+                                        (click)="trigger_report_filedownload(report,'xlsx')">
+                                        description
+                                    </mat-icon>
+                                    <mat-icon [ngStyle]="{'color': 'green', 'cursor': 'pointer', 'margin-left':'25px'}"
+                                        [matTooltip]="'Download PDF'" aria-label="Download PDF"
+                                        (click)="trigger_report_filedownload(report,'pdf')">
+                                        picture_as_pdf
+                                    </mat-icon>
+                                </td> -->
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                        (click)="previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpage}}
+                    <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form *ngIf='report_view_flag==true' [formGroup]="report_view" id="headtable">
+        <h2 matTooltip="Report Master" style="text-align:center; padding-right:100px; cursor: pointer;">
+            {{report_view_name}}</h2>
+        <div class="col-md-12">
+            <div class="col-md-6">
+                <button style="border-radius: 40px;" (click)="back_summary()"
+                    class="btn btn-outline-primary">Back</button>
+            </div>
+            <div class="col-md-12">
+                <h2 style="text-align: right;">Amount In Crores
+                <button type="submit" class="btn btn-outline-primary" style="border-radius: 40px;"
+                    (click)="Screendownload()"><i class="fa fa-download" aria-hidden="true"></i></button>
+                </h2>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="tablescroll" style="margin-top: 2%; width: 75%; margin-left: 10px; overflow: auto;">
+                    <div class="tableFixHead">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <tbody>
+                                <ng-container matColumnDef="position">
+                                    <tr *ngFor="let report of report_view_list;let i=index">
+                                        <td [ngStyle]="{'padding':report.padding,'padding-left':report.padding_left}"
+                                            [matTooltip]="report.toolkey">
+                                            <div *ngIf="report.padding_left!='120px'"><a
+                                                    style="color: blue;cursor: pointer;" class="ng-binding"
+                                                    (click)="treelevel_click(i,report,report_view_list)">
+                                                    {{report.name}}</a></div>
+                                            <div *ngIf="report.padding_left=='120px'">{{report.name}}</div>
+                                        </td>
+                                        <td>{{report.report_amount/10000000 |number:'1.2-2'}}</td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div *ngIf="summrytemplate">
+    <app-drs-summary-template></app-drs-summary-template>
+</div>

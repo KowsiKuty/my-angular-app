@@ -1,0 +1,602 @@
+<div class="sql-builder-container" *ngIf="qurymain_screen">
+	<!-- Sidebar -->
+	<div class="sidebar" id="matInput-size">
+		<h2 *ngIf="this.multi_single_scheme != 'Multiple_scheme'">{{schema_name}}</h2>
+		<h2 *ngIf="this.multi_single_scheme == 'Multiple_scheme'">Multiple Schemas</h2>
+
+		<mat-form-field class="mb-2 no-padding-field" *ngIf="multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+			<mat-label>Select Schema</mat-label>
+			<input matInput [(ngModel)]="sechema_table" [matAutocomplete]="filterschema">
+			<mat-autocomplete #filterschema="matAutocomplete" [displayWith]="displayStatus">
+				<mat-option *ngFor="let schema of getFilteredschema()" (click)="schema_selected(schema,1)" [value]="schema">
+					{{ schema }}
+					</mat-option>
+			</mat-autocomplete>
+		</mat-form-field>
+
+		  <mat-form-field (click)="this.Get_tablenames()" class="no-padding-field" appearance="outline">
+			<mat-label>Select Table</mat-label>
+			<input matInput [(ngModel)]="selectedTable" [matAutocomplete]="aws_status">
+			<mat-autocomplete #aws_status="matAutocomplete" [displayWith]="displayStatus">
+				<mat-option *ngFor="let table of getFilteredtable()" (click)="onTableSelect()" [value]="table">
+					{{ table }}
+				  </mat-option>
+			</mat-autocomplete>
+		</mat-form-field>
+
+		<ul>
+			<li *ngFor="let section of sidebarSections">
+				<button (click)="openPopup(section.key)">{{ section.name }}</button>
+			</li>
+		</ul>
+	</div>
+
+	<!-- Main Content -->
+	<div class="main-content">
+		<h3>Generated SQL Query</h3>
+		<div class="sql-box">
+			<pre>
+			  <code class="language-sql" contenteditable="true" spellcheck="false" (input)="updateQuery($event)">
+				<span *ngFor="let token of formattedQuery" [class]="token.class">{{ token.text }} </span>
+			  </code>
+			</pre>
+		</div>
+
+		<div class="button-group">
+			<form [formGroup]="template_group" class="cus-matInput">
+				<div class="row align-items-center justify-content-center">
+					<div class="col-md-3" id="matInput-size">
+						<mat-form-field appearance="outline" class="no-padding-field">
+							<mat-label>Template Name</mat-label>
+							<input matInput formControlName="Template_name" #bsInput required>
+						</mat-form-field>
+					</div>
+					<div class="col-md-auto">
+						<button (click)="create_dynamicquery(formattedQuery)">Create template</button>
+					</div>
+					<div class="col-md-auto">
+						<button (click)="copySQL()">Copy SQL</button>
+					</div>
+					<div class="col-md-auto">
+						<button (click)="downloadSQL()">Download SQL</button>
+					</div>
+					<div class="col-md-auto">
+						<button (click)="Go_to_mainscreen()">Go to Main</button>
+					</div>
+					<div class="col-md-auto">
+						<button class="btn_clear" (click)="Clear_query('html')">clear</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</div>
+
+	<div class="popup-overlay" *ngIf="popupOpen && popupType === 'Select Column'">
+		<div class="popup large-popup">
+			<h3>{{ popupTitle }}</h3>
+			<div class="popup-row filter-row">
+					<div class="row cus-matInput" id="matInput-size">
+
+						<mat-form-field class="col no-padding-field" *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+							<mat-label>Select Schema</mat-label>
+							<input matInput [(ngModel)]="sechema_table_select" [matAutocomplete]="filterschema">
+							<mat-autocomplete #filterschema="matAutocomplete" [displayWith]="displayStatus" [panelWidth]="400">
+								<mat-option *ngFor="let schema of getFilteredschema_pop3(sechema_table_select)" (click)="schema_selected(schema,2)" [value]="schema">
+									{{ schema }}
+									</mat-option>
+							</mat-autocomplete>
+						</mat-form-field>
+		
+						<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.tableKeys.length == 0 ?this.Get_tablenames() : '';filterTables_se(selectedJoinTable_select)" appearance="outline" class="col no-padding-field">
+							<mat-label>Select Table</mat-label>
+							<input matInput [(ngModel)]="selectedJoinTable_select" [matAutocomplete]="_table" (keyup)="filterTables_se(selectedJoinTable_select)"  (focus)="preventOpeningforschema(sechema_table_select)" [matAutocompleteDisabled]="!validatefunforschema(sechema_table_select)">
+							<mat-autocomplete #_table="matAutocomplete" [displayWith]="displayStatus" [panelWidth]="400">
+								<mat-option *ngFor="let join of filteredTables_select" [value]="join" (click)="updateColumnsForJoinTable(selectedJoinTable_select)">
+									{{ join }}
+								  </mat-option>
+							</mat-autocomplete>
+						</mat-form-field>
+
+						<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme != 'Multiple_scheme'" appearance="outline" class="col no-padding-field">
+							<mat-label>Select Table</mat-label>
+							<input type="text" matInput [(ngModel)]="selectedJoinTable_select" [matAutocomplete]="_table" (keyup)="filterTables(selectedJoinTable_select)">
+							<mat-autocomplete #_table="matAutocomplete" [panelWidth]="400">
+								<mat-option  *ngFor="let join of filteredTables" [value]="join" (click)="updateColumnsForJoinTable(selectedJoinTable_select)">{{ join }}</mat-option>
+							</mat-autocomplete>
+						</mat-form-field>
+						
+						<mat-form-field class="mat_width no-padding-field col" appearance="outline">
+							<mat-label>Select Column</mat-label>
+							<mat-select multiple [(value)]="selectedFields" (selectionChange)="handleFieldSelection($event)" (click)="joins.length > 0 ? preventOpening(selectedJoinTable_select):''"  [disabled]="joins.length > 0 && !validatefun(selectedJoinTable_select)">
+								<mat-option value="*" selected>All (*)</mat-option>
+								<mat-option *ngFor="let field of (selectedJoinTable_select ? joinTableFields : tableFields)"  [value]="field.column_name">{{ field.column_name }}</mat-option>
+							</mat-select>
+						</mat-form-field>
+					</div>
+			</div>
+			<div class="popup-buttons">
+				<div>
+					<button class="btn-green" (click)="applySelection()">Apply Selection ⚡</button>
+				</div>
+				<div>
+					<button (click)="closePopup()">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="popup-overlay" *ngIf="popupOpen && popupType === 'filters'">
+		<div class="popup large-popup">
+			<h3>{{ popupTitle }}</h3>
+	
+			<!-- Filter Conditions List -->
+			<div *ngFor="let filter of filters_field; let i = index" class="row cus-matInput popup-row filter-row" id="matInput-size">
+
+				<!-- Logical Operator (Only Show After First Filter) -->
+				<mat-form-field *ngIf="i > 0" appearance="outline" class="col no-padding-field">
+					<mat-label>Logical Operator</mat-label>
+					<mat-select  [(ngModel)]="filter.logicalOperator">
+						<mat-option value="AND">AND</mat-option>
+						<mat-option value="OR">OR</mat-option>
+					</mat-select>
+				</mat-form-field>
+				
+				<mat-form-field class="col no-padding-field" *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+					<mat-label>Select Schema</mat-label>
+					<input matInput [(ngModel)]="filter.sechema_table" [matAutocomplete]="filterschema">
+					<mat-autocomplete #filterschema="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let schema of getFilteredschema_pop3(filter.sechema_table)" (click)="schema_selected(schema,2)" [value]="schema">
+							{{ schema }}
+							</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.tableKeys.length == 0 ?this.Get_tablenames() : '';filterTablesscheme(filter.selectedJoinTable,filter.sechema_table)" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input matInput [(ngModel)]="filter.selectedJoinTable" [matAutocomplete]="_table" (keyup)="filterTablesscheme(filter.selectedJoinTable,filter.sechema_table)" (focus)="preventOpeningforschema(filter.sechema_table)" [matAutocompleteDisabled]="!validatefunforschema(filter.sechema_table)">
+					<mat-autocomplete #_table="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let table of filteredTables" (click)="innerjoin_table_fields(filter);selecttabele(table)" [value]="table">
+							{{ table }}
+						  </mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme != 'Multiple_scheme'" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input type="text" matInput [(ngModel)]="filter.selectedJoinTable" [matAutocomplete]="_table" (keyup)="filterTables(filter.selectedJoinTable)">
+					<mat-autocomplete #_table="matAutocomplete" [panelWidth]="400">
+						<mat-option  *ngFor="let join of filteredTables" [value]="join" (click)="innerjoin_table_fields(filter)">{{ join }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+
+				<mat-form-field appearance="outline" class="col no-padding-field" (click)="filterFields(filter.selectedField, filter)">
+					<mat-label>Field</mat-label>
+					<input type="text" matInput [(ngModel)]="filter.selectedField" (focus)="joins.length > 0 ? preventOpening(filter.selectedJoinTable):''" [matAutocompleteDisabled]="joins.length > 0 && !validatefun(filter.selectedJoinTable)"  [matAutocomplete]="_field" (keyup)="filterFields(filter.selectedField, filter)">
+					<mat-autocomplete #_field="matAutocomplete" [displayWith]="displayfield">
+						<ng-container *ngIf="filter.selectedJoinTable; else defaultFields">
+							<mat-option *ngFor="let field of filter.filteredJoinTableFields" [value]="field" (click)="get_field_type(field,filter)">{{ field.column_name }}</mat-option>
+						</ng-container>
+						
+						<ng-template #defaultFields>
+							<mat-option *ngFor="let field of filter.filteredTableFields" [value]="field" (click)="get_field_type(field,filter)">{{ field.column_name }}</mat-option>
+						</ng-template>
+					</mat-autocomplete>
+				</mat-form-field>
+				<!-- Operator Selection -->
+
+				<mat-form-field appearance="outline" class="col no-padding-field">
+					<mat-label>Select Operator</mat-label>
+					<input type="text" matInput [(ngModel)]="filter.selectedOperation" [matAutocomplete]="_oprations">
+					<mat-autocomplete #_oprations="matAutocomplete">
+						<mat-option value="=">=</mat-option>
+						<mat-option value="!=">!=</mat-option>
+						<mat-option value="<>"><></mat-option>
+						<mat-option value=">">></mat-option>
+						<mat-option value="<"><</mat-option>
+						<mat-option value=">=">>=</mat-option>
+						<mat-option value="<="><=</mat-option>
+						<mat-option value="IN">IN</mat-option>
+						<mat-option value="NOT IN">NOT IN</mat-option>
+						<mat-option value="LIKE">LIKE</mat-option>
+						<mat-option value="NOT LIKE">NOT LIKE</mat-option>
+						<mat-option value="IS NULL">IS NULL</mat-option>
+						<mat-option value="IS NOT NULL">IS NOT NULL</mat-option>
+						<mat-option value="BETWEEN">BETWEEN</mat-option>
+						<mat-option value="NOT BETWEEN">NOT BETWEEN</mat-option>
+						<mat-option value="EXISTS">EXISTS</mat-option>
+						<mat-option value="NOT EXISTS">NOT EXISTS</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<!-- Value Input (Hidden for NULL conditions) -->
+				<mat-form-field appearance="outline" class="col no-padding-field"
+					*ngIf="filter.selectedOperation !== 'IS NULL' && filter.selectedOperation !== 'IS NOT NULL' && filter.inputType !== 'date'">
+					<mat-label>Value</mat-label>
+					<input [type]="filter.inputType" matInput class="input-field"
+						[(ngModel)]="filter.selectedValue" />
+				</mat-form-field>
+
+				<mat-form-field appearance="outline" class="col no-padding-field" *ngIf="filter.selectedOperation !== 'IS NULL' && filter.selectedOperation !== 'IS NOT NULL' && filter.inputType === 'date' && ['=', '!='].includes(filter.selectedOperation)">
+					<mat-label>Date</mat-label>
+					<input matInput [matDatepicker]="datePicker" [(ngModel)]="filter.selectedValue" placeholder="Choose dates" readonly>
+					<mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+					<mat-datepicker #datePicker startView="multi-year"></mat-datepicker>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline" class="col no-padding-field" *ngIf="filter.selectedOperation !== 'IS NULL' && filter.selectedOperation !== 'IS NOT NULL' && filter.inputType === 'date' && ['BETWEEN'].includes(filter.selectedOperation)">
+					<mat-label>Date range</mat-label>
+					<mat-date-range-input [rangePicker]="picker">
+					  <input matInput matStartDate #firstdate placeholder="Start date">
+					  <input matInput matEndDate #secondadete placeholder="End date">
+					</mat-date-range-input>
+					<mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+					<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+					<mat-date-range-picker #picker (closed)="onDateSelect(firstdate,secondadete,filter)"></mat-date-range-picker>
+				  </mat-form-field>
+
+				  
+			
+								
+	
+				<!-- Remove Filter Button -->
+				<button class="remove-filter col-md-auto" (click)="removeCondition(i)">❌</button>
+			</div>
+	
+			<!-- Add More Button -->
+			<div class="add-more-row d-flex justify-content-end">
+				<button class="add-more-btn" (click)="addmorefilter()">Add More +</button>
+			</div>
+	
+			<!-- Buttons -->
+			<div class="popup-buttons">
+				<button type="submit" class="btn-green" (click)="addCondition()">Execute ⚡</button>
+				<button (click)="closePopup()">Close</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="popup-overlay" *ngIf="popupOpen && popupType === 'joins'">
+		<div class="popup large-popup">
+			<h3>{{ popupTitle }}</h3>
+	
+			<!-- Join Conditions List -->
+			<div *ngFor="let join of joins_field; let i = index;trackBy: trackByFn" class="row popup-row filter-row cus-matInput " id="matInput-size">
+	
+				<!-- Join Type -->
+				<mat-form-field appearance="outline" class="col no-padding-field">
+					<mat-label>Join Type</mat-label>
+					<mat-select [(ngModel)]="join.joinType">
+						<mat-option *ngFor="let type of joinTypes" [value]="type">{{ type }}</mat-option>
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field class="col no-padding-field" *ngIf="multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+					<mat-label>Select Schema</mat-label>
+					<input matInput [(ngModel)]="join.sechema_table1" [matAutocomplete]="filterschema1">
+					<mat-autocomplete #filterschema1="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let schema of getFilteredschema_pop(join.sechema_table1)" (click)="schema_selected(schema,2)" [value]="schema">
+							{{ schema }}
+							</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<!-- Table -->
+				<mat-form-field appearance="outline" class="col no-padding-field" (click)="gettable_common(join.selectedTable)">
+					<mat-label>Table</mat-label>
+					<input type="text" matInput [(ngModel)]="join.selectedTable" [matAutocomplete]="join_first_table" (keyup)="gettable_common(join.selectedTable)" (focus)="multi_single_scheme == 'Multiple_scheme' ? preventOpeningforschema(join.sechema_table1):''" [matAutocompleteDisabled]="multi_single_scheme == 'Multiple_scheme' && !validatefunforschema(join.sechema_table1)">
+					<mat-autocomplete #join_first_table="matAutocomplete" [panelWidth]="400">
+						<mat-option *ngFor="let table of jointablekeys" [value]="table" (click)="get_table_fields(join)">{{ table }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<!-- Field -->
+				<mat-form-field appearance="outline" class="col-md-auto no-padding-field">
+					<mat-label>Field</mat-label>
+					<input type="text" matInput [(ngModel)]="join.selectedField" [matAutocomplete]="join_first_field" (keyup)="getfield_common(join.selectedField,join,'joinTableFields')" (focus)="preventOpening(join.selectedTable)" [matAutocompleteDisabled]="!validatefun(join.selectedTable)">
+					<mat-autocomplete #join_first_field="matAutocomplete" >
+						<mat-option *ngFor="let field of join.joinTableFields" [value]="field.column_name" >{{ field.column_name }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field class="col-md-auto no-padding-field" *ngIf="multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+					<mat-label>Select Schema</mat-label>
+					<input matInput [(ngModel)]="join.sechema_table2" [matAutocomplete]="filterschema2">
+					<mat-autocomplete #filterschema2="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let schema of getFilteredschema_pop2(join.sechema_table2)" (click)="schema_selected(schema,2)" [value]="schema">
+							{{ schema }}
+							</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<!-- Join Table -->
+				<mat-form-field appearance="outline" class="col-md-auto no-padding-field"  (click)="gettablesec_common(join.joinTable)">
+					<mat-label>Join Table</mat-label>
+					<input type="text" matInput [(ngModel)]="join.joinTable" [matAutocomplete]="join_sec_table" (keyup)="gettablesec_common(join.joinTable)" (focus)="multi_single_scheme == 'Multiple_scheme' ? preventOpeningforschema(join.sechema_table2):''" [matAutocompleteDisabled]="multi_single_scheme == 'Multiple_scheme' && !validatefunforschema(join.sechema_table2)">
+					<mat-autocomplete #join_sec_table="matAutocomplete" [panelWidth]="400">
+						<mat-option *ngFor="let table of jointablekeyssec" [value]="table" (click)="onSecondTableSelect(join)">{{ table }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<!-- Join Table Field -->
+				<mat-form-field appearance="outline" class="col-md-auto no-padding-field">
+					<mat-label>Join Table Field</mat-label>
+					<input type="text" matInput  [(ngModel)]="join.joinField" [matAutocomplete]="join_sec_field" (keyup)="getfield_common_sec(join.joinField,join,'secondTableFields')" (focus)="preventOpening(join.joinTable)" [matAutocompleteDisabled]="!validatefun(join.joinTable)">
+					<mat-autocomplete #join_sec_field="matAutocomplete" >
+						<mat-option *ngFor="let field of join.secondTableFields" [value]="field.column_name" >{{ field.column_name }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<!-- Remove Join Condition Button -->
+				<button class="col-md-auto remove-filter" (click)="removeJoin(i)">❌</button>
+			</div>
+	
+			<!-- Add More Button -->
+			<div class="add-more-row d-flex justify-content-end">
+				<button class="add-more-btn" (click)="addMoreJoin()">Add More +</button>
+			</div>
+	
+			<!-- Buttons -->
+			<div class="popup-buttons">
+				<button class="btn-green" (click)="addCondition()">Execute Query ⚡</button>
+				<button (click)="closePopup()">Close</button>
+			</div>
+		</div>
+	</div>
+
+	
+
+	<!-- Popup for Sorting -->
+	<div class="popup-overlay" *ngIf="popupOpen && popupType === 'sorting'">
+		<div class="popup large-popup">
+			<h3>{{ popupTitle }}</h3>
+	
+			<!-- Sorting Conditions List -->
+			<div *ngFor="let sort of sortConditions; let i = index" class="row cus-matInput popup-row filter-row" id="matInput-size">
+
+				<mat-form-field class="col no-padding-field" *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+					<mat-label>Select Schema</mat-label>
+					<input matInput [(ngModel)]="sort.sechema_table" [matAutocomplete]="filterschema">
+					<mat-autocomplete #filterschema="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let schema of getFilteredschema_pop3(sort.sechema_table)" (click)="schema_selected(schema,2)" [value]="schema">
+							{{ schema }}
+							</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.tableKeys.length == 0 ?this.Get_tablenames() : '';filterTablesscheme(sort.selectedJoinTable,sort.sechema_table)" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input matInput [(ngModel)]="sort.selectedJoinTable" [matAutocomplete]="_table" (keyup)="filterTablesscheme(sort.selectedJoinTable,sort.sechema_table)" (focus)="preventOpeningforschema(sort.sechema_table)" [matAutocompleteDisabled]="!validatefunforschema(sort.sechema_table)">
+					<mat-autocomplete #_table="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let table of filteredTables" (click)="innerjoin_table_fields(sort);selecttabele(table)" [value]="table">
+							{{ table }}
+						  </mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme != 'Multiple_scheme'" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input type="text" matInput [(ngModel)]="sort.selectedJoinTable" [matAutocomplete]="_tablejoin" (keyup)="filterTables(sort.selectedJoinTable)">
+					<mat-autocomplete #_tablejoin="matAutocomplete" [panelWidth]="400">
+						<mat-option  *ngFor="let join of filteredTables" [value]="join" (click)="innerjoin_table_fields(sort)">{{ join }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline" class="col no-padding-field"  (click)="filterFields(sort.selectedField, sort)">
+					<mat-label>Field</mat-label>
+					<input type="text" matInput [(ngModel)]="sort.selectedField" [matAutocomplete]="_fieldfil" (focus)="joins.length > 0 ? preventOpening(sort.selectedJoinTable):''" [matAutocompleteDisabled]="joins.length > 0 && !validatefun(sort.selectedJoinTable)" (keyup)="filterFields(sort.selectedField, sort)">
+					<mat-autocomplete #_fieldfil="matAutocomplete">
+						<ng-container *ngIf="sort.selectedJoinTable; else defaultFields">
+							<mat-option *ngFor="let field of sort.filteredJoinTableFields" [value]="field.column_name">{{ field.column_name }}</mat-option>
+						</ng-container>
+						
+						<ng-template #defaultFields>
+							<mat-option *ngFor="let field of sort.filteredTableFields" [value]="field.column_name">{{ field.column_name }}</mat-option>
+						</ng-template>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline" class="col no-padding-field">
+					<mat-label>Sort Order</mat-label>
+					<mat-select [(ngModel)]="sort.selectedOperation">
+						<mat-option value="ASC">Ascending</mat-option>
+						<mat-option value="DESC">Descending</mat-option>
+					</mat-select>
+				</mat-form-field>
+
+	
+				<!-- Remove Sorting Condition Button -->
+				<button class="remove-filter col-md-auto" (click)="removeSorting(i)">❌</button>
+			</div>
+	
+			<!-- Add More Sorting Conditions -->
+			<div class="add-more-row d-flex justify-content-end">
+				<button class="add-more-btn" (click)="addMoreSorting()">Add More +</button>
+			</div>
+	
+			<!-- Buttons -->
+			<div class="popup-buttons">
+				<button class="btn-green" (click)="addCondition()">Apply Sorting ⚡</button>
+				<button (click)="closePopup()">Close</button>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Popup for Summarization -->
+	<div class="popup-overlay" *ngIf="popupOpen && popupType === 'summarize'">
+		<div class="popup large-popup">
+			<h3>{{ popupTitle }}</h3>
+	
+			<!-- Summarization Conditions List -->
+			<div *ngFor="let summarize of summarizeConditions; let i = index" class="row cus-matInput popup-row filter-row" id="matInput-size">
+
+				<mat-form-field class="col no-padding-field" *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+					<mat-label>Select Schema</mat-label>
+					<input matInput [(ngModel)]="summarize.sechema_table" [matAutocomplete]="filterschema">
+					<mat-autocomplete #filterschema="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let schema of getFilteredschema_pop3(summarize.sechema_table)" (click)="schema_selected(schema,2)" [value]="schema">
+							{{ schema }}
+							</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.tableKeys.length == 0 ?this.Get_tablenames() : '';filterTablesscheme(summarize.selectedJoinTable,summarize.sechema_table)" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input matInput [(ngModel)]="summarize.selectedJoinTable" [matAutocomplete]="_table" (keyup)="filterTablesscheme(summarize.selectedJoinTable,summarize.sechema_table)" (focus)="preventOpeningforschema(summarize.sechema_table)" [matAutocompleteDisabled]="!validatefunforschema(summarize.sechema_table)">
+					<mat-autocomplete #_table="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let table of filteredTables" (click)="innerjoin_table_fields(summarize);selecttabele(table)" [value]="table">
+							{{ table }}
+						  </mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+	
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme != 'Multiple_scheme'" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input type="text" matInput [(ngModel)]="summarize.selectedJoinTable" [matAutocomplete]="_tablesummarize" (keyup)="filterTables(summarize.selectedJoinTable)">
+					<mat-autocomplete #_tablesummarize="matAutocomplete" [panelWidth]="400">
+						<mat-option  *ngFor="let join of filteredTables" [value]="join" (click)="innerjoin_table_fields(summarize)">{{ join }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline" class="col no-padding-field" (click)="filterFields(summarize.selectedField, summarize)">
+					<mat-label>Field</mat-label>
+					<input type="text" matInput [(ngModel)]="summarize.selectedField" [matAutocomplete]="_fieldsummarize" (keyup)="filterFields(summarize.selectedField, summarize)" (focus)="joins.length > 0 ? preventOpening(summarize.selectedJoinTable):''" [matAutocompleteDisabled]="joins.length > 0 && !validatefun(summarize.selectedJoinTable)">
+					<mat-autocomplete #_fieldsummarize="matAutocomplete">
+						<ng-container *ngIf="summarize.selectedJoinTable; else defaultFields">
+							<mat-option *ngFor="let field of summarize.filteredJoinTableFields" [value]="field.column_name">{{ field.column_name }}</mat-option>
+						</ng-container>
+						
+						<ng-template #defaultFields>
+							<mat-option *ngFor="let field of summarize.filteredTableFields" [value]="field.column_name">{{ field.column_name }}</mat-option>
+						</ng-template>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<mat-form-field appearance="outline" class="col no-padding-field">
+					<mat-label>Function</mat-label>
+					<mat-select [(ngModel)]="summarize.selectedOperation">
+						<mat-option value="COUNT">COUNT</mat-option>
+						<mat-option value="SUM">SUM</mat-option>
+						<mat-option value="AVG">AVG</mat-option>
+						<mat-option value="MIN">MIN</mat-option>
+						<mat-option value="MAX">MAX</mat-option>
+					</mat-select>
+				</mat-form-field>
+				
+	
+				<!-- Remove Summarization Condition Button -->
+				<button class="remove-filter col-md-auto" (click)="removeSummarization(i)">❌</button>
+			</div>
+	
+			<!-- Add More Summarization Conditions -->
+			<div class="add-more-row d-flex justify-content-end">
+				<button class="add-more-btn" (click)="addMoreSummarization()">Add More +</button>
+			</div>
+	
+			<!-- Buttons -->
+			<div class="popup-buttons">
+				<button class="btn-green" (click)="addCondition()">Apply Summarization ⚡</button>
+				<button (click)="closePopup()">Close</button>
+			</div>
+		</div>
+	</div>
+	
+
+	<!-- Popup for Group By -->
+	<div class="popup-overlay" *ngIf="popupOpen && popupType === 'groupBy'">
+		<div class="popup large-popup">
+			<h3>{{ popupTitle }}</h3>
+	
+			<!-- Group By Conditions List -->
+			<div *ngFor="let group of groupByConditions; let i = index" class="row cus-matInput opup-row filter-row" id="matInput-size">
+
+				<mat-form-field class="col no-padding-field" *ngIf="multi_single_scheme == 'Multiple_scheme'" (click)="this.schema_names_arr.length == 0 ? this.get_schemas(connection_id) : ''" appearance="outline">
+					<mat-label>Select Schema</mat-label>
+					<input matInput [(ngModel)]="group.sechema_table" [matAutocomplete]="filterschema">
+					<mat-autocomplete #filterschema="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let schema of getFilteredschema_pop3(group.sechema_table)" (click)="schema_selected(schema,2)" [value]="schema">
+							{{ schema }}
+							</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme == 'Multiple_scheme'" (click)="this.tableKeys.length == 0 ?this.Get_tablenames() : '';filterTablesscheme(group.selectedJoinTable,group.sechema_table)" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input matInput [(ngModel)]="group.selectedJoinTable" [matAutocomplete]="_table" (keyup)="filterTablesscheme(group.selectedJoinTable,group.sechema_table)"  (focus)="preventOpeningforschema(group.sechema_table)" [matAutocompleteDisabled]="!validatefunforschema(group.sechema_table)">
+					<mat-autocomplete #_table="matAutocomplete" [displayWith]="displayStatus">
+						<mat-option *ngFor="let table of filteredTables" (click)="innerjoin_table_fields(group);selecttabele(table)" [value]="table">
+							{{ table }}
+						  </mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<mat-form-field *ngIf="joins.length > 0 && multi_single_scheme != 'Multiple_scheme'" appearance="outline" class="col no-padding-field">
+					<mat-label>Select Table</mat-label>
+					<input type="text" matInput [(ngModel)]="group.selectedJoinTable" [matAutocomplete]="_tablegroup" (keyup)="filterTables(group.selectedJoinTable)">
+					<mat-autocomplete #_tablegroup="matAutocomplete" [panelWidth]="400">
+						<mat-option  *ngFor="let join of filteredTables" [value]="join" (click)="innerjoin_table_fields(group)">{{ join }}</mat-option>
+					</mat-autocomplete>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline" class="col no-padding-field"  (click)="filterFields(group.selectedField, group)">
+					<mat-label>Field</mat-label>
+					<input type="text" matInput [(ngModel)]="group.selectedField" [matAutocomplete]="_fieldgroup" (keyup)="filterFields(group.selectedField, group)" (focus)="joins.length > 0 ? preventOpening(group.selectedJoinTable):''" [matAutocompleteDisabled]="joins.length > 0 && !validatefun(group.selectedJoinTable)">
+					<mat-autocomplete #_fieldgroup="matAutocomplete">
+						<ng-container *ngIf="group.selectedJoinTable; else defaultFields">
+							<mat-option *ngFor="let field of group.filteredJoinTableFields" [value]="field.column_name">{{ field.column_name }}</mat-option>
+						</ng-container>
+						
+						<ng-template #defaultFields>
+							<mat-option *ngFor="let field of group.filteredTableFields" [value]="field.column_name">{{ field.column_name }}</mat-option>
+						</ng-template>
+					</mat-autocomplete>
+				</mat-form-field>
+	
+				<!-- Remove Group By Condition Button -->
+				<button class="remove-filter col-md-auto" (click)="removeGroupBy(i)">❌</button>
+			</div>
+	
+			<!-- Add More Group By Conditions -->
+			<div class="add-more-row d-flex justify-content-end">
+				<button class="add-more-btn" (click)="addMoreGroupBy()">Add More +</button>
+			</div>
+	
+			<!-- Buttons -->
+			<div class="popup-buttons">
+				<button class="btn-green" (click)="addCondition()">Apply Group By⚡</button>
+				<button (click)="closePopup()">Close</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="popup-overlay" *ngIf="popupOpen && popupType === 'limit'">
+		<div class="popup large-popup">
+			<h3>{{ popupTitle }}</h3>
+
+			<!-- Limit Input -->
+			<div class="popup-row filter-row">
+				<input type="number" class="input-field" [(ngModel)]="limit" placeholder="Enter a Limit"
+					min="1" max="10000"/>
+			</div>
+
+			<!-- Buttons -->
+			<div class="popup-buttons">
+				<div>
+					<button class="btn-green" (click)="addCondition()">Apply Limit</button>
+				</div>
+				<div>
+					<button (click)="closePopup()">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div *ngIf="sqlmainscreen">
+	<app-ppr-summary></app-ppr-summary>
+</div>
+<div *ngIf="temp_summary">
+	<app-Template-Summary></app-Template-Summary>
+</div>

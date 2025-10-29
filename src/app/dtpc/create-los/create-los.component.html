@@ -1,0 +1,1023 @@
+<div>
+    <mat-card style="margin-top: 13px;margin-left: 20px;margin-right: 20px;margin-bottom: 20px;">
+        <h2 style="margin-left: 20px;">Invoice Header</h2>
+        <div style="margin-top: 10px;margin-bottom: 5px;">
+   <form [formGroup]="losheaderform">
+        <table>
+            <div>
+                <tr>
+                    <!-- <td>
+                        <mat-form-field style="width: 250px;margin-top: 5px;margin-left:3%;">
+                            <mat-label>Choose Vendor</mat-label>
+                            <input #choosevendor placeholder="Choose Vendor" matInput formControlName="vendor"
+                                [matAutocomplete]="vendors">
+                            <mat-autocomplete #vendors="matAutocomplete" [displayWith]="displayFnvendor">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                </mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let vendor of vendorList" [value]="vendor">
+                                        {{vendor.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td> -->
+                    <td>
+                        <mat-form-field style="width: 250px;margin-left:20px">
+                            <mat-label>Supplier Name<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input matInput placeholder="Supplier Name" [value]="inputSUPPLIERValue" [readonly]="true" [matTooltip]="losheaderform.value.Supplier_id"
+                                formControlName="Supplier_id" autocomplete="off">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <div style="margin-left: 25px;">
+                            <button class="btn btn-outline-primary" type="submit" data-toggle="modal"
+                                data-target="#selectSupplier" style="border-radius:40px;"
+                                color="primary"><i class="fa fa-long-arrow-up fa-lg" aria-hidden="true"></i>
+                                Select Supplier</button>
+                        </div>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 250px;margin-left:25px;">
+                            <mat-label>Supplier State<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input matInput placeholder="Supplier State" [value]="inputSUPPLIERStateid"
+                                [readonly]="true" formControlName="Supplierstate_id" autocomplete="off">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width:250px;margin-left:25px;">
+                            <mat-label>Supplier GST</mat-label>
+                            <input matInput placeholder="Supplier GST" [value]="inputSUPPLIERgst || '' " [readonly]="true">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+    
+                    <td>
+                        <mat-form-field style="width:250px;margin-left: 20px;">
+                            <mat-label>Branch GST</mat-label>
+                            <input matInput placeholder="Branch GST" [value]="branchgstnumber || '' " [readonly]="true">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width:250px;margin-left: 25px;">
+                            <mat-label>Branch</mat-label>
+                            <input matInput placeholder="Branch Name-Code" [value]="branchnamecode" [readonly]="true">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width:250px;margin-left: 25px;" class="paymode-field">
+                            <mat-label>Paymode<label style="color:red"> &nbsp;*</label></mat-label>
+
+                            <mat-select placeholder="Paymode" formControlName="payment_detail"  autocomplete="off">
+                                <mat-option *ngFor="let pp of PayDetailList" [value]="pp" matTooltip="{{pp.paymode_id.name}}"
+                                    (click)="getsuppaydet(pp);" >
+
+                                    {{pp.paymode_id.name }} - {{pp.account_no}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <div  style="margin-left: 25px;width: 230px;margin-top: 0px;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size: small;
+                        font-weight: bold;align-items: start;color: darkslateblue;" 
+                        *ngIf="this.losheaderform.value.payment_detail != undefined &&this.losheaderform.value.payment_detail != null &&  this.losheaderform.value.payment_detail != ''"> 
+                                Acc No : {{accno}} <br>
+                                Bank Name : {{bankname}} <br>
+                                IFSC Code : {{ifsccode}}
+            </div>
+                    </td>
+                    <td>
+                        <mat-form-field 
+                            style="width:250px;margin-left: 20px;">
+                            <mat-label>Charge Type<label style="color:red"> &nbsp;*</label></mat-label>
+                            <mat-select formControlName="invoice_charge_type" (keypress)="only_numalpha($event)"
+                                >
+                                <mat-option *ngFor="let charge of chargeTypeList" [value]="charge.charge_type"
+                                    (click)="commoditypatchfunction(charge)">
+                                    {{charge.charge_type}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <!-- <td>
+                        <mat-form-field style="width:250px;margin-left:-5px;">
+                            <mat-label>Commodity Name</mat-label>
+                            <input #commodityInput placeholder="Select commodity" matInput
+                                [formControlName]="'Commodity_id'" [matAutocomplete]="commodity"
+                                (keypress)="only_numalpha($event)" required>
+                            <mat-autocomplete #commodity="matAutocomplete" [displayWith]="displayFncommodity">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let commodity of commodityList" [value]="commodity">
+                                        {{commodity.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td> -->
+    
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field style="width:250px;margin-left: 20px;">
+                            <mat-label>Commodity Name</mat-label>
+                            <input matInput placeholder="Commodity Name" formControlName="Commodity_id"
+                                [value]="CommodityName" [readonly]="true">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="margin-left: 25px;width: 250px;" >
+                            <mat-label>Invoice Date<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input matInput [matDatepicker]="invoice_header_date" formControlName="invoice_header_date"
+                                [max]="maxDate" (keypress)="numberOnly($event)"  readonly>
+                            <mat-datepicker-toggle matSuffix [for]="invoice_header_date"></mat-datepicker-toggle>
+                            <mat-datepicker #invoice_header_date></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+    
+                    <td>
+                        <mat-form-field style="margin-left: 25px;width: 250px;">
+                            <mat-label>Invoice Number<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input matInput formControlName="invoice_header_number" 
+                                autocomplete="off">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 250px;margin-left:25px;">
+                            <mat-label>Invoice Taxable Amount<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input matInput formControlName="invoice_header_amount" (keypress)="numberOnlyandDot($event)" appApptodecimal
+                                [ngModel]="ng_invoice_header_amount" 
+                                (ngModelChange)="calculate_header_total($event)"
+                                autocomplete="off" >
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <br>
+                <tr>
+                    <td *ngIf="GSTtax">
+                        <mat-form-field style="margin-left:20px;width: 250px;">
+                            <mat-label>GST Amount<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input matInput formControlName="invoice_header_gst_amount"
+                                [ngModel]="ng_invoice_header_gst_amount" (keypress)="numberOnlyandDot($event)" appApptodecimal
+                                (ngModelChange)="calculate_header_total($event)" autocomplete="off">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="GSTnontax">
+                        <mat-form-field style="margin-left:20px;width: 250px;">
+                            <mat-label>GST Amount</mat-label>
+                            <input matInput formControlName="invoice_header_gst_amount"
+                                [ngModel]="ng_invoice_header_gst_amount" (keypress)="numberOnlyandDot($event)" 
+                                (ngModelChange)="calculate_header_total($event)" autocomplete="off" [readonly]=true>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="margin-left: 25px; width: 250px;">
+                            <mat-label>Invoice Total Amount</mat-label>
+                            <input matInput formControlName="invoice_header_total_amount" autocomplete="off" (keypress)="numberOnlyandDot($event)" required>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width:250px;margin-left: 25px;">
+                            <mat-label>Remarks<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input matInput placeholder="Remarks" formControlName="Remarks" (paste)="copypaste($event,'name')" >
+                        </mat-form-field>
+                    </td>
+                    <!-- <td *ngIf="onbehalfoff==false">
+                        <mat-form-field style="width:250px;margin-left: 3%;margin-top:-180%">
+                            <mat-label>Behalfoff Branch</mat-label>
+                            <input matInput placeholder="Behalfoff Branch" formControlName="behalf_branch"  readonly>
+                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td> -->
+                    <td *ngIf="onbehalfoff==true">
+                        <mat-form-field style="width: 250px;margin-left: 25px;" (click)="branchnames()">
+                            <mat-label>Behalfof Branch<label style="color:red"> &nbsp;*</label></mat-label>
+                            <input #brnchInput  placeholder="Behalfof Branch" matInput 
+                            formControlName="behalf_branch" [matAutocomplete]="brnch">
+                            <mat-autocomplete [panelWidth]="400" #brnch="matAutocomplete" (opened)="autocompletebranchScroll()"
+                            [displayWith]="displayFnBranch">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let branch of BranchesList" (click)="getbranchid(branch)"
+                            [value]="branch">{{branch.full_name}}
+                        </mat-option>
+                     </ng-container>
+                         </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                   
+                   
+                    <td *ngIf="onbehalfoff==false">
+                        <span class="material-icons" type="button" data-toggle="modal"
+                            style="margin-left: 25px;"
+                            data-target=".bd-example-modal-xl">description</span>Add Notes
+                    </td>
+    
+                    <td *ngIf="onbehalfoff==false">
+                        <button type="button" style="border-radius:40px;margin-left: 10px;" class="btn btn-outline-primary"
+                            (click)="ResetFunction()">
+                            Reset</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td *ngIf="onbehalfoff==true">
+                        <mat-form-field style="width:250px; margin-left: 20px;">
+                            <mat-label>Behalfof Branch GST</mat-label>
+                            <input matInput placeholder="Behalfof Branch GST" [value]="behalfbranchnamecode" [readonly]="true">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="onbehalfoff==true">
+                        <span class="material-icons" type="button" data-toggle="modal"
+                            style="margin-left: -145px;"
+                            data-target=".bd-example-modal-xl">description</span>Add Notes
+                    </td>
+                    <td *ngIf="onbehalfoff==true">
+                        <button type="button" style="border-radius:40px;margin-left: -515px;" class="btn btn-outline-primary"
+                            (click)="ResetFunction()">
+                            Reset</button>
+                    </td>
+                </tr>
+            </div>
+            
+        </table>
+
+
+        <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="exampleModalLongTitle">
+                            Note Pad
+                        </h2>
+                    </div>
+                    <br>
+                    <div style="margin-left: 50px;width:90%;height: 70%;">
+                        <div>
+
+                            <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                                (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                                formControlName="Notename">
+                            </div>
+
+                        </div>
+                    </div>
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" style="border-radius: 40px;margin-right: 5px;"
+                        class="btn btn-outline-primary" data-dismiss="modal">Save</button>
+                        <button type="button" style="border-radius: 40px;"
+                        class="btn btn-outline-primary" data-dismiss="modal">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="col-md-12">
+            <pre>{{losheaderform | json}}</pre>
+        </div> -->
+        <!-- <div class="col-md-12">
+            <div class="table-responsive" style="margin-top: 2%;width: 100%;overflow-x: hidden;">
+                <table class="table">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S. No</th>
+                            <th>Invoice Date</th>
+                            <th>Invoice Charge Type</th>
+                            <th>Invoice Amount</th>
+                            <th>GST Amount</th>
+                            <th>Vendor Name</th>
+                            <th>Action</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let header of invoice_header_data; index as i">
+                            <td> {{(this.currentpage - 1)*pageSize +i+1 }} </td>
+                            <td>{{header.invoice_header_date}}</td>
+                            <td>{{header.invoice_charge_type}}</td>
+                            <td>{{header.invoice_header_amount}}</td>
+                            <td>{{header.invoice_header_gst_amount}}</td>
+                            <td>{{header.vendor_name}}</td>
+
+                            <td>
+                                <button mat-icon-button color="warn">
+                                    <mat-icon class="mat-18" (click)="delete_single_invoice(header,i)">delete
+                                    </mat-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="invoice_header_data.length == 0">
+                    <h3>Records Not Found.. </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                    <h3>Invoice Header Total Amount: {{header_total}}</h3>
+                </div>
+            </div>
+
+        </div> -->
+        <hr>
+    </form>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+        id="selectSupplier">
+        <div class="modal-dialog modal-xl" style="width:80%;height:300%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title">
+                        Find Supplier</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <br>
+                <div>
+                    <form [formGroup]="SelectSupplierForm" (ngSubmit)="SelectSuppliersearch()">
+                        <table style="margin-left: 20px;">
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>Supplier GST Number</mat-label>
+                                            <input matInput placeholder="GST No" formControlName="gstno"
+                                                autocomplete="off" (keypress)="only_numalpha($event)" maxlength="15">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>Supplier Code</mat-label>
+                                            <input matInput placeholder="Supplier" formControlName="code"
+                                                autocomplete="off" (keypress)="only_numalpha($event)">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>PAN Number</mat-label>
+                                            <input matInput placeholder="PAN" formControlName="panno" autocomplete="off"
+                                                (keypress)="only_numalpha($event)" maxlength="10">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+
+                                    <button class="btn btn-outline-primary" type="submit"
+                                        style="border-radius:40px;margin-left: 15px;" color="primary"
+                                        (click)="SelectSuppliersearch()"><i class="fa fa-search"
+                                            aria-hidden="true"></i></button>&nbsp;
+
+                                    <button type="button" style="border-radius:40px;margin-left: 15px;"
+                                        class="btn btn-outline-primary" (click)="dataclear()">
+                                        Reset</button>
+                                </tr>
+                                <tr>
+                                    <div *ngIf="default" style="margin-left: 25px;">
+                                        <td>
+                                            <mat-form-field style="width: 250px;margin-top: 5px;">
+                                                <mat-label>Choose Supplier</mat-label>
+                                                <input #name placeholder="Choose Supplier" matInput
+                                                    formControlName="name" [matAutocomplete]="autosupp">
+                                                <mat-autocomplete #autosupp="matAutocomplete"
+                                                [panelWidth]="200" [displayWith]="displayFnsupplier">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let suppliername of supplierNameData"
+                                                            ngDefaultControl [(ngModel)]="inputSUPPLIERValue"
+                                                            [ngModelOptions]="{standalone: true}"
+                                                            (ngModelChange)="inputSUPPLIERValue = $event.toUpperCase()"
+                                                            (focusout)="getsupplierView(suppliername)"
+                                                            [value]="suppliername" matTooltip=" {{suppliername.name}}">
+                                                            {{suppliername.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                    </div>
+
+                                    <div *ngIf="alternate" style="margin-left: 25px;">
+                                        <td>
+                                            <mat-form-field style="width: 250px;margin-top: 5px;">
+                                                <mat-label>Choose Supplier</mat-label>
+                                                <input #name placeholder="Choose Supplier" matInput
+                                                    formControlName="name" [matAutocomplete]="autosupp2">
+                                                <mat-autocomplete #autosupp2="matAutocomplete"
+                                                [panelWidth]="200" [displayWith]="displaytest">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let suppliername of selectsupplierlist"
+                                                            ngDefaultControl [(ngModel)]="inputSUPPLIERValue"
+                                                            [ngModelOptions]="{standalone: true}"
+                                                            (ngModelChange)="inputSUPPLIERValue = $event.toUpperCase()"
+                                                            (focusout)="getsupplierView(suppliername)"
+                                                            [value]="suppliername" matTooltip=" {{suppliername.name}}">
+                                                            {{suppliername.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                    </div>
+                                </tr>
+                            </div>
+                        </table>
+
+
+                        <div class="row">
+                            <div width="60%;" style="margin-left: 100px">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text_key_color">Supplier Name:</td>&nbsp;
+                                            <td>{{SupplierName }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text_key_color">Supplier Code:</td>&nbsp;
+                                            <td>{{SupplierCode}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text_key_color">Supplier GST Number:</td>&nbsp;
+                                            <td>{{SupplierGSTNumber}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text_key_color">Supplier PAN Number:</td>&nbsp;
+                                            <td>{{SupplierPANNumber}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text_key_color">Address:</td>&nbsp;
+                                            <td>{{line1}},
+                                                {{line2}},
+                                                {{line3}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text_key_color">City:</td>&nbsp;
+                                            <td>{{City}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- <div >
+                                <table width="60%;">
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div> -->
+                            <br>
+                        </div>
+                        <br>
+                        <div *ngIf="submitbutton" style="margin-left: 20px;margin-bottom: 3%; ">
+                            <tr>
+                                <button type="button" data-dismiss="modal"
+                                    style="border-radius:40px;margin-left: 500px;" class="btn btn-outline-primary"
+                                    (click)="Branchcallingfunction()">
+                                    Submit</button>
+                            </tr>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form [formGroup]="losdetailsform">
+        <div class="col-md-12">
+            <div class="row">
+                <!-- <div class="col-md-9">
+                   -->
+                   <h2 style="margin-left: 20px;">Invoice Details</h2>
+
+                <!-- </div> -->
+                <br><br><br>
+                <div>
+                    <td>
+                        <!-- <button type="button" style="border-radius: 40px;margin-left: 800px;" disabled
+                            class="btn btn-outline-success" (click)="addItem()"><i class="fa fa-plus"
+                                aria-hidden="true"></i>Add
+                            Row</button> -->
+                        <!-- <button mat-mini-fab color="basic" (click)="addItem()"> -->
+                        <!-- [disabled]="invoice_header_data.length==0" -->
+                        <!-- <mat-icon>exposure_plus_1</mat-icon> -->
+                        <!-- </button> -->
+                    </td>
+                </div>
+            </div>
+        </div>
+        <div class="row"></div>
+
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table_header">
+                        <tr style="background: #DDEFDD;">
+                            <th style="width: 30px !important;">S.No</th>
+                            <th style="width: 30px !important;">Application Number<label style="color:red"> &nbsp;*</label></th>
+                            <th style="width: 30px !important;">Balance Amount</th>
+                            <th style="width: 30px !important;">Product<label style="color:red"> &nbsp;*</label></th>
+                            <th style="width: 30px !important;">Description</th>
+                            <th style="width: 30px !important;">HSN Code</th>
+                            <!-- <th>HSN Percentage</th> -->
+                            <th style="width: 30px !important;">UOM</th>
+                            <th style="width: 30px !important;">BS<label style="color:red"> &nbsp;*</label></th>
+                            <th style="width: 30px !important;">CC<label style="color:red"> &nbsp;*</label></th>
+                            <th style="width: 30px !important;">Unit Price<label style="color:red"> &nbsp;*</label></th>
+                            <th style="width: 30px !important;">Qty<label style="color:red"> &nbsp;*</label></th>
+                            <th style="width: 30px !important;">Taxable Amount</th>
+                            <th style="width: 30px !important;">SGST</th>
+                            <th style="width: 30px !important;">CGST</th>
+                            <th style="width: 30px !important;">IGST</th>
+                            <th style="width: 30px !important;">GST Amount</th>
+                            <th style="width: 30px !important;">Total Amount</th>
+                            <th style="width: 30px !important;">Final Payment</th>
+                            <!-- <th style="width: 30px !important;">Action</th> -->
+                        </tr>
+                    </thead>
+                    <!-- <tbody>
+                        <tr *ngFor="let details of invoice_details_data; index as i">
+                            <td> {{(this.currentpage - 1)*pageSize +i+1 }} </td> -->
+                    <!-- *ngFor="let section of getSections(losdetailsform); let i = index"> -->
+                    <!-- *ngFor="let a of myForm.get('arr').controls; -->
+                    <tbody formArrayName="invoice_details_data"
+                        *ngFor="let a of getSections(losdetailsform); let i = index">
+                        <tr [formGroupName]="i">
+
+                            <td>{{i+1}}</td>
+                            <!-- <div *ngIf="defaultapplication"> -->
+                            <td>
+                                <mat-form-field style="width: 170px !important;">
+                                    <input #appInput placeholder="Choose Application" matInput
+                                        formControlName="invoice_details_app_no" [matAutocomplete]="appdata">
+                                    <mat-autocomplete #appdata="matAutocomplete" [displayWith]="displayFn"
+                                    (opened)="autocompleteappScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let app of LoanAp" [value]="app" matTooltip="{{app.ApplNo}}-{{app.DrAcctName}}"
+                                                (click)="get_application_loan_balance(app,i)">
+                                                {{app.ApplNo}}-{{app.DrAcctName}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                                <br>
+                                <br>
+                                <u style="color:#1BCF1B"><a style="align-items: center;" (click)="viewDetails(i)">View
+                                        Details</a></u>
+                            </td>
+                            <!-- </div> -->
+                            <!-- <div *ngIf="alterapplication">
+                                <td>
+                                    <mat-form-field>
+                                        <input matInput formControlName="invoice_details_app_no" autocomplete="off"
+                                            readonly>
+                                    </mat-form-field>
+                                    <u style="color:#1BCF1B"><a style="align-items: center;"
+                                            (click)="viewDetails(i)">View
+                                            Details</a></u>
+                                </td>
+                            </div> -->
+                            <td>
+                                <mat-form-field>
+                                    <input matInput placeholder="Balance Amount" style="width: 150px;" (keypress)="numberOnlyandDot($event)"
+                                        formControlName="invoice_details_balance_amount" autocomplete="off" readonly>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                    <mat-form-field style="width: 120px !important;" (click)="getproducts('')">
+                                        <mat-label>Product Name</mat-label>
+                                        <!-- <input #proname placeholder="Product Name" matInput formControlName="Productname"
+                                            [matAutocomplete]="autopro">
+                                        <mat-autocomplete #autopro="matAutocomplete" [panelWidth]="250" [displayWith]="displayFnproduct">
+                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                            </mat-option>
+                                            <ng-container *ngIf="!isLoading">
+                                                <mat-option *ngFor="let pro of productlist" [value]="pro" matTooltip="{{pro.name}}">
+                                                    {{pro.name}}
+                                                </mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete> -->
+                                        <mat-select formControlName="Productname" (keypress)="only_numalpha($event)"
+                                           required>
+                                         <mat-option *ngFor="let pro of productslists"[value]="pro.name" matTooltip="{{pro.name}}"
+                                   >
+                                   {{pro.name}}
+                                </mat-option>
+                            </mat-select>
+                                    </mat-form-field>
+
+                                <!-- <mat-form-field style="width: 100px !important;">
+                                    <input matInput placeholder="Item/Product" type="text" formControlName="Productname"
+                                        autocomplete="off" (keypress)="only_numalpha($event)">
+                                </mat-form-field> -->
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px !important;">
+                                    <input matInput placeholder="Desc" type="text" formControlName="Description"
+                                        autocomplete="off" (keypress)="only_numalpha($event)">
+                                </mat-form-field>
+
+                            </td>
+                            <div *ngIf="HSNtax">
+                                <td>
+                                    <mat-form-field style="width: 120px !important;">
+                                        <mat-label>HSN Code</mat-label>
+                                        <input #name placeholder="HSN Code" matInput [formControlName]="'Hsn'"
+                                            [matAutocomplete]="autosupp">
+                                        <mat-autocomplete #autosupp="matAutocomplete" [panelWidth]="200" [displayWith]="displayFnhsn">
+                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                            </mat-option>
+                                            <ng-container *ngIf="!isLoading">
+                                                <mat-option *ngFor="let hsn of hsnList" [value]="hsn"  matTooltip="{{hsn.code}}" [disabled]="false"
+                                                    (click)="gethsnper(hsn,i)">
+                                                    {{hsn.code}}
+                                                </mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+
+                                    <a style="align-items: center;">
+                                        HSN Percentage:
+                                        <!-- <mat-form-field> -->
+                                        <input matInput placeholder="HSN%" type="text" formControlName="Hsn_percentage"
+                                            autocomplete="off" (keypress)="only_numalpha($event)" [readonly]="true">
+                                        <!-- </mat-form-field> -->
+                                    </a>
+                                </td>
+                            </div>
+
+                            <div *ngIf="HSNnontax">
+                                <td>
+                                    <mat-form-field>
+                                        <input matInput placeholder="HSN Code" type="text" formControlName="hsn"
+                                            autocomplete="off" (keypress)="only_numalpha($event)" [readonly]=true [disabled]="false">
+                                    </mat-form-field>
+                                    <a style="align-items: center;">
+                                        HSN Percentage:
+                                        <input matInput placeholder="HSN%" type="text" autocomplete="off"
+                                            (keypress)="only_numalpha($event)" [readonly]="true" [disabled]="true">
+                                    </a>
+                                </td>
+                            </div>
+
+
+                            <!-- <td>
+                                <mat-form-field>
+                                    <input matInput placeholder="HSN%" type="text" formControlName="Hsn_percentage"
+                                        autocomplete="off" (keypress)="only_numalpha($event)" [readonly]="true">
+                                </mat-form-field>
+                            </td> -->
+                            <!-- [value]="hsnper" -->
+                            <td>
+                                <mat-form-field style="width: 70px !important;">
+                                    <input matInput placeholder="UOM" type="text" formControlName="Uom" [(ngModel)]="number"
+                                        autocomplete="off" (keypress)="only_numalpha($event)" readonly>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 140px !important;">
+                                    <mat-label>BS</mat-label>
+                                    <input #bsInput placeholder="BS" matInput formControlName="bs_code"
+                                        [matAutocomplete]="bstype">
+                                    <mat-autocomplete #bstype="matAutocomplete" [panelWidth]="200" [displayWith]="displayFnbs"
+                                    (opened)="bsScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let bs of bsList" [value]="bs" matTooltip="{{bs.name}}"(click)="getbsid(bs)">
+                                                {{bs.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 140px !important;">
+                                    <mat-label>CC</mat-label>
+                                    <input #ccInput placeholder="CC" matInput formControlName="cc_code"
+                                        [matAutocomplete]="cctype">
+                                    <mat-autocomplete #cctype="matAutocomplete" [panelWidth]="200" [displayWith]="displayFncc"
+                                    (opened)="ccScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let cc of ccList" [value]="cc" matTooltip = "{{cc.name}}">
+                                                {{cc.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+
+                                <mat-form-field style="width: 100px !important;">
+                                    <input matInput placeholder="Unit Price" formControlName="Unitprice" appApptodecimal
+                                        #Unit autocomplete="off" (keypress)="numberOnlyandDot($event)" min=1>
+                                </mat-form-field>
+                                <!-- <mat-form-field>
+                                    <input matInput placeholder="Unit Price" type="number" formControlName="Unitprice"
+                                        autocomplete="off" (keypress)="numberOnlyandDot($event)" min=1>
+                                </mat-form-field>(click)="unitpricefunction(Unit.value,i)"
+                            (click)="quantityfunction(Quantity.value)"(change)="apihitting()" -->
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 60px !important;">
+                                    <input matInput placeholder="Qty" type="number" formControlName="Quantity" #Quantity
+                                        autocomplete="off" (ngModelChange)="ahit(Quantity,i)"
+                                        (keypress)="only_numalpha($event)">
+                                </mat-form-field>
+                                <!-- <mat-form-field>
+                                    <input matInput placeholder="Qty" type="text" formControlName="Quantity"
+                                        autocomplete="off" (keypress)="numberOnly($event)" min=1>
+                                </mat-form-field> -->
+                            </td>
+
+
+                            <!-- <mat-form-field>
+                                    <mat-select formControlName="invoice_details_app_no">
+                                        <mat-option *ngFor="let loanap of LoanAp" [value]="loanap">
+                                            {{loanap.ApplNo}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field> -->
+
+                            <!-- <mat-form-field (click)="get_loan_applicaton(i)">
+                                    <input #rmInput placeholder="Application Number" matInput
+                                        formControlName="invoice_details_app_no" [matAutocomplete]="rmemp">
+                                    <mat-autocomplete #rmemp="matAutocomplete" [displayWith]="displayFnRm">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let loanap of LoanAp" [value]="loanap">
+                                                {{loanap.ApplNo}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field> -->
+
+
+                            <td>
+                                <mat-form-field>
+                                    <input matInput placeholder="Taxable Amount" (keypress)="numberOnlyandDot($event)"
+                                        formControlName="invoice_details_amount" autocomplete="off" readonly>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field>
+                                    <input matInput placeholder="SGST" type="text" formControlName="Sgst" (keypress)="numberOnlyandDot($event)"
+                                        autocomplete="off" (keypress)="only_numalpha($event)" [value]="sgstrate"
+                                        readonly>
+                                </mat-form-field>
+                                <!-- [value]="sgstrate" -->
+                            </td>
+
+                            <td>
+                                <mat-form-field >
+                                    <input matInput placeholder="CGST" type="text" formControlName="Cgst" (keypress)="numberOnlyandDot($event)"
+                                        autocomplete="off" (keypress)="only_numalpha($event)" [value]="cgstrate"
+                                        readonly>
+                                    <!-- [value]="cgstrate" -->
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field >
+                                    <input matInput placeholder="IGST" type="text" formControlName="Igst" autocomplete="off" (keypress)="numberOnlyandDot($event)"
+                                        (keypress)="only_numalpha($event)" [value]="igstrate" readonly>
+                                </mat-form-field>
+                                <!-- [value]="igstrate" -->
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px !important;">
+                                    <input matInput placeholder="GST Amount" (keypress)="numberOnlyandDot($event)"
+                                        formControlName="invoice_details_gst_amount" autocomplete="off" readonly>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px !important;">
+                                    <input matInput placeholder="Total Amount" (keypress)="numberOnlyandDot($event)"
+                                        formControlName="invoice_details_total_amount" autocomplete="off" readonly>
+                                </mat-form-field>
+                            </td>
+                            <!-- <div *ngIf="defaultcheck"> -->
+                            <!-- <td> -->
+                            <!-- <mat-checkbox class="example-margin" [disabled]="true"></mat-checkbox> -->
+                            <!-- <input type="checkbox" formControlName="Is_Flag" disabled="true" /> -->
+
+                            <!-- <section class="example-section">
+                                    <mat-slide-toggle [(ngModel)]="checked" class="example-margin" [color]="color"
+                                        (change)="changed()">
+                                        Slide me! {{checked}}
+                                    </mat-slide-toggle>
+                                </section> -->
+                            <!-- <mat-checkbox class="example-margin">Check me!</mat-checkbox> -->
+                            <!-- <mat-slide-toggle (click)="Paymentstatus($event)"
+                                    (change)="onChange()"></mat-slide-toggle> -->
+                            <!-- </td> -->
+                            <!-- </div> -->
+                            <!-- <div *ngIf="alternatecheck"> formControlName="Is_Flag"-->
+                            <td>
+                                <mat-checkbox formControlName="is_check"
+                                 (change)="Paymentstatus(i)">
+
+                                </mat-checkbox>
+                                <!-- <input type="checkbox" /> -->
+                            </td>
+                            <!-- </div> (click)="removeSection(i)" class="mat-18"-->
+                            <!-- <td>
+                                <button mat-icon-button color="warn">
+                                    <mat-icon>delete
+                                    </mat-icon>
+                                </button>
+                            </td> -->
+                        </tr>
+                    </tbody>
+
+  
+                    <tr>
+                        <th class="totaldisplay" colspan="14"></th>
+                        <th class="totaldisplay" colspan="2" style="text-align: end;">Rounding Off Amount:</th>
+                        <td>
+                            <mat-form-field style="width: 100px !important;">
+                                <input matInput type="number"  [min]="min" [max]="max"
+                                    (ngModelChange)="RoundingOFF($event)" formControlName="Roundoffamt"
+                                    autocomplete="off" (keypress)="numberOnlyandDotminus($event)">
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="totaldisplay" colspan="14"></th>
+                        <th class="totaldisplay" colspan="2" style="text-align: end;">Net Amount:</th>
+                        <td>{{detail_total | currency:'INR'}}</td>
+                    </tr>
+                    <!-- <tr>
+                        <th class="totaldisplay" colspan="13"></th>
+                        <th class="totaldisplay" colspan="1" style="margin-left: 1000px;">Other Adjustment Amount:
+                        </th>
+                        <td>
+                            <mat-form-field style="width: 100px !important;">
+                                <input matInput type="number" [min]="min" [max]="max"
+                                    (ngModelChange)="OtherAdjustment($event)" formControlName="Otheramount"
+                                    autocomplete="off" (keypress)="numberOnlyandDotminus($event)">
+                            </mat-form-field>
+                        </td>
+                    </tr> -->
+                </table>
+                <!--<div  style="margin-left: 100%;">
+                    <div>
+                        <div class="col-md-9"></div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>
+                                        <a style="align-items: center;">
+                                            Rounding Off Amount:
+                                            <mat-form-field>
+                                                <input matInput type="number" [(ngModel)]="Rvalue" [min]="min" [max]="max"
+                                                    (ngModelChange)="RoundingOFF($event)" formControlName="Roundoffamt"
+                                                    autocomplete="off" (keypress)="numberOnlyandDot($event)">
+                                            </mat-form-field>
+                                        </a>
+                                    </td>
+                                   
+                                    <td>
+                                        <a style="align-items: center;">
+                                            Other Adjustment Amount:
+                                            <mat-form-field>
+                                                <input matInput type="number" [(ngModel)]="Ovalue" [min]="min" [max]="max"
+                                                (ngModelChange)="OtherAdjustment($event)"  formControlName="Otheramount"
+                                                    autocomplete="off" (keypress)="numberOnlyandDot($event)">
+                                            </mat-form-field>
+                                        </a>
+                                    </td>
+                                      <td>
+                                        <div *ngIf="defaulttotalamount">
+                                            <a style="align-items: center;">
+                                                Invoice Detail Total Amount:
+                                                <mat-form-field>
+                                                    <input matInput type="text" autocomplete="off" [value]="detail_total"
+                                                        readonly>
+                                                </mat-form-field>
+                                            </a>
+                                        </div>
+                                        <div *ngIf="altertotalamount">
+                                            <a style="align-items: center;">
+                                                Invoice Detail Total Amount:
+                                                <mat-form-field>
+                                                    <input matInput type="text" autocomplete="off"
+                                                        [value]="editheadertotalamount" readonly>
+                                                </mat-form-field>
+                                            </a>
+                                        </div>
+                                        <div *ngIf="defaulttotalamount" class="col-md-3">
+                                            <a style="align-items: center;">
+                                                Invoice Detail Total Amount:{{detail_total}}</a>
+        
+        
+                                            <a>Invoice Detail Total Amount:{{detail_total}}</a>
+                                        </div>
+                                        <div *ngIf="altertotalamount">
+                                            <h3>Invoice Detail Total Amount:{{editheadertotalamount}}</h3>
+                                        </div>
+                                    </td>  
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>-->
+                <!-- <div style="margin-left: 214%;">
+                   <a style="align-items: center;">
+                        Rounding Off Amount:
+                        <mat-form-field>
+                            <input matInput type="number" [(ngModel)]="Rvalue" [min]="min" [max]="max"
+                                (ngModelChange)="RoundingOFF($event)" formControlName="Roundoffamt" autocomplete="off"
+                                (keypress)="numberOnlyandDot($event)">
+                        </mat-form-field>
+                    </a>
+                    <a style="align-items: center;">
+                        Other Adjustment Amount:
+                        <mat-form-field>
+                            <input matInput type="number" [(ngModel)]="Ovalue" [min]="min" [max]="max"
+                                (ngModelChange)="OtherAdjustment($event)" formControlName="Otheramount" autocomplete="off"
+                                (keypress)="numberOnlyandDot($event)">
+                        </mat-form-field>
+                    </a> 
+                    <a style="align-items: center;">
+                        Other Adjustment Amount:
+                    <mat-form-field>
+                        <input matInput type="number" [(ngModel)]="Rvalue" [min]="min" [max]="max"
+                            (ngModelChange)="RoundingOFF($event)" formControlName="Roundoffamt" autocomplete="off"
+                            (keypress)="numberOnlyandDot($event)">
+                    </mat-form-field>
+                    </a>
+
+                    <br>
+                    <mat-form-field>
+                        <input matInput type="number" [(ngModel)]="Ovalue" [min]="min" [max]="max"
+                            (ngModelChange)="OtherAdjustment($event)" formControlName="Otheramount" autocomplete="off"
+                            (keypress)="numberOnlyandDot($event)">
+                    </mat-form-field> 
+                </div>-->
+
+                <!-- <div *ngIf="invoice_details_data.length == 0">
+                    <h3>Records Not Found.. </h3>
+                </div> -->
+                <!-- <pre>{{losheaderform.value | json}}</pre>
+                <pre>{{losdetailsform.value | json}}</pre>
+                <pre>{{invoice_details_data}}</pre> -->
+            </div>
+        </div>
+
+        <hr>
+    </form>
+
+    <div class="col-md-12">
+        <div class="row" style="margin-left: -1000px;">
+            <div class="col-md-6"></div>
+
+            <div class="col-md-2" *ngIf="invoice_isEdit === 'Y'">
+
+                <!-- <button type="button" mat-raised-button (click)="fileInput.click()"> +Choose File</button> -->
+                <!-- <input type="file" id="uploadFile" class="choose-file" formControlName="file" placeholder="Choose File"
+                    [disabled]="filedisable" (change)="onFileSelected($event)" name="uploadFile" multiple="multiple" /> -->
+                    <label for="uploadFile" style="font-weight:bold;margin-left:-60px">Files<span class="required" style="color:red;">*</span></label>
+                    <input type="file" #fileInput id="uploadFile" class="choose-file" formControlName="file" style = "margin-left: 15px;"
+                        [disabled]="filedisable" (change)="onFileSelected($event)" name="uploadFile" multiple="multiple" required />
+                    
+                    <!-- <br> -->
+                <!-- <span style="color: green;">{{fileName}}</span> -->
+            </div>
+            <div class="col-md-3" *ngIf="invoice_isEdit === 'Y'">
+                <!-- <button type="button" style="border-radius: 40px;margin-left: 5px;" class="btn btn-outline-success"
+                    [disabled]="draftdisable" (click)="submit_loan_app('Draft')">Save as Draft</button> -->
+                <!-- <button mat-stroked-button color="primary" [disabled]="losheaderform.invalid || losdetailsform.invalid"
+                    (click)="submit_loan_app('Draft')">Save as Draft</button> -->
+            </div>
+            <div class="col-md-1" *ngIf="invoice_isEdit === 'Y'">
+                <button type="button" style="border-radius: 40px;margin-left: -450px;" class="btn btn-outline-success"
+                    [disabled]="submitdisable" (click)="submit_loan_app('New')">Submit</button>
+                <!-- <button mat-stroked-button color="primary" [disabled]="losheaderform.invalid || losdetailsform.invalid"
+                    (click)="submit_loan_app('New')">Submit</button>   
+                [disabled]="losheaderform.invalid || losdetailsform.invalid"
+             [disabled]="losheaderform.invalid || losdetailsform.invalid"-->
+                <button type="button" style="border-radius: 40px;margin-left: 20px;" class="btn btn-outline-primary"
+                    (click)="los_summary()">
+                    Back</button>
+            </div>
+            <div class="col-md-1">
+
+            </div>
+        </div>
+    </div>
+    <br><br>
+    </mat-card>
+</div>
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+    <p style="color: white">Loading... </p>
+</ngx-spinner>

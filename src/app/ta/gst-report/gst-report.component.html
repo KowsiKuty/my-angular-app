@@ -1,0 +1,118 @@
+<div style="margin-top: 40px;margin-left: 30px;">
+    <h2>
+        eClaim GST Report Summary
+    </h2>
+    <div class="row">
+        <div class="col-12">
+            <form [formGroup]="tagstReportForm">
+                <mat-form-field style="width:175px;">
+                    <mat-label>Tour No</mat-label>
+                    <input matInput formControlName="requestno" type="text">
+                </mat-form-field>
+
+                <mat-form-field style="width: 175px;;margin-left: 50px;">
+                    <mat-label>Branch</mat-label>
+                    <input matInput [matAutocomplete]="branchname"  formControlName="branch" #branchinput>
+                    <mat-autocomplete  #branchname="matAutocomplete" [displayWith]="display_branch" (opened)="autocompleteScroll_branch()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let branch of branchlist" (click)="getemployeelist(1)" [value]="branch">{{branch.code}}-{{branch.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>                    
+                </mat-form-field>
+
+                <mat-form-field style="width: 175px;;margin-left: 50px;">
+                    <mat-label>Employee</mat-label>
+                    <input matInput [matAutocomplete]="empname"  formControlName="employee" #empinput  (click)="branchchoosen()"(click)="getemployeelist(1)">
+                    <mat-autocomplete  #empname="matAutocomplete" [displayWith]="display_employee" (opened)="autocompleteScroll_employee()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let emp of employeelist"  [value]="emp">{{emp.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>  
+                </mat-form-field>
+
+                <mat-form-field style="margin-left: 50px;">
+                    <mat-label>From Date</mat-label>
+                    <input matInput [matDatepicker]="from" formControlName="fromdate" readonly>
+                    <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+                    <mat-datepicker #from></mat-datepicker>
+                </mat-form-field>
+
+                 <mat-form-field style="margin-left: 50px;">
+                    <mat-label>To Date</mat-label>
+                    <input matInput [matDatepicker]="to" formControlName="todate" readonly>
+                    <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+                    <mat-datepicker #to></mat-datepicker>
+                </mat-form-field>
+
+                <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                color="primary" (click)="download()"><i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i></button>
+                <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                color="primary" (click)="gstSearch(1,'search')"><i  matTooltip="Search" class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-outline-primary" type="clear" style="border-radius:40px;margin-left: 15px;"
+                color="primary" (click)="reset()">Clear</button>
+            
+            </form>
+        </div>
+    </div>
+    </div>
+
+<div class="table-responsive" >
+    <table class="table table-bordered" fixed-header style="width: 95%;margin-top: 10px;margin-left:30px;overflow-x: hidden;">
+        <thead class="table_header" style="text-align: left;">
+          <tr>
+          <th style="text-align: center;">S.No</th>
+          <th style="text-align: center;">Tour NO</th>
+          <th style="text-align: center;">Employee</th>
+          <th style="text-align: center;">Employee Branch</th>
+          <th style="text-align: center;">Approver</th>
+          <th style="text-align: center;">Approver Branch</th>
+          <th style="text-align: center;">Cost Center Name</th>
+          <th style="text-align: center;">Business Segment Name</th>
+          <th style="text-align: center;">Tour Reason</th>
+          <th style="text-align: center;">Total Amount</th>
+          <th style="text-align: center;">Base amount</th>
+          <th style="text-align: center;">Approved Amount</th>
+          <th style="text-align: center;">Tax Amount</th>
+          <th style="text-align: center;">Status</th>
+        </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let gst of gstreportlist; index as i">
+              <td style="text-align: center;">{{(presentpage-1)*pageSize+i+1}}</td> 
+              <td style="text-align: center;">{{gst.requestno}}</td> 
+              <td style="text-align: center;">{{gst.Employee_Name}}</td>
+              <td style="text-align: center;">{{gst.Employee_Branch_Name}}</td> 
+              <td style="text-align: center;">{{gst.Approver_Name}}</td>
+              <td style="text-align: center;">{{gst.Approver_Branch_Name}}</td>
+              <td style="text-align: center;">{{gst.CostCentre_Name}}</td>
+              <td style="text-align: center;">{{gst.BusinessSegment_Name}}</td>
+              <td style="text-align: center;">{{gst.Tour_Reason}}</td>
+              <td style="text-align: center;">{{gst.Total_amount}}</td> 
+              <td style="text-align: center;">{{gst.Base_Amount}}</td>
+              <td style="text-align: center;">{{gst.Approved_amount}}</td>
+              <td style="text-align: center;">{{gst.Tax_Amount}}</td>
+              <td style="text-align: center;">{{gst.Tour_Status}}</td>
+            </tr>
+                <tr *ngIf="gstreportlist?.length==0; else gstpagination" class="NodataAlign"><td colspan="19" style="text-align: center;">No Records Found...</td></tr>
+     <ng-template #gstpagination>
+    <tr>
+        <td colspan="4">Total Count:{{this.totalcount}}</td>
+    <td colspan="15">
+    <div style="text-align:right;">
+        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back
+            </mat-icon>
+        </button> {{presentpage}}
+        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward
+            </mat-icon>
+        </button>
+    </div>
+    </td>
+    </tr>
+    </ng-template>
+    </tbody>
+    </table>
+</div>

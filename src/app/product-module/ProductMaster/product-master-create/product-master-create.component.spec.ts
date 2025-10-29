@@ -1,0 +1,25 @@
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { ProductMasterCreateComponent } from './product-master-create.component';
+
+describe('ProductMasterCreateComponent', () => {
+  let component: ProductMasterCreateComponent;
+  let fixture: ComponentFixture<ProductMasterCreateComponent>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ ProductMasterCreateComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ProductMasterCreateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

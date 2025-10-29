@@ -1,0 +1,299 @@
+<div  style="margin-left: 2%;">
+    
+        <h2 style="font-family:Times New Roman;font-size:20px;color:blue;font-weight:bold;">Asset Sale Checker Summary </h2>
+        <form [formGroup]="salesSummaryApprove" (ngSubmit)="assetsalesapprove(presentpage,selectPage)">
+            <div class="row">
+
+                <!-- Asset category   -->
+                <div class="col-md-3">
+                    <mat-form-field (click)="asset_category()" style="width: 220px;">
+                        <mat-label>Asset Category</mat-label>
+                        <input #categoryInput placeholder="Select Asset Category" matInput formControlName="category"
+                            [matAutocomplete]="categoryAutoComplete">
+                        <!-- <mat-error *ngIf="vendorSearchForm.controls.category.errors?.matchRequired">
+                        Please select a character from the list.
+                    </mat-error> -->
+                        <mat-autocomplete #categoryAutoComplete="matAutocomplete" [displayWith]="displayFnAssest"
+                            (opened)="autocompleteScrollcategory()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let category of category" [value]="category">
+                                    {{category.subcatname}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                        <!-- <mat-error *ngIf="vendorSearchForm.controls['category'].hasError('incorrect')">
+                    Please select a valid project
+                </mat-error> -->
+
+                    </mat-form-field>
+                </div>
+                <!--End Asset category  -->
+
+                <!-- Branch Name -->
+                <div class="col-md-3">
+                    <mat-form-field (click)="Branch()" style="width: 250px;">
+                        <mat-label>Branch Name</mat-label>
+                        <input #BranchInput placeholder="Select Branch Name" matInput formControlName="branch_name"
+                            (focusout)="onFocusOutEvent($event)" [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFn"
+                            (opened)="autocompleteScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let employee of employeeList" [value]="employee">{{employee.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+
+                <!-- End Branch Name -->
+                <!-- Asset barcode -->
+                <div class="col-md-3">
+                    <mat-form-field  style="width: 220px;">
+                        <!-- (click)="Assetbarcode()" -->
+                        <mat-label>Select Asset Barcode</mat-label>
+                        <input #AssetInput placeholder="Select Asset Barcode" matInput formControlName="barcode"
+                        [matTooltip]="salesSummaryApprove.get('barcode').value"
+                            >
+                            <!-- [matAutocomplete]="asset" -->
+                        <!-- <mat-autocomplete #asset="matAutocomplete" [displayWith]="displayFnAssestId"
+                            (opened)="autocompleteScrollAssetId()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let details of assetDetails" [value]="details">{{details.barcode}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete> -->
+                    </mat-form-field>
+                </div>
+                <!-- End Asset barcode -->
+                <!-- cap date -->
+
+                <div class="col-md-3">
+                    <mat-form-field>
+                        <mat-label>Capitalization Date</mat-label>
+                        <input matInput [matDatepicker]="excemfrom" formControlName="capdate_Value">
+                        <mat-datepicker-toggle matSuffix [for]="excemfrom"></mat-datepicker-toggle>
+                        <mat-datepicker #excemfrom disabled="false"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <!-- end Cap Date -->
+                <!-- Asset Value -->
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                <mat-form-field>
+                    <mat-label>Asset Value</mat-label>
+                    <input type="text" formControlName="asset_value" (keypress)="decimalFilter($event)" matInput
+                        placeholder="Asset Value">
+                </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field>
+                        <mat-label>CR No.</mat-label>
+                        <input type="text" formControlName="crno"  matInput [matTooltip]="salesSummaryApprove.get('crno').value"
+                            placeholder="CR No.">
+                    </mat-form-field>
+                    </div>
+                <!-- end Asset Value -->
+
+
+                <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary"
+                    style="border-radius:40px;height: 44px; margin-top: 12px;">Search
+                </button></div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-outline-primary" (click)="clearSearch()"
+                        style="border-radius:40px;height: 44px; margin-top: 12px;">Clear
+                    </button>
+                </div>
+                <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary"  routerLink="/fa/fa"
+                    style="border-radius:40px;height: 44px; margin-top: 12px;">Back</button>
+                    </div>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table  table-bordered" style="width: 98%; margin-top: 20px;overflow-y: auto;overflow-x: auto;">
+                <thead class="table_header " fixed-header>
+                    <tr>
+                        <th >Expand</th>
+                        <th >S.No</th>
+                        <th >Barcode</th>
+                        <th>CR No.</th>
+                        <th>Sale Type</th>
+                        <th>Asset SubCategory</th>
+                        <th>Asset Value</th>
+                    <th>Sale Value</th>
+                    <th>Total Count</th>
+                    <th>Branch Name</th>
+                    <th>Customer Name</th>
+                    <th>Sale Date</th>
+                    <th>Sale Reason</th>
+                    <th>Maker</th>
+                        <th>Status</th>
+                        <th>Action
+                            <br>
+                            <mat-checkbox  #myCheckbox  [(ngModel)]="overallCheck"  (change)="selectall($event)" style="text-align: center;"
+                            [indeterminate]="intermediateCheck" color="primary"></mat-checkbox>
+                        </th>
+
+
+                    </tr>
+                </thead>
+                <tbody  *ngFor="let value of assetsalesValue; index as i;" style="padding-left: 84px;">
+                    
+                    <tr>
+                        <!-- <td><button (click)="toggleStatus()">click to show/hide</button></td> -->
+                        <!-- <td><button type="button" class="btn btn-dark" (click)="i=!i">View</button></td> -->
+                    <!-- <td>   <button type="button" class="btn btn-outline-primary" (click)="toggleStatus()" *ngIf="i"
+                [attr.aria-expanded]="!isShow" aria-controls="collapseExample" style="text-align: center;padding-left: 84px;">
+            Collapse Toggle
+        </button></td> -->
+                        <!-- <button data-toggle="collapse" data-target="#demo">Collapsible</button> -->
+                        <td >
+                        
+                            <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" [attr.data-target]="'#collapse-' + i" [attr.aria-expanded]="false" [attr.aria-controls] = "'collapse-' + i">expand</button>
+                        </td>
+                        <!-- <td> <button class="btn btn-primary" type="button" data-toggle="collapse"  data-target="#i" aria-expanded="false" aria-controls="multiCollapseExample2">Toggle second element</button></td> -->
+                        <td style="text-align:center;" > {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                        <td >{{value.barcode}}</td>
+                        <td>{{value?.crnum}}</td>
+                        <td>{{value?.sale_type}}</td>
+                        <td>{{value.assetcat_subcatname}}</td>
+                        <td style="text-align:end;">{{value.assetvalue}}</td>
+                        <td style="text-align:end;">{{value.sale_value}}</td>
+                        <td style="text-align:end;">{{value.total_count}}</td>
+                        <td>{{value.branch.name}}</td>
+                        <td>{{value.customer_name}}</td>
+                        <td style="text-align:center;">{{value.assetsale_date | date:'dd-MMM-yyyy '}}</td>
+                        <td class="text-center">{{value.reason}}</td>
+                        <td class="text-center">{{value?.maker_name}}</td>
+                        <td class="text-center">{{value.status}}</td>
+                        <td><input type="checkbox" [value]="value.id" [checked]="value.con==true" [(ngModel)]="value.con" [disabled]="!value.approval_flag"
+                            (change)="onCheckboxChange($event,value,i)"></td>
+
+
+                            
+                    
+                    </tr>
+                    <tr>
+                        <td colspan="14" class="collapse-row">
+                            <div [attr.id]="'collapse-' + i" class="collapse out">
+                                
+                                <table class="table table scrolltable table-bordered" style="margin-top: 20px;">
+                                    <thead class="table_header " fixed-header>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Asset SubCategory</th>
+                                            <th>Sale Value</th>
+                                        <th>Customer</th>
+                                        <th>Branch</th>
+                                        <th>Sale Category Name</th>
+                                        <th>Sale Subcategory Name</th>
+                                        <th>Sale Gl No</th>
+                                        <th>Sale IGST Amount</th>
+                                        <th>Sale CGST Amount</th>
+                                        <th>Sale SGST Amount</th>
+                                        <th>Sale Taxable Amount</th>
+                                        <th>Sale Total Amount</th>
+                                        <th>Asset Sale Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let subvalue of value.sale_details">
+                                            <td>{{subvalue.product_name}}</td>
+                                            <td>{{subvalue.category_name}}</td>
+                                            <td style="text-align:end;">{{subvalue.sale_value}}</td>
+                                            <td>{{subvalue.customer_name}}</td>
+                                            <td>{{subvalue.branch_name}}</td>
+                                            <td>{{subvalue?.sale_cat_name}}</td>
+                                            <td>{{subvalue?.sale_subcat_name}}</td>
+                                            <td>{{subvalue?.sale_gl}}</td>
+                                            <td>{{subvalue?.i_tax_value}}</td>
+                                            <td>{{subvalue?.c_tax_value}}</td>
+                                            <td>{{subvalue?.s_tax_value}}</td>
+                                            <td>{{subvalue?.taxable_value}}</td>
+                                            <td>{{subvalue?.total_tax_val}}</td>
+                                            <td>{{subvalue.status}}</td>
+                                        </tr>
+                                        </tbody>
+                                        </table>
+                            </div>
+                        </td>
+                    </tr>  
+
+                    
+                    
+                </tbody>
+            </table>
+            
+                    
+            <div *ngIf="assetsalesValue ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+        </div>
+        <br>
+        <div class="col-12 row">
+            <div class="col-md-7">
+
+            </div>
+            <div class="col-md-3">
+                <mat-form-field class="example-full-width" style="float: right;">
+                    <mat-select [(ngModel)]="selectPage" (selectionChange)="paginationChange($event)" [(value)]="selectPage">
+                        <mat-option value="10" ngDefaultControl >10</mat-option>
+                        <mat-option value="20">20</mat-option>
+                        <mat-option value="30">30</mat-option>
+                        <mat-option value="40">40</mat-option>
+                        <mat-option value="50">50</mat-option>
+                       
+                    </mat-select>
+                    <mat-placeholder>Select Pagination Count</mat-placeholder>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2" style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+    
+            </div>
+        </div>
+        <br>
+        <div style="margin-bottom: 48px;">
+            <div align="center">
+
+                <mat-form-field class="example-full-width">
+                    <input class="toolbar-search" type="textarea" [(ngModel)]="reasons" matInput autocomplete="off"
+                        >
+                    <mat-placeholder>Reason*</mat-placeholder>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row" >
+            <div class="col-md-3" style="margin-left: 200px;">
+                <button type="submit" style="border-radius:40px;margin-bottom: 81px" class="btn btn-outline-primary"
+                   [disabled]="btndisable" (click)="approveSummary()">Approve</button>
+            </div>
+            <div class="col-md-3" style="margin-left: 50px;">
+                <button type="submit" style="border-radius:40px;margin-bottom: 81px" class="btn btn-outline-primary"
+                  [disabled]="btndisablepopup"  (click)="rejectSummary()">Reject</button>
+            </div>
+
+        </div>
+        
+<!-- <div class="accordion" id="accordionExample"> -->
+    
+ </div>
+ <ngx-spinner
+            bdColor="rgba(51,51,51,0.8)"
+            size="medium"
+            color="#fff"
+            type="ball-scale-multiple"
+          >
+            <p style="font-size: 20px; color: white">Loading...</p>
+          </ngx-spinner>

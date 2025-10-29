@@ -1,0 +1,93 @@
+<div class="container">
+    <br>                              
+    <h2>LOS Summary Searchsasasasaaaaaaaaaaasasasasassa</h2>
+    <form [formGroup]="losSummaryForm" class="example-form">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                        <input #name placeholder="Choose Application" matInput
+                            formControlName="application_no" [matAutocomplete]="autosupp">
+                        <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                            </mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let app of applno" [value]="app"  (click)="myclick(app)"                      >
+                                    {{app.ApplNo}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                
+                <div class="col-md-3">
+                    <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                        <input #name placeholder="Choose branch" matInput
+                            formControlName="branch" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displaybranch">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                            </mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let brach of branap" [value]="brach"                                  >
+                                    {{brach.BranchName}}{{brach.BranchCode}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-1">
+                    <div class="example-button-container">
+                        <button class="btn btn-outline-primary" type="submit" (click)="search()"
+                                style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                                    aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="example-button-container">
+                        <button class="btn btn-outline-primary" (click)="reset()"
+                        style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h2>LOS Summary</h2>
+        <div class="table-responsive">
+            <table class="table table scrolltable table-bordered">
+                <thead class="table_header" fixed-header>
+                    <tr>
+                         <th>S.No</th>
+                        <th>Application Number</th>
+                        <th  class="w-25" >Branch Name</th>
+                        <th>Branch Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let los of los_summary_data; index as i">
+                        <td align="center"> {{(this.currentpage - 1)*pageSize +i+1 }} </td>
+                        <td align="center" (click)="view_los_data(los)" style="cursor: pointer;color:red;"> {{los.ApplNo}}</td>
+                        <td align="center">
+                            <div *ngIf="los.BranchName === null || los.BranchName === ''">
+                                -
+                            </div>
+                            <div *ngIf="los.BranchName !== null">
+                                {{los.BranchName}}
+                            </div>
+                        </td>
+                        <td align="center">{{ los.BranchCode}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="los_summary_data ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+               <button type="button" mat-mini-fab color="primary" [disabled]="has_previous === false" style="border-radius:200px;margin-left: 15px;" (click)="previousClick()"><mat-icon>arrow_back</mat-icon></button>
+                &nbsp;&nbsp;  {{presentpage}}
+                <button type="button"  mat-mini-fab color="primary" [disabled]="has_next === false" style="border-radius:200px;margin-left: 15px;" (click)="nextClick()"> <mat-icon>arrow_forward</mat-icon></button>
+            </div>
+        </div>
+    </form>
+</div>
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+    <p style="color: white">Loading... </p>
+</ngx-spinner>

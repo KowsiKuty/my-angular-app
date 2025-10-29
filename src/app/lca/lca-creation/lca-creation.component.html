@@ -1,0 +1,806 @@
+<div style="margin-left: 30px; margin-top: 3%;">
+<mat-card style="width: 90%;margin-bottom: 1px;">
+      <h2 style="margin-left: 10px; font-family:'Times New Roman'; font-weight:bold;">LCA Creation</h2>
+  
+      <div>
+        <form [formGroup]="lcaheaderform">
+          <table style="margin-bottom: 10px;">
+            <tr >
+              <td>
+                <mat-form-field style="width: 200px;margin-left: 10px;">
+                  <input matInput placeholder="LCA Raised Date" readonly 
+                  formControlName="lcadata" autocomplete="off" [value]="formattedTodayDate" [disabled]="true">
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field
+                    style="width: 200px;margin-left: 20px;">
+                    <input matInput placeholder="Branch " formControlName="branchcodename" autocomplete="off"
+                    [disabled]="true" readonly>
+                </mat-form-field>
+                
+              </td>
+              <!-- <td>
+                <mat-form-field style="width: 200px;margin-left: 200px;" (click)="getbranchname()">
+                    <mat-label> Branch</mat-label>
+                    <input #brInput placeholder="Branch" matInput formControlName="branchcodename"
+                        [matAutocomplete]="branchmatAuto">
+                    <mat-autocomplete [panelWidth]="400" #branchmatAuto="matAutocomplete" (opened)="branchScroll()"
+                        [displayWith]="displayFnBranch">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let br of brList" matTooltip="{{br.code}}-{{br.name}}" matTooltipClass="custom-tooltipnew" [value]="br">
+                                {{br.code}}-{{br.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </td> -->
+              <td *ngIf="!enableemployee">
+                <mat-form-field style="width: 200px;margin-left: 20px;">
+                  <input matInput placeholder="Employee" formControlName="empnamecode" autocomplete="off"
+                  [disabled]="true" readonly>
+                </mat-form-field>
+              </td>
+              <td *ngIf="enableemployee">
+                     
+                       
+                <mat-form-field (click)="getraiserdropdown()" style="width: 200px;margin-left: 20px;">
+                    <mat-label>Raiser Name</mat-label>
+                    <input #raiserInput matInput
+                        formControlName="empnamecode" [matAutocomplete]="raisertyperole" 
+                        placeholder="Choose Raiser">
+                    <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                    <mat-autocomplete [panelWidth]="400" #raisertyperole="matAutocomplete"
+                        [displayWith]="displayFnraiserrole" (opened)="raiserScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let data of Raiserlist" [value]="data" matTooltip = "{{data.full_name}}">
+                                {{data.full_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </td>
+              <td>
+                <mat-form-field style="width:200px;margin-left: 20px; ">
+                  <input matInput placeholder="Amount" formControlName="headeramt" autocomplete="off" (keypress)="numberOnlyandDot($event)">
+                </mat-form-field>
+                
+              </td>
+            </tr>
+            
+            <tr>
+              <!-- <td>
+
+                <mat-form-field style="width: 200px;margin-left:-22px"
+                (click)="getcommoditydd()">
+
+                <input #commodityInput placeholder="Commodity Name" matInput
+                    formControlName="commadity" [matAutocomplete]="commoditytype"> -->
+                <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                <!-- <mat-autocomplete [panelWidth]="300" #commoditytype="matAutocomplete"
+                    [displayWith]="displayFncommodity" (opened)="commodityScroll()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let commodity of commodityList"
+                            [value]="commodity" (click)="getcommoditydata(commodity)"
+                            matTooltip="{{commodity.name}}" matTooltipClass="custom-tooltipnew">
+                            {{commodity.name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+              </td> -->
+              <td>
+                <mat-form-field style="width: 200px;margin-left: 10px;">
+                  <mat-label>LCA Type</mat-label>
+                  <mat-select formControlName="lcamode" required>
+                      <mat-option *ngFor="let status of expenseTypeList"  [value]="status.LCA_name" matTooltip="{{status.LCA_name}}"
+                        (click)="onExpenseTypeChange(status)">
+                          {{status.LCA_name}}
+                      </mat-option>
+                  </mat-select>
+              </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field style="width: 200px;margin-left: 20px;">
+
+                  <input #commodityInput placeholder="Commodity Name" matInput
+                      formControlName="commadity" [disabled]="true" matTooltip="{{this.expencetypecolumnlist[0]?.expense_type_id?.commodity_id?.name}}"  [matAutocomplete]="commoditytype">
+                      <!-- (click)="getcommoditydd()" -->
+                  <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                  <!-- <mat-autocomplete [panelWidth]="300" #commoditytype="matAutocomplete"
+                      [displayWith]="displayFncommodity" (opened)="commodityScroll()">
+                      <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let commodity of commodityList"
+                              [value]="commodity" (click)="getcommoditydata(commodity)"
+                              matTooltip="{{commodity.name}}" matTooltipClass="custom-tooltipnew">
+                              {{commodity.name}}
+                          </mat-option>
+                      </ng-container>
+                  </mat-autocomplete> -->
+              </mat-form-field>
+              </td>
+              <td></td>
+              <td >
+                <!-- <button type="button" style="margin-left: 50px;" (click)="fileInputs.click()" mat-raised color="warn">Choose
+                  File <mat-label ><label style="color: red;" >*</label></mat-label> </button> -->
+                  <input  hidden #fileInputs id="uploadFile" type="file" multiple
+                 style="width: 110px;margin-left: 20px;" (change)="fileupload($event)" >
+                <i  (click)="fileInputs.click()"  class="fa fa-cloud-upload" matTooltip="Upload file" aria-hidden="true" style="margin-left: 150px;font-size: 25px;color: blue;"></i>
+                 <span *ngIf="lcaheaderform?.value?.filevalue?.length >= 0" matTooltip="View Files" class=" fa fa-eye create"
+                   style="margin-left: 10px;color: blue;" data-toggle="modal" data-target ="#showfiledetails" ></span>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      
+     
+</mat-card>
+<br><br>
+
+<mat-card style="width: 90%;margin-top: 0px;">
+    <h2 style="margin-left: 10px; font-family:'Times New Roman'; font-weight:bold;">LCA Details</h2>
+
+    <div>
+
+<!-- [disabled]="!isLcaCreateFormEnabled()" -->
+      <form [formGroup]="lcacreateform">
+        <div>
+          <tr>
+          <!-- <div class="col-md-3">
+            <mat-form-field style="margin-left:-22px">
+              <mat-label>LCA Type</mat-label>
+              <mat-select formControlName="lcamode" required>
+                  <mat-option *ngFor="let status of expenseTypeList"  [value]="status.LCA_name" matTooltip="{{status.LCA_name}}"  (click)="onExpenseTypeChange(status)">
+                      {{status.LCA_name}}
+                  </mat-option>
+              </mat-select>
+          </mat-form-field>
+            
+              
+          </div> -->
+          <!-- <div class="col-md-3">
+            <mat-form-field> -->
+
+            <!-- <input #commodityInput placeholder="Commodity Name" matInput
+                formControlName="commadity" [disabled]="true" matTooltip="{{this.expencetypecolumnlist[0]?.expense_type_id?.commodity_id?.name}}"  [matAutocomplete]="commoditytype"> -->
+                <!-- (click)="getcommoditydd()" -->
+            <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+            <!-- <mat-autocomplete [panelWidth]="300" #commoditytype="matAutocomplete"
+                [displayWith]="displayFncommodity" (opened)="commodityScroll()">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let commodity of commodityList"
+                        [value]="commodity" (click)="getcommoditydata(commodity)"
+                        matTooltip="{{commodity.name}}" matTooltipClass="custom-tooltipnew">
+                        {{commodity.name}}
+                    </mat-option>
+                </ng-container>
+            </mat-autocomplete> -->
+        <!-- </mat-form-field> -->
+            <!-- <mat-form-field style="width: 200px; ">
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="picker1" placeholder="From Date" [max]="today" formControlName="fromdate" required>
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field> -->
+          <!-- </div> -->
+        
+          <!-- <div class="col-md-3"> -->
+            <!-- <mat-form-field style="width: 200px; ">
+              <mat-label>To Date</mat-label>
+              <input matInput [matDatepicker]="picker2" placeholder="To Date" [min]="lcacreateform.get('fromdate').value" formControlName="todate" required>
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+            <div *ngIf="lcacreateform.get('todate').hasError('invalidDate')">
+              To Date must be after From Date.
+            </div> -->
+          <!-- </div> -->
+          <td>
+            <mat-form-field style="width: 200px;margin-left: 10px;">
+              <input matInput placeholder="Amount" formControlName="invamt" autocomplete="off" >
+            </mat-form-field>
+         
+          </td>
+          <td>
+            <mat-form-field style="width: 200px;margin-left: 20px;">
+              <input matInput placeholder="Purpose" formControlName="purpose"  autocomplete="off" required>
+            </mat-form-field>
+          </td>
+          </tr>
+        </div>
+          <!-- <div class="col-md-3" *ngFor="let column of expencetypecolumnlist; let i = index">
+            <mat-form-field class="dynamic-form-field">
+              <input matInput placeholder="{{ column.column_name }}"  [formControlName]="getDynamicFormControlName(column, i)">
+            </mat-form-field>
+            
+          </div> -->
+      <div>
+      <tr *ngIf="Coldet1.length >0 ">
+      <ng-container *ngFor="let column of Coldet1; let i = index">    
+      <td *ngIf="column.column_type === 'Date' && i==0">
+          <!-- -{{column.column_type}} -->
+          <mat-form-field style="width: 200px;margin-left: 10px;">
+          <mat-label>{{ column.column_name }}</mat-label>
+          <input matInput [matDatepicker]="picker2" [formControlName]="getDynamicFormControlName(column, i)" readonly style="width: 170px;">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+      </td>   
+      <td *ngIf="column.column_type === 'Date' && i!=0">
+          <!-- -{{column.column_type}} -->
+          <mat-form-field style="width: 200px;margin-left: 20px;">
+          <mat-label>{{ column.column_name }}</mat-label>
+          <input matInput [matDatepicker]="picker2" [formControlName]="getDynamicFormControlName(column, i)" readonly style="width: 170px;">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+      </td>
+
+      <td *ngIf="column.column_type === 'Boolean' && i==0">
+          <!-- -{{column.column_type}} -->
+        <mat-form-field style="width: 200px;margin-left: 10px;">
+        <mat-select [formControlName]="getDynamicFormControlName(column, i)">
+          <mat-option *ngFor="let option of booleanvaluedropdown" [value]="option.value">
+            {{ option.value }}
+          </mat-option>
+        </mat-select>
+        </mat-form-field>
+      </td>
+
+      <td *ngIf="column.column_type === 'Boolean' && i!=0">
+          <!-- -{{column.column_type}} -->
+        <mat-form-field style="width: 200px;margin-left: 20px;">
+        <mat-select [formControlName]="getDynamicFormControlName(column, i)">
+          <mat-option *ngFor="let option of booleanvaluedropdown" [value]="option.value">
+            {{ option.value }}
+          </mat-option>
+        </mat-select>
+        </mat-form-field>
+      </td>
+      <!-- -{{column.column_type}} -->
+      <!-- -{{column.column_type}} -->
+      <td *ngIf="column.column_type == 'Integer' && i==0">
+        <mat-form-field style="width: 200px;margin-left: 10px;">
+        <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)"
+         (keypress)="numberOnly($event)">
+         </mat-form-field>
+      </td>
+      <td *ngIf="column.column_type == 'Integer' && i!=0">
+        <mat-form-field style="width: 200px;margin-left: 20px;">
+        <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)"
+         (keypress)="numberOnly($event)">
+         </mat-form-field>
+      </td>
+      <td *ngIf="column.column_type == 'Textbox' && i==0">
+        <mat-form-field style="width: 200px;margin-left: 10px;">
+        <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)"  >
+        </mat-form-field>
+      </td>
+      <td *ngIf="column.column_type == 'Textbox' && i!=0">
+        <mat-form-field style="width: 200px;margin-left: 20px;">
+        <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)">
+        </mat-form-field>
+      </td>
+      </ng-container>
+      </tr>
+      </div>
+      <div>
+        <tr *ngIf="Coldet2.length >0 ">
+        <ng-container *ngFor="let column of Coldet2; let i = index">    
+        <td *ngIf="column.column_type === 'Date' && i==0">
+            <!-- -{{column.column_type}} -->
+            <mat-form-field style="width: 200px;margin-left: 10px;">
+            <mat-label>{{ column.column_name }}</mat-label>
+            <input matInput [matDatepicker]="picker2" [formControlName]="getDynamicFormControlName(column, i)" readonly style="width: 170px;">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </td>   
+        <td *ngIf="column.column_type === 'Date' && i!=0">
+            <!-- -{{column.column_type}} -->
+            <mat-form-field style="width: 200px;margin-left: 20px;">
+            <mat-label>{{ column.column_name }}</mat-label>
+            <input matInput [matDatepicker]="picker2" [formControlName]="getDynamicFormControlName(column, i)" readonly style="width: 170px;">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </td>
+  
+        <td *ngIf="column.column_type === 'Boolean' && i==0">
+            <!-- -{{column.column_type}} -->
+          <mat-form-field style="width: 200px;margin-left: 10px;">
+          <mat-select [formControlName]="getDynamicFormControlName(column, i)" >
+            <mat-option *ngFor="let option of booleanvaluedropdown" [value]="option.value">
+              {{ option.value }}
+            </mat-option>
+          </mat-select>
+          </mat-form-field>
+        </td>
+  
+        <td *ngIf="column.column_type === 'Boolean' && i!=0">
+            <!-- -{{column.column_type}} -->
+          <mat-form-field style="width: 200px;margin-left: 20px;">
+          <mat-select [formControlName]="getDynamicFormControlName(column, i)">
+            <mat-option *ngFor="let option of booleanvaluedropdown" [value]="option.value">
+              {{ option.value }}
+            </mat-option>
+          </mat-select>
+          </mat-form-field>
+        </td>
+        <!-- -{{column.column_type}} -->
+        <!-- -{{column.column_type}} -->
+        <td *ngIf="column.column_type == 'Integer' && i==0">
+          <mat-form-field style="width: 200px;margin-left: 10px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)"
+           (keypress)="numberOnly($event)">
+           </mat-form-field>
+        </td>
+        <td *ngIf="column.column_type == 'Integer' && i!=0">
+          <mat-form-field style="width: 200px;margin-left: 20px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)"
+           (keypress)="numberOnly($event)">
+           </mat-form-field>
+        </td>
+        <td *ngIf="column.column_type == 'Textbox' && i==0">
+          <mat-form-field style="width: 200px;margin-left: 10px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)" >
+          </mat-form-field>
+        </td>
+        <td *ngIf="column.column_type == 'Textbox' && i!=0">
+          <mat-form-field style="width: 200px;margin-left: 20px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)" >
+          </mat-form-field>
+        </td>
+        </ng-container>
+        </tr>
+      </div>
+      <div>
+        <tr *ngIf="Coldet3.length >0 ">
+        <ng-container *ngFor="let column of Coldet3; let i = index">    
+        <td *ngIf="column.column_type === 'Date' && i==0">
+            <!-- -{{column.column_type}} -->
+            <mat-form-field style="width: 200px;margin-left: 10px;">
+            <mat-label>{{ column.column_name }}</mat-label>
+            <input matInput [matDatepicker]="picker2" [formControlName]="getDynamicFormControlName(column, i)" readonly style="width: 170px;">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </td>   
+        <td *ngIf="column.column_type === 'Date' && i!=0">
+            <!-- -{{column.column_type}} -->
+            <mat-form-field style="width: 200px;margin-left: 20px;">
+            <mat-label>{{ column.column_name }}</mat-label>
+            <input matInput [matDatepicker]="picker2" [formControlName]="getDynamicFormControlName(column, i)" readonly style="width: 170px;">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </td>
+  
+        <td *ngIf="column.column_type === 'Boolean' && i==0">
+            <!-- -{{column.column_type}} -->
+          <mat-form-field style="width: 200px;margin-left: 10px;">
+          <mat-select [formControlName]="getDynamicFormControlName(column, i)">
+            <mat-option *ngFor="let option of booleanvaluedropdown" [value]="option.value">
+              {{ option.value }}
+            </mat-option>
+          </mat-select>
+          </mat-form-field>
+        </td>
+  
+        <td *ngIf="column.column_type === 'Boolean' && i!=0">
+            <!-- -{{column.column_type}} -->
+          <mat-form-field style="width: 200px;margin-left: 20px;">
+          <mat-select [formControlName]="getDynamicFormControlName(column, i)">
+            <mat-option *ngFor="let option of booleanvaluedropdown" [value]="option.value">
+              {{ option.value }}
+            </mat-option>
+          </mat-select>
+          </mat-form-field>
+        </td>
+        <!-- -{{column.column_type}} -->
+        <!-- -{{column.column_type}} -->
+        <td *ngIf="column.column_type == 'Integer' && i==0">
+          <mat-form-field style="width: 200px;margin-left: 10px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)"
+           (keypress)="numberOnly($event)">
+           </mat-form-field>
+        </td>
+        <td *ngIf="column.column_type == 'Integer' && i!=0">
+          <mat-form-field style="width: 200px;margin-left: 20px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)"
+           (keypress)="numberOnly($event)" >
+           </mat-form-field>
+        </td>
+        <td *ngIf="column.column_type == 'Textbox' && i==0">
+          <mat-form-field style="width: 200px;margin-left: 10px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)" 
+          >
+          </mat-form-field>
+        </td>
+        <td *ngIf="column.column_type == 'Textbox' && i!=0">
+          <mat-form-field style="width: 200px;margin-left: 20px;">
+          <input matInput placeholder="{{ column.column_name }}" [formControlName]="getDynamicFormControlName(column, i)" 
+          >
+          </mat-form-field>
+        </td>
+        </ng-container>
+        </tr>
+      </div>
+
+      
+      <div>
+        <tr>
+          <td>
+            <!-- (click)="getcatdropdown()" -->
+            <mat-form-field  style="width: 200px;margin-left:10px">
+              <mat-label>Category</mat-label>
+              <input #categoryInput placeholder="Category" matInput
+                  formControlName="jedcat_code" [disabled]="true" matTooltip="{{this.lcacreateform.value.jedcat_code?.name}}" [matAutocomplete]="cattype">
+                  <!--   -->
+              <!-- <mat-autocomplete [panelWidth]="400" #cattype="matAutocomplete" [displayWith]="displaycatFn"
+                  (opened)="categoryScroll()" required>
+                  <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                  </mat-option>
+                  <ng-container *ngIf="!isLoading">
+                      <mat-option *ngFor="let categoryname of categoryNameData"
+                          (click)="cid(categoryname)" [value]="categoryname?.code" matTooltip="{{categoryname.code}}">
+                          {{categoryname?.code}}
+                      </mat-option>
+                  </ng-container>
+              </mat-autocomplete> -->
+          </mat-form-field>
+
+        </td>
+      
+          <td>
+
+            <mat-form-field style="width: 200px;margin-left:20px">
+                                            
+
+              <mat-label>Subcategory</mat-label>
+              <input #subcategoryInput placeholder="Subcategory" matInput
+                  formControlName="jedsubcat_code" [disabled]="true" matTooltip="{{this.lcacreateform.value.jedsubcat_code?.name}}"  [matAutocomplete]="subcategorytype" required>
+                  <!-- -->
+              <!-- <mat-autocomplete [panelWidth]="400" #subcategorytype="matAutocomplete"
+                  [displayWith]="displaysubcatFn" (opened)="subcategoryScroll()">
+                  <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                  </mat-option>
+                  <ng-container *ngIf="!isLoading">
+                      <mat-option *ngFor="let subcategoryname of subcategoryNameData"
+                          [value]="subcategoryname"
+                          (focusout)="getGLNumber(subcategoryname,i)" matTooltip="{{subcategoryname.code}}">
+                          {{subcategoryname.code}}
+                      </mat-option>
+                  </ng-container>
+              </mat-autocomplete> -->
+              </mat-form-field>
+        
+            </td>
+          <td>
+            <mat-form-field  style="width: 200px;margin-left:20px">
+              <input matInput placeholder="GL No" formControlName="jedglno" autocomplete="off" readonly [disabled]="true">
+            </mat-form-field>
+           
+          </td>
+          <td>
+            <mat-form-field style="width: 200px;margin-left: 20px;" (click)="getbsdropdown()">
+
+
+              <mat-label>BS</mat-label>
+
+              <input #bsInput placeholder="BS" matInput formControlName="jedbs_code"
+                  [matAutocomplete]="bstype" required>
+              <mat-autocomplete [panelWidth]="400" #bstype="matAutocomplete" [displayWith]="displaybsFn"
+                  (opened)="bsScroll()">
+                  <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                  </mat-option>
+                  <ng-container *ngIf="!isLoading">
+                      <mat-option *ngFor="let bsname of bsNameData" [value]="bsname"
+                          (click)="bsid(bsname,bsname.code)" matTooltip="{{bsname.name}}">
+                          {{bsname.name}}
+                      </mat-option>
+                  </ng-container>
+              </mat-autocomplete>
+
+
+          </mat-form-field>
+         
+        </td>
+      
+          <td>
+            <mat-form-field style="width: 200px;margin-left:20px">
+              <mat-label>CC</mat-label>
+              <input #ccinput placeholder="CC" matInput formControlName="jedcc_code"
+                  [matAutocomplete]="cctype"required >
+              <mat-autocomplete [panelWidth]="400" #cctype="matAutocomplete" [displayWith]="displayccFn"
+                  (opened)="ccScroll()">
+                  <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                  </mat-option>
+                  <ng-container *ngIf="!isLoading">
+                      <mat-option *ngFor="let ccname of ccNameData" [value]="ccname"
+                          (click)="getccdata(ccname.code,ccname.id)" matTooltip=" {{ccname.name}}">
+                          {{ccname.name}}
+                      </mat-option>
+                  </ng-container>
+              </mat-autocomplete>
+
+          </mat-form-field>
+           
+        </td>
+         
+        </tr>
+      </div>
+      <div>
+      <tr>
+      <!-- (keypress)="characterandnumberonly($event) --> 
+      
+      
+        
+            <!-- <button type="submit" class="btn-outline-primary"  style="border-radius:40px;margin-left: 50px;" (click)="submitlca()">Save</button>
+            <button type="button" class="btn-outline-danger" style="border-radius:40px;margin-left: 50px;" (click)="goback()">Reset</button> -->
+            <td> 
+              <button type="button" (click)="submitlca()" class="btn btn-outline-success"
+                style="border-radius: 40px;margin-left: 450px;">Save</button>
+              <button type="button" (click)="resetlca()" class="btn btn-outline-danger" style="border-radius: 40px; margin-left:10px;">Reset</button>
+            </td>
+
+      </tr>
+      </div>
+      </form>
+     
+      
+    </div>
+    
+
+<h2 style="margin-left: 10px; font-family:'Times New Roman'; font-weight:bold;">LCA Details Data</h2>
+<div class="table-responsive" style="margin-left: 10px;">
+    <table class="table table-bordered" fixed-header >
+        <thead class="table_header">
+            <tr>
+            <th>S.No</th>
+            <th>Category</th>
+            <th>Subcategory</th>
+            <th>BS</th>
+            <th>CC</th>
+            <th>GL No</th>
+            <!-- <th>Paymode</th> -->
+            <th>Purpose</th>
+            <th>LCA Type</th>
+            <th>Amount</th>
+            <th>Delete</th>
+            </tr>
+         </thead>
+  
+  <tbody *ngIf="submitted">
+    <tr *ngFor="let data of ValueArray;index as i">
+      <td>{{i+1}}</td>
+      <!-- <td>{{ data.value.fromdate| date:'dd-MMM-yyyy'  }}</td>
+      <td>{{ data.value.todate| date:'dd-MMM-yyyy'  }}</td> -->
+      <td>{{ data.value.jedcat_code }}</td>
+      <td>{{ data.value.jedsubcat_code }}</td>
+      <td>{{ data.value.jedbs_code }}</td>
+      <td>{{ data.value.jedcc_code }}</td>
+      <td>{{ data.value.jedglno }}</td>
+      <!-- <td>{{ data.value.paymodeid }}</td> -->
+      <td>{{ data.value.purpose }}</td>
+      <td>{{this.expenseTypeList[0].LCA_name}}</td>
+      <td>{{ data.value.invamt }}</td>
+      <td>
+        <button mat-icon-button type="button" matTooltip="Delete">
+          <mat-icon style="color: red;" aria-label="Edit" (click)="deleteData(data)">
+              delete</mat-icon>
+      </button>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="7"></td>
+      <td>Total Amount</td>
+      <td colspan="2">{{ calculateTotalAmount() }}</td>
+      
+  </tr>
+  </tbody>
+    </table>
+</div>
+
+
+
+
+<!-- </mat-expansion-panel> -->
+</mat-card>
+<br><br>
+<mat-card style="width: 90%;">
+<!-- <mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title> -->
+    <h2 style="margin-left: 10px; font-family:'Times New Roman'; font-weight:bold;">Beneficiary Details</h2>
+    <!-- </mat-panel-title>
+  </mat-expansion-panel-header> -->
+<form [formGroup]="beneficiaryform">
+  <!-- <mat-form-field>
+    <mat-label>Paymode</mat-label>
+    <mat-select  formControlName="mode"required >
+        <mat-option *ngFor="let status of Paymodelist"  [value]="status.name" matTooltip="{{status.name}}" (click)="benedetails(status)">
+            {{status.name}}
+        </mat-option>
+    </mat-select>
+</mat-form-field> -->
+</form>
+<div class="table-responsive" style="margin-left: 10px;">
+    <table class="table table-bordered" fixed-header >
+        <thead class="table_header">
+            <tr>
+              <th>Paymode</th>
+              <th>Account No</th>
+              <th>Bank Name</th>
+              <th>Branch Name</th>
+              <th>IFSC Code</th>
+              <th>Beneficiary Name</th>
+              <th>Amount</th>
+            
+            </tr>
+         </thead>
+  
+  <tbody>
+    <tr *ngFor="let data of BeneficiaryDetails">
+      <td>ERA</td>
+      <td>{{data?.account_number}}</td>
+      <td>{{data?.bank_name}}</td>
+      <td>{{data?.bankbranch?.name}}</td>
+      <td>{{data?.bankbranch?.ifsccode}}</td>
+      <td>{{data?.beneficiary_name}}</td>
+      <td>{{beneamt}}</td>
+    </tr>
+  </tbody>
+    </table>
+</div>
+<!-- </mat-expansion-panel> -->
+</mat-card>
+<br>
+<div class="row">
+<form [formGroup]="approverForm">
+
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+   <mat-form-field style="width: 200px;margin-left: 200px;" (click)="getbranchname()">
+    <mat-label>Approver Branch</mat-label>
+    <input #brInput placeholder="Approver Branch" matInput formControlName="branch_id"
+        [matAutocomplete]="branchmatAuto">
+    <mat-autocomplete [panelWidth]="400" #branchmatAuto="matAutocomplete" (opened)="branchScroll()"
+        [displayWith]="displayFnBranch">
+        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+        <ng-container *ngIf="!isLoading">
+            <mat-option *ngFor="let br of brList" matTooltip="{{br.code}}-{{br.name}}" matTooltipClass="custom-tooltipnew" [value]="br">
+                {{br.code}}-{{br.name}}
+            </mat-option>
+        </ng-container>
+    </mat-autocomplete>
+</mat-form-field>
+
+   <mat-form-field style="width: 250px;margin-left: 15px;" (click)="approvername()">
+    <mat-label>Approver Name</mat-label>
+    <input #appInput  placeholder="Choose Approver" matInput 
+    formControlName="approvedby" [matAutocomplete]="approver" required >
+    <mat-autocomplete [panelWidth]="400" #approver="matAutocomplete" (opened)="autocompleteapproverScroll()"
+    [displayWith]="displayFnApprover">
+    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+    <ng-container *ngIf="!isLoading">
+    <mat-option *ngFor="let app of approverList"
+    [value]="app?.employee_id" matTooltip="{{app?.employee_id?.name}} - {{app?.employee_id?.code}}" matTooltipClass="custom-tooltipnew">{{app?.employee_id?.name}} - {{app?.employee_id?.code}}
+</mat-option>
+</ng-container>
+ </mat-autocomplete>
+</mat-form-field> 
+
+
+   
+ 
+    
+      <button type="submit" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 30px;" (click)="wholeform()">Submit to Approver</button>
+      <button type="button" class="btn btn-outline-danger" style="border-radius: 40px;margin-left: 10px;"(click)="glback()">Back</button>
+    </form>
+</div>
+
+</div>
+<br>
+<br>
+
+<div >
+  <div class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+    id="showfiledetails">
+    <div class="modal-dialog modal-xl " style="width: 70%;">
+      <div class="modal-content">
+        <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+          <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">File Details</h2>
+          <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 80%;">
+          <div class="container">
+            <div class="row">                  
+          
+              <!-- <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">File Details</h2> -->
+                    
+                    <div class="table-responsive">
+                      <table class="table  table-bordered" style="width: 99%;margin-top: 10px;">
+                      <thead class="table_header" fixed-header style="background: #a7e4ab;">
+                          <tr>
+                              <th style="width: 80px;">S.No</th>
+                              <th style="text-align: center;">File Name</th>
+                              <th style="text-align: center;">View</th>
+                              <th style="text-align: center;">Delete</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          
+                         <tr *ngFor="let fileControl of lcaheaderform.get('filevalue')?.controls as FormArray; let j=index">
+                                        <td>
+                                            {{j+1}}
+                                        </td>
+                                        <td>{{ fileControl.value.name }}</td>
+                                      <td class="txt-ctr">
+                                            <span class="fa fa-eye create " (click)="filepreview(fileControl.value)" 
+                                            matTooltip="View File"  data-target="#my-modalpreview" data-toggle="modal"
+                                            >
+                                        </span>
+                                        </td> 
+                                         <td class="txt-ctr">
+                                          <span (click)="deleteUpload(fileControl.value,j)">
+                                              <mat-icon matTooltip="Delete" class="tfdr">delete
+                                              </mat-icon>
+                                          </span>
+                                      </td>
+                                  </tr> 
+                      </tbody>
+                      </table>
+                   </div>
+               
+               
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div #myModal *ngIf="showimageHeaderPreview" id="my-modalpreview" class="modal bd-fileupload-modal-lg" aria-labelledby="myLargeModalLabels"
+    tabindex="-1" role="dialog"  data-backdrop="static" data-keyboard="false"   [ngClass]="viewpop == true ?'openpopup':'closepop' " >
+    <div class="modal-dialog modal-xl pordes pordes" data-dismiss="modal">
+        <div class="modal-content">
+            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button> -->
+            <button type="button" class="btn btn-outline-primary br-rs clr-whit bgmi" (click)="closeview()" data-dismiss="modal">Close</button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive hundr" >
+
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="showimageHeaderPreviewPDF" id="my-modalpreview" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                <h2 class="modal-title"> JV Attachments</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <pdf-viewer [src]="pdfurl" [original-size]="false" [render-text]='false' [show-borders]="true"
+                [fit-to-page]="true" [show-all]="true" style="display: block; height: 600px;" [fit-to-page]="true">
+            </pdf-viewer>
+        </div>
+    </div>
+</div>
+

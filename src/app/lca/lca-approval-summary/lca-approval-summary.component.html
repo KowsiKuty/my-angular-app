@@ -1,0 +1,492 @@
+<div>
+
+    <p style="color:black;font-size: 22px;font-weight: 500;margin-top: 20px;margin-left: 35px">
+      LCA Approval Summary Search
+   </p>
+
+    <form [formGroup]="LcaAppSummaryForm">
+
+        <div class="row" style="align-items: center;justify-content: space-evenly;">
+           
+              <div class="col-md-3" style="margin-left: 15px;">
+                       <mat-form-field 
+                        style="font-family: 'Times New Roman', Times, serif;">
+                        <input matInput placeholder="CR No" formControlName="crno" 
+                            autocomplete="off">
+                         </mat-form-field>
+              
+                </div>
+                <div class="col-md-3">
+                  <mat-form-field class="example-full-width"  (click)="getbranchdropdown()">
+                    <mat-label > Branch </mat-label>
+                    <input #branchInput  matInput
+                        formControlName="jebranch" [matAutocomplete]="branchtyperole" 
+                        placeholder="Choose Branch">
+                    <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                    <mat-autocomplete [panelWidth]="400" #branchtyperole="matAutocomplete"
+                        [displayWith]="displayFnbranchrole" (opened)="branchScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.code}}-{{branch.name}}">
+                                {{branch.code}}-{{branch.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                 </div>
+                 <div class="col-md-3">
+                  <mat-form-field class="example-full-width" (click)="getraiserdropdown()">
+                    <mat-label>Raiser Name</mat-label>
+                    <input #raiserInput matInput
+                        formControlName="created_by" [matAutocomplete]="raisertyperole" 
+                        placeholder="Choose Raiser">
+                    <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                    <mat-autocomplete [panelWidth]="400" #raisertyperole="matAutocomplete"
+                        [displayWith]="displayFnraiserrole" (opened)="raiserScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let data of Raiserlist" [value]="data" matTooltip = "{{data.full_name}}">
+                                {{data.full_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                 </div>
+        
+       
+                <div class="col-md-2">
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;" color="primary"
+                    (click)="search()"><i matTooltip="Search" class="fa fa-search" aria-hidden="true"></i></button>
+                
+                    <button class="btn btn-outline-danger" matTooltip="Reset" type="button" style="border-radius:40px;margin-left: 25px;"
+                    color="danger" (click)="resetlcaapp()">Reset</button>
+
+                
+                </div>
+                <!-- <td>
+                    
+                    <button type="button" class="btn btn-outline-info" matTooltip="JV Bulk Upload"
+                    style="border-radius:40px;margin-left:5px;" (click)="uploadjv()"><span
+                    class="fa fa-plus"></span></button>
+                </td> -->
+        </div>
+
+    </form>
+         <p style="color:black;font-size: 22px;font-weight: 500;margin-top: 20px;margin-left: 35px">
+          LCA Approval Summary
+         </p>
+
+            <div class="table-responsive" style="margin-top: 1%;width: 98%;margin-left: 30px;">
+                <table class="table scrolltable table-bordered" fixed-header>
+                    <thead>
+                        <tr class="table_header" fixed-header style="text-align:center;">
+                          <th>S.No</th>
+                          <th>CR No</th>
+                          <th>Branch</th>
+                          <th>Raiser</th>
+                          <th>Total Amount</th>
+                          <th>Commotidy Name</th>
+                          <th>Status</th>
+                          <th>View</th>
+                          <th>Transaction View</th>
+                          <th>Download</th>
+                          <!-- <th>Edit</th>
+                          <th>Delete</th> -->
+                        </tr>
+                    </thead>
+         <tbody>
+            <tr *ngFor="let d of data;index as i" style="text-align: center;">
+                <td>{{(presentpage - 1)*pagesize +i+1 }}</td>
+                <td>{{data[i]?.lcacrno}}</td>
+                <td>{{data[i]?.lcabranch?.code}}-{{data[i]?.lcabranch?.name}}</td>
+                <td>{{data[i]?.created_by?.code}}-{{data[i]?.created_by?.name}}</td>
+                <td>{{data[i]?.lcaamount}}</td>
+                <td>{{data[i]?.commodity_name}}</td>  
+                <td>{{data[i]?.lcastatus}}</td>                         
+                <td style="text-align: center;">
+                    <!-- data-target="#showattachmentpopup" data-toggle="modal" -->
+                    <span matTooltip="View" class=" fa fa-eye create "
+                    style="color: green;cursor: pointer;" (click)="showjvsummaryviews(d)" ></span>  
+                </td>
+                <td>
+                    <span matTooltip="Transaction" style="color: green; cursor: pointer;"
+                    data-target="#showtrandetailpopup" data-toggle="modal" (click)="transview(d)">
+                <mat-icon>library_books</mat-icon>
+              </span>
+                  </td>
+                  <td>
+                    <span class="fa fa-download" (click)="coverNotedownload(d)"></span>
+                  </td>
+                <!-- <td >
+                  <button mat-icon-button type="button" matTooltip="Edit" style="margin-top:-15px;">
+                    <mat-icon  style="color: grey;" aria-label="Edit">create</mat-icon>
+                  </button>
+              </td>
+              
+                <td >
+                    <button mat-icon-button type="button" matTooltip="Delete" style="margin-top:-15px;">
+                        <mat-icon style="color: red;" aria-label="Edit" >
+                            delete</mat-icon>
+                    </button>
+                </td> -->
+            </tr>
+        </tbody> 
+                </table>
+    <!-- ----To add pagination--- --> 
+    <div *ngIf="!issummarypage" class="NodataAlign" style="margin-left: 35%;">No Records Found...
+
+    <div class="row" *ngIf="issummarypage" style="width: 90%;">
+
+        <div class="col-md-3" style="margin-bottom: 10px;font-size: small;font-weight:bold;margin-top: 15px;">
+             Page: {{presentjvsum}}
+        </div>
+        <div class="col-md-9" style="margin-bottom: 0%;font-size: small;right:10px">
+   
+        <mat-paginator  
+                            (page)="handlePageEvent($event)"
+                            [length]="length_jvsum"
+                            [pageSize]="pageSize_jvsum"
+                            [showFirstLastButtons]="showFirstLastButtons"
+                            [pageSizeOptions]="pageSizeOptions"
+                            [pageIndex]="pageIndexjvsum"
+                            [hidePageSize]="true"
+                            aria-label="Select page">
+        </mat-paginator>
+        </div>
+    </div> 
+</div>
+  
+            </div>
+
+
+</div>
+<div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false"
+        id="showtrandetailpopup">
+        <div class="modal-dialog modal-xl " style="width: 90%;">
+            <div class="modal-content">
+                <div class="modal-header text-center" style="background: rgba(23, 204, 23, 0.288);">
+                    <h2 class="modal-title w-100 font-weight-bold" style="color:black ;height:2px">Transaction Details
+                    </h2>
+                    <button type="button" class="close" data-dismiss="modal" #closetranbutton aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 90%;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                    <thead class="table_header" style="text-align: left;">
+    
+    
+                                        <tr>
+    
+                                            <th>S.No</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Remarks</th>
+                                            <th>Employee Name</th>
+                                            <th>Approver Name</th>
+                                            <!-- <th>Approved By</th> -->                                        
+    
+    
+                                        </tr>
+                                    </thead>
+                                    <tr *ngFor="let dtl of transdata; index as i">
+                                        <td>{{i+1}}</td>
+                                        <td>{{dtl?.comments}}</td>
+                                        <td>{{dtl?.created_date }}</td>
+                                        <td>{{dtl?.remarks}}</td>
+                                        <td>{{dtl?.from_user_id?.name}}
+                                        <br>
+                                        <div *ngIf="dtl.from_user_id==-1; else deta"></div>
+                                            <ng-template #deta>
+                                                <a style="color: green;cursor: pointer;"  (click)="view(dtl)">View Details</a>
+                                            </ng-template>
+                                        </td>
+                                        <td>{{dtl?.to_user_id?.name}}
+                                            <br>
+                                            <div *ngIf="dtl.to_user_id==-1; else deta1"></div>
+                                                <ng-template #deta1>
+                                                    <a style="color: green;cursor: pointer;"  (click)="viewto(dtl)">View Details</a>
+                                                </ng-template>
+                                            </td>
+                                    </tr>
+                                </table>
+                            </div>
+                                <div class="modal-footer"  style="width:100%;">
+                                    <table  style="width: 100%;text-align: center;">
+                                        <tr>
+                                            <td><b>Employee Name</b>:&nbsp;{{this.name}}</td>
+                                            <td><b>Designation</b>: &nbsp;{{this.designation}}</td>
+                                            <td><b>Branch Name</b> : &nbsp;{{this.branch}}</td>
+                                         </tr>
+                                         <tr>
+                                             <td colspan="3" style="text-align: center;">
+                 
+                                                 <button type="button" class="btn btn-light" style="border-radius:7px;
+                                                 border-color: black; margin-bottom: 20px;
+                                                 background-color: white;" (click)="tranback()">Back</button>
+                 
+                                             </td>
+                                         </tr>
+                                    </table>
+                                </div>
+                        </div>
+    
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div >
+  <div *ngIf="appflag" class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+    id="showattachmentpopup">
+    <div class="modal-dialog modal-xl " style="width: 70%;">
+      <div class="modal-content">
+        <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+          <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">View Details</h2>
+          <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 80%;">
+          <div class="container">
+            <div class="row">
+              <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                
+                  <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                        <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">LCA Header</h2>
+                       
+                      </mat-panel-title>
+                  </mat-expansion-panel-header>
+                      <p style="color: #808080;"> LCA Raised date :<span
+                          style="color: black;margin-left: 22px;">{{listlcadetails?.lcatransactiondate}}
+                      </span></p><br>
+                      <p style="color: #808080;"> Branch :<span
+                          style="color: black;margin-left: 22px;">{{listlcadetails?.lcabranch?.code}}-{{listlcadetails?.lcabranch?.name}}
+                      </span></p><br>
+                      <p style="color: #808080;"> Employee :<span
+                          style="color: black;margin-left: 22px;">{{listlcadetails?.lcatransactiondate}}
+                      </span></p><br>
+                      <p style="color: #808080;"> Amount :<span
+                          style="color: black;margin-left: 22px;">{{listlcadetails?.lcaamount}}
+                      </span></p><br>
+                      <p style="color: #808080;"> Commotidy Name :<span
+                          style="color: black;margin-left: 22px;">{{listlcadetails?.commodity_name}}
+                      </span></p><br>
+                  </mat-expansion-panel>
+                  <br><br>
+                  <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                        <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">LCA Details Form</h2>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="table-responsive">
+                      <table class="table  table-bordered" style="width: 99%;margin-top: 10px;">
+                      <thead class="table_header" fixed-header style="background: #a7e4ab;">
+                          <tr>
+                              <th style="width: 80px;">S.No</th>
+                              <th style="text-align: center;width: 120px;">From Date</th>
+                              <th style="text-align: center;">To Date</th>
+                              <th style="text-align: center;">Amount</th>
+                              <th style="text-align: center;">Category</th>
+                              <th style="text-align: center;">Sub Category</th>
+                              <th style="text-align: center;">BS</th>
+                              <th style="text-align: center;">CC</th>
+                              <th style="text-align: center;">GL No</th>
+                              <th style="text-align: center;">Paymode</th>
+                              <th style="text-align: center;">Purpose</th>
+                              <th style="text-align: center;">Mode</th>
+                          </tr>
+                      </thead>
+                      <tbody> 
+                          <tr *ngFor="let cc of tableviewdata; index as i;">
+                              <td>
+                                  {{i+1}}
+                              </td>
+
+                              <td>
+                                  {{cc?.from_date | date:'dd-MMM-yyyy'}}
+                              </td>
+                              <td>
+                                  {{cc?.to_date | date:'dd-MMM-yyyy'}}
+                              </td>
+                              <td>
+                                  {{cc?.lcadamount}}
+                              </td>
+                              <td>
+                                  {{cc?.lcadcat_code?.name}}
+                              </td>
+                              <td>
+                                  {{cc?.lcadsubcat_code?.name}}
+                              </td>
+                              <td>
+                                  {{cc?.lcadbs_code?.name}}
+                              </td>
+                              <td>
+                                  {{cc?.lcadcc_code?.name}}
+                              </td>
+                              <td>
+                                  {{cc?.lcadglno}}
+                              </td>
+                              <td>
+                                  {{cc?.paymode}}
+                              </td>
+                              <td>
+                                  {{cc?.lcaddescription}}
+                              </td>
+                              <td>
+                                  {{cc?.lcadmodetype}}
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              <div *ngIf="!isdetpage"  style="margin-left: 40%;">No Records Found...</div>
+              
+              <div class="row" *ngIf="isdetpage" style="width: 85%;">
+                  
+                  <div class="col-sm-3" style="margin-bottom: 0%;font-size: small;text-align: right;margin-top: 18px;left: -16%;font-weight:bold">
+                      Page: {{presentpagedet}}
+                  </div>
+                  <div  class="col-sm-9" style="margin-bottom: 0%;font-size: small;text-align: right;left: 20%;">
+                         
+                      <mat-paginator  
+                                                  (page)="pophandlePageEvent($event)"
+                                                  [length]="length_det"
+                                                  [pageSize]="pageSize_det"
+                                                  [showFirstLastButtons]="lcashowFirstLastButtons"
+                                                  [pageSizeOptions]="lcapageSizeOptions"
+                                                  [pageIndex]="pageIndex"
+                                                  [hidePageSize]="true"
+                                                  aria-label="Select page">
+                                              </mat-paginator>
+                                             
+                  </div>
+              </div>
+                  
+              </div>
+                  </mat-expansion-panel>
+                  <br><br>
+                  <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                        <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">Beneficiary Details</h2>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="table-responsive">
+                      <table class="table  table-bordered" style="width: 99%;margin-top: 10px;">
+                      <thead class="table_header" fixed-header style="background: #a7e4ab;">
+                          <tr>
+                              <th style="width: 80px;">S.No</th>
+                              <th style="text-align: center;width: 120px;">Account No</th>
+                              <th style="text-align: center;">Bank Name</th>
+                              <th style="text-align: center;">Branch Name</th>
+                              <th style="text-align: center;">IFSC Code</th>
+                              <th style="text-align: center;">Beneficiary Name</th>
+                              <th style="text-align: center;">Amount</th>
+                          </tr>
+                      </thead>
+                      <tbody> 
+                          <tr *ngFor="let cc of beneficiarydata; index as i;">
+                              <td>
+                                  {{i+1}}
+                              </td>
+
+                              <td>
+                                  {{cc.account_number}}
+                              </td>
+                              <td>
+                                  {{cc?.bank_name}}
+                              </td>
+                              <td>
+                                  {{cc?.bankbranch?.bank?.name}}
+                              </td>
+                              <td>
+                                  {{cc?.bankbranch?.ifsccode}}
+                              </td>
+                              <td>
+                                  {{cc?.beneficiary_name}}
+                              </td>
+                              <td>
+                                  {{amt}}
+                              </td>
+                             
+                          </tr>
+                      </tbody>
+                  </table>
+              <div *ngIf="!isdetpage"  style="margin-left: 40%;">No Records Found...</div>
+              
+              <div class="row" *ngIf="isdetpage" style="width: 85%;">
+                  
+                  <div class="col-sm-3" style="margin-bottom: 0%;font-size: small;text-align: right;margin-top: 18px;left: -16%;font-weight:bold">
+                      Page: {{presentpagedet}}
+                  </div>
+                  <div  class="col-sm-9" style="margin-bottom: 0%;font-size: small;text-align: right;left: 20%;">
+                         
+                      <mat-paginator  
+                                                  (page)="pophandlePageEvent($event)"
+                                                  [length]="length_det"
+                                                  [pageSize]="pageSize_det"
+                                                  [showFirstLastButtons]="lcashowFirstLastButtons"
+                                                  [pageSizeOptions]="lcapageSizeOptions"
+                                                  [pageIndex]="pageIndex"
+                                                  [hidePageSize]="true"
+                                                  aria-label="Select page">
+                                              </mat-paginator>
+                                             
+                  </div>
+              </div>
+                  
+                     </div>
+                  </mat-expansion-panel>
+                  <br><br>
+                  <mat-expansion-panel>
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                        <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">File Details</h2>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="table-responsive">
+                      <table class="table  table-bordered" style="width: 99%;margin-top: 10px;">
+                      <thead class="table_header" fixed-header style="background: #a7e4ab;">
+                          <tr>
+                              <th style="width: 80px;">S.No</th>
+                              <th style="text-align: center;width: 120px;">File Name</th>
+                              <th>Download</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let cc of filedtailsdata;index as i">
+                              <td>{{i+1}}</td>
+                              <td>{{cc?.file_name}}</td>
+                              <td><mat-icon>download</mat-icon></td>
+                          </tr>
+                      </tbody>
+                      </table>
+                   </div>
+                  </mat-expansion-panel>
+                  <br><br>
+               
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div> -->
+
+
+

@@ -1,0 +1,1275 @@
+<div>
+    <div>
+        <form [formGroup]="GRNForm">
+            <div>
+                <h2 style="margin-left: 3%;">
+                    Goods Received Note Inward Form
+                </h2>
+                <table class="centered-table">
+                    <div>
+                        <tr>
+                            <td>
+                                <mat-form-field style="width: 200px;margin-left: 50px;">
+                                    <mat-label>PO No</mat-label>
+                                    <input matInput placeholder="PO No" formControlName="pono" autocomplete="off"
+                                        (keypress)="only_numalpha($event)" maxlength="">
+                                </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </td>
+
+                            <td>
+                                <mat-form-field style="width: 200px;margin-left: 50px;">
+                                    <mat-label>PR No</mat-label>
+                                    <input matInput placeholder="PR No" formControlName="prno" autocomplete="off"
+                                        (keypress)="only_numalpha($event)">
+                                </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 200px;margin-left: 50px;">
+                                    <mat-label>Branch Code</mat-label>
+                                    <input placeholder="Branch Code" matInput formControlName="branchcode" #branch
+                                        [matAutocomplete]="autoPrimary">
+                                    <mat-autocomplete #autoPrimary="matAutocomplete" [displayWith]="displayFns">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let branchcode of branchNameData" [value]="branchcode">
+                                                {{branchcode.codename}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary" type="submit"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"
+                                    (click)="GRNCreateEditForm()">
+                                    <!-- <i class="fa fa-search"
+                                        aria-hidden="true"></i> -->
+                                        <mat-icon>search</mat-icon>
+                                    </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <mat-form-field style="width: 200px;margin-left: 50px;">
+                                    <mat-label>Supplier Name</mat-label>
+                                    <input matInput placeholder="Supplier Name" [value]="inputSUPPLIERValue"
+                                        [readonly]="true" formControlName="suppliername" autocomplete="off">
+                                </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary" type="submit" data-toggle="modal"
+                                    data-target="#selectSupplier" style="border-radius:40px;margin-left: 40px;
+                        margin-top: auto;" color="primary">
+                        <!-- <i class="fa fa-long-arrow-up fa-lg" aria-hidden="true"></i> -->
+                         <mat-icon>arrow_upward</mat-icon>
+                                    Select Supplier</button>
+
+                                <button type="button" style="border-radius:40px;margin-left: 15px;"
+                                    class="btn btn-outline-primary" (click)="dataclearinwardform()">
+                                    Reset</button>
+                            </td>
+                        </tr>
+                    </div>
+                </table>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive" id="styleScroll" style="margin-top: 2%;width: 95%;margin-left: 5px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>PO No</th>
+                    <th>PR No</th>
+                    <!-- <th>Type</th> -->
+                    <th>Location</th>
+                    <th>Supplier Name</th>
+                    <th>Product Type</th>
+                    <th>Product Name</th>
+                    <!-- <th>Product Name</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Configuration</th> -->
+                    <!-- <th>Other Attributes</th> -->
+                    <th>Ordered Quantity</th>
+                    <!-- <th>UOM</th> -->
+                    <th>Already Received Quantity</th>
+                    <th>Remaining Quantity</th>
+                    <th>Received Quantity</th>
+                    <th>Add Asset Details</th>
+                     <th>Current Amount</th>
+                    <th>Ordered Amount</th>
+                    <th>Balance Amount</th>
+                   
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let grninward of grninwardList;index as i">
+                    <!-- <td>{{(this.presentpagegrninward - 1)*pageSizegrninward +i+1 }}</td>
+                    <td>{{grninward?.poheader_id?.no}}</td>
+                    <td>{{grninward?.prpoqty_id?.prccbs_id?.prdetails?.prheader_id?.no}}</td>
+                    <td>{{grninward?.poheader_id.type}}</td>
+                    <td>{{grninward?.prpoqty_id?.prccbs_id?.branch_id?.code}}--{{grninward?.prpoqty_id?.prccbs_id?.branch_id?.name}}
+                    </td>
+                    <td>{{grninward?.poheader_id?.supplierbranch_id?.code}}--{{grninward?.poheader_id?.supplierbranch_id?.name}}
+                    </td>
+                    <td>{{grninward?.product_type}}</td>
+                    <td>{{grninward?.podetails_id?.product_name}}</td>
+                    <td>{{grninward?.podetails_id?.item_name}}</td>
+                    <td>{{grninward?.podetails_id?.model_name}}</td>
+                    <td>{{grninward?.podetails_id?.specification}}</td>
+                     <td style="text-align: center;color:green;">
+                        <i class="fa fa-file" aria-hidden="true" data-toggle="modal" data-target="#fileview" (click)="otheratributsview(grninward)"></i>
+                    </td>
+                    <td>{{grninward?.qty}}</td>
+                    <td>{{grninward?.podetails_id?.uom}}</td>
+                    <td>{{grninward?.received_quantity}}</td>
+                    <td>{{grninward?.qty - grninward?.received_quantity}}</td> -->
+                    <td>{{(this.presentpagegrninward - 1)*pageSizegrninward +i+1 }}</td>
+                    <td>{{grninward?.poheader_no}}</td>
+                    <td>{{grninward?.prheader_no}}</td>
+                    <!-- <td>{{grninward?.type}}</td> -->
+                    <td>{{grninward?.branch_id?.code}}--{{grninward?.branch_id?.name}}
+                    </td>
+                    <td>{{grninward?.supplierbranch_id?.code}}--{{grninward?.supplierbranch_id?.name}}
+                    </td>
+                    <td>{{grninward?.pty_id?.name}}</td>
+                    <td data-toggle="modal" data-target="#productview" style="cursor: pointer; color: blue;" (click)="ViewProduct(grninward)">{{grninward?.product_name}}</td>
+                    <!-- <td>{{grninward?.product_name}}</td> -->
+                    <!-- <td>{{grninward?.item_name}}</td> -->
+                    <!-- <td>{{grninward?.model_name}}</td> -->
+                    <!-- <td>{{grninward?.specification}}</td> -->
+                    <!-- <td style="text-align: center;color:green;">
+                        <i class="fa fa-file" aria-hidden="true" data-toggle="modal" data-target="#attributes" (click)="otheratributsview(grninward, i, '')"></i>
+                    </td> -->
+
+                    <td>{{grninward?.qty}}</td>
+                    <!-- <td>{{grninward?.uom}}</td> -->
+                    <td>{{grninward?.received_quantity}}</td>
+
+                                       
+
+                    <!-- <td>{{grninward?.qty - grninward?.received_quantity}}</td> -->
+                     <td>{{ (grninward?.qty - grninward?.received_quantity) | number:'1.2-2' }}</td>
+
+
+                     <!-- // Received Quantity	 here -->
+
+
+                    <td *ngIf="!isamountbased && grninward?.is_qty_based != 0" >
+                        <mat-form-field appearance="legacy" class="qty">
+                          <mat-label>Quantity</mat-label>
+                          <input
+                            matInput
+                            type="number"
+                            placeholder="Quantity"
+                            [formControl]="rcdqnty?.controls[i]"   (input)="qntybased($event,i,grninward)"  [min]="2" />
+                        </mat-form-field>
+
+                         <!-- <mat-radio-group *ngIf="grninward?.qty == 1" [(ngModel)]="grninward.selectedToggle" [ngModelOptions]="{ standalone: true }" (change)="onToggleChange($event,i)"> -->
+                                   <!-- <mat-radio-button value="1" style="margin-right: 40px;"  [disabled]="isqntybased == true || grninward?.is_qty_based == 1">Value</mat-radio-button> -->
+                                    <!-- <mat-radio-button value="1" style="margin-right: 40px;"  [disabled]="isqntybased == true">Value</mat-radio-button> -->
+
+                        <!-- </mat-radio-group> -->
+
+
+                        <mat-checkbox *ngIf="grninward?.qty == 1"  [(ngModel)]="grninward.selectedToggle"
+                          [ngModelOptions]="{ standalone: true }" [disabled]="isqntybased == true"
+                           (change)="onToggleChange($event, i)"> Value  </mat-checkbox>
+
+                    </td>
+<!-- ************************NOTE************ -->
+                    <!-- //if is_qty_based ==1 means its for freah datas and the for PO raised with qnty based also -->
+                     <!-- //when value based GRN is done for that PO then is_qty_based will be 0 -->
+
+                    <td *ngIf="isamountbased || grninward?.is_qty_based == 0" >
+                        <mat-form-field appearance="legacy" class="qty">
+                          <mat-label>Quantity</mat-label>
+                          <!-- <input
+                            matInput
+                            type="number"
+                            placeholder="Quantity"
+                            [formControl]="rcdqnty?.controls[i]"   [value]="1/  ((crntamt?.controls[i]?.value / grninward?.amount)*100 )" 
+                            (change)="onQtyChange(i, rcdqnty?.controls[i]?.value)" readonly /> -->
+                            <input
+                            matInput
+                            type="number"
+                            placeholder="Quantity"
+                            [formControl]="rcdqnty?.controls[i]"   
+                            (change)="onQtyChange(i, rcdqnty?.controls[i]?.value,grninward)" readonly />
+
+                        </mat-form-field>
+
+                        <!-- <mat-radio-group *ngIf="grninward?.qty == 1" [(ngModel)]="grninward.selectedToggle" [ngModelOptions]="{ standalone: true }" (change)="onToggleChange($event,i)">
+                                   <mat-radio-button value="1" style="margin-right: 40px;" >Value</mat-radio-button>
+                        </mat-radio-group> -->
+
+                        <mat-checkbox *ngIf="grninward?.qty == 1"  [(ngModel)]="grninward.selectedToggle" [ngModelOptions]="{ standalone: true }" 
+                           (change)="onToggleChange($event, i)" [disabled]="grninward.fieldtext"> Value  </mat-checkbox>
+
+                    </td>
+
+
+                        
+
+                     <!-- <td  *ngIf="!isamountbased">
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+
+                               <input type="number" [value]="getInputValue(i, grninward)" (input)="receivedqtychange($event, i, grninward)"
+                              #quantity class="inputStyle" [disabled]="grninward.fieldtext"/>
+
+
+                            <mat-radio-group *ngIf="grninward?.qty == 1" [(ngModel)]="grninward.selectedToggle" [ngModelOptions]="{ standalone: true }" (change)="onToggleChange($event)">
+                                   <mat-radio-button value="1" style="margin-right: 40px;" >Value</mat-radio-button>
+                             </mat-radio-group>
+
+                        </div>
+                     </td> -->
+
+
+                     <!-- <td *ngIf="isamountbased" >
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+
+                               <input type="number" [value]="getInputValue(i, grninward)" (input)="receivedqtychange($event, i, grninward)"
+                              #quantity class="inputStyle" [disabled]="grninward.fieldtext"/>
+
+
+                            <mat-radio-group *ngIf="grninward?.qty == 1" [(ngModel)]="grninward.selectedToggle" [ngModelOptions]="{ standalone: true }" (change)="onToggleChange($event)">
+                                   <mat-radio-button value="1" style="margin-right: 40px;" >Value</mat-radio-button>
+                             </mat-radio-group>
+
+                        </div>
+                     </td> -->
+
+
+
+
+
+
+
+                    <td>
+                        <div *ngIf="grninward.is_asset == 1 ; else lock" data-toggle="modal"
+                            data-target="#assetdataModal">
+                            <!-- <button
+                                (click)="passgrninwardid(grninward?.poheader_id, grninward?.podetails_id, grninward, quantity?.value, templatepopup )"
+                                type="button" class="btn btn-outline-success" [disabled]=grninward.fieldtext>
+                                
+                                    <mat-icon>add</mat-icon>
+                            </button> -->
+                            <button *ngIf="grninward?.asset_complete != true"
+                                (click)="passgrninwardid(grninward?.poheader_id, grninward?.podetails_id, grninward, rcdqnty?.controls[i]?.value, templatepopup )"
+                                type="button" class="btn btn-outline-success" [disabled]=grninward.fieldtext>
+                                
+                                    <mat-icon>add</mat-icon>
+                            </button>
+
+                             <button *ngIf="grninward?.asset_complete == true"
+                                (click)="passgrninwardpatch(grninward?.poheader_id, grninward?.podetails_id, grninward, rcdqnty?.controls[i]?.value, assetpopup)"
+                                type="button" class="btn btn-outline-success" [disabled]=grninward.fieldtext>
+                                
+                                    <mat-icon>add</mat-icon>
+                            </button>
+
+                             <!-- <button
+                                (click)="passgrninwardid( 
+                                    grninward?.poheader_id, grninward?.podetails_id, grninward, 
+                                (!isreceivedqtychange || updateddetails?.length === 0)? (grninward.qty - grninward.received_quantity)
+                             : updateddetails.at(i).get('quantity')?.value, templatepopup )"
+                                type="button" class="btn btn-outline-success" [disabled]=grninward.fieldtext>
+                                    <mat-icon>add</mat-icon>
+                            </button> -->
+
+
+                             <!-- <button
+                                (click)="passgrninwardid( 
+                                    grninward?.poheader_id, grninward?.podetails_id, grninward, 
+                                (!isreceivedqtychange)? (grninward?.qty - grninward?.received_quantity)
+                             : grninward?._tempQty, templatepopup )"
+                                type="button" class="btn btn-outline-success" [disabled]=grninward.fieldtext>
+                                    <mat-icon>add</mat-icon>
+                            </button> -->
+
+
+
+
+                        </div>
+                        <!-- <div *ngIf="assetpopup"> -->
+                        <ng-template #templatepopup>
+
+                            <div>
+                                <div>
+                                    <button type="button" class="close" (click)="closedialog()" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <h2>Number of Asset Details needed : {{TotalAssetRequired}}</h2>
+                                <h2>Selected Asset count: {{SelectedAsset}}</h2>
+                                 <!-- <button mat-raised-button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2" [disabled]="checkboxclicked"
+                               style="border-radius: 40px;height: 40px;margin-left:3%;margin-top:10px">Bulk Upload</button> -->
+
+                               
+                               <button *ngIf="grninward?.qty != 1" mat-raised-button type="button" class="btn btn-primary" (click)="openSecondPopup()" [disabled]="checkboxclicked"
+                               style="border-radius: 40px;height: 40px;margin-left:3%;margin-top:10px">Bulk Upload</button>
+
+                                <div class="table-responsive" style="width: 100%;margin-top:2%;"
+                                    class="tablescroll"> 
+                                    <form [formGroup]="GrnAssestForm">
+
+                                        <table class="table table-bordered" fixed-header
+                                            style="margin-left: 10px;width: 95%">
+                                            <thead class="table_header">
+                                                <tr>
+                                                    <th>S.No</th>
+                                                    <!-- <th>Asset Serial No</th> -->
+                                                    <!-- <th>Manufacturer</th> -->
+                                                    <!-- <th>Warranty Start Date</th> -->
+                                                    <!-- <th>Warranty End Date</th> -->
+                                                    <!-- <th *ngIf="ShowHideAssertInstallation">Installation Date </th> -->
+                                                    <th>Asset IDS</th>
+                                                    <th>Other Attributes</th>
+                                                    <th>Select</th>
+                                               
+
+                                                </tr>
+                                            </thead>
+                                            <tbody formArrayName="assetitems"
+                                                *ngFor="let grndetails of GrnAssestForm.get('assetitems').controls; index as index">
+                                                <tr [formGroupName]="index">
+                                                    <!-- <tr [formGroupName]="fieldGlobalIndex(i)"> -->
+                                                    <!-- <td> {{((popup-1)*itemsPerPage)+i+1}} </td> -->
+                                                    <td> {{index+1}} </td>
+                                                    <!-- <td>
+                                                        <mat-form-field style="width: 170px;">
+                                                            <input matInput placeholder="Asset Serial No"
+                                                                formControlName="serialno"
+                                                                autocomplete="off">
+                                                        </mat-form-field>
+                                                    </td> -->
+                                                   
+                                                    <!-- <td>
+                                                        <mat-form-field style="width: 170px;">
+                                                            <input matInput placeholder="Asset Manufacturer"
+                                                                formControlName="manufacturer"
+                                                                autocomplete="off">
+                                                        </mat-form-field>
+                                                    </td> -->
+                                                    <!-- <td>
+                                                        <mat-form-field style="width:170px;">
+                                                            <input matInput readonly [matDatepicker]="picker1"
+                                                                placeholder="Warranty Start Date"
+                                                                formControlName="warranty_from_date">
+                                                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                                            </mat-datepicker-toggle>
+                                                            <mat-datepicker #picker1></mat-datepicker>
+                                                        </mat-form-field>
+                                                      
+                                                    </td> -->
+                                                      <!-- <mat-form-field appearance="outline" >
+
+                                                            <input matInput readonly
+                                                            formControlName="warranty_from_date" [matDatepicker]="picker1"
+                                                            placeholder="Warranty Start Date">
+                                                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                                            </mat-datepicker-toggle>
+                                                            <mat-datepicker #picker1>
+                                                            </mat-datepicker>
+                                                          </mat-form-field> -->
+                                                    <!-- <td>
+                                                        <mat-form-field style="width:170px;">
+                                                            <input matInput readonly [matDatepicker]="picker2"
+                                                                placeholder="Warranty End Date"
+                                                                formControlName="warranty_to_date">
+                                                            <mat-datepicker-toggle matSuffix [for]="picker2">
+                                                            </mat-datepicker-toggle>
+                                                            <mat-datepicker #picker2></mat-datepicker>
+                                                        </mat-form-field>
+                                                    </td> -->
+                                                      <!-- <td *ngIf="ShowHideAssertInstallation">
+                                                        <mat-form-field style="width:170px;">
+                                                            <input matInput readonly [matDatepicker]="picker3"
+                                                                placeholder="Installation Date"
+                                                                formControlName="installation_date">
+                                                            <mat-datepicker-toggle matSuffix [for]="picker3">
+                                                            </mat-datepicker-toggle>
+                                                            <mat-datepicker #picker3></mat-datepicker>
+                                                        </mat-form-field>
+                                                    </td> -->
+                                                    <td>
+                                                        <mat-form-field style="width: 200px;">
+                                                            <input matInput formControlName="hostassetid" readonly
+                                                                autocomplete="off">
+                                                        </mat-form-field>
+                                                    </td> 
+                                                    <td style="text-align: center;color:green;">
+                                                        <!-- <i class="fa fa-file" aria-hidden="true" (click)="otheratributsview(grninward, i, other_popup)"></i> -->
+                                                         <mat-icon  aria-hidden="true" (click)="otheratributsview(grninward, i, other_popup,grndetails)">file_copy</mat-icon>
+                                                    </td>
+                                                    <td>
+
+                                                        <input type="checkbox" class="checkboxsize"
+                                                            [disabled]="fieldCheckboxAsset[index] || bulkclicked"
+                                                            (click)="assetArrayFormation(grndetails, grninward, index, $event)" /> 
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+
+                                        </table>
+                                        <div class="row"  style="font-size: small;margin-bottom: 3%;">
+
+                                            <div  class="col">
+                                                <!-- <button style="border-radius: 40px;margin-left: 10px;margin-bottom: 100px;"
+                                                class="btn btn-outline-primary"
+                                                (click)="getData(grninward, i, quantity?.value, $event, 'popup')"
+                                                data-dismiss="modal">Save</button> -->
+                                                <button style="border-radius: 40px;margin-left: 10px;margin-bottom: 100px;"
+                                                class="btn btn-outline-primary"
+                                                (click)="getData(grninward, i, rcdqnty?.controls[i]?.value,crntamt?.controls[i]?.value, $event, 'popup')"
+                                                data-dismiss="modal">Save</button>
+
+
+
+                                                
+                                             <!-- <button style="border-radius: 40px;margin-left: 10px;margin-bottom: 100px;"
+                                                class="btn btn-outline-primary"
+                                                (click)="getData(grninward, i, 
+                                                (!isreceivedqtychange)? (grninward.qty - grninward.received_quantity)
+                                                 : grninward._tempQty, $event, 'popup')"
+                                                data-dismiss="modal">Save
+                                            </button>
+                                                 -->
+                                            </div>
+                                            <div class="col pl-5" *ngIf="showLoadMore">
+                                                
+                                                <button type="button" style="border-radius:40px;"
+                                                class="btn btn-outline-primary" (click)="nextassetClick()">
+                                                <span class="material-icons">
+                                                    autorenew
+                                                </span>Load More
+                                            </button>
+                                            </div>
+
+
+                                        </div>
+                                        <ng-template #other_popup>
+                                            <div class="modal-header">
+                                                <h2 class="modal-title">Other Attributes</h2>
+                                                <button #closebtn2 type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true" (click)="closeInnerDialog()">&times;</span>
+                                                </button>
+                                            </div>
+                                
+                                            <!-- Modal Body -->
+                                            <div class="modal-body">
+                                                <h4 class="font-weight-bold">Product Name: {{prod_name}}</h4>
+                                
+                                                <div class="container">
+                                                    <mat-card class="custom-card mat-elevation-z4">
+                                                        <mat-card-header>
+                                                          <mat-card-title>Attributes</mat-card-title>
+                                                        </mat-card-header>
+                                                        <mat-card-content>
+                                                           
+                                                              
+                                                            <form [formGroup]="myForm">
+                                                                <div formArrayName="attributes" style="max-height: 400px; overflow-y: auto;">
+                                                                    <div class="row align-items-center" *ngFor="let dada of otherattributespatching; let i = index">
+                                                                      <div class="col text-right">
+                                                                        <div class="label-box label-container">
+                                                                          <!-- {{ dada.specification }} -->
+                                                                          <mat-chip-list class="chip-list">
+                                                                            <mat-chip>{{ dada?.specification }}</mat-chip>
+                                                                            </mat-chip-list>
+                                                                            <!-- <mat-form-field> -->
+                                                                        </div>
+                                                                      </div>
+                                                                      
+                                                                      <div class="col-4" style="margin-right: 120px;">
+
+                                                                        <mat-form-field>
+          
+                                                                            <!-- <mat-select  [formControlName]="i"  *ngIf="dada.configuration?.length > 0" (selectionChange)="getattributeview($event.value, i)">
+                                                                                <mat-option *ngFor="let suppliername of dada.configuration" [value]="suppliername">
+                                                                                  {{ suppliername.data_value }}
+                                                                                </mat-option>
+                                                                              </mat-select> -->
+                                                                              <mat-select 
+                                                                              [formControlName]="i"  
+                                                                              *ngIf="dada.configuration?.length > 0" 
+                                                                              (selectionChange)="getattributeview($event.value, i)"
+                                                                            >
+                                                                              <mat-option 
+                                                                                *ngFor="let option of dada.configuration" 
+                                                                                [value]="option.data_value"
+                                                                              >
+                                                                                {{ option.data_value }}
+                                                                              </mat-option>
+                                                                            </mat-select>
+                                                                            
+
+                                                                            <!-- Show mat-select if configuration exists -->
+                                                                            <!-- <mat-select *ngIf="dada.configuration?.length > 0" 
+                                                                                        [formControlName]="i" 
+                                                                                        (selectionChange)="getattributeview($event.value, i)">
+                                                                                        <mat-option *ngFor="let conf of dada.configuration" [value]="conf">
+                                                                                            {{ conf.data_value }}
+                                                                                          </mat-option>
+                                                                                          
+                                                                            </mat-select> -->
+                                                                            
+                                                                            <!-- Show input if configuration is empty -->
+                                                                            <input *ngIf="!dada.configuration || dada.configuration.length === 0"
+                                                                                   matInput 
+                                                                                   [formControlName]="i" 
+                                                                                   (input)="getattributeview($event.target.value, i)">
+                                                                            
+                                                                          </mat-form-field>
+                                                                      </div>
+                                                                    </div>
+                                                                  </div>
+                                                                       
+                                                                      
+                                                                  <div class="modal-footer">
+                                                                    <button  type="button" class="btn btn-sm btn-outline-primary" (click)="submitattributeForm(grndata,grndetailsdata)">Submit</button>
+                                                                </div>
+                                                              </form>
+                                                        </mat-card-content>
+                                                      </mat-card>
+                                                    </div>
+                                                </div>
+                                           
+                                        </ng-template>
+                                        <!-- <div class="col-sm-12"
+                                            style="font-size: small;text-align: right;margin-bottom: 5%;">
+                                        
+
+                                            
+                                        </div>
+                                        <div mat-dialog-actions>
+                                            
+                                        </div> --> 
+                                       
+                                    </form>
+                                </div>
+
+                            </div>
+
+                        </ng-template>
+
+
+                        <!-- </div> -->
+                        <ng-template #lock>- </ng-template>
+
+
+
+                    </td>
+
+    
+
+                    <ng-template #assetpopup>
+  <div style="max-height: 80vh; overflow-y: auto; padding: 20px; background: #fff;">
+    <!-- Close Button -->
+    <div>
+      <button type="button" class="close" (click)="closedialog()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <!-- Headings -->
+    <h2>Number of Asset Details needed: {{ TotalAssetRequired }}</h2>
+    <h2>Selected Asset count: {{ SelectedAsset }}</h2>
+
+    <!-- Scrollable Table Container -->
+    <div class="table-responsive tablescroll"
+         style="width: 100%; max-height: 300px; overflow-y: auto; margin-top: 2%;">
+
+      <table class="table table-bordered" fixed-header style="margin-left: 10px; width: 95%;">
+        <thead class="table_header">
+          <tr>
+            <th>S.No</th>
+            <th>Asset IDS</th>
+            <th>Other Attribute</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let asset of newassetdetails; index as i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ asset?.assetid }}</td>
+            <td>
+              <ul *ngIf="asset?.other_attribute">
+                <li *ngFor="let attr of parseAttributes(asset.other_attribute)">
+                  <ng-container *ngFor="let key of objectKeys(attr)">
+                    {{ key }}: {{ attr[key] }}
+                  </ng-container>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- OK Button -->
+    <div style="text-align: right; margin-top: 15px;">
+      <button
+        style="border-radius: 40px; margin-left: 10px;"
+        class="btn btn-outline-primary"
+        (click)="getasseetData(grninward, i, rcdqnty?.controls[i]?.value, crntamt?.controls[i]?.value, $event, 'popup')"
+        data-dismiss="modal">
+        OK
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+                                        
+                                        
+                    <!-- // current amount calculation -->
+
+
+                    <!-- <td *ngIf="!isamountbased">
+                        <mat-form-field appearance="standard" class="qty">
+                          <mat-label>current 
+                          </mat-label>
+                          <input
+                            matInput
+                            type="number"
+                            placeholder="Current amount"
+                            [formControl]="crntamt?.controls[i]" 
+                            [value]="(rcdqnty?.controls[i]?.value * grninward.unitprice) "  readonly/>
+                        </mat-form-field>
+                    </td> -->
+
+
+                    
+                    <!-- <td *ngIf="!isamountbased">
+                        <mat-form-field appearance="standard" class="qty">
+                          <mat-label>current amount</mat-label>
+                          <input
+                            matInput
+                            type="number"
+                            placeholder="Current amount"
+                            [formControl]="crntamt?.controls[i]"   readonly/>
+                        </mat-form-field>
+                    </td>
+
+                    <td *ngIf="isamountbased">
+                        <mat-form-field appearance="standard" class="qty">
+                          <mat-label>current amount</mat-label>
+                          <input
+                            matInput
+                            type="number"
+                            placeholder="Current amount"
+                            [formControl]="crntamt?.controls[i]" 
+                             (input)="crntamtchange(i,grninward)"
+                            [readonly]="!grninward.isonamountbased"  />
+                        </mat-form-field>
+                    </td> -->
+
+                    
+<td class="resize-table-inp">
+  <mat-form-field appearance="standard" class="qty">
+    <mat-label>Current amount</mat-label>
+
+    <!-- Readonly -->
+     <!-- isamountbased => this key to find whether amount based module or not -->
+     <!-- is_qty_based = 0 means value based akready done for that, po again dont allow for qnty based -->
+      <!-- initally for fresh PO is_qnty_based = 1 for all pos -->
+       <!-- if value based GRN raised only FE will pass is_qnty_based = 0 -->
+   <input       
+   *ngIf="!isamountbased || !grninward.isonamountbased "
+
+  matInput
+  type="text"
+  [value]="crntamt.at(i).value?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })"
+   (input)="formatIndianNumberInput($event)"
+  (keypress)="omit_special_num($event)"
+  [readonly]="(!isamountbased || !grninward.isonamountbased)"
+/>
+
+
+    <!-- Editable -->
+    <!-- <input
+      *ngIf="isamountbased && grninward.isonamountbased"
+      matInput
+      type="text"
+      [value]="crntamt.at(i).value?.toLocaleString('en-IN'),"
+      (input)="crntamtchange($event, i,grninward)"       (keypress)="omit_special_num($event)"
+
+      (blur)="crntamtBlur($event, i)"
+    /> -->
+    <!-- <input
+      *ngIf="isamountbased && grninward.isonamountbased"
+      matInput
+      type="text"
+[value]="displayAmount[i]| amountPipeCustom"     
+ (input)="crntamtchange($event, i,grninward)"  (keypress)="omit_special_num($event)"
+
+      (blur)="crntamtBlur($event, i)" /> -->
+         <input
+      *ngIf="isamountbased && grninward.isonamountbased"
+      matInput
+      type="text"
+[value]="formatDisplayAmount(displayAmount[i])"  
+ (input)="crntamtchange($event, i,grninward)"  (keypress)="omit_special_num($event)" />
+  
+  </mat-form-field>
+</td>
+
+
+
+
+
+                    
+
+
+                    
+
+                    <!-- <td> -->
+
+                        <!-- // on changimg of rcd qnty & adding assert details -->
+
+                        <!-- <span *ngIf="isreceivedqtychange && this.updateddetails?.length == 0 "> -->
+
+                                <!-- <input *ngIf="grninward.selectedToggle ==1" type="number" [value]="((!isreceivedqtychange)? (grninward.qty - grninward.received_quantity):grninward._tempQty) * grninward?.unitprice" 
+                            class="inputStyle" (change)="currentcheck($event,i)"      [disabled]=grninward.fieldtext /> -->
+
+                           <!-- <input *ngIf="grninward.selectedToggle !=1" type="number" [value]="grninward?._tempQty * grninward?.unitprice" 
+                           readonly/> 
+                           </span> -->
+
+
+                        <!-- // afetr enter assert details and save & checkbox checked -->
+
+                        <!-- <span *ngIf="!isreceivedqtychange && this.updateddetails?.length > 0 "> -->
+
+
+                        <!-- <input *ngIf="grninward.selectedToggle ==1" type="number" [value]="grninward?.qty * grninward?.unitprice" 
+                            class="inputStyle" (change)="currentcheck($event,i)"      [disabled]=grninward.fieldtext /> -->
+
+                        <!-- <input *ngIf="grninward.selectedToggle !=1" type="number" [value]=" this.updateddetails?.at(i)?.get('quantity')?.value * grninward?.unitprice" 
+                           readonly/> 
+                        </span> -->
+                        
+                          <!-- //first loading of data from BE -->
+
+                        <!-- <span *ngIf="!isreceivedqtychange && this.updateddetails?.length == 0 "> -->
+
+                            <!-- <input *ngIf="grninward.selectedToggle ==1" type="number" [value]="grninward?.qty * grninward?.unitprice" 
+                            class="inputStyle" (change)="currentcheck($event,i)"      [disabled]=grninward.fieldtext /> -->
+
+                        <!-- <input *ngIf="grninward.selectedToggle !=1" type="number" [value]="grninward?.qty * grninward?.unitprice" 
+                           readonly/> 
+                        </span> -->
+
+                        <!-- /////////// -->
+
+                           <!-- <input *ngIf="grninward.selectedToggle ==1" type="number" [value]="grninward?.qty - grninward?.received_quantity" 
+                            class="inputStyle" [disabled]=grninward.fieldtext /> -->
+
+
+
+
+                        <!-- <input *ngIf="grninward.selectedToggle !=1" type="number" [value]="quantity?.value * grninward?.unitprice" 
+                        readonly/> 
+
+                           <input *ngIf="grninward.selectedToggle ==1" type="number" [value]="quantity?.value * grninward?.unitprice" 
+                            class="inputStyle" [disabled]=grninward.fieldtext /> -->
+
+                        
+                    <!-- </td> -->
+                    <!-- // ordered amount calculation -->
+                    <!-- <td>     <input  type="number" [value]="grninward?.amount"  #orderamt   readonly/>     </td>   -->
+                     <td>{{(grninward?.amount | number:'1.2-2')}}</td>
+
+                    <!-- // balance amount calculation -->
+
+                    <!-- //as we r not passing value to BE td tag is enough -->
+                    <!-- <td>     <input  type="number" [value]="grninward?.amount - ((grninward?.qty - rcdqnty?.controls[i]?.value) * grninward?.unitprice)" 
+                         #balamt   readonly/>     </td>   -->
+                  <!-- <td>     {{ (( +grninward?.qty - +grninward?.received_quantity) * grninward?.unitprice)}}   </td>  -->
+<td *ngIf="(!isamountbased || !grninward.isonamountbased) && grninward?.is_qty_based != 0">
+  {{ ((+grninward?.qty - +grninward?.received_quantity) * grninward?.unitprice) | number:'1.2-2' }}
+</td>
+
+<td *ngIf="(isamountbased && grninward.isonamountbased) || grninward?.is_qty_based == 0">
+  {{ (+grninward?.amount) - (+grninward?.received_amount) | number:'1.2-2' }}
+</td>
+                  <!-- po amt --{{grninward?.amount}} -- 
+                total qnty--  {{grninward?.qty}}  --  
+                 rcd qnty-- {{grninward?.received_quantity}} -- 
+                 unit patchunitprice-- {{grninward?.unitprice}} -- 
+                 remaining qnty -- {{grninward?.qty - +grninward?.received_quantity}} --
+                 current amount -- {{(( +grninward?.qty - +grninward?.received_quantity) * grninward?.unitprice)}}
+
+                  <script> -->
+<!-- //   // Simulated value from backend
+//   const valueFromBackend = grninward?.qty; // this could also be a string, object, etc.
+//     const valueFromBackend1 = grninward?.received_quantity; // this could also be a string, object, etc.
+
+
+//   console.log('total quty',typeof valueFromBackend); // "number"
+//   console.log('rcd quty',typeof valueFromBackend1); // "number"
+
+// </script> -->
+
+
+                    <!-- <td> {{  grninward?.amount - ((grninward?.qty - rcdqnty?.controls[i]?.value) * grninward?.unitprice)}}</td>    -->
+                            
+
+                    <td>
+                        <!-- <input type="checkbox" class="checkboxsize"
+                            (click)="getData(grninward, i, quantity?.value, $event, 'checkbox')"
+                            [disabled]="grninward.disabled" [checked]="grninward.CheckboxenableDiableArrays == true" /> -->
+
+                            <!-- <input type="checkbox" class="checkboxsize"
+                            (click)="getData(grninward, i, rcdqnty?.controls[i]?.value, $event, 'checkbox',crntamt?.controls[i]?.value,orderamt?.value,balamt?.value)"
+                            [disabled]="grninward.disabled" [checked]="grninward.CheckboxenableDiableArrays == true" /> -->
+                             <input type="checkbox" class="checkboxsize"
+                            (click)="getData(grninward, i, rcdqnty?.controls[i]?.value,crntamt?.controls[i]?.value, $event, 'checkbox')"
+                            [disabled]="grninward.disabled" [checked]="grninward.CheckboxenableDiableArrays == true" />
+
+                            <!-- <input type="checkbox" class="checkboxsize"
+                            (click)="getData(grninward, i, (!isreceivedqtychange)? (grninward.qty - grninward.received_quantity)
+                            : grninward._tempQty, $event, 'checkbox')"
+                             [disabled]="grninward.disabled" [checked]="grninward.CheckboxenableDiableArrays == true" /> -->
+
+                    </td>
+                </tr>
+            </tbody>
+
+
+
+
+        </table>
+        <!-- <div *ngIf="grninwardList ?.length == 0" style="text-align: center;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+    <div class="row" *ngIf="grninwardpage">
+        <div class="col-sm-10" style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="has_previousgrninward === false" color="primary"
+                (click)="previousClickgrninward()">
+                <mat-icon>arrow_back
+                </mat-icon>
+            </button>
+            {{presentpagegrninward}}
+            <button mat-icon-button [disabled]="has_nextgrninward === false" color="primary" (click)="nextClickgrninward()">
+                <mat-icon>arrow_forward
+                </mat-icon>
+            </button>
+        </div>
+    </div> -->
+    </div>
+
+
+    <div *ngIf="grninwardList ?.length == 0; else paginationgrn" colspan="10" class="NodataAlign">No Records Found...
+    </div>
+
+
+
+    <ng-template #paginationgrn>
+
+        <div class="row mb-4">
+            <div class="col-md-5">
+                <h3>Total Count : {{total_count}}</h3>
+
+            </div>
+            <div class="col-md-6 text-right cursor">
+                <button mat-icon-button [disabled]="has_previousgrninward === false" color="primary"
+                (click)="previousClickgrninward()">
+                <mat-icon>arrow_back
+                </mat-icon>
+            </button>
+            {{presentpagegrninward}}
+            <button mat-icon-button [disabled]="has_nextgrninward === false" color="primary"
+                (click)="nextClickgrninward()">
+                <mat-icon>arrow_forward
+                </mat-icon>
+            </button>
+        </div>
+        </div>
+
+    </ng-template>
+
+
+    <form [formGroup]="GRNForm2" (ngSubmit)="GRNCreateEditForm2()">
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;">
+                        <mat-label>DC Number</mat-label>
+                        <input matInput placeholder="DC Number" formControlName="dcnote" autocomplete="off">
+                    </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      <!-- (keypress)="only_numalpha($event)" -->
+                        <!-- (ngModelChange)="inputDCValue = $event.toUpperCase()" -->
+                </td>
+
+                <td>
+                    <mat-form-field style="width: 200px;margin-left: 50px;">
+                        <mat-label>Invoice Number</mat-label>
+                        <input matInput placeholder="Invoice Number" formControlName="invoiceno" autocomplete="off"
+                            (ngModelChange)="inputINVValue = $event.toUpperCase()"
+                            required>
+                    </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     <!-- (keypress)="only_numalpha($event)" -->
+                </td>
+                <td>
+                    <mat-form-field style="width:200px;margin-left: 50px;">
+                        <mat-label>Received Date</mat-label>
+                        <input matInput readonly [matDatepicker]="picker1" placeholder="Received Date"
+                            formControlName="date" [max]="todate" [min]="fromdate">
+                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <mat-form-field style="width: 200px;margin-left: 50px;">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput placeholder="Remarks" formControlName="remarks" autocomplete="off" required>
+                    </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                    <!-- <button type="button" mat-raised-button (click)="fileInput.click()"> +Choose File</button> -->
+                    <input type="file" #fileInput name="image" formControlName="fileData" multiple
+                        (change)="fileProgress($event)" />
+                                        <div *ngFor="let files of fileDatas; let index = index">
+                                           <span style="color: green;"> {{index+1}}.{{files?.name}} </span><span><mat-icon (click)="RemoveFileData(files)" class="CursorPointer">delete</mat-icon></span>
+                                        </div>
+                    <!-- <span style="color: green;">{{fileName}}</span> -->
+                </td>
+            </tr>
+        </table>
+        <div style="margin-bottom: 5%; margin-left: 50px;">
+            <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary"
+                [disabled]="issubmit">Submit</button>
+            <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary"
+                style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" 
+    id="selectSupplier">
+    <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">
+                    Find Supplier</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <br>
+            <div class="modal-body">
+                <form [formGroup]="SelectSupplierForm" (ngSubmit)="SelectSuppliersearch()">
+                    <table style="margin-left: 20px;">
+        
+                            <tr>
+                                <td>
+                                    <mat-form-field style="width: 200px;">
+                                        <mat-label>Supplier GST Number</mat-label>
+                                        <input matInput placeholder="GST No" formControlName="gstno" autocomplete="off"
+                                            (keypress)="only_numalpha($event)" maxlength="">
+                                    </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </td>
+
+                                <td>
+                                    <mat-form-field style="width: 200px;">
+                                        <mat-label>Supplier Code</mat-label>
+                                        <input matInput placeholder="Supplier" formControlName="code" autocomplete="off"
+                                            (keypress)="only_numalpha($event)">
+                                    </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </td>
+
+                                <td>
+                                    <mat-form-field style="width: 200px;">
+                                        <mat-label>PAN Number</mat-label>
+                                        <input matInput placeholder="PAN" formControlName="panno" autocomplete="off"
+                                            (keypress)="only_numalpha($event)">
+                                    </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </td>
+
+                                <button class="btn btn-outline-primary" type="submit"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"
+                                    (click)="SelectSuppliersearch()">
+                                    <!-- <i class="fa fa-search"
+                                        aria-hidden="true"></i> -->
+                                        <mat-icon>search</mat-icon>
+                                    </button>&nbsp;
+
+                                <button type="button" style="border-radius:40px;margin-left: 15px;"
+                                    class="btn btn-outline-primary" (click)="dataclear()">
+                                    Reset</button>
+                            </tr>
+                            <tr>
+                                <div *ngIf="default">
+                                    <td>
+                                        <mat-form-field style="width: 250px;margin-top: 5px;">
+                                            <mat-label>Choose Supplier</mat-label>
+                                            <input #name placeholder="Choose Supplier" matInput formControlName="name"
+                                                [matAutocomplete]="autosupp">
+                                            <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let suppliername of supplierNameData"
+                                                        ngDefaultControl [(ngModel)]="inputSUPPLIERValue"
+                                                        [ngModelOptions]="{standalone: true}"
+                                                        (ngModelChange)="inputSUPPLIERValue = $event.toUpperCase()"
+                                                        (focusout)="getgrnView(suppliername)" [value]="suppliername">
+                                                        {{suppliername.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                </div>
+
+                                <div *ngIf="alternate">
+                                    <td>
+                                        <mat-form-field style="width: 250px;margin-top: 5px;"> 
+                                            <mat-label>Choose Supplier</mat-label>
+                                            <input #name placeholder="Choose Supplier" matInput formControlName="name"
+                                                [matAutocomplete]="autosupp2">
+                                            <mat-autocomplete #autosupp2="matAutocomplete" [displayWith]="displaytest">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let suppliername of selectsupplierlist"
+                                                        ngDefaultControl [(ngModel)]="inputSUPPLIERValue"
+                                                        [ngModelOptions]="{standalone: true}"
+                                                        (ngModelChange)="inputSUPPLIERValue = $event.toUpperCase()"
+                                                        (focusout)="getgrnView(suppliername)" [value]="suppliername">
+                                                        {{suppliername.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                </div>
+                            </tr>
+                        
+                    </table>
+
+                    <!-- <form [formGroup]="supplierchooseForm"></form> -->
+                    <table border="0">
+                        <tbody>
+
+
+                            <tr>
+                                <td style="width: 18%;"><strong>Supplier Name : </strong></td>
+                                <td colspan="3" style="text-align: left;">{{SupplierName}}</td>
+                            </tr>
+                            <tr>
+
+                                <td><strong>Supplier Code : </strong></td>
+                                <td>{{SupplierCode}}</td>
+                                <td> <strong>Address : </strong></td>
+                                <td style="width: 18%;">{{line1}},
+                                    {{line2}},
+                                    {{line3}}</td>
+                            </tr>
+                            <tr>
+
+                                <td style="width: 20%;"><strong>Supplier GST Number : </strong></td>
+                                <td style="width: 18%;">{{SupplierGSTNumber}}</td>
+                                <td><strong>City : </strong></td>
+                                <td>{{City}}</td>
+
+                            </tr>
+                            <tr>
+                                <td colspan="4">&nbsp;</td>
+                            </tr>
+                            <tr>
+
+
+                                <td><strong>Supplier PAN Number : </strong></td>
+                                <td>{{SupplierPANNumber}}</td>
+
+
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ///////////////// Asset work -->
+
+<div class="modal fade" id="attributes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Other Attributes</h2>
+                <button #closebtn2 type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <h4 class="font-weight-bold">Product Name: {{prod_name}}</h4>
+
+                <div class="container">
+                    <mat-card class="custom-card mat-elevation-z4">
+                        <mat-card-header>
+                          <mat-card-title>Attributes</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <form [formGroup]="myForm">
+                                
+                                <div formArrayName="attributes">
+                                  <div class="row align-items-center" *ngFor="let dada of otherattributespatching; let i = index">
+                                    <div class="col-md-3 text-right">
+                                      <div class="label-box label-container">
+                                        {{ dada.specification }}
+                                      </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                      <mat-form-field style="width: 200px;">
+                                        <mat-select [formControlName]="i" (selectionChange)="getattributeview($event.value, i)">
+                                          <mat-option *ngFor="let suppliername of dada.configuration" [value]="suppliername">
+                                            {{ suppliername.data_value }}
+                                          </mat-option>
+                                        </mat-select>
+                                      </mat-form-field>  
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-primary" (click)="submitattributeForm(grndata,grndetailsdata)">Submit</button>
+                                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                                </div>
+                              </form>
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+                </div>
+           
+
+            <!-- Modal Footer -->
+           
+        </div>
+    </div>
+</div>
+
+<ng-template #secondPopup>
+
+ <!-- <div class="modal fade" id="myModal2" data-bs-backdrop="false" data-bs-keyboard="false"> -->
+        <form [formGroup]="bulkuploadform">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title" style="font-size: x-large;font-weight: bold;">Bulk Upload</h4>
+
+                        <!-- <button type="button" #closebox class="close"
+                            data-bs-dismiss="modal">&times;</button> -->
+
+                            <button mat-icon-button class="close-btn" (click)="closeSecondPopup()">
+      <mat-icon>close</mat-icon>
+    </button>
+                           
+
+                    </div>
+                    <div class="container">
+                         <p class="description">
+                         <mat-icon class="text-warning custom">error</mat-icon>
+                           Download the template to update your order information or upload a new
+                                file with the updated details.
+                                 </p>
+                                 <button  type="button"  class="csv-download-link"  (click)="downloadFileXLSXprTemplate()"  style="border-radius: 40px; border: none; background: transparent;">
+                                  <mat-icon>save_alt</mat-icon>
+                                  <p>Download Sample Excel File</p>
+                                 </button>
+                        <div class="row">
+                            <div class="col">
+                                <div class="timeline-steps aos-init aos-animate" data-aos="fade-up"
+                                    style="margin-top: -2%;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input  *ngIf="bulkclicked" type="file"  class="choosefile" accept=".xlsx"
+                            (change)="onFileSelected($event )" formControlName="fileArr">
+                        <!-- <button  *ngIf="bulkclicked"  #closebox type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal" (click)="closefunc()">Close</button> -->
+                            <button mat-button mat-dialog-close class="upload-button" class="btn btn-secondary">Cancel</button>
+                        <button   *ngIf="bulkclicked"   class="upload-button" type="button" class="btn btn-secondary"  
+                            (click)="BulkUpload()">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    
+</ng-template>
+
+    
+ <div class="modal fade" id="productview" data-backdrop="false" data-keyboard="false">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" style="font-size: x-large;font-weight: bold;">Product Details</h4>
+                        <button type="button"  class="close"
+                            data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="container">
+                          <div class="header mat-card">
+              <p>
+                Product Name:
+                <span > {{prodnameview}}</span>
+             </p>
+              <p>
+                 Make:
+                <span> {{makenameview}}</span>
+              </p>
+               <p>
+                Model:
+              <span>{{modelnameview}} </span>
+               </p>
+               <p>
+                Configuration:
+              <span>{{specnameview}} </span>
+               </p>
+             </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button  type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+
+
+<!-- <pre>
+    {{GRNForm2.value | json}}
+</pre>
+<pre>
+    {{GrnAssestForm.value | json}}
+</pre> -->
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" type="line-scale-party">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner>

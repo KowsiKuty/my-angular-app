@@ -1,0 +1,272 @@
+<main role="main" style="margin-top:1%;margin-left:30px;width:95%">
+
+    <h2>Create Culling Request <button class="btn btn-outline-dark backbtn" style="margin-right:0px ;"
+            (click)="router.navigate(['rmu/rmu_summary'])" id="rmubtn">Back</button> </h2>
+
+    <mat-divider></mat-divider>
+    <div id="rmucontetn">
+        <br>
+        <form [formGroup]="cullingform">
+            <section role="search" class="row">
+                <div class="col-md-3">
+
+                    <mat-form-field class='summaryformfield'>
+                        <mat-label>Select To Box</mat-label>
+                        <mat-select (selectionChange)="changefromlist()" matInput formControlName="to_box">
+                            <mat-option *ngFor="let item of archivallist" [value]="item">
+                                {{item.barcode_no}}: Freecount = {{item.free_count}}
+                            </mat-option>
+                        </mat-select>
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <h3>Available Counts to Put = <label>{{availablecount-fileidarraylength}}</label></h3>
+
+                    <!-- <mat-form-field class='summaryformfield'>
+                        <mat-label>Retrieval Type</mat-label>
+                        <mat-select matInput formControlName="retrieval_type">
+                            <mat-option *ngFor="let item of retrievaltype" [value]="item.value">
+                                {{item.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field> -->
+                </div>
+                <!-- <div class="col-md-2">
+
+                <mat-form-field class='summaryformfield'>
+                    <mat-label>Retrieval Method</mat-label>
+                    <mat-select matInput formControlName="retrieval_method">
+                        <mat-option *ngFor="let item of retrievalmethod" [value]="item.value">
+                            {{item.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+                <div class="col-md-2">
+
+                    <h3>Selected Files count = <label>{{fileidarraylength}}</label></h3>
+                </div>
+                <div class="col-md-2">
+                    <div id="rmubtngrp">
+
+
+                    </div>
+                </div>
+
+
+            </section>
+
+        </form>
+        <table class="table table-bordered" id="rmutable">
+            <thead class="table_header">
+                <th>S.No</th>
+                <th>Archivaled Code</th>
+                <th>From Boxes</th>
+                <th>Occupied Count</th>
+                <th>Total Count</th>
+                <th>Free Count</th>
+                <th>Select Files</th>
+                <th>Select Box</th>
+            </thead>
+
+            <tbody *ngFor="let element of fromboxlist;index as ind">
+                <td>{{ind+1}}</td>
+                <td>{{element.archival_code}}</td>
+                <td>{{element.barcode_no}}</td>
+                <td>{{element.occupied_count}}</td>
+                <td>{{element.total_count}}</td>
+                <td>{{element.free_count}}</td>
+                <td>
+                    <button id="rmubtn" class="btn btn-outline-success"
+                        (click)="fromboxid = element.id;getfilesummary();" data-target="#filelevelform"
+                        data-toggle="modal">
+                        View File
+                    </button>
+                </td>
+                <td>
+                    <mat-checkbox  (change)="checkavailablecount()" [(ngModel)]="element.isselected"
+                        [color]="'primary'">
+                    </mat-checkbox>
+                </td>
+
+            </tbody>
+        </table>
+
+        <div style="text-align:center">
+            <button id="rmubtn" class="btn btn-outline-success" data-toggle="modal" (click)="popupopen()">Initiate
+                Culling Process</button>
+
+        </div>
+    </div>
+
+</main>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filelevelform" aria-hidden="true"
+    id="filelevelform" #filelevelform>
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">File Level View</h2>
+                <button type="button" #closebutton class="close" (click)="emptyselectarray()" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <br>
+            <br>
+
+            <div style="margin-left:10px;">
+                <table class="table table-bordered" id="boxlevel">
+                    <thead class="table_header">
+                        <th>S.No</th>
+                        <th>Product </th>
+                        <th>Product Barcode</th>
+                        <th>Retention Date</th>
+                        <th>Status</th>
+                        <th>Select</th>
+                        <!-- <th>Legitimate</th> -->
+                    </thead>
+                    <tbody *ngFor="let lists of filelevellists;index as ind">
+                        <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                        <td>{{lists.product.name}}</td>
+                        <td>{{lists.product_barcode}}</td>
+                        <td>{{lists.retention_date | date:'dd-MM-yyyy'}}</td>
+                        <td>{{lists.archival_status.value}}</td>
+                        <td>
+
+                            <mat-checkbox [disabled]="limitexceed && !lists.isselected" [(ngModel)]="lists.isselected"
+                                (change)="isfileselected(lists)" [color]="'primary'">
+                            </mat-checkbox>
+
+                        </td>
+                        <!-- <td>
+                            <div>
+
+                                <div class="btn-group" role="group" aria-label="buttons">
+                                    <button type="button" class="btn btn-light" data-toggle="modal"
+                                        href="#myModal">✓</button>
+                                    <button type="button" class="btn btn-light">View</button>
+                                    <button type="button" class="btn btn-light" (click)="deleteLegitimate(lists.id)">X</button>
+                                </div> -->
+
+                        <!-- <a data-toggle="modal" data-target="#" ><i class="fa fa-plus-square" matTooltip="Create"></i></a>
+                            <a data-toggle="modal" data-target="#" style="margin-left:15px;"><i class="fa fa-eye" matTooltip="View"></i></a>
+                            <a data-toggle="modal" data-target="#" style="margin-left:15px;"><i class="fa fa-minus-square" matTooltip="Delete"></i></a>
+                            <a  *ngIf="archstatus[lists.archival_status.value] == 'REQUESTED' " data-toggle="modal" data-target="#trackingArch" (click)="canceldata(lists)"><i class="fa fa-trash" matTooltip="Cancel"></i></a> -->
+
+                        <!-- <a  *ngIf="archstatus[lists.archival_status.value] == 'SCHEDULED' " data-toggle="modal" data-target="#trackingArch" (click)="canceldata(lists)"><i class="fa fa-trash" matTooltip="Cancel"></i></a> -->
+                        <!-- </div>
+                        </td> -->
+                    </tbody>
+                </table>
+
+                <div *ngIf="!filelevellists.length" style="margin-left: 42%;">
+                    <h3>Sorry no data found!... </h3>
+                </div>
+
+
+
+                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <button id="rmubtn" class="btn btn-outline-success" (click)="pushfileids()" data-dismiss="modal"> Submit</button>
+                    <button  id="rmubtn" class="btn btn-outline-danger" (click)="emptyselectarray()" data-dismiss="modal">Close</button>
+                    <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false"
+                        color="primary">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{pagination.index}}
+                    <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false"
+                        color="primary">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div
+    class="modal fade"
+    id="finalpreview"
+    tabindex="-1"
+    aria-labelledby="finalpreview"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="finalpreview" style="font-weight: 600;">Check Culling History</p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closeretrivalpopup
+            aria-label="Close"
+            (click)="close()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+    
+        <div class="modal-body">
+            <div style="margin-left:10px;">
+                <table *ngIf="filesidarray.length" class="table table-bordered" id="boxlevel">
+                    
+                </table>
+
+                <div *ngIf="!fileidarraylength" style="margin-left: 28%;">
+                    <h3>Sorry No History found!... </h3>
+                </div>
+            </div>
+            
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-success" (click)="startculling()">Ok</button>
+
+        <button class="btn btn-outline-danger" #closeretrivalpopup data-dismiss="modal">Close</button>
+</div>
+    </div>
+    </div>
+
+
+<!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filelevelform" aria-hidden="true" id="finalpreview"
+    #filelevelform>
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Check Culling History</h2>
+                <button type="button" #closeretrivalpopup class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <br>
+            <br>
+
+            <div style="margin-left:10px;">
+                <table *ngIf="filesidarray.length" class="table table-bordered" id="boxlevel">
+                    
+                </table>
+
+                <div *ngIf="!fileidarraylength" style="margin-left: 42%;">
+                    <h3>Sorry No History found!... </h3>
+                </div>
+
+
+
+                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+
+                    <button id="rmubtn" class="btn btn-outline-success" (click)="startculling()">Ok</button>
+
+                    <button id="rmubtn" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div> -->

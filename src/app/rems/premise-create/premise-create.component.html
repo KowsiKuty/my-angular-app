@@ -1,0 +1,206 @@
+<br>
+
+<h2 style="margin-left: 40px;">
+    Premises Creation
+</h2>
+<div style="margin-left: 100px;margin-right: 80%;margin-top: 1%; width: 100%;">
+
+    <div>
+        <form [formGroup]="PremiseForm" (ngSubmit)="PremiseCreateForm()">
+            <table>
+                <div>
+                    <tr>
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>Premises Identification Number</mat-label>
+                                <input matInput placeholder="Premises Identification Number" autocomplete="off"
+                                    formControlName="code" required id="premise-create-0001">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Premises Name</mat-label>
+                                <input matInput placeholder="Premises Name"
+                                    autocomplete="off" formControlName="name"  required id="premise-create-0002">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Type</mat-label>
+                                <mat-select formControlName="type" id="premise-create-0003">
+                                    <mat-option *ngFor="let premise of premisesTypeData" [value]="premise.id">
+                                        {{premise.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>Total Occupied Area</mat-label>
+                                <input matInput placeholder="Total Occupied Area" [readonly]="true"
+                                    formControlName="rent_area" autocomplete="off"
+                                    (keypress)="omit_special_char($event)" required id="premise-create-0004">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Controlling Office</mat-label>
+                                <input #office1Input placeholder="Select Controlling Office" matInput
+                                    formControlName="controlling_office_id" [matAutocomplete]="cotype" required id="premise-create-0005">
+                                <mat-autocomplete #cotype="matAutocomplete" [displayWith]="displayFn"
+                                    (opened)="priOffScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let controlling_office of ControllingOfficeList"
+                                            [value]="controlling_office">
+                                            {{controlling_office.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Latitude</mat-label>
+                                <input matInput placeholder="Latitude" formControlName="latitude" autocomplete="off"
+                                    (keypress)="omit_special_char($event)" required id="premise-create-0006">
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>Longitude</mat-label>
+                                <input matInput placeholder="Longitude" formControlName="longitude" autocomplete="off"
+                                    (keypress)="omit_special_char($event)" required id="premise-create-0007">
+                            </mat-form-field>
+                        </td>
+                        <td *ngIf="landOwnerShipType">
+                            <mat-form-field class="input-style2">
+                                <mat-label>OwnerShip Type</mat-label>
+                                <mat-select formControlName="land_ownership" id="premise-create-0008">
+                                    <mat-option *ngFor="let ownership of ownershipData" [value]="ownership.id">
+                                        {{ownership.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+
+                    </tr>
+                </div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="margin-top:2%">
+                                    <h3 style="font-weight:500;font-size: 15px;">Address</h3>
+                                    <div [formGroup]="PremiseForm.controls.address">
+                        <tr>
+                            <td>
+                                <mat-form-field class="input-style">
+                                    <mat-label>No</mat-label>
+                                    <input matInput placeholder="No" [readonly]="true" formControlName="line1"
+                                        autocomplete="off" required id="premise-create-0009">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>Street</mat-label>
+                                    <input matInput placeholder="Street" [readonly]="true" formControlName="line2"
+                                        autocomplete="off" required id="premise-create-0010">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>Area</mat-label>
+                                    <input matInput placeholder="Area" [readonly]="true" formControlName="line3"
+                                        autocomplete="off" required id="premise-create-0011">
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <mat-form-field class="input-style">
+                                    <mat-label>Pin Code</mat-label>
+                                    <input placeholder="Select Pin Code" [readonly]="true" matInput
+                                        formControlName="pincode_id" maxlength="6" [matAutocomplete]="pintype" required id="premise-create-0012">
+                                    <mat-autocomplete #pintype="matAutocomplete" [displayWith]="displayFnpin">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let pin of pinCodeList" (focusout)="pinCode(pin)"
+                                                [value]="pin">
+                                                {{pin.no}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>City</mat-label>
+                                    <input placeholder="Select city" [readonly]="true" matInput
+                                        formControlName="city_id" [matAutocomplete]="citytype" required id="premise-create-0013">
+                                    <mat-autocomplete #citytype="matAutocomplete" [displayWith]="displayFncity">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let city of cityList" (focusout)="citys(city)"
+                                                [value]="city">
+                                                {{city.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>District</mat-label>
+                                    <input placeholder="Select District" [readonly]="true" matInput
+                                        formControlName="district_id" [matAutocomplete]="districttype" required id="premise-create-0014">
+                                    <mat-autocomplete #districttype="matAutocomplete" [displayWith]="displayFndistrict">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let district of districtList" [value]="district">
+                                                {{district.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <mat-form-field class="input-style">
+                                    <mat-label>State</mat-label>
+                                    <input placeholder="Select State" [readonly]="true" matInput
+                                        formControlName="state_id" [matAutocomplete]="statetype" required id="premise-create-0015">
+                                    <mat-autocomplete #statetype="matAutocomplete" [displayWith]="displayFnstate">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let state of stateList" [value]="state">
+                                                {{state.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+    </div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</table>
+<div style="margin-bottom: 5%;">
+    <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary" matTooltip="Submit"
+        [disabled]="Premisebtn" id="premise-create-0016">Submit</button>
+    <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary" matTooltip="Cancel"
+        style="border-radius: 40px;margin-left: 10px;" id="premise-create-0017">Cancel</button>
+</div>
+</form>
+</div>
+</div>

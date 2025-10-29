@@ -1,0 +1,336 @@
+<div class="container-fluid m-3 p-3">
+
+    <div class="row color">
+      <div class="col-md-12 text-center ">
+        <h2>Vendor Risk Assessment</h2> 
+      </div>
+    </div>
+    
+    <div class="row pl-3 pr-3 pt-5 pb-4">
+            <div class="col">
+              <mat-form-field class="width" appearance="outline">
+                <mat-label>Vendor Name</mat-label>
+                <input  readonly [value]="vendor_name" matInput>
+              </mat-form-field>
+            </div>
+
+           
+          <div class="col">
+            <mat-form-field class="width" appearance="outline">
+              <mat-label>Branch Name</mat-label>
+          <input  readonly [value]="branch_name" matInput>
+            </mat-form-field>
+
+          </div>
+      
+
+          <div class="col">
+            <mat-form-field class="width" appearance="outline">
+              <mat-label>Supplier Name</mat-label>
+          <input  readonly [value]="supplier_name" matInput>
+            </mat-form-field>
+
+          </div>
+          <div class="col">
+            <mat-form-field class="width" appearance="outline">
+              <mat-label>Activity Name</mat-label>
+              <input  readonly [value]="activity_name" matInput>
+            </mat-form-field>
+          </div>
+          <!-- <div class="col-md-6 text-right">
+            <button type="button" routerLink="/login" class="btn btn-outline-secondary">
+                Back
+            </button> 
+          </div> -->
+           <div class="col-md-2 text-center">
+            <button type="button" (click)="backtoLogin()" class="btn btn-outline-secondary">
+                Back
+            </button> 
+          </div>
+    </div>
+    <div class="row pl-3 pr-5">
+      <div *ngIf="risk == 1" class="col-md-6">
+        <!-- <h3>List of Questions </h3> -->
+
+        <!-- <div> -->
+          <h3>Vendor Performance Monitoring Control Sheet</h3>
+        <button  class="btn btn-outline-secondary alignn" style="margin-left: 410px;" type="button" (click)="downloadpdf()">
+          <span class="fa fa-download"></span>
+       </button>
+
+       
+        <!-- </div> -->
+      </div>
+
+      <div *ngIf="risk == 1" class="col-md-6 text-center">
+        <!-- <h3>List of Questions </h3> -->
+
+        <!-- <div> -->
+          <h3>Vendor Performance Review Questionnaire</h3>
+        <button  class="btn btn-outline-secondary alignn" style="margin-left: 440px;" type="button" (click)="reviewDownload()">
+          <span class="fa fa-download"></span>
+       </button>
+
+       
+        <!-- </div> -->
+      </div>
+
+      <div *ngIf="risk_status" class="col-md-7">
+        <!-- <b>Uploaded File :{{ file_name}} </b> -->
+        <b>Uploaded Performance Control Sheet : {{ file_name}}</b>
+
+        &nbsp;
+        <!-- <a  (click)="fileView()"  class="btn btn-link" style="cursor: pointer;color:blue;"
+        matTooltip="View File"  data-target="#my-modal" data-toggle="modal">{{ file_name}}</a> -->
+            <button class="btn btn-outline-primary download" type="button" (click)="fileDownload()" matTooltip="Download PDF">
+              <span class="fa fa-download"></span>
+           </button>
+      </div>
+
+
+
+
+
+
+
+
+
+      <div *ngIf="risk_status">
+      <div class="col">
+        <h3>Questionnaire Report</h3>
+        <button class="btn btn-outline-secondary alignn" type="button" (click)="reportDownload()">
+          <span class="fa fa-download"></span>
+       </button>
+       <!-- <div *ngIf="risk == 2" class="alert alert-success d-flex align-items-center alignItems" role="alert"> -->
+        <div  class="alert alert-secondary d-flex align-items-center alignItems" role="alert">
+        <div>
+          <mat-icon class="icon" matTooltip="Status">schedule</mat-icon>&nbsp;
+          <!-- <b class="averagee">Accepted</b> -->
+          <b class="averagee">{{this.risk_status_name}}</b>
+          
+        </div>
+       
+      </div>
+      </div>
+      </div>
+      <div *ngIf="isScore" class="col-md-5 margin">
+        <div class="alert d-flex align-items-center align" role="alert">
+          <div>
+            <!-- <mat-icon class="icon">assignment_turned_in</mat-icon>&nbsp; -->
+            <b class="average"> Total Score - {{risk_score}}
+            &nbsp;<span>|</span>&nbsp;
+           Adjusted Risk Score - {{adjusted_risk_score}}% </b>
+          </div>
+        </div>
+      </div>
+    </div>
+  <div class="row pl-4">
+    <h3>List of Questions </h3>
+  </div>
+    <div class="row mt-4">
+      <div class="container-fluid fluid">
+        <div class="tableCon">
+          <form [formGroup]="questionForm">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <th>S.No</th>
+                <th>Risk Scenario</th>
+                <th>Description</th>
+                <th>Response</th>
+                <th>Impact</th>
+                <th>Likelihood</th>
+                <th *ngIf="isScore">Score</th>
+              </thead>
+            <tbody formArrayName="rows">
+              <ng-container *ngFor="let row of rows.controls; let i=index">
+                <tr  class="fields">
+                  <td>
+                    {{ (i+1) }}
+                  </td>
+                  <td>{{ displayData[i]?.riskscenario }}</td>
+                  <td>{{ displayData[i]?.description }}</td>
+                  <td>{{ displayData[i]?.response }}</td>
+
+                  <td [formGroupName]="i">
+                    <mat-form-field appearance="outline">
+                      <mat-select placeholder="Impact" formControlName="impact" [disabled]="risk_status">
+                          <mat-option 
+                              *ngFor="let i of impact" [value]="i.id">
+                              {{i?.name}}
+                          </mat-option>
+                      </mat-select>
+                  </mat-form-field>
+                  </td>
+                  <td [formGroupName]="i">
+                    <mat-form-field appearance="outline">
+                      <mat-select placeholder="Likelihood" formControlName="likelhood"  [disabled]="risk_status">
+                          <mat-option
+                              *ngFor="let i of likelhood" [value]="i.id">
+                              {{i?.name}}
+                          </mat-option>
+                      </mat-select>
+                  </mat-form-field>
+                  </td>
+                  <td *ngIf="isScore" [formGroupName]="i">
+                    <input class="score" formControlName="score" readonly>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+            </table>  
+          </form>
+        </div>
+      </div>
+    </div>
+<br><hr><br>
+    <div class="row p-0 m-3">
+      <div class="col-md-12">
+        <mat-checkbox class="check" (change)="declaration($event)" [checked]="risk_status" [disabled]="risk_status">
+        </mat-checkbox> 
+        &nbsp;
+        <!-- <b>"I declare that the attached document has been signed and that every detail has been filled out!"<span class="text-danger">*</span></b> -->
+        <b>"I declare that the Vendor performance monitoring control sheet has been reviewed by the KVB vendor relationship manager and 
+          the vendor and all details have been filled and signed off by the vendor and the KVB vendor relationship manager."<span class="text-danger">*</span></b>
+
+      </div>
+      </div>
+<br>
+      
+      <div class="row p-0 m-3">
+        <div *ngIf="!risk_status1" class="col-md-10">
+
+        <!-- <b>Upload a File</b><span class="text-danger">*</span> -->
+        <!-- <b>Upload </b><span> (Filled Vendor Performance Monitoring Control Sheet in PDF/JPG/JPEG/png format)</span><span class="text-danger">*</span> -->
+ &nbsp;
+        <!-- <input type="file" class="file" autocomplete="off" (change)="fileSelected($event)" [readOnly]="risk_status"
+        accept=".pdf,.jpg,.jpeg,.png"> -->
+        <b>Upload </b><span> (Filled Vendor Performance Monitoring Control Sheet in PDF format)</span><span class="text-danger">*</span>
+        <input type="file" class="file" autocomplete="off" (change)="fileSelected($event)" [readOnly]="risk_status"
+        accept=".pdf,">
+      </div>
+    </div>
+    <!-- <div class="row pl-5 ml-5">
+      <div class="col-md-10 text-right" *ngIf="risk_status">
+        <b>Uploaded File : </b>
+        &nbsp;
+        <a  (click)="fileView()"  class="btn btn-link" style="cursor: pointer;color:blue;"
+        matTooltip="View File"  data-target="#my-modal" data-toggle="modal">{{ file_name}}</a>
+      </div>
+      <div  *ngIf="risk_status" class="col-md-2 text-center"> 
+            <button class="btn btn-outline-primary" type="button" (click)="fileDownload()" matTooltip="Download PDF">
+              <span class="fa fa-download"></span>
+           </button>
+      </div>
+    </div> -->
+    <br><hr>
+    <div *ngIf="risk != 2" class="row">
+      <div class="col-md-11 text-right">
+        <button *ngIf="(!isEmc && !risk_status) || (isEmc && !risk_status)" type="button" class="btn btn-outline-primary" (click)="saveData(1)" [disabled]="risk_status">
+          Save
+        </button>
+        &nbsp; &nbsp;
+        <button *ngIf="(!isEmc && !risk_status) || (isEmc && !risk_status)" type="button" class="btn btn-outline-info" (click)="evaluateScore()"  [disabled]="risk_status">
+          Evaluate
+        </button>
+        &nbsp; &nbsp;
+        <button *ngIf="(!isEmc && !risk_status) || (isEmc && !risk_status)" type="button" class="btn btn-outline-success" (click)="saveData(2)" [disabled]="!enableSubmit || risk_status">
+          Submit
+        </button>
+        &nbsp; &nbsp;
+        
+        <button *ngIf="isEmc && risk_status" type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#return" [disabled]="risk == 2">
+          Return
+        </button>
+        &nbsp; &nbsp;
+        <button *ngIf="isEmc && risk_status" type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#accept" [disabled]="risk == 2">
+          Accept
+        </button>
+
+
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="return" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Remarks for Return</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeRemarks>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="returnform">
+          <mat-label>Enter Remarks</mat-label> &nbsp; &nbsp; &nbsp;
+          <mat-form-field class="widths">
+            <textarea formControlName="remarks" rows="2" matInput></textarea> 
+          </mat-form-field>        
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-danger"  (click)="returnForm()">Return</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="accept" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Remarks for Accept Questionnaire</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" #closeAccept>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="acceptform">
+          <mat-label>Enter Remarks</mat-label> &nbsp; &nbsp; &nbsp;
+          <mat-form-field class="widths">
+            <textarea formControlName="remarks" rows="2" matInput></textarea> 
+          </mat-form-field>        
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"  data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-success"  (click)="acceptForm()">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showimageHeaderPreview" id="my-modal" class="modal" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+    <div *ngIf="showimageHeaderPreviewPDF" id="my-modal" class="modal" aria-labelledby="my-modalLabel" aria-hidden="true"
+        tabindex="-1" role="dialog" data-backdrop="false" >
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#ddefdd;">
+                    <h2 class="modal-title">PDF View</h2>
+                    <button type="button"  class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <pdf-viewer [src]="pdfurl" [zoom]="1"  [render-text]="true" [original-size]="false"
+                    style="display: block;width: 800px; height: 800px;">
+                </pdf-viewer>
+                    <!-- <iframe [src]="pdfurl" style="display: block;width: 800px; height: 800px;"></iframe> -->
+            </div>
+        </div>
+    </div>
+
+

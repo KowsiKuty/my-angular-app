@@ -1,0 +1,567 @@
+<div style="margin-left: 50px;margin-top: 3%; ">
+
+   
+    <div *ngIf="addformholiday">
+        <h2 style="    margin-left: 2%;">
+            Holiday Master Add Screen
+        </h2>
+        <form  [formGroup]="holidaysform"  style="    margin-left: 2%;margin-top: 3%;margin-bottom: 3%;">
+            <table >
+                <div> 
+                    <tr>
+                        <td> 
+                            <mat-form-field style="width:250px;" class="input-style" (click)="productname()">
+                            
+                                <mat-label>Vendor</mat-label>
+                                <input placeholder="Vendor" matInput formControlName="vendor_id" #VendorContactInput [readonly]="addformonholiday"
+                                    [matAutocomplete]="producttype"  required>
+                                <mat-autocomplete #producttype="matAutocomplete"  [displayWith]="displaydis"
+                                (opened)="autocompleteVendornameScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let vendor of empvendorlist" 
+                                            [value]="vendor" >
+                                            ({{vendor.code}}) {{vendor.name+ " " }} 
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                    </td>
+                    <td style="padding-left: 10%;">
+                        <mat-form-field style="width: 250px;" class="input-style" (click)="statename()" >
+                            
+                            <mat-label>State</mat-label>
+                            <input placeholder="State" matInput formControlName="state_id" #StateContactInput [readonly]="addformonholiday"
+                                [matAutocomplete]="producttype1"  required>
+                            <mat-autocomplete #producttype1="matAutocomplete"  [displayWith]="displaydis1"
+                            (opened)="autocompleteStatenameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let state of dropdownstate" 
+                                        [value]="state" >
+                                        {{state.name}} 
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        
+                    </td> 
+                    <td style="padding-left: 30%;">
+                        <mat-form-field style="width: 137px;" class="input-style"  >
+                            <input matInput [matDatepicker]="dp" placeholder="Year" formControlName="year" readonly [formControl]="monthdate">
+                            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                            <mat-datepicker #dp
+                                            startView="multi-year"
+                                            (yearSelected)="chosenYearHandler($event,dp)"
+                                            
+                                            panelClass="example-month-picker">
+                            </mat-datepicker>
+                        </mat-form-field>
+                   
+                    </td>
+                    </tr>
+                   
+                    <tr>
+
+                        <input type="file" #takeInput (change)="fileProgress($event)"
+                            style="width:250px; margin-left: 35px;" />
+                        <!-- <button type="button" mat-raised-button (click)="fileInput.click()" style="margin-top: 2%;">
+                            +Choose Files</button>
+                          <input type="file" hidden #fileInput name="image" 
+                           (change)="fileProgress($event)"/>
+
+
+                        <div *ngIf="filehide" class="bs-example" >
+                            <div *ngFor="let file of myFileseventfile;index as i" 
+                                style="width:100%; padding-top: 5% ">
+                              <div class="file-choo" style="width:100%;    display: flex">
+                                <div style="padding-top: 5%">{{i+1}}&nbsp;{{file.name}}</div>
+                                <button style="left: 50%;" type="button" mat-raised-button
+                                  (click)="delete(i)">Remove</button>
+                              </div>
+                            </div> 
+                        </div> -->
+                    </tr>
+                    <button type="button" style="border-radius: 40px;margin-top: 10%;margin-bottom:30%"   data-toggle="modal" data-target="#makerHolidaychecker"
+                     class="btn btn-outline-primary">
+                    <span>Submit</span></button>
+                    <button type="button" style="border-radius: 40px; margin-left: 5%;margin-top: 10%;margin-bottom:30%" (click)="OnCancleclick()"
+                    class="btn btn-outline-primary">
+                   <span>Cancel </span></button>
+                </div>
+            </table>
+        </form>
+
+        
+    </div>
+    <div *ngIf="addviewholiday">
+        <h2 style="    margin-left: 2%;margin-bottom: 1%;">
+            Holiday Master View Screen
+        </h2> 
+        <div style="margin-left: 2%;margin-bottom: 2%;">
+            <h3>State &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;{{state}}</h3>
+            <h3>Vendor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;{{vendor}}</h3>
+            <h3>Year&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp; {{year }}</h3>
+            <h3>Approval status &nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;{{approval_status}}</h3>
+        </div>
+        <!-- <button type="button" class="btn btn-outline-primary" *ngIf="fileoalist ?.length <= 1"
+        style="border-radius:40px;    margin-left: 47%;" (click)="Addscreenchange(hoildayvalue)"><span class="fa fa-plus"></span>
+        Add</button> -->
+
+        <div class="table-responsive" style="margin-top: 0.5%;margin-left: 2%;width: 50%; overflow-x: hidden;">
+            <table class="table table-bordered" style="text-align: center;" fixed-header>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.No</th>
+                        <th>Holiday Name</th>
+                        <th>Holiday Date</th>
+                        <!-- <th>Action</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let holiday of fileoalist;index as i">
+                        <td >{{i+1}}</td>
+                        <td >{{holiday.name}} </td>
+                        <td>{{holiday.date |date:'dd-MMM-yyyy'}}</td>
+                        <!-- <td>
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" (click)="singleList(holiday)"
+                            data-toggle="modal" data-target="#holidayUpdate">
+                            <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                           </button>
+                        </td> -->
+                    </tr>   
+                </tbody>
+            </table>
+            
+         
+            
+        </div>
+        
+        <div style="    margin-bottom: 6%;
+        display: flex;
+        width: 50%;
+        justify-content: center;
+        margin-left: 2%; " >
+     <button style="border-radius: 40px;margin-bottom: 1%;" (click)="OnCancleclick1()"
+         class="btn btn-outline-primary">
+        <span>Cancel </span></button>
+
+    <button  style="border-radius: 40px;margin-left: 31px;" *ngIf="((this.approvalflowlist[0]?.approval_status?.id==4) && (this.approvalflowlist[0]?.ismaker == true))"
+    (click)="holidayUpdate()" class="btn btn-outline-primary" 
+     >Update</button>
+
+     <button  style="border-radius: 40px;margin-left: 31px;" *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 1  ||this.approvalflowlist[0]?.approval_status?.id==4  ) && (this.approvalflowlist[0]?.ismaker == true))" class="btn btn-outline-primary" data-toggle="modal" data-target="#makerchecker" 
+     >Move to Approver</button>
+    
+     <button 
+     type="button" class="btn btn-outline-success"  *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 2) && (this.approvalflowlist[0]?.ischecker == true))" data-toggle="modal" data-target="#rejectModalApprover"
+         style="border-radius: 40px;margin-left: 31px;">
+         Approve
+     </button>
+     <button 
+      type="button" class="btn btn-outline-danger" data-toggle="modal"  *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 2 )&&( this.approvalflowlist[0]?.ischecker == true))" data-target="#rejectModalReject"
+         style="border-radius: 40px;margin-left: 30px;">Reject
+     </button>
+     <button 
+     type="button" class="btn btn-outline-success" data-toggle="modal"  *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 2 )&&( this.approvalflowlist[0]?.ischecker == true))" data-target="#rejectModalReview"
+         style="border-radius: 40px;margin-left: 30px;">Review
+     </button>
+
+     <button 
+     type="button" class="btn btn-outline-success"  data-toggle="modal" data-target="#viewModalApprover" (click)="approvalFlow(this.approvalflowlist[0])"
+         style="border-radius: 40px;margin-left: 31px;">  
+         Transaction History
+     </button>
+     </div>
+    
+    
+    </div>
+    
+</div>
+
+
+<div class="modal fade" id="rejectModalApprover" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" style="width: 45%;">
+      <div class="modal-content">
+          <div class="modal-header" style="background:#DDEFDD;">
+              <h2 class="modal-title" style="color:black ;">Approver</h2>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" #addaprover (click)="oncancelclick1()"> 
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+
+          <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+              <form [formGroup]="approverform" (ngSubmit)="ApproverPopupForm()">
+                  <table>
+                      <div>
+                          <tr>
+                              <td>
+                                  <mat-form-field style="width: 200px;">
+                                      <mat-label>Remarks</mat-label>
+                                      <input matInput placeholder="Remarks" formControlName="remarks"
+                                          autocomplete="off">
+                                  </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              </td>
+                          </tr>
+                      </div>
+                  </table>
+                  <tr>
+                      <button type="submit" style="float: left;border-radius: 40px" 
+                           class="btn btn-outline-primary">
+                          Submit</button>
+                      <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                          style="margin-left: 10px;margin-bottom: 10px;border-radius: 40px" (click)="oncancelclick1()">
+                          Cancel</button>
+                  </tr>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<!-- reject popup -->
+<div class="modal fade" id="rejectModalReject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" style="width: 45%;">
+      <div class="modal-content">
+          <div class="modal-header" style="background:#DDEFDD;">
+              <h2 class="modal-title" style="color:black ;">Reject</h2>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" #rejected (click)="oncancelclick1()">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+
+          <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+              <form [formGroup]="rejectedform" (ngSubmit)="rejectPopupForm()">
+                  <table>
+                      <div>
+                          <tr>
+                              <td>
+                                  <mat-form-field style="width: 200px;">
+                                      <mat-label>Remarks</mat-label>
+                                      <input matInput placeholder="Remarks" formControlName="remarks"
+                                          autocomplete="off">
+                                  </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              </td>
+                          </tr>
+                      </div>
+                  </table>
+                  <tr>
+                      <button type="submit" style="float: left;border-radius: 40px" 
+                           class="btn btn-outline-primary">
+                          Submit</button>
+                      <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                          style="margin-left: 10px;margin-bottom: 10px;border-radius: 40px" (click)="oncancelclick1()" >
+                          Cancel</button>
+                  </tr>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+<!-- review popup -->
+<div class="modal fade" id="rejectModalReview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" style="width: 45%;">
+      <div class="modal-content">
+          <div class="modal-header" style="background:#DDEFDD;">
+              <h2 class="modal-title" style="color:black ;">Review</h2>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" #review (click)="oncancelclick1()">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+
+          <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+              <form [formGroup]="reviewform" (ngSubmit)="reviewPopupForm()">
+                  <table>
+                      <div>
+                          <tr>
+                              <td>
+                                  <mat-form-field style="width: 200px;">
+                                      <mat-label>Remarks</mat-label>
+                                      <input matInput placeholder="Remarks" formControlName="remarks"
+                                          autocomplete="off">
+                                  </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              </td>
+                          </tr>
+                      </div>
+                  </table>
+                  <tr>
+                      <button type="submit" style="float: left;border-radius: 40px" 
+                         class="btn btn-outline-primary">
+                          Submit</button>
+                      <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                          style="margin-left: 10px;margin-bottom: 10px;border-radius: 40px" (click)="oncancelclick1()">
+                          Cancel</button>
+                  </tr>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- popup for makerchecker  -->
+
+<div class="modal fade" id="makerchecker" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header"style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;" >
+                   Move To Approver</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="oncancelclick1()" #makerchecker>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            
+                <form  [formGroup]="movetochekerform"  style="margin-top: 3%;margin-bottom: 3%;margin-left: 10%;">
+                    <table class="movtochecker" style="margin-bottom: 3%;">
+                        <div> 
+                            <tr>
+                                <td>
+                                    <mat-form-field style="width: 250px;" (click)="approvalBranchClick()">
+                                                    <mat-label>Approval Branch</mat-label>
+                                                    <input #appBranchInput placeholder="Approval Branch" matInput
+                                                        formControlName="approval_branch" (click)="clearAppBranch()" [matAutocomplete]="approvalBranch" required>
+                                                    <mat-autocomplete #approvalBranch="matAutocomplete" (opened)="autocompleteapprovalBranchScroll()"
+                                                     [displayWith]="displayFnappBranch">
+                                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                        <ng-container *ngIf="!isLoading">
+                                                            <mat-option *ngFor="let appBranch of appBranchList" [value]="appBranch" (focusout)="FocusApprovalBranch(appBranch)">
+                                                                ({{appBranch.code}}){{appBranch.name}}
+                                                            </mat-option>
+                                                        </ng-container>
+                                                    </mat-autocomplete>
+                                    </mat-form-field>
+                                </td>
+                                <td style="padding-left: 8%;">
+                                    <mat-form-field style="width: 250px;margin-left: 50px;" (click)="approvername()">
+                                            <mat-label>Approver</mat-label>
+                                                    <input #employeeInput placeholder="Approver" matInput #ApproverContactInput
+                                                        formControlName="approver" [matAutocomplete]="employee"  required>
+                                                    <mat-autocomplete #employee="matAutocomplete" (opened)="autocompleteapprovernameScroll()"
+                                                        [displayWith]="displayFnEmployee">
+                                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                        <ng-container *ngIf="!isLoading">
+                                                            <mat-option *ngFor="let employee of employeeList" 
+                                                                [value]="employee">{{employee.full_name}}
+                                                            </mat-option>
+                                                        </ng-container>
+                                                    </mat-autocomplete>
+                                     </mat-form-field>
+                                </td>
+                                
+                            
+                                <td style="padding-left: 8%;">
+                                    <mat-form-field style="width: 175px;margin-left: 50px;">
+                                        <mat-label>Remarks</mat-label>
+                                        <input  matInput placeholder="Remarks"  formControlName="remarks" autocomplete="off" required>    
+                                     </mat-form-field>
+                                </td>
+                            
+                                
+                            </tr> 
+                        </div> 
+                    </table>
+                    <button type="submit" style="border-radius: 40px;"   class="btn btn-outline-primary" (click)="movetoapprove()"
+                >Move To Approver </button>
+                <button type="button"  data-dismiss="modal" class="btn btn-outline-primary" (click)="oncancelclick1()" data-dismiss="modal" aria-label="Close"
+                style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+                </form>
+            </div>
+        </div>
+        </div>
+</div>
+
+
+<div class="modal fade" id="viewModalApprover" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header"style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;" >
+                    Transaction History</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                
+                    <div class="center">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" fixed-header
+                                style="width: 87%;">
+                                <thead class="table_header" style="text-align: left;">
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Date</th>
+                                        <th>Employee</th>
+                                        <th>Comments</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let info of historyData; index as i">
+                                        <td> {{i+1}} </td>
+                                        <td class="text-style">{{ info.action_date | date:'dd-MMM-yyyy '}}</td>
+                                        <td class="text-style">{{ info.action_taken.name}}</td>
+                                        <td class="text-style">{{ info.remarks}}</td>
+                                        <td class="text-style">{{ info.action}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="historyData ?.length == 0" style="margin-left: 42%;margin-bottom: 40px;">
+                                <h3>Sorry data not found!.. </h3>
+                            </div>
+                        </div>
+                    </div>  
+
+                <!-- <table class="table table-bordered" style="width: 70%;">
+                    <thead class="table_header">
+                        <tr>
+                        <th >S.No</th>
+                        <th >Approver</th>
+                        <th >Created </th>
+                        <th >Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>{{this.approvalflowlist[0]?.approval_data?.approver?.full_name}}</td>
+                                <td>{{this.approvalflowlist[0]?.approval_data?.created_by?.full_name}}</td>
+                                <td>{{this.approvalflowlist[0]?.approval_data?.approval_status?.status}}</td>
+                            </tr>  
+                        </tbody>
+                    </table>
+                 -->
+            </div>
+        </div>
+        </div>
+</div>
+
+
+
+<div class="modal fade" id="makerHolidaychecker" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header"style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;" >
+                       Move To Approver</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="oncancelclick1()" #makerHolidaychecker>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                
+                    <form  [formGroup]="movetochekerform"  style="margin-top: 3%;margin-bottom: 3%;margin-left: 10%;">
+                        <table class="movtochecker" style="margin-bottom: 3%;">
+                            <div> 
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 250px;" (click)="approvalBranchClick()">
+                                                        <mat-label>Approval Branch</mat-label>
+                                                        <input #appBranchInput placeholder="Approval Branch" matInput
+                                                            formControlName="approval_branch" (click)="clearAppBranch()" [matAutocomplete]="approvalBranch" required>
+                                                        <mat-autocomplete #approvalBranch="matAutocomplete" (opened)="autocompleteapprovalBranchScroll()"
+                                                         [displayWith]="displayFnappBranch">
+                                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                            <ng-container *ngIf="!isLoading">
+                                                                <mat-option *ngFor="let appBranch of appBranchList" [value]="appBranch" (focusout)="FocusApprovalBranch(appBranch)">
+                                                                    ({{appBranch.code}}){{appBranch.name}}
+                                                                </mat-option>
+                                                            </ng-container>
+                                                        </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td style="padding-left: 8%;">
+                                        <mat-form-field style="width: 250px;margin-left: 50px;" (click)="approvername()">
+                                                <mat-label>Approver</mat-label>
+                                                        <input #employeeInput placeholder="Approver" matInput #ApproverContactInput
+                                                            formControlName="approver" [matAutocomplete]="employee"  required>
+                                                        <mat-autocomplete #employee="matAutocomplete" (opened)="autocompleteapprovernameScroll()"
+                                                            [displayWith]="displayFnEmployee">
+                                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                            <ng-container *ngIf="!isLoading">
+                                                                <mat-option *ngFor="let employee of employeeList" 
+                                                                    [value]="employee">{{employee.full_name}}
+                                                                </mat-option>
+                                                            </ng-container>
+                                                        </mat-autocomplete>
+                                         </mat-form-field>
+                                    </td>
+                                    <td style="padding-left: 8%;">
+                                        <mat-form-field style="width: 175px;margin-left: 50px;">
+                                            <mat-label>Remarks</mat-label>
+                                            <input  matInput placeholder="Remarks"  formControlName="remarks" autocomplete="off" >    
+                                         </mat-form-field>
+                                    </td>
+                                
+                                    
+                                </tr> 
+                            </div> 
+                        </table>
+                        <button type="submit" style="border-radius: 40px;" data-dismiss="modal"   class="btn btn-outline-primary" (click)="OnSubmitclick()"
+                    >Move To Approver </button>
+                    <button type="button"  data-dismiss="modal" class="btn btn-outline-primary" (click)="oncancelclick1()" data-dismiss="modal" aria-label="Close"
+                    style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+            </div>
+    </div>
+
+<!-- holiday update -->
+<!-- <div class="modal fade" id="holidayUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" style="width: 45%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Holiday Update</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+                <form [formGroup]="HolidayUpdateForm" (ngSubmit)="HolidayUpdatePopupForm()">
+                    <table>
+                        <div>
+                            <tr>
+                                <td>
+                                    <mat-form-field style="width: 200px;">
+                                        <mat-label>Holiday Name</mat-label>
+                                        <input matInput placeholder="Holiday Name" formControlName="name"
+                                            autocomplete="off">
+                                    </mat-form-field>
+                                </td>
+                                <mat-form-field style="width: 175px;margin-left: 10px;">
+                                    <input matInput readonly [matDatepicker]="picker2" formControlName="date" 
+                                    placeholder="Holiday Date">
+                                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                </mat-form-field>
+                            </tr>
+                        </div>
+                    </table>
+                    <tr>
+                        <button type="submit" style="float: left;" data-toggle="modal"
+                            data-target="#holidayUpdate" class="btn btn-outline-primary">
+                            Submit</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                            style="margin-left: 10px;margin-bottom: 10px;">
+                            Cancel</button>
+                    </tr>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->

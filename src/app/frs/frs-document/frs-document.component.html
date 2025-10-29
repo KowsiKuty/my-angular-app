@@ -1,0 +1,90 @@
+<div class="container" style="margin: 2%;">
+    <!-- <H2>NII Document</H2> -->
+    <div>
+        <form [formGroup]="frs_document">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>Status</mat-label>
+                            <input matInput formControlName="status" [matAutocomplete]="aws_status">
+                            <mat-autocomplete #aws_status="matAutocomplete" [displayWith]="displayStatus">
+                                <mat-option *ngFor="let status of status_list" [value]="status">
+                                    {{status.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>File Name</mat-label>
+                            <input matInput formControlName="file_name" placeholder="File Name" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>Created Date</mat-label>
+                            <input matInput [matDatepicker]="create_date" formControlName="create_date">
+                            <mat-datepicker-toggle matSuffix [for]="create_date"></mat-datepicker-toggle>
+                            <mat-datepicker #create_date startView="multi-year"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="submit" (click)="frs_search(frs_document.value)" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Search</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" (click)="clear_aws()" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="padding-top: 2%;">
+        <div class="tableFixHead">
+            <table class="table table-bordered" fixed-header id="datatable">
+                <thead style="    background-color: #00800021; top: 0;position: sticky;">
+                    <tr>
+                        <th>S.No</th>
+                        <th>File Name</th>
+                        <!-- <th>File Type</th> -->
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let frs of frs_data;index as ind">
+                        <td class="td_style">{{(presentpage-1)*10+ind+1}}</td>
+                        <td class="td_style">{{frs.file_name}}</td>
+                        <!-- <td>{{frs}}</td> -->
+                        <td class="td_style">{{frs.created_date | date:'yyyy-MMM-dd'}}</td>
+                        <!-- <td>{{(aws.status==1 && aws.status !=3 ) ? 'Uploaded':(aws.status==2 ? 'Processing' : ((aws.status==3 || aws.status==4 ) ? 'Success': ((aws.status==1 && aws.status ==3) ? 'File Download Processing':'--')))}} -->
+                        <td class="td_style">{{(frs.status==2 ? 'Processing' : 'Success')}}</td>
+                        <td class="td_style">
+                            <mat-icon
+                                [ngStyle]="{'color':(frs.status == 3) ? 'green' : 'gray','cursor': (frs.status == 3 ) ? 'pointer':'default'}"
+                                [matTooltip]="(frs.status == 3) ? 'Download' : ''"
+                                aria-label="Download" (click)="(frs.status == 3 )?frs_file(frs):''">
+                                download
+                            </mat-icon>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_found" style="text-align: center;">Data Not Found ...</p>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

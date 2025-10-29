@@ -1,0 +1,393 @@
+<div style="margin-left: 50px;">
+
+	<div>
+		<form [formGroup]="branchcertification">
+			<div class="table-responsive" style="margin-top: 2%;width:35%; overflow-x: hidden;margin-left: 31%;">
+				<table class="table table-bordered" fixed-header>
+					<thead class="table_header" style="text-align: center;">
+						<tr>
+							<th> Branch Certification Report</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<label style="margin-left: 20px;color: blue;">Branch: </label>
+								<mat-form-field style="width: 250px;margin-left: 50px;margin-bottom: -16px;" (keyup.backspace)="getbranchid()">
+									<mat-label>Branch</mat-label>
+									<input placeholder="branch" matInput formControlName="branch_id" #branchContactInput
+										[matAutocomplete]="branchtype" (click)="clearPremises()"  (keyup)="branchname()" required>
+									<mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaydiss2"
+									(opened)="autocompletebranchnameScroll()">
+										<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+										<ng-container *ngIf="!isLoading">
+											<mat-option *ngFor="let branch of branchlist" [value]="branch" (focusout)="branchFocusOut(branch)">
+												({{branch.code}}){{branch.name+ " " }}
+											</mat-option>
+										</ng-container>
+									</mat-autocomplete>
+								</mat-form-field>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label style="margin-left: 20px;color: blue;">Site: </label>
+								<mat-form-field style="width: 250px;margin-left: 70px;margin-bottom: -16px;" (keyup.backspace)="getpremiseid()">
+									<mat-label>Site</mat-label>
+									<input placeholder="Site" matInput formControlName="premise_id" #PremiseContactInput
+										[matAutocomplete]="producttype" (keyup)="premisename()" required>
+									<mat-autocomplete #producttype="matAutocomplete" [displayWith]="displaydiss1"
+									(opened)="autocompletePremisenameScroll()">
+										<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+										<ng-container *ngIf="!isLoading">
+											<mat-option *ngFor="let premise of premiselistt" [value]="premise" (focusout)="premiseFocusOut(premise)">
+												({{premise.code}}){{premise.name+ " " }}
+											</mat-option>
+										</ng-container>
+									</mat-autocomplete>
+								</mat-form-field>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label style="margin-left: 20px;color: blue;">Month: </label>
+								<mat-form-field style="width: 250px;margin-left: 50px;margin-bottom: -16px;">
+									<input matInput readonly [matDatepicker]="dp" placeholder="Month" formControlName="monthdate"
+										[formControl]="monthdate">
+									<mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+									<mat-datepicker #dp startView="multi-year"
+										(yearSelected)="chosenYearHandler($event)"
+										(monthSelected)="chosenMonthHandler($event, dp)"
+										panelClass="example-month-picker">
+									</mat-datepicker>
+								</mat-form-field>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div *ngIf="dataEntryButton">
+					<button type="button" class="btn btn-outline-success" style="border-radius: 40px;" (click)="onClickButton()">
+					Data Entry
+				</button>
+				</div>
+			</div>
+
+
+			<div *ngIf="isShowtable">
+				<table>
+						<div class="table-responsive"
+							style="width: 100%; overflow-x: hidden;margin-left: 22%;">
+							<table class="table table-bordered" fixed-header>
+								<thead class="table_header" style="text-align: center;">
+									<tr>
+	
+										<th>Criteria</th>
+										<th>Yes/No</th>
+										<th>Incidents/Hours</th>
+										<th>Reason</th>
+	
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>
+											<div style="color: blue;text-align: left;">Last Month Salary Credited?</div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select formControlName="is_salary_credited">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+	
+									</tr>
+									<tr>
+										<td>
+											<div style="color: blue;text-align: left;">Last Month ESI/EPF Remitted?</div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select formControlName="is_esi_esf_remitted">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+	
+									</tr>
+									<tr>
+										<td>
+											<div style="color:blue;text-align: left;">Is there any overtime for Security Guard?</div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select disabled formControlName="is_overtimeunarmed">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<mat-label>hrs</mat-label>
+												<input matInput [readonly] ="true" placeholder="hrs" formControlName="overtimeunarmed"
+													autocomplete="off">
+											</mat-form-field>
+											<!-- <div>-</div> -->
+										</td>
+										<td *ngIf="Sovertime_no">
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<mat-label>Reason</mat-label>
+												<input matInput placeholder="Reason" (keypress)="keyPressAlphanumeric($event)" formControlName="overtime_reasonunarmed"
+													autocomplete="off">
+											</mat-form-field>
+										</td>
+										<td *ngIf="Sovertime_yes">
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<mat-label>Reason</mat-label>
+												<input matInput placeholder="Reason" (keypress)="keyPressAlphanumeric($event)" formControlName="overtime_reasonunarmed"
+													autocomplete="off" required>
+											</mat-form-field>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div style="color:blue;text-align: left;">Is there any overtime for Armed Guard?</div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select disabled formControlName="is_overtime">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<mat-label>hrs</mat-label>
+												<input matInput [readonly] ="true" placeholder="hrs" formControlName="overtime"
+													autocomplete="off">
+											</mat-form-field>
+											<!-- <div>-</div> -->
+										</td>
+										<td *ngIf="Aovertime_no">
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<mat-label>Reason</mat-label>
+												<input matInput placeholder="Reason" (keypress)="keyPressAlphanumeric($event)" formControlName="overtime_reason"
+													autocomplete="off">
+											</mat-form-field>
+											<!-- <div>-</div> -->
+										</td>
+										<td *ngIf="Aovertime_yes">
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<mat-label>Reason</mat-label>
+												<input matInput placeholder="Reason" (keypress)="keyPressAlphanumeric($event)" formControlName="overtime_reason"
+													autocomplete="off" required>
+											</mat-form-field>
+											<!-- <div>-</div> -->
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div style="color:blue;text-align: left;">Security Guard Operation is satisfied</div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select formControlName="is_staisfied">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div style="color: blue;text-align: left;">Is there any leave for security?</div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select disabled formControlName="is_leaveunarmed">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div style="color: blue;text-align: left;">Is there any leave for armed?</div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select disabled formControlName="is_leave">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div style="color:blue ;text-align: left;">Sleeping while on duty for Armed Guard? </div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select disabled formControlName="is_sleeping">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div style="color: blue;text-align: left;">Sleeping while on duty for Security Guard? </div>
+										</td>
+										<td>
+											<mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+												<!-- <mat-label>Yes/No</mat-label> -->
+												<mat-select disabled formControlName="is_sleepingunarmed">
+													<mat-option *ngFor="let branch of branchcert" [value]="branch.id">
+														{{branch.name}}
+													</mat-option>
+												</mat-select>
+											</mat-form-field>
+											<!-- <div>-</div> -->
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+										<td>
+											<div>-</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+				</table>
+			
+
+
+			<div style="margin-left: 23%;">
+				<table>
+					<div>
+						<tr>
+							<td>
+								<mat-form-field style="width: 250px;" (click)="approvalBranchClick()">
+									<mat-label>Approval Branch</mat-label>
+									<input #appBranchInput placeholder="Approval Branch" matInput
+										formControlName="approval_branch" (click)="clearAppBranch()" [matAutocomplete]="approvalBranch" required>
+									<mat-autocomplete #approvalBranch="matAutocomplete" (opened)="autocompleteapprovalBranchScroll()"
+									 [displayWith]="displayFnappBranch">
+										<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+										<ng-container *ngIf="!isLoading">
+											<mat-option *ngFor="let appBranch of appBranchList" [value]="appBranch" (focusout)="FocusApprovalBranch(appBranch)">
+												({{appBranch.code}}){{appBranch.name}}
+											</mat-option>
+										</ng-container>
+									</mat-autocomplete>
+							    </mat-form-field>
+							</td>
+							<td>
+								<mat-form-field style="width: 250px;margin-left: 50px;" (click)="approvername()">
+									<mat-label>Approver</mat-label>
+											<input #employeeInput placeholder="Approver" matInput #ApproverContactInput
+												formControlName="approver" [matAutocomplete]="employee"  required>
+											<mat-autocomplete #employee="matAutocomplete" (opened)="autocompleteapprovernameScroll()"
+												[displayWith]="displayFnEmployee">
+												<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+												<ng-container *ngIf="!isLoading">
+													<mat-option *ngFor="let employee of employeeList" 
+														[value]="employee">{{employee.full_name}}
+													</mat-option>
+												</ng-container>
+											</mat-autocomplete>
+								 </mat-form-field>
+							</td>
+							<!-- <td>
+								<mat-form-field style="width: 250px;margin-left: 50px;">
+									<mat-label>Approval Branch</mat-label>
+                                    <input matInput [readonly] = "true" formControlName="approval_branch_name">
+                                </mat-form-field>
+							</td> -->
+						</tr>
+					</div>
+				</table>
+				<div class="btn-bottom">
+				<button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary"
+					(click)="BranchSubmitForm()">Submit</button>
+				<button type="button" (click)="onCancelClick()" class="btn btn-outline-primary"
+					style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+			    </div>
+			</div>
+		    </div>
+			
+
+		</form>
+	</div>
+
+
+
+
+
+</div>
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen] = "true" type="ball-spin-clockwise">
+    <p style="color: white">Loading... </p>
+</ngx-spinner>
+
+
+<!-- <pre>{{branchcertification.value|json}}</pre> -->

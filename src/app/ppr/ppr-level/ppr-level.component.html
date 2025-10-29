@@ -1,0 +1,663 @@
+<div class="container" *ngIf="tabcheck_ppr">
+	<br>
+	<h2>PPR Summary</h2>	
+	<form [formGroup]="pprSearchForm">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-3">
+					<mat-form-field (click)="finyear_dropdown()">
+						<mat-label>Fin Year</mat-label>
+						<input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput
+							[matAutocomplete]="fin_year" required>
+						<mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">
+							<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+							<ng-container *ngIf="!isLoading">
+								<mat-option *ngFor="let finyearname of finyearList" (click)="table_header_close()" [value]="finyearname">
+									{{finyearname.finyer}} </mat-option>
+							</ng-container>
+						</mat-autocomplete>
+					</mat-form-field>
+				</div>
+				<div class="col-md-3">
+					<mat-label>Select View</mat-label>
+					<br>
+					<mat-radio-group aria-label="Select Quarterly or Monthly" formControlName="year_term"
+						#group="matRadioGroup">
+						<mat-radio-button (click)="table_header_close()" value="Quarterly">Quarterly</mat-radio-button>&nbsp;
+						<mat-radio-button (click)="table_header_close()" value="Monthly"> Monthly</mat-radio-button>&nbsp;
+						<mat-radio-button (click)="table_header_close()" value="1">Core Business</mat-radio-button>
+					</mat-radio-group>
+				</div>
+				<div class="col-md-3">
+					<mat-label>Select Amount</mat-label>
+					<br>
+					<mat-radio-group aria-label="Select Quarterly or Monthly" formControlName="divAmount"
+						#group="matRadioGroup">
+						<mat-radio-button value="L" (click)="table_header_close()">In Lakhs</mat-radio-button>&nbsp;&nbsp;&nbsp;
+						<mat-radio-button value="K" (click)="table_header_close()"> In Thousands</mat-radio-button>
+					</mat-radio-group>
+				</div>
+				<div class="col-md-3">
+					<mat-form-field (click)="branchname(this.pprSearchForm,'branch_id')">
+						<mat-label>Branch</mat-label>
+						<input #branchInput placeholder="Branch" matInput formControlName="branch_id"
+							#branchContactInput [matAutocomplete]="branch">
+						<mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+							(opened)="autocompletebranchnameScroll()">
+							<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+							<ng-container *ngIf="!isLoading">
+								<mat-option *ngFor="let branch of branchList" (click)="table_header_close()" [value]="branch">
+									{{branch.code}}-{{branch.name}} </mat-option>
+							</ng-container>
+						</mat-autocomplete>
+					</mat-form-field>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-3">
+					<mat-form-field (click)="Sector_dropdown()">
+						<mat-label>Sector</mat-label>
+						<input placeholder="Sector" matInput formControlName="sectorname" #sectornameInput
+							[matAutocomplete]="sector_name" required>
+						<mat-autocomplete #sector_name="matAutocomplete" [displayWith]="displayfnsectorname"
+							(opened)="autocompletesectorScroll()">
+							<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+							<ng-container *ngIf="!isLoading">
+								<mat-option *ngFor="let sector of sectorList" [value]="sector" (click)="table_header_close()"
+									(click)="secotralldata_clear()" (focusout)="selectsectorSection(sector)">
+									{{sector.name}} </mat-option>
+							</ng-container>
+						</mat-autocomplete>
+					</mat-form-field>
+				</div>
+
+				<div class="col-md-3">
+					<mat-form-field (click)="Business_dropdown()">
+						<mat-label>Business</mat-label>
+						<input placeholder="Business" matInput formControlName="businesscontrol" #businessInput
+							[matAutocomplete]="business_name">
+						<mat-autocomplete #business_name="matAutocomplete" [displayWith]="displayfnbusiness"
+							(opened)="autocompletebusinessnameScroll()">
+							<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+							<ng-container *ngIf="!isLoading">
+								<mat-option *ngFor="let business of businessList" (click)="table_header_close()"
+									[value]="business" (click)="bs_clear()"
+									(focusout)="selectbusinessSection(business)"> {{business.name}}
+								</mat-option>
+							</ng-container>
+						</mat-autocomplete>
+					</mat-form-field>
+				</div>
+				<div class="col-md-3">
+					<mat-form-field (click)="bsname_dropdown()">
+						<mat-label>BS</mat-label>
+						<input placeholder="BS" matInput formControlName="bs_id" #bsInput [matAutocomplete]="bs">
+						<mat-autocomplete #bs="matAutocomplete" [displayWith]="displayfnbs"
+							(opened)="autocompletebsnameScroll()">
+							<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+							<ng-container *ngIf="!isLoading">
+								<mat-option *ngFor="let bs of bsList" [value]="bs" (click)="bs_cc_clear()"
+									(focusout)="selectbsSection(bs)" (click)="table_header_close()"> {{bs.name}} </mat-option>
+							</ng-container>
+						</mat-autocomplete>
+					</mat-form-field>
+				</div>
+				<div class="col-md-3">
+					<mat-form-field (click)="ccname_dropdown()">
+						<mat-label>CC</mat-label>
+						<input #bsclear_nameInput placeholder="CC" matInput formControlName="cc_id" #ccInput
+							[matAutocomplete]="cc_name">
+						<mat-autocomplete #cc_name="matAutocomplete" [displayWith]="displayfncc"
+							(opened)="autocompletccnameScroll()">
+							<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+							<ng-container *ngIf="!isLoading">
+								<mat-option *ngFor="let cc of ccList" (click)="table_header_close()" [value]="cc"> {{cc.name}} </mat-option>
+							</ng-container>
+						</mat-autocomplete>
+					</mat-form-field>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-3"
+					*ngIf="pprSearchForm.value.year_term=='Monthly' || pprSearchForm.value.year_term=='1'">
+					<mat-form-field>
+						<mat-label>From Month</mat-label>
+						<mat-select formControlName="frommonth"
+						(selectionChange)="frommonthsearch(pprSearchForm.value.frommonth)">
+							<mat-option *ngFor="let month of from_month" (click)="table_header_close()" [value]="month">
+								{{month.month}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-3"
+					*ngIf="pprSearchForm.value.year_term=='Monthly' || pprSearchForm.value.year_term=='1'">
+					<mat-form-field>
+						<mat-label>To Month {{pprSearchForm.value.frommonth ? '*' : '' }} </mat-label>
+						<mat-select formControlName="tomonth"
+						(selectionChange)="tomonthsearch(pprSearchForm.value.tomonth)">
+							<mat-option *ngFor="let month of from_month"
+								[disabled]="(frommonthid<month.id || frommonthid==12 || frommonthid===month.id)? false:true" (click)="table_header_close()" [value]="month">
+								{{month.month}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<!-- <div class="col-md-3">
+				<section class="example-section">
+					<mat-checkbox value="business_wise" (click)="ppr_search()"(change)="business_wise()">Business Wise</mat-checkbox>
+				</section>
+				</div> -->
+				<div class="col-md-3">
+					<button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary"
+						(click)="ppr_search()">Search</button>
+				</div>
+				<div class="col-md-3">
+					<button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary"
+						(click)="clear_budgetdata()">Reset</button>
+				</div>
+				<div class="col-md-3">
+					<mat-form-field>
+						<mat-label>Download Type</mat-label>
+						<mat-select formControlName="download_type">
+							<mat-option *ngFor="let types of download_types" [value]="types.id">
+								{{types.type}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-3">
+					<button matTooltip="Download" class="btn btn-outline-primary" style="border-radius: 40px;"
+						(click)="exceldownload()"><i class="fa fa-download" aria-hidden="true"></i></button>
+				</div>
+				<div class="col-md-3">
+					<button class="btn btn-outline-primary" (click)="ppr_chart()"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
+				</div>
+			</div>
+		</div>
+	</form>
+
+	<div *ngIf="ppr_report_search" class="mb-2 d-flex justify-content-end">
+		<button mat-raised-button class="compact-green-button mr-3" (click)="downloadPDF()">
+			Download
+			<i class="fa fa-file-pdf-o pdf-icon"></i>
+		  </button>
+		<button mat-raised-button class="compact-green-button mr-3" (click)="downloadExcel()">
+			Download
+			<i class="fa fa-file-excel-o excel-icon"></i>
+		  </button>
+		<span style="color:blue;">{{amount_type}}</span>
+	</div>
+
+	<div class="tableFixHead" *ngIf="ppr_report_search">
+		<div class="example-list" #preformattedDiv>
+
+			<table class="table table-bordered" #pprlevels id="pprlevels" fixed-header>
+				<thead *ngIf="!headercheckone">
+					<tr>
+						<th>Name</th>
+						<ng-container *ngFor="let m of month; let ind = index">
+							<th *ngIf="m !== 'YTD'">
+								{{ m }}&nbsp;{{ ind >= startyear_ind ? lastyear : startyear }}
+							</th>
+						</ng-container>
+						<th>YTD</th>
+					</tr>
+										
+				</thead>
+				<thead *ngIf="!businessview">
+					<tr>
+						<ng-container *ngIf="businessviewheader?.length==0">
+							<th>Name</th>
+							<th style="text-align: center;">Core Business </th>
+							<th>YTD</th>
+						</ng-container>
+						<ng-container *ngIf="businessviewheader?.length!=0">
+							<th>Name</th>
+							<th style="text-align: center;" *ngFor="let business of businessviewheader">
+								<!-- <ng-container *ngIf='ind>0 && ind<businessviewheader.length-1'> -->
+								{{business}}
+								<!-- </ng-container> -->
+							</th>
+						</ng-container>
+					</tr>
+
+				</thead>
+				<thead style="top:0;position: sticky;" *ngIf="!headercheck">
+					<tr>
+						<th>Name</th>
+						<th *ngFor="let quarter of quarterly">{{quarter}}</th>
+					</tr>
+
+				</thead>
+
+
+				<tbody *ngFor="let level of levelslist;let i=index">
+					<ng-container>
+						<tr>
+							<td colspan="1"								
+								style="background-color: #ffff0045; text-align: center;" class="example-box">
+							</td>
+							<td (click)="expant_level(i,level)" [attr.colspan]="colspanlength" class="example-box"
+								style="background-color: #ffff0045; text-align: center;font-size: 14px;"
+								(click)="level.expanded = !level.expanded">
+								<a style="color: blue;cursor: pointer;">{{level?.name}}</a>
+							</td>
+						</tr>
+
+						<!-- total -->
+						<ng-container *ngIf="levels_net_before_after==true ">
+							<ng-container *ngIf="level.code=='L9'">
+								<ng-container *ngIf="level.expanded">
+									<tr *ngFor="let total of total_level;index as levelind">
+										<td>
+
+
+											<div style="color: black;">{{total.name}}
+											</div>
+
+
+										</td>
+
+										<td style=" text-align: end;" *ngFor="let header_data of headerdata">
+											<div *ngFor='let h of total | keyvalue'>
+												<ng-container *ngIf="header_data==h.key">{{h.value | number:'1.2-2'}}</ng-container>
+											</div>
+										</td>
+
+									</tr>
+
+								</ng-container>
+							</ng-container>
+
+							<ng-container *ngIf="level.code=='L10'">
+								<ng-container *ngIf="level.expanded">
+									<tr *ngFor="let total of incometotal;index as levelind">
+										<td>
+
+
+											<div style="color: black;">{{total.name}}
+											</div>
+
+
+										</td>
+
+										<td style=" text-align: end;" *ngFor="let header_data of headerdata">
+											<div *ngFor='let t of total | keyvalue'>
+												<ng-container *ngIf="header_data==t.key">{{t.value | number:'1.2-2'}}</ng-container>
+											</div>
+										</td>
+
+									</tr>
+
+								</ng-container>
+							</ng-container>
+
+							<ng-container *ngIf="level.code=='L11'">
+								<ng-container *ngIf="level.expanded">
+									<tr *ngFor="let total of income_total_level;index as levelind">
+										<td>
+											<div style="color: black;">{{total.name}}</div>
+                                        </td>
+
+										<td style=" text-align: end;" *ngFor="let header_data of headerdata">
+											<div *ngFor='let t of total | keyvalue'>
+												<ng-container *ngIf="header_data==t.key">{{t.value | number:'1.2-2'}}</ng-container>
+											</div>
+										</td>
+
+									</tr>
+
+								</ng-container>
+							</ng-container>
+							<ng-container *ngIf="level.code=='L12'">
+								<ng-container *ngIf="level.expanded">
+									<tr *ngFor="let total of beforetax;index as levelind">
+										<td>
+											<div style="color: black;">{{total.name}}
+											</div>
+										</td>
+
+										<td style=" text-align: end;" *ngFor="let header_data of headerdata">
+											<div *ngFor='let h of total | keyvalue'>
+												<ng-container *ngIf="header_data==h.key">{{h.value | number:'1.2-2'}}</ng-container>
+											</div>
+										</td>
+
+
+									</tr>
+
+								</ng-container>
+							</ng-container>
+
+							<ng-container *ngIf="level.code=='L13'">
+								<ng-container *ngIf="level.expanded">
+									<tr *ngFor="let total of beforeallocation;index as levelind">
+										<td>
+											<div style="color: black;">{{total.name}}</div>
+										</td>
+
+										<td style=" text-align: end;" *ngFor="let header_data of headerdata">
+											<div *ngFor='let h of total | keyvalue'>
+												<ng-container *ngIf="header_data==h.key">{{h.value | number:'1.2-2'}}</ng-container>
+											</div>
+										</td>
+
+									</tr>
+
+								</ng-container>
+							</ng-container>
+						</ng-container>
+						<ng-container >
+							<ng-container *ngIf="level_label_expand[level.name].expanded">
+								<tr *ngFor="let leveldata of (level_label_expand[level.name].lavel_data||[]);index as j;let last=last">
+									<ng-container *ngIf="leveldata.expanded">
+									<td [ngStyle]="{'padding':leveldata.Padding,'padding-left':leveldata.Padding_left}">
+										<ng-container *ngIf="!last">
+											<div *ngIf="leveldata.Padding_left!='100px' && leveldata?.name!='Read More'" style="color: blue;"
+												title="{{leveldata.title}}">
+
+												<a  style="cursor: pointer;"
+													(click)="treelevelclick(leveldata.name,j,leveldata,level_label_expand[level.name]?.lavel_data)">{{leveldata.name}}</a>
+											</div>
+											<div *ngIf='leveldata.Padding_left=="75px" && leveldata?.name=="Read More"'
+												style="color: blue;">
+												<a  style="cursor: pointer;" (click)="page_nextexpancecat(i,j,leveldata,level_label_expand[level.name]?.lavel_data)">{{leveldata.name}}</a>
+											</div>
+											<div *ngIf='leveldata.Padding_left=="100px" && leveldata?.name=="Read More"'
+												style="color: blue;">
+												<a  style="cursor: pointer;" (click)="page_nextexpance(i,j,leveldata,level_label_expand[level.name]?.lavel_data)">{{leveldata.name}}</a>
+											</div>
+											<div *ngIf="leveldata.Padding_left=='100px' && leveldata?.name!='Read More'"
+												style="color: black;">
+												<a (click)="treelevelclick(leveldata.name,j,leveldata,level_label_expand[level.name]?.lavel_data)"
+													title="Sub Category">{{leveldata.name}}</a>
+											</div>
+										</ng-container>
+										<ng-container *ngIf="last">
+											<div style="color: black;">
+												{{leveldata.name}}
+											</div>
+										</ng-container>
+									</td>
+								
+									<td style="text-align: end;"  [ngStyle]="{'color': leveldata.Padding_left === '100px' ? 'blue' : 'black','cursor': 'pointer'}"
+									 *ngFor="let hrdata of headerdata;let ind=index"  [attr.data-toggle]="leveldata.Padding_left === '100px' ? 'modal' : null"
+									 [attr.data-target]="leveldata.Padding_left === '100px' ? '.bd-gl-transaction' : null">
+										<div *ngFor='let e of leveldata | keyvalue'  (click)="leveldata.Padding_left === '100px' ? gl_transaction(leveldata, hrdata,e.value) : ''">
+											<ng-container *ngIf="hrdata==e.key">{{e.value  | number:'1.2-2' }}</ng-container>
+										</div>
+									</td>
+								</ng-container>
+								</tr>
+
+							</ng-container>
+						</ng-container>
+					</ng-container>
+
+				</tbody>
+
+			</table>
+		</div>
+	</div>
+	<div class="modal fade bd-fileupload-modal-lg" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+		tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabels">
+		<div class="modal-dialog modal-lg" style="padding-top: 7%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title"> &nbsp;&nbsp; File Upload</h2>
+					<button type="button" class="close" (click)="closepopup()" #closepop data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" style="white-space: nowrap;">
+
+
+
+					<div class="card">
+						<div class="card-body" style="margin-top: 2%;margin-bottom: 2%;">
+
+							<div class="input-group mb-3">
+								<form [formGroup]="fileuploade">
+									<div class="col-md-12">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="custom-file" style="display: flex;
+											flex-direction: row;
+											justify-content: center;">
+													<label>Branch:</label> &nbsp;&nbsp; <input type="file"
+														formControlName='branch' id="branchFile" class="choose"
+														style="width:90%" (change)="branchupload_file($event)"
+														accept=".xlsx,.csv">
+													<!-- <input type="file" class="custom-file-input" accept=".xlsx,.csv" formControlName="branch" id="importFile" (change)="branchupload_file($event)">
+												<label class="custom-file-label" #labelImport for="importFile"><i class="fas fa-search"></i> Choose file</label> -->
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="custom-file" style="display: flex;
+											flex-direction: row;
+											justify-content: center;">
+													<label>Core BS:</label> &nbsp; &nbsp;<input type="file"
+														formControlName='ccbs' id="ccbsFile" class="choose"
+														(change)="ccbsuploadfile($event)" accept=".xlsx,.csv">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-12" style="
+								padding-top: 4%;
+							">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="custom-file" style="display: flex;
+											flex-direction: row;
+											justify-content: center;">
+													<label>GL:</label> &nbsp;&nbsp;<input type="file"
+														formControlName='gldata' id="gldataFile" class="choose"
+														(change)="gluploadfile($event)" accept=".xlsx,.csv">
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="custom-file" style="display: flex;
+											flex-direction: row;
+											justify-content: center;">
+													<label>{{lableincomehr}}:</label> &nbsp;&nbsp;<input type="file"
+														formControlName='income_file' id="incomeFile" class="choose"
+														(change)="incomeuploadfile($event)" accept=".xlsx,.csv">
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="modal-footer">
+					<button class="btn btn-outline-primary" type="button" style="float: right;"
+						(click)="upload(incomehr,fileuploade)">
+						Upload
+					</button>
+					<button class="btn btn-outline-secondary" type="button" data-dismiss="modal" style="float: right ;"
+						(click)="closepopup()">
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div *ngIf="tabcheck_pprbuilder">
+		<app-budget-builder></app-budget-builder>
+	</div>
+	<div *ngIf="variance_analysis">
+		<app-variance-analysis></app-variance-analysis>
+	</div>
+	<div *ngIf="cost_allocation">
+		<app-cost-allocation></app-cost-allocation>
+	</div>
+	<div *ngIf="tabcheck_pprreviewer">
+		<!-- <h1>reviewer</h1> -->
+	</div>
+	<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+		<p style="color: white">Loading... </p>
+	</ngx-spinner>
+</div>
+<div *ngIf="report_chart">
+	<app-ppr-chart></app-ppr-chart>
+</div>
+
+<!-- pop -->
+<div class="modal fade bd-gl-transaction" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+	tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabels">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Transaction - {{transaction_gl}}  {{'('}}<span style="color: rgb(67 193 73);">{{ NumberTomonth[from_month_data]}}</span> - <span style="color: rgb(67 193 73);">{{ NumberTomonth[to_month]}}</span>{{')'}}</h2>
+				<button type="button" class="close" #closepop (click)="close_transaction()" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				  <mat-accordion>
+					<mat-expansion-panel class="mb-2" #expansionPanel>
+					  <mat-expansion-panel-header>
+						<mat-panel-title>
+							<div class="row max_width m-2">
+								<h4 *ngIf="!expansionPanel.expanded && gl_transaction_from.value.branch_id_pop" class="mr-2 lable_font_style">Branch : <span
+									style="color: rgb(67 193 73);">{{ gl_transaction_from.value.branch_id_pop.name}}</span></h4>
+								<h4 *ngIf="!expansionPanel.expanded && gl_transaction_from.value.entry_crno" class="mr-2 lable_font_style">Entry CRNO : <span
+									style="color: rgb(67 193 73);">{{ gl_transaction_from.value.entry_crno}}</span></h4>
+								<h4 *ngIf="!expansionPanel.expanded && gl_transaction_from.value.supplier_name" class="mr-2 lable_font_style supplier-name-text">Supplier : <span
+									style="color: rgb(67 193 73);" matTooltip="{{gl_transaction_from.value.supplier_name.name}}" >{{ gl_transaction_from.value.supplier_name.name}}</span></h4>
+								<h4 *ngIf="!expansionPanel.expanded && gl_transaction_from.value.transactiondate" class="mr-2 lable_font_style">Transaction Date : <span
+									style="color: rgb(67 193 73);">{{ gl_transaction_from.value.transactiondate | date:'dd:MM:yyyy'}}</span></h4>
+								<!-- <h4 *ngIf="!expansionPanel.expanded && this.pprSearchForm.value.divAmount" class="mr-2 lable_font_style">Amount In : <span
+									style="color: rgb(67 193 73);">{{ this.pprSearchForm.value.divAmount == 'K' ? 'Thousand' : 'Lakh'}}</span></h4> -->
+							</div>
+						</mat-panel-title>
+						<div class="custom-icon" matExpansionPanelToggleIndicator>
+							<mat-icon>search</mat-icon>
+						</div>
+					  </mat-expansion-panel-header>
+						<form [formGroup]="gl_transaction_from">
+							<div class="row">
+								<div class="col-md-auto" *ngIf="!pprSearchForm.value.branch_id">
+									<mat-form-field (click)="branchname(this.gl_transaction_from,'branch_id_pop')">
+										<mat-label>Branch</mat-label>
+										<input #branchInput placeholder="Branch" matInput formControlName="branch_id_pop"
+											#branchContactInput [matAutocomplete]="branch">
+										<mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+											(opened)="autocompletebranchnameScroll()">
+											<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+											<ng-container *ngIf="!isLoading">
+												<mat-option *ngFor="let branch of branchList" [value]="branch">
+													{{branch.code}}-{{branch.name}} </mat-option>
+											</ng-container>
+										</mat-autocomplete>
+									</mat-form-field>
+								</div>
+								<div class="col-md-auto">
+									<mat-form-field>
+										<mat-label>Entry CRNO</mat-label>
+										<input  matInput formControlName="entry_crno" type="text">
+									</mat-form-field>
+								</div>
+								<div class="col-md-auto">
+									<mat-form-field (click)="supplier_drop()">
+										<mat-label>Supplier Name</mat-label>
+										<input placeholder="Supplier" matInput formControlName="supplier_name"
+											#supplierContactInput [matAutocomplete]="supplier">
+										<mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayfnsup"
+											(opened)="autocompletesupplierScroll()">
+											<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+											<ng-container *ngIf="!isLoading">
+												<mat-option *ngFor="let supp of supplier_list" [value]="supp">
+													{{supp.code}}-{{supp.name}} </mat-option>
+											</ng-container>
+										</mat-autocomplete>
+									</mat-form-field>
+								</div>
+								<div class="col-md-auto">
+									<mat-form-field >
+										<mat-label>Transaction date</mat-label>
+										<input matInput [matDatepicker]="picker" formControlName="transactiondate" [max]="current_date">
+										<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+										<mat-datepicker #picker></mat-datepicker>
+									</mat-form-field>
+								</div>
+								<!-- <div class="col-md-auto">
+									<mat-form-field>
+										<mat-label>Select Amount</mat-label>
+										<input placeholder="Select Amount" matInput formControlName="div_amount"
+											#branchContactInput [matAutocomplete]="divamount">
+										<mat-autocomplete #divamount="matAutocomplete" [displayWith]="displayfnbranch">
+												<mat-option *ngFor="let amt of div_amount_list"  [value]="amt">
+													{{amt.name}} 
+												</mat-option>
+										</mat-autocomplete>
+									</mat-form-field>
+								</div> -->
+								<div class="col-md-auto">
+									<button mat-raised-button class="greenbtn" (click)="gl_transaction(this.parms_val,this.month_val,this.amount_popup)">Search</button>
+								</div>
+								<div class="col-md-auto">
+									<button mat-raised-button class="compact-red-button" (click)="reset_pop()">Clear</button>
+								</div>
+							</div>
+						</form>
+					</mat-expansion-panel>
+				  </mat-accordion>
+				<div class="mb-2 d-flex justify-content-end">
+					<h4 class="lable_font_style">Total Counts : <span style="color: rgb(67 193 73);">{{rec_count}}</span></h4>
+					<h4 class="ml-2 lable_font_style">Total Amount ({{this.pprSearchForm.value.divAmount == 'K' ? 'In Thousand' : 'In Lakh'}}) : <span style="color: rgb(67 193 73);">{{amount_popup?amount_popup:0.00}}</span></h4>
+				</div>
+				<div class="table-responsive" class="tablescroll">
+					<table class="table table scrolltable table-bordered">
+						<thead class="table_header" style="text-align: center;">
+							<tr>
+								<th>S.No</th>
+								<th>Branch Code - Name</th>
+								<th>Entry CRNO</th>
+								<th>Supplier Name</th>
+								<th>Transaction date</th>
+								<th>Amount</th>
+								<th>DR/CR</th>
+							</tr>
+						</thead>
+						<tbody style="text-align: center;">                   
+							<tr *ngFor="let data of gl_transaction_data; index as i">
+								<td>{{(presentpage_pop - 1)*10 +i+1 }}</td>
+								<td>{{data.branch_combo}}</td>
+								<td>{{data.entry_crno}}</td>
+								<td>{{data.supplier_name ? data.supplier_name : '-'}}</td>
+								<td>{{data.transactiondate | date:'dd:MMM:y' }}</td>
+								<td style="text-align:right;">{{data.amount}}</td>
+								<td>{{data.DRCR_IN}}</td>
+							</tr>
+						</tbody>
+					</table>
+					<div>
+						<p *ngIf="gl_transaction_data.length == 0" style="text-align: center;">Data Not Found...</p>
+					</div>
+					<div style="margin-bottom: 5%;font-size: small;text-align:right;">
+						<button mat-icon-button [disabled]="has_previous_pop === false" color="primary" (click)="previousClick()">
+							<mat-icon>arrow_back</mat-icon>
+						</button> {{presentpage_pop}}
+						<button mat-icon-button [disabled]="has_next_pop === false" color="primary" (click)="nextClick()">
+							<mat-icon>arrow_forward</mat-icon>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,1246 @@
+<div style="margin-left: 50px; margin-right: 80%; margin-top: 1%; width: 90%" *ngIf="showpopup">
+  <div class="row">
+    <div class="col-md-9 mt-3">
+      <h2>Branch Indent Request Maker</h2>
+    </div>
+    <!-- <div class="col-md-3 mt-3 text-center">
+      <mat-radio-group
+        (ngModelChange)="isReplacement($event)"
+        [(ngModel)]="selectedType"
+      >
+        <mat-chip-list>
+          <mat-chip>
+            <mat-radio-button value="1" [disabled]="editKey == 1"
+              >New</mat-radio-button
+            >
+          </mat-chip>
+          <mat-chip>
+            <mat-radio-button value="2" [disabled]="editKey == 1"
+              >Replacement</mat-radio-button
+            >
+          </mat-chip>
+        </mat-chip-list>
+      </mat-radio-group>
+    </div>
+  </div> -->
+    <!-- <div class="col-md-3 mt-3 text-center mb-3">
+
+  <mat-button-toggle-group
+  [(ngModel)]="selectedType"
+  (change)="isReplacement($event)"
+  appearance="standard"
+  class="thin-toggle-group"
+
+>
+  <mat-button-toggle [value]="'1'" [disabled]="editKey == 1">
+    New
+  </mat-button-toggle>
+  <mat-button-toggle [value]="'2'" [disabled]="editKey == 1" data-toggle="modal" data-target="#popupname" (click)="patchProduct()">
+    Replacement
+  </mat-button-toggle>
+</mat-button-toggle-group>
+</div> -->
+  </div>
+  <br />
+  <mat-accordion>
+  
+    <mat-expansion-panel
+      [expanded]="true"
+      (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title> Branch Indent Details </mat-panel-title>
+        <mat-panel-description> </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <form [formGroup]="brForm">
+        <div class="row pl-3 pr-3">
+          <!-- <div [ngClass]="{'col-md-12': selectedType == '1', 'col-md-8': selectedType == '2'}"> -->
+          <div class="col-md-12">
+            <!-- <table class="table">
+            <tr> -->
+
+            <!-- <td class="col-md-3">
+               <mat-form-field style="width: 250px">
+                  <mat-label>Request Type</mat-label>
+                  <mat-select formControlName="type">
+                    <mat-option
+                      *ngFor="let t of type"
+                      [value]="t.id"
+                      (click)="selectedType = t.id"
+                    >
+                      {{ t.text }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field> -
+               </td> -->
+            <div class="row pl-5 pr-5">
+              <div class="col-md-3">
+                <mat-form-field
+                  style="width: 150px"
+                  (click)="getEmployeeBranchData()"
+                >
+                  <mat-label>Branch Code</mat-label>
+                  <input
+                    #branchInput
+                    placeholder="Branch Code"
+                    matInput
+                    readonly
+                    [matAutocomplete]="branch"
+                    formControlName="branch_id"
+                  />
+                  <mat-autocomplete
+                    #branch="matAutocomplete"
+                    [displayWith]="displayFnbranch"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let branch of branchList"
+                        [value]="branch"
+                      >
+                        {{ branch.code }}-{{ branch.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <mat-form-field style="width: 150px" (click)="getbrcommodity()">
+                  <mat-label>Commodity </mat-label>
+                  <input
+                    #commodityInput
+                    placeholder="Commodity"
+                    matInput
+                    [matAutocomplete]="commodity"
+                    formControlName="commodity"
+                    required
+                  />
+                  <mat-autocomplete
+                    #commodity="matAutocomplete"
+                    [displayWith]="displayFncommodity"
+                    (opened)="autocompletecommodityScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let commodity of commodityList"
+                        title="{{ commodity.name }}"
+                        [value]="commodity"
+                        (click)="resetAfterCommodityChange('', commodity)"
+                      >
+                        {{ commodity.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterCCommodityChange('', 'removecom')"
+                  >
+                    X
+                  </button>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <!-- <mat-form-field class="example-full-width" style="width: 150px">
+                  <mat-label>Product Type</mat-label>
+                  <mat-select formControlName="product_type">
+                    <mat-option
+                      *ngFor="let l of Lists"
+                      [value]="l.id"
+                      (click)="product_service(l)"
+                    >
+                      {{ l.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field> -->
+                <mat-form-field (click)="getProductTypes()" class="example-full-width" style="width: 150px">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types"  (click)="product_service(types)">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+
+                <!-- <mat-form-field style="width: 250px" (click)="getproductType()">
+                  <mat-label> Product Type</mat-label>
+                  <mat-select formControlName="product_type">
+                    <mat-option
+                      *ngFor="let types of Lists$ | async"
+                      [value]="types.id"
+                      (click)="product_service(types)"
+                    >
+                      {{ types.text }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field> -->
+              </div>
+              <!-- </tr> -->
+
+              <!-- <tr > -->
+
+              <!-- <td class="col-md-3" rowspan="6" *ngIf="selectedType == '2'">
+                <mat-card>
+                  <mat-card-header>
+                    <mat-card-title>Asset ID Details</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <li *ngFor="let a of this.assetArray">
+                      <ul>{{a.asset_id}}</ul>
+                    </li>
+                  </mat-card-content>
+                </mat-card>
+              </td> -->
+              <!-- </tr> -->
+              <!-- </table> -->
+
+              <!-- <table> -->
+              <!-- <tr> -->
+              <div class="col-md-3">
+                <mat-form-field style="width: 150px" (click)="getproductList()">
+                  <mat-label>Product Name</mat-label>
+                  <input
+                    #itemInput
+                    placeholder="Select Product"
+                    matInput
+                    formControlName="product"
+                    [matAutocomplete]="item"
+                    required
+                  />
+                  <mat-autocomplete
+                    #item="matAutocomplete"
+                    [displayWith]="displayFnitem"
+                    (opened)="autocompleteitemScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let item of productList"
+                        [value]="item"
+                        (click)="productclick(item)"
+                      >
+                        {{ item.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterProductChange('', 'removeProd')"
+                  >
+                    X
+                  </button>
+                </mat-form-field>
+              </div>
+         
+              <div class="col-md-3">
+                <mat-button-toggle-group
+                  [(ngModel)]="selectedType"
+                  [ngModelOptions]="{ standalone: true }"
+                  (change)="isReplacement($event.value)"
+                  appearance="standard"
+                  class="thin-toggle-group"
+                >
+                  <mat-button-toggle [value]="'1'" [disabled]="editKey == 1">
+                    New
+                  </mat-button-toggle>
+
+                  <mat-button-toggle
+                    [value]="'2'"
+                    [attr.data-toggle]="'modal'"
+                    [attr.data-target]="'#popupname'"
+                    (click)="patchProduct()"
+                  >
+                    Replacement
+                  </mat-button-toggle>
+                </mat-button-toggle-group>
+
+                <!-- <mat-button-toggle-group
+                [(ngModel)]="selectedType"
+                [ngModelOptions]="{ standalone: true }"
+
+                (change)="isReplacement($event.value)"
+                appearance="standard"
+                class="thin-toggle-group"
+
+              >
+                <mat-button-toggle [value]="'1'" [disabled]="editKey == 1">
+                  New
+                </mat-button-toggle>
+                <mat-button-toggle [value]="'2'" [disabled]="editKey == 1" data-toggle="modal" data-target="#popupname" (click)="patchProduct()">
+                  Replacement
+                </mat-button-toggle>
+              </mat-button-toggle-group> -->
+              </div>
+              <div class="col-md-3">
+                <mat-form-field style="width: 150px" (click)="getbruom()">
+                  <mat-label>UOM</mat-label>
+                  <input
+                    #uomInput
+                    placeholder="UOM"
+                    matInput
+                    formControlName="uom"
+                    [matAutocomplete]="uom"
+                    required
+                  />
+                  <mat-autocomplete
+                    [panelWidth]="250"
+                    #uom="matAutocomplete"
+                    [displayWith]="displayFnuom"
+                    (opened)="uomScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...
+                    </mat-option>
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let uom of uomlist"
+                        [value]="uom.name"
+                        (click)="uomclick(uom)"
+                      >
+                        {{ uom.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field style="width: 150px">
+                  <mat-label>Quantity</mat-label>
+                  <input
+                    matInput
+                    formControlName="quantity"
+                    type="number"
+                    autocomplete="off"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+
+              <!-- </tr> -->
+              <!-- <tr> -->
+              <div class="col-md-3">
+                <mat-form-field style="width: 150px" (click)="getbrbs()">
+                  <mat-label> BS </mat-label>
+                  <input
+                    #bsInput
+                    placeholder="Select BS"
+                    matInput
+                    formControlName="bs"
+                    [matAutocomplete]="bs"
+                    required
+                  />
+                  <mat-autocomplete
+                    #bs="matAutocomplete"
+                    [displayWith]="displayFnbs.bind(this)"
+                    (opened)="autocompletebsScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading">
+                      Loading...
+                    </mat-option>
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let bs of bslist"
+                        [value]="bs.name"
+                        (click)="ccclear(bs)"
+                        title="Description: {{ bs.description }}"
+                      >
+                        {{ bs.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterbsccbsChange()"
+                  >
+                    X
+                  </button>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field style="width: 150px" (click)="getccValue()">
+                  <mat-label> CC </mat-label>
+                  <input
+                    #ccInput
+                    placeholder="Select CC"
+                    matInput
+                    formControlName="cc"
+                    [matAutocomplete]="cc"
+                    required
+                  />
+                  <mat-autocomplete
+                    #cc="matAutocomplete"
+                    [displayWith]="displayFncc.bind(this)"
+                    (opened)="ccscroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading">
+                      Loading...
+                    </mat-option>
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let cc of cclist"
+                        [value]="cc.name"
+                        (click)="ccname(cc)"
+                        title="Description: {{ cc.description }}"
+                      >
+                        {{ cc.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterSccccbsChange()"
+                  >
+                    X
+                  </button>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <input
+                  type="file"
+                  multiple
+                  formControlName="files"
+                  #takeInput
+                  (change)="onFileSelectedHeader($event)"
+                  style="width: 200px; margin-bottom: 8px"
+                />
+                <mat-icon
+                  style="color: gray"
+                  (click)="HeaderFilesDelete()"
+                  aria-label="Delete"
+                  >delete</mat-icon
+                >
+              </div>
+
+              <!-- </tr>
+            <tr> -->
+              <div class="col-md-3">
+                <mat-form-field
+                  class="fields"
+                  style="width: 150px;"
+                >
+                  <mat-label >Remarks</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="remarks"
+                    autocomplete="off"
+                  ></textarea>
+                </mat-form-field>
+              </div>
+              <!-- </tr> -->
+              <!-- <td>
+                            <mat-form-field style="width: 175px;margin-left: 10px;">
+                                <mat-label>CC Name</mat-label>
+                                <input #ccInput placeholder="Select CC" matInput
+                                    [matAutocomplete]="cc">
+                                <mat-autocomplete #cc="matAutocomplete">
+                                    <mat-option *ngIf="isLoading" class="is-loading">
+                                        Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option>
+                                            ccbs
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                                <button type="button" matSuffix class="close">X</button>
+                            </mat-form-field>
+                        </td>
+                      
+                        <td class="col-md-3">
+                                <mat-form-field style="width: 175px;margin-left: 10px;">
+                                    <mat-label> Select BS Name</mat-label>
+                                    <input #bsInput placeholder="Select BS" matInput
+                                        [matAutocomplete]="bs">
+                                    <mat-autocomplete #bs="matAutocomplete">
+                                        <mat-option *ngIf="isLoading" class="is-loading">
+                                            Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option>
+                                                bs name
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                    <button type="button" matSuffix class="close">X</button>
+                                </mat-form-field>
+                        </td>
+                    </tr>
+    
+                </table>
+    
+                <table>
+                    <tr>
+                <td class="col-md-9">
+                    <mat-form-field style="width: 100px; margin-left: 5px;">
+                        <mat-label>UOM</mat-label>
+                        <input matInput formControlName="uom" autocomplete="off" [readonly]="ForCatlog">
+                    </mat-form-field>
+                </td> -->
+
+              <!-- <td class="col-md-3">
+                    <mat-form-field style="width: 300px; margin-left: 50px;">
+                        <mat-label>Approver Name with Limit</mat-label>
+                        <input #empInput placeholder="Select Approver" matInput
+                            [matAutocomplete]="emp">
+                        <mat-autocomplete #emp="matAutocomplete">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option>
+                                    employee
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+    
+                    <mat-form-field style="width: 100px; margin-left: 50px;">
+                        <mat-label>Code</mat-label>
+                        <input readonly matInput value={{employeeCode}}>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100px; margin-left: 50px;">
+                        <mat-label>Limit</mat-label>
+                        <input readonly matInput value={{employeeLimit}}>
+                    </mat-form-field>
+    
+                </td> -->
+              <!-- </table> -->
+            </div>
+          </div>
+
+          <!-- <div class="col-md-4 text-center p-2" *ngIf="selectedType == '2'">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-subtitle>
+                  <h4>
+                  Selected Asset IDs
+                </h4>
+              </mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content class="table-responsive">
+                <div class="list-group">
+                  <div *ngFor="let asset of assetArray">
+                   <a data-toggle="modal" data-target="#assetDetails" class="btn-link" role="button">
+                    {{ asset.asset_id }}
+                   </a> 
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div> -->
+        </div>
+      </form>
+    </mat-expansion-panel>
+    <mat-expansion-panel *ngIf="product_for" 
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title> Request Asset Details </mat-panel-title>
+      <!-- <mat-panel-description>
+            Type your name and age
+          </mat-panel-description> -->
+    </mat-expansion-panel-header>
+      <!-- <div class="col-md-4"> -->
+        <form [formGroup]="brForm">
+    <div class="row">
+       <div class="col-md-3">
+                      <!-- <mat-form-field style="width: 200px" (click)="getproductType()">
+                  <mat-label>Product Type</mat-label>
+                  <mat-select formControlName="prod_type_asset">
+                    <mat-option
+                      *ngFor="let types of Lists"
+                      [value]="types.id"
+                      (click)="product_service1(types)"
+                    >
+                      {{ types.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field> -->
+                  <mat-form-field (click)="getProductTypes()" style="width: 200px">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="prod_type_asset"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types"   (click)="product_service1(types)">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+                  </div>
+          <div class="col-md-3" *ngIf="product_for">
+            <mat-form-field class="conf-field" style="width: 200px" >
+              <mat-label>Request Product For
+              </mat-label>
+              <input
+                matInput
+                placeholder="Select Product For"
+                [matAutocomplete]="auto"
+                formControlName="product_for"
+                (focus)="getConf()"
+
+              />
+              <!-- (focus)="getConf(spec?.specification)" -->
+
+              <mat-autocomplete #auto="matAutocomplete"
+              [displayWith]="displayFnProduct"
+              >
+                <mat-option
+                  *ngFor="let conf of specsList"
+                  [value]="
+                    conf
+                  "
+                >
+                  {{
+                    conf?.name  }}
+                </mat-option>
+              </mat-autocomplete>
+              <button
+              type="button"
+              matSuffix
+              class="close"
+              (click)="resetAfterProductChange('removeProdF', '')"
+            >
+              X
+            </button>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3"  *ngIf="product_for">
+            <mat-form-field style="width: 200px"
+            (click)="getAssetId(1)"
+          >
+            <mat-label>Asset ID</mat-label>
+            <div class="input-wrapper">
+              <input
+                #assetInputt
+                placeholder="Select Asset ID"
+                matInput
+                formControlName="asset_id"
+                [matAutocomplete]="assetDDd"
+              />
+              <mat-autocomplete
+                #assetDDd="matAutocomplete"
+                [displayWith]="displayFnAsset"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let item of assetList"
+                    [value]="item"
+                    (click)="asset_id = item.assetid"
+                  >
+                    {{ item.assetid }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+              <button
+              type="button"
+              matSuffix
+              class="close"
+              (click)="resetAfterProductChange('', 'asset_id')"
+            >
+              X
+            </button>
+              <!-- <i
+                class="fa fa-times-circle cancel"
+                role="button"
+                (click)="resetAfterProductChange('', 'asset')"
+              ></i> -->
+            </div>
+          </mat-form-field>
+          </div>
+        
+          <!-- <mat-form-field appearance="outline" class="width"> -->
+           
+      <!-- </div> -->
+      <div class="col-md-3 text-right pr-5 mt-2">
+        <button class="btn btn-outline-success" (click)="addAssett()">
+          <span class="fa fa-plus"></span>
+        </button>
+      </div>
+    </div>
+
+    </form>
+
+    <div class="table-responsive tableStyle" *ngIf="assetArrayy.length >= 1">
+      <table class="table table-hover">
+        <thead class="table_header">
+          <tr>
+            <td>S.No</td>
+            <td>Asset ID</td>
+            <td>Serial No</td>
+            <td>Product</td>
+            <td>Make</td>
+            <td>Model</td>
+            <td>Specification</td>
+            <td>Status</td>
+            <td>Action</td>
+          </tr>
+        </thead>
+        <tbody *ngFor="let a of assetArrayy; index as i">
+          <tr *ngIf="a.status !== 0">
+        <!-- <tbody>
+          <tr *ngFor="let a of assetArrayy; index as i"> -->
+            <td>{{ i + 1 }}</td>
+            <td>{{ a.assetid || a?.asset_id }}</td>
+            <td>{{ a.serial_no }}</td>
+            <td>{{ a.product_name }}</td>
+            <td>{{ a.item_name }}</td>
+            <td>{{ a.model_name }}</td>
+            <td>
+              <ng-container
+                *ngIf="
+                  a.specification && a.specification !== '--';
+                  else showEmpty
+                "
+              >
+                <ng-container
+                  *ngFor="
+                    let specKey of getSpecificationKeys(a.specification)
+                  "
+                >
+                  {{ specKey }}: {{ a.specification[specKey] }}<br />
+                </ng-container>
+              </ng-container>
+              <!-- Template to display "--" if specification is empty -->
+              <ng-template #showEmpty>{{ a.specification }}</ng-template>
+            </td>
+            <td>{{a?.assetdetails_status}}</td>
+            <td>
+              <mat-icon role="button" class="gray" (click)="deleteAssett(a, i)"
+                >delete</mat-icon
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-expansion-panel>
+  </mat-accordion>
+  <br />
+  <div class="row p-2 mb-5">
+    <div class="col-md-12 text-right">
+      <button
+        type="submit"
+        class="btn btn-outline-success"
+        (click)="brrSubmit()"
+      >
+        Submit
+      </button>
+      &nbsp; &nbsp;
+
+      <button
+        type="button"
+        (click)="onCancelClick()"
+        class="btn btn-outline-primary"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="popupname"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="DeactivateModalLabel"
+  aria-hidden="true"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h3
+          class="modal-title w-100 font-weight-bold"
+          id="DeactivateModalLabel"
+        >
+          Replacement Details
+        </h3>
+        <button
+          type="button"
+          #closebtn
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="closePopup()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <mat-accordion>
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title> Replacement Asset Details </mat-panel-title>
+              <!-- <mat-panel-description>
+                  Type your name and age
+                </mat-panel-description> -->
+            </mat-expansion-panel-header>
+           <form [formGroup]="assetForm">
+              <div class="row">
+                <div class="col-md-3">
+                  <mat-form-field
+                    appearance="outline"
+                    style="width: 250px"
+                    (click)="getbrbranch()"
+                  >
+                    <mat-label>Request For</mat-label>
+                    <div class="input-wrapper">
+                      <input
+                        #branchInput
+                        placeholder="Select Request For"
+                        matInput
+                        formControlName="request_for"
+                        [matAutocomplete]="request_for"
+                      />
+                      <mat-autocomplete
+                        [panelWidth]="400"
+                        #request_for="matAutocomplete"
+                        [displayWith]="displayFnbranch"
+                        (opened)="autocompletebranchScroll()"
+                      >
+                        <mat-option *ngIf="isLoading" class="is-loading"
+                          >Loading...</mat-option
+                        >
+                        <!-- BUG ID:7807 -->
+                        <mat-option
+                          *ngIf="is_admin"
+                          id="all-option"
+                          [value]="{ id: -1, value: -1 }"
+                          (click)="branchid = -1"
+                          >ALL</mat-option
+                        >
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option
+                            *ngFor="let branch of branchList; let first = first"
+                            [value]="branch"
+                            (click)="getbranch(branch)"
+                          >
+                            {{ branch.code }}-{{ branch.name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                      <i
+                        class="fa fa-times-circle cancel"
+                        role="button"
+                        (click)="resetAfterProductChange('', 'request_for')"
+                      ></i>
+                    </div>
+                  </mat-form-field>
+                </div>
+
+                <div class="col-md-3">
+                  <mat-form-field
+                    appearance="outline"
+                    style="width: 250px"
+                    (click)="getbrproduct()"
+                  >
+                    <mat-label>Product Name</mat-label>
+                    <div class="input-wrapper">
+                      <input
+                        #itemInput
+                        placeholder="Select Product Name"
+                        matInput
+                        formControlName="product_name"
+                        [matAutocomplete]="item"
+                      />
+                      <mat-autocomplete
+                        #item="matAutocomplete"
+                        [panelWidth]="400"
+                        [displayWith]="displayFnitem"
+                        (opened)="autocompleteitemScroll()"
+                      >
+                        <mat-option *ngIf="isLoading" class="is-loading"
+                          >Loading...</mat-option
+                        >
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option
+                            *ngFor="let item of productList"
+                            [value]="item" (click)="setProduct(item)"
+                          
+                          >
+                            {{ item.name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                      <i
+                        class="fa fa-times-circle cancel"
+                        role="button"
+                        (click)="resetAfterProductChange('', 'removeProdB')"
+                      ></i>
+                    </div>
+                  </mat-form-field>
+                  <!-- </td> -->
+                </div>
+                
+                <div class="row col-md-12">
+                  <div class="col-md-3">
+                    <mat-form-field (click)="assetForm.get('items').enabled ? getitemFK() : $event.stopPropagation()" appearance="outline" style="width: 250px">
+                <mat-label>Make</mat-label>
+                <input
+                  #itemmakeInput
+                  placeholder="Select Make"
+                  matInput
+                  formControlName="items"
+                  [matAutocomplete]="itemmake"
+                  [disabled]="product_selected"
+                />
+                <mat-autocomplete
+                  #itemmake="matAutocomplete"
+                  [displayWith]="displayFnitem"
+                  (opened)="autocompleteitemScrollmake()" 
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let item of makeList"
+                      [value]="item"
+                      (onSelectionChange)="makeCheck(item)"
+                    >
+                      {{ item.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+              </mat-form-field>
+                  </div>
+                  <div class="col-md-3">
+                    <mat-form-field appearance="outline" (click)="assetForm.get('models').enabled ? getmodall() : $event.stopPropagation()" style="width: 250px">
+                <mat-label>Model</mat-label>
+                <input
+                  #modelInput
+                  placeholder="Select Model"
+                  matInput
+                  formControlName="models"
+                  [matAutocomplete]="model"
+                  [disabled]="product_selected"
+                />
+                <mat-autocomplete
+                  #model="matAutocomplete"
+                  [displayWith]="displayFnmodell"
+                  (opened)="autocompletemodelScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let model of modelList" [value]="model">
+                      {{ model.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+              </mat-form-field>
+                  </div>
+
+                  <div class="col-md-3">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Serial No</mat-label>
+                          <div class="input-wrapper">
+                            <input
+                              placeholder="Enter Serial No"
+                              matInput
+                              formControlName="serial_no">
+                            </div>
+                        </mat-form-field>
+                        
+                  </div>
+                  <div class="col-md-3">
+                  <mat-form-field
+                    appearance="outline"
+                    style="width: 250px"
+                    (click)="getAssetId_replacement(2)"
+                  >
+                    <mat-label>Asset ID</mat-label>
+                    <div class="input-wrapper">
+                      <input
+                        #assetInput
+                        placeholder="Select Asset ID"
+                        matInput
+                        formControlName="asset_id"
+                        [matAutocomplete]="assetDD"
+                      />
+                      <mat-autocomplete
+                        #assetDD="matAutocomplete"
+                        [displayWith]="displayFnAsset"
+                        (opened)="autocompleteAssetScroll()"
+                      >
+                        <mat-option *ngIf="isLoading" class="is-loading"
+                          >Loading...</mat-option
+                        >
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option
+                            *ngFor="let item of assetList"
+                            [value]="item"
+                            (click)="asset_id = item.assetid"
+                          >
+                            {{ item.assetid }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                      <i
+                        class="fa fa-times-circle cancel"
+                        role="button"
+                        (click)="resetAfterProductChange('', 'asset')"
+                      ></i>
+                    </div>
+                  </mat-form-field>
+
+                  <!-- <mat-form-field appearance="outline" class="width">
+                  <mat-label>Asset ID</mat-label>
+                  <div class="input-wrapper">
+                    <input
+                      matInput
+                      type="text"
+                      formControlName="asset_id"
+                      placeholder="Enter an Asset ID"
+                      (input)="toUpperCase($event)"
+                    />
+                    <i
+                      class="fa fa-times-circle cancel"
+                      role="button"
+                      (click)="resetAsset()"
+                    ></i>
+                  </div>
+                </mat-form-field> -->
+                </div>
+               
+                <div class="col-md-3 text-right mt-2">
+                  <button class="btn btn-outline-success" (click)="addAsset()">
+                    <span class="fa fa-plus"></span>
+                  </button>
+                </div>
+                </div>
+              </div>
+            </form>
+
+            <div class="table-responsive tableStyle">
+              <table class="table table-hover">
+                <thead class="table_header">
+                  <tr>
+                    <td>S.No</td>
+                    <td>Asset ID</td>
+                    <td>Serial No</td>
+                    <td>Product</td>
+                    <td>Make</td>
+                    <td>Model</td>
+                    <td>Specification</td>
+                    <td>Status</td>
+                    <td>Action</td>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let a of assetArray; index as i">
+                  <tr *ngIf="a.status !== 0">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ a?.assetid || a?.asset_id }}</td>
+                    <td>{{ a.serial_no }}</td>
+                    <td>{{ a.product_name }}</td>
+                    <td>{{ a.make }}</td>
+                    <td>{{ a.model }}</td>
+                    <td>
+                      <ng-container
+                        *ngIf="
+                          a.specification && a.specification !== '--';
+                          else showEmpty
+                        "
+                      >
+                        <ng-container
+                          *ngFor="
+                            let specKey of getSpecificationKeys(a.specification)
+                          "
+                        >
+                          {{ specKey }}: {{ a.specification[specKey] }}<br />
+                        </ng-container>
+                      </ng-container>
+                      <!-- Template to display "--" if specification is empty -->
+                      <ng-template #showEmpty>{{
+                        a.specification
+                      }}</ng-template>
+                    </td>
+                    <td>{{ a?.assetdetails_status }}</td>
+                    <td>
+                      <mat-icon
+                        role="button"
+                        class="gray"
+                        (click)="deleteAsset(a, i)"
+                        >delete</mat-icon
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+
+      <div class="modal-footer" style="margin-left: 10px">
+        <button
+          type="button"
+          style="border-radius: 40px; margin-left: 10px"
+          class="btn btn-outline-primary"
+          data-dismiss="modal"
+          (click)="closePopup()"
+        >
+          Save
+        </button>
+
+        <!-- <button
+          type="button"
+          style="border-radius: 40px; margin-left: 10px"
+          class="btn btn-outline-info"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          class="d-none"
+          id="assetmodal"
+          data-dismiss="modal"
+        >
+          Save
+        </button> -->
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="assetDetails"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="DeactivateModalLabel"
+  aria-hidden="true"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h3
+          class="modal-title w-100 font-weight-bold"
+          id="DeactivateModalLabel"
+        >
+          Asset History Details
+        </h3>
+        <button
+          type="button"
+          #closebtn
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive tableStyle">
+          <table class="table table-hover">
+            <thead class="table_header">
+              <tr>
+                <td>S.No</td>
+                <td>Asset ID</td>
+                <td>Serial No</td>
+                <td>Product</td>
+                <td>Make</td>
+                <td>Model</td>
+                <td>Specification</td>
+                <!-- <td>Action</td> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of assetArray; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ a.asset_id }}</td>
+                <td>{{ a.serial_no }}</td>
+                <td>{{ a.product_name }}</td>
+                <td>{{ a.item_name }}</td>
+                <td>{{ a.model_name }}</td>
+                <td>
+                  <ng-container
+                    *ngIf="
+                      a.specification && a.specification !== '--';
+                      else showEmpty
+                    "
+                  >
+                    <ng-container
+                      *ngFor="
+                        let specKey of getSpecificationKeys(a.specification)
+                      "
+                    >
+                      {{ specKey }}: {{ a.specification[specKey] }}<br />
+                    </ng-container>
+                  </ng-container>
+                  <!-- Template to display "--" if specification is empty -->
+                  <ng-template #showEmpty>{{ a.specification }}</ng-template>
+                </td>
+                <!-- <td>
+                  <mat-icon role="button" class="gray" (click)="deleteAsset(a, i)"
+                    >delete</mat-icon
+                  >
+                </td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="margin-left: 10px">
+        <button
+          type="button"
+          style="border-radius: 40px; margin-left: 10px"
+          class="btn btn-outline-primary"
+          data-dismiss="modal"
+        >
+          Cancel
+        </button>
+
+        <!-- <button
+          type="button"
+          style="border-radius: 40px; margin-left: 10px"
+          class="btn btn-outline-info"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          class="d-none"
+          id="assetmodal"
+          data-dismiss="modal"
+        >
+          Save
+        </button> -->
+      </div>
+    </div>
+  </div>
+</div>

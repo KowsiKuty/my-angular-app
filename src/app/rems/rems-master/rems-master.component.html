@@ -1,0 +1,743 @@
+<div class="Container" style="margin-left: 45px;">
+    <nav>
+        <div class="nav nav-tabs" style="margin-top: 1%;  cursor: pointer;">
+            <span class="nav-item nav-link" data-toggle="tab" (click)="subModuleData(sub)" role="tab"
+                *ngFor="let sub of remsMasterList">
+                {{sub.name}}
+            </span>
+            <button type="button" class="btn btn-outline-success" *ngIf="ismakerCheckerButton" (click)="addForm()"
+                style="border-radius: 20px;margin-bottom: 10px;margin-top:4px; cursor: pointer;" color="primary" id="rems-master-0001"><span
+                    class="fa fa-plus"></span>
+                {{addFormBtn}} </button>
+        </div>
+    </nav>
+    <!-- <div>
+        <span *ngIf="isPremiseForm">
+            <app-premise-create (onCancel)="PremiseCancel()" (onSubmit)="PremiseSubmit()"></app-premise-create>
+        </span>
+    </div> -->
+    <div>
+        <span *ngIf="isInsurancetypeForm">
+            <app-insurancetype-create (onCancel)="InsurancetypeCancel()" (onSubmit)="InsurancetypeSubmit()">
+            </app-insurancetype-create>
+        </span>
+    </div>
+    <div>
+        <span *ngIf="isInsurancetypeEditForm">
+            <app-insurancetype-edit (onCancel)="InsurancetypeEditCancel()" (onSubmit)="InsurancetypeEditSubmit()">
+            </app-insurancetype-edit>
+        </span>
+    </div>
+    <div>
+        <span *ngIf="isInsuranceDetailForm">
+            <app-insurance-detail-create (onCancel)="InsuranceDetailCancel()" (onSubmit)="InsuranceDetailSubmit()">
+            </app-insurance-detail-create>
+        </span>
+    </div>
+    <div>
+        <span *ngIf="isInsuranceDetailEditForm">
+            <app-insurance-detail-edit (onCancel)="InsuranceDetailEditCancel()"
+                (onSubmit)="InsuranceDetailEditSubmit()"></app-insurance-detail-edit>
+        </span>
+    </div>
+    <div>
+        <span *ngIf="isLicenseTypeForm">
+            <app-licensetype (onCancel)="LicenseTypeCancel()" (onSubmit)="LicenseTypeSubmit()"></app-licensetype>
+        </span>
+    </div>
+
+    <div>
+        <span *ngIf="isLicenseTypeEditForm">
+            <app-licensetype-edit (onCancel)="LicenseTypeEditCancel()" (onSubmit)="LicenseTypeEditSubmit()">
+            </app-licensetype-edit>
+        </span>
+    </div>
+
+    <div>
+        <span *ngIf="isLicenseDetailsForm">
+            <app-licensedetails (onCancel)="LicenseDetailsCancel()" (onSubmit)="LicenseDetailsSubmit()">
+            </app-licensedetails>
+        </span>
+    </div>
+    <div>
+        <span *ngIf="isLicenseDetailsEditForm">
+            <app-licensedetails-edit (onCancel)="LicenseDetailsEditCancel()" (onSubmit)="LicenseDetailsEditSubmit()">
+            </app-licensedetails-edit>
+        </span>
+    </div>
+    <div>
+        <span *ngIf="isTaxForm">
+            <app-tax (onCancel)="taxCancel()" (onSubmit)="taxSubmit()">
+            </app-tax>
+        </span>
+    </div>
+    <div>
+        <span *ngIf="isTaxRateForm">
+            <app-tax-rate (onCancel)="taxRateCancel()" (onSubmit)="taxRateSubmit()">
+            </app-tax-rate>
+        </span>
+    </div>
+
+    <div>
+        <span *ngIf="isStatutoryTypeForm">
+            <app-statutory-type (onCancel)="statutoryTypeCancel()" (onSubmit)="statutoryTypeSubmit()">
+            </app-statutory-type>
+        </span>
+    </div>
+
+    <div>
+        <span *ngIf="isbankAccountTypeForm">
+            <app-bank-account-type (onCancel)="bankAccountTypeCancel()" (onSubmit)="bankAccountTypeSubmit()">
+                </app-bank-account-type>
+        </span>
+    </div>
+
+    <div *ngIf="isControllingOffice">
+        <div class="table-responsive" style="margin-top: 2%;width: 40%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let controllingofz of ControllinOfficeList; index as i">
+                        <th> {{(presentpagectrl - 1)*pagesize +i+1 }} </th>
+                        <td>{{ controllingofz.code }}</td>
+                        <td>{{ controllingofz.name}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="font-size: small;text-align:right; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previousctrl === false" color="primary"
+                    (click)="previousClick()" id="rems-master-0002">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagectrl}}
+                <button mat-icon-button [disabled]="has_nextctrl === false" color="primary" (click)="nextClick()" id="rems-master-0003">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isPremise">
+        <div>
+            <div class="row">
+                <div class="col-12">
+                    <!-- <div class="container" style="margin: 0 auto;"> -->
+                    <!-- <div style="text-align:center;"> -->
+                    <div>
+                        <form [formGroup]="PremiseSearchForm" (ngSubmit)="PremiseSearch()">
+                            <!-- <mat-form-field style="width: 175px;margin-top: 20px;">
+                            <mat-label>Controlling Office Type</mat-label>
+                            <input placeholder="Select type" matInput formControlName="controlling_office_id"
+                                [matAutocomplete]="cotype" id="rems-master-0004">
+                            <mat-autocomplete #cotype="matAutocomplete" [displayWith]="displayFn">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let controlling_office of ControllingOfficeList" [value]="controlling_office">
+                                        {{controlling_office.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+                            <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                    formControlName="code" id="rems-master-0005">
+                                <mat-placeholder>Code</mat-placeholder>
+                            </mat-form-field>
+                            <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                    formControlName="name" id="rems-master-0006">
+                                <mat-placeholder>Name</mat-placeholder>
+                            </mat-form-field>
+                            <mat-form-field style="width: 175px;margin-top: 20px; margin-left: 3%;">
+                                <mat-label>Controlling Office</mat-label>
+                                <input placeholder="Select type" matInput formControlName="controllingofz_id"
+                                    [matAutocomplete]="cotype" id="rems-master-0007">
+                                <mat-autocomplete #cotype="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let controlling_office of ControllingOfficeList"
+                                            [value]="controlling_office">
+                                            {{controlling_office.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <button class="btn btn-outline-primary" type="submit"
+                                style="border-radius:40px;margin-left: 15px;" color="primary" id="rems-master-0008"><i class="fa fa-search"
+                                    aria-hidden="true"></i></button>
+                            <button class="btn btn-outline-primary" (click)="reset()" type="submit"
+                                style="border-radius:40px;margin-left: 15px;" color="primary" id="rems-master-0009">Reset</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive" style="margin-top: 2%;width: 70%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Rent Area</th>
+                        <th>Controlling Office</th>
+                        <!-- <th *ngIf="ismakerCheckerButton">Action</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let premise of PremiseList; index as i">
+                        <!-- <th scope="row">{{ i+1 }}</th> -->
+                        <td> {{(presentpageprem - 1)*pagesize +i+1 }} </td>
+                        <td>{{ premise.code }}</td>
+                        <td style="cursor: pointer; color: #3684BF; " (click)="premiseView(premise)">{{ premise.name}}
+                        </td>
+                        <td style="text-indent:1em;">{{ premise.type}}</td>
+                        <td style="text-indent:2em;">{{ premise.rent_area}}</td>
+                        <td style="text-indent:2em;">{{ premise.controlling_office.name}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                <button mat-icon-button [disabled]="has_previousprem === false" color="primary"
+                    (click)="pre_previousClick()" id="rems-master-0010">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{presentpageprem}}
+                <button mat-icon-button [disabled]="has_nextprem === false" color="primary" (click)="pre_nextClick()" id="rems-master-0011">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div style="margin-bottom: 10%;margin-top: 1%;">
+        <nav>
+            <div class="nav nav-tabs">
+                <a class="nav-item nav-link" data-toggle="tab" role="tab"
+                    (click)=" StatutoryPaymentBtn()">StatutoryPayment
+                </a>
+
+                <div *ngIf="isStatutoryPayment">
+                    <button type="button" class="btn btn-outline-success" (click)="addStatutoryPayment()"
+                        style="border-radius:40px;margin-left: 50px" id="rems-master-0012"><span class="fa fa-plus"></span>
+                        StatutoryPayment</button>
+                </div>
+            </div>
+        </nav>
+        <div>
+            <span *ngIf="isStatutoryPaymentForm">
+                <app-create-statutorypayment (onCancel)="onCancelClick()" (onSubmit)="statutorySubmit()">
+                </app-create-statutorypayment>
+
+            </span>
+        </div>
+        <div>
+            <span *ngIf="isStatutoryPaymentEditForm">
+                <app-edit-statutorypayment (onCancel)="statutoryEditCancel()" (onSubmit)="statutoryEditSubmit()">
+                </app-edit-statutorypayment>
+            </span>
+        </div>
+        <div *ngIf="isStatutoryPayment">
+            <div class="table-responsive" style="width: 80%;margin-top: 1%; overflow-x: hidden;">
+                <table class="table">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Frequency</th>
+                            <th>PaidBy</th>
+                            <th>Remarks </th>
+                            <th>TaxName</th>
+                            <th>Action</th>
+                            <th *ngIf="ismakerCheckerButton">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let statutorypayment of getStatutoryPaymentList; index as i">
+                            <td scope="row" style="vertical-align: middle;">{{(this.statutorypage - 1)*pagesize +i+1 }}
+                            </td>
+                            <td>{{ statutorypayment.frequency }}</td>
+                            <td>{{ statutorypayment.paid_by }}</td>
+                            <td>{{ statutorypayment.remarks }}</td>
+                            <td>{{ statutorypayment.tax_name.name}}</td>
+                            <td *ngIf="ismakerCheckerButton">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                    (click)="statutorypaymentedit(statutorypayment)" color="primary" id="rems-master-0013">
+                                    <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                            </td>
+                            <td><button mat-icon-button matTooltip="Delete" class="iconbutton"
+                                    (click)="deleteStatutory(statutorypayment)" color="primary" id="rems-master-0014">
+                                    <mat-icon style="color: gray;" aria-label="Delete">delete</mat-icon>
+                                </button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                            (click)="StapreviousClick()" id="rems-master-0015">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{statutorypage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary"
+                            (click)="StanextClick()" id="rems-master-0016">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div> -->
+
+
+
+
+
+
+    <div *ngIf="isInsurancetype">
+        <div class="table-responsive" style="margin-top: 2%;width: 40%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th *ngIf="ismakerCheckerButton">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let Instype of InsurancetypeList; index as i">
+                        <td> {{(presentpageinsty - 1)*pagesize +i+1 }} </td>
+                        <td>{{ Instype.code }}</td>
+                        <td>{{ Instype.name}}</td>
+                        <td>{{ Instype.type }}</td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                (click)="InsurancetypeEdit(Instype)" color="primary" id="rems-master-0017">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                <button mat-icon-button [disabled]="has_previousinsty === false" color="primary"
+                    (click)="previousClickIT()" id="rems-master-0018">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{presentpageinsty}}
+                <button mat-icon-button [disabled]="has_nextinsty === false" color="primary" (click)="nextClickIT()" id="rems-master-0019">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isInsuranceDetail">
+        <div class="table-responsive" style="margin-top: 2%;width: 80%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Insurance Type</th>
+                        <th>Insurance Certificate Number</th>
+                        <!-- <th>Start Date</th>
+                        <th>End Date</th> -->
+                        <th>Premium Amount</th>
+                        <th>Remarks</th>
+                        <th *ngIf="ismakerCheckerButton">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let InsDetail of InsuranceDetailList; index as i">
+                        <td> {{(presentpageid - 1)*pagesize +i+1}} </td>
+                        <td>{{ InsDetail.insurancetype.name }}</td>
+                        <td>{{ InsDetail.insurancenumber}}</td>
+                        <!-- <td>{{ InsDetail.start_date }}</td>
+                        <td>{{ InsDetail.end_date }}</td> -->
+                        <td>{{ InsDetail.premiumamount }}</td>
+                        <td>{{ InsDetail.remarks }}</td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                (click)="InsuranceDetailEdit(InsDetail)" color="primary" id="rems-master-0020">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="font-size: small;text-align:right; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previousid === false" color="primary"
+                    (click)="previousClickInsuranceDetails()" id="rems-master-0021">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpageid}}
+                <button mat-icon-button [disabled]="has_nextid === false" color="primary"
+                    (click)="nextClickinsuranceDetails()" id="rems-master-0022">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isLicenseType">
+        <div class="table-responsive" style="margin-top: 2%;width: 60%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header style="margin-right: auto;margin-left: auto;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>License Name</th>
+                        <th>Code</th>
+                        <th>License Type</th>
+                        <th>Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let license of LicenseTypeList; index as i">
+                        <th> {{(presentpagelic - 1)*pagesize +i+1 }} </th>
+                        <!-- <td scope="row">{{ i+1 }}</td> -->
+                        <td style="font-weight: lighter;">{{ license.name}}</td>
+                        <td style="font-weight: lighter;">{{ license.code}}</td>
+                        <!-- <td>{{ license.type }}</td> -->
+
+
+                        <td>
+                            <div *ngIf=" license.type === 0 ; else notype">License</div>
+                            <ng-template #notype> Certificate </ng-template>
+                        </td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                (click)="licensetypeEdit(license)" color="primary" id="rems-master-0023">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="has_previouslic === false" color="primary"
+                        (click)=" lic_previousClick()" id="rems-master-0024">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{presentpagelic}}
+                    <button mat-icon-button [disabled]="has_nextlic === false" color="primary"
+                        (click)=" lic_nextClick()" id="rems-master-0025">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isLicenseDetails">
+        <div class="table-responsive" style="margin-top: 2%;width: 60%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header style="margin-right: auto;margin-left: auto;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>License No</th>
+                        <th>License Type</th>
+                        <th>Remarks</th>
+                        <th>Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let license of LicenseDetailsList; index as i">
+                        <td> {{(presentpagelicdet - 1)*pagesize +i+1}} </td>
+
+                        <td>{{ license.licensenumber}}</td>
+                        <td>{{ license.licensetype.name}}</td>
+                        <td>{{ license.remarks }}</td>
+
+
+
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                (click)="licensedetailsEdit(license)" color="primary" id="rems-master-0026">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="has_previouslicdet === false" color="primary"
+                        (click)="licdet_previousClick()" id="rems-master-0027">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{presentpagelicdet}}
+                    <button mat-icon-button [disabled]="has_nextlicdet === false" color="primary"
+                        (click)="licdet_nextClick()" id="rems-master-0028">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="isAmentiesType">
+        <div class="table-responsive" style="margin-top: 2%;width: 60%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header style="margin-right: auto;margin-left: auto;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let amenties of amentiesTypeList; index as i">
+                        <td> {{(presentpage_AmentiesType - 1)*pagesize +i+1}} </td>
+                        <td>{{ amenties.name}}</td>
+                        <td>{{ amenties.code}}</td>
+                        <td>{{ amenties.remarks }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="previous_AmentiesType === false" color="primary"
+                        (click)="amentiesType_previousClick()" id="rems-master-0029">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{presentpage_AmentiesType}}
+                    <button mat-icon-button [disabled]="next_AmentiesType === false" color="primary"
+                        (click)="amentiesType_nextClick()" id="rems-master-0030">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div *ngIf="isTax">
+        <div class="table-responsive" style="margin-top: 2%;width: 60%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header style="margin-right: auto;margin-left: auto;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Remarks</th>
+                        <th>Action</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tax of taxList; index as i">
+                        <td> {{(presentpage_tax - 1)*pagesize +i+1}} </td>
+                        <td>{{ tax.name}}</td>
+                        <td>{{ tax.code}}</td>
+                        <td>{{ tax.remarks }}</td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton" (click)="taxEdit(tax)"
+                                color="primary" id="rems-master-0031">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                        <td>
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton" (click)="taxDelete(tax.id)"
+                                color="primary">
+                                <mat-icon style="color: gray;" aria-label="Delete">delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="taxList ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div class="row" *ngIf="isTaxPage">
+                <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="previous_tax === false" color="primary"
+                        (click)="tax_previousClick()" id="rems-master-0032">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{presentpage_tax}}
+                    <button mat-icon-button [disabled]="next_tax === false" color="primary" (click)="tax_nextClick()" id="rems-master-0033">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="isTaxRate">
+        <div class="table-responsive" style="margin-top: 2%;width: 60%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header style="margin-right: auto;margin-left: auto;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Rate</th>
+                        <th>Action</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let taxRate of taxRateList; index as i">
+                        <td> {{(presentpage_taxRate - 1)*pagesize +i+1}} </td>
+                        <td>{{ taxRate.name}}</td>
+                        <td>{{ taxRate.code}}</td>
+                        <td>{{ taxRate.rate }}</td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton" (click)="taxRateEdit(taxRate)"
+                                color="primary" id="rems-master-0034">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                        <td>
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton"
+                                (click)="taxRateDelete(taxRate.id)" color="primary">
+                                <mat-icon style="color: gray;" aria-label="Delete">delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="taxRateList ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div class="row" *ngIf="isTaxRatePage">
+                <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="previous_taxRate === false" color="primary"
+                        (click)="taxRate_previousClick()" id="rems-master-0035">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{presentpage_taxRate}}
+                    <button mat-icon-button [disabled]="next_taxRate === false" color="primary"
+                        (click)="taxRate_nextClick()" id="rems-master-0036">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div *ngIf="isStatutoryType">
+        <div class="table-responsive" style="margin-top: 2%;width: 60%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header style="margin-right: auto;margin-left: auto;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Remarks</th>
+                        <th>Action</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let statutory of statutoryTypeList; index as i">
+                        <td> {{(present_statutoryType - 1)*sizeStatutoryType +i+1}} </td>
+                        <td>{{ statutory.name}}</td>
+                        <td>{{ statutory.code}}</td>
+                        <td>{{ statutory.remarks }}</td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                (click)="statutoryTypeEdit(statutory)" color="primary" id="rems-master-0037">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton"
+                                (click)="statutoryTypeDelete(statutory.id)" color="primary">
+                                <mat-icon style="color: gray;" aria-label="Delete">delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="statutoryTypeList ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div class="row" *ngIf="isStatutoryTypePage">
+                <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="previous_statutoryType === false" color="primary"
+                        (click)="staturoyType_previous()" id="rems-master-0038">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{present_statutoryType}}
+                    <button mat-icon-button [disabled]="next_statutoryType === false" color="primary"
+                        (click)="staturoyType_next()" id="rems-master-0039">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div *ngIf="isBankAccountType">
+        <div class="table-responsive" style="margin-top: 2%;width: 60%; overflow-x: hidden;">
+            <table class="table table-bordered" fixed-header style="margin-right: auto;margin-left: auto;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Remarks</th>
+                        <th>Action</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let bankType of banckAccountTypeList; index as i">
+                        <td> {{(present_bankAccountType - 1)*sizebankAccountType +i+1}} </td>
+                        <td>{{ bankType.name}}</td>
+                        <td>{{ bankType.code}}</td>
+                        <td>{{ bankType.remarks }}</td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                (click)="bankAccountTypeEdit(bankType)" color="primary" id="rems-master-0040">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton"
+                                (click)="bankAccountTypeDelete(bankType.id)" color="primary">
+                                <mat-icon style="color: gray;" aria-label="Delete">delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="banckAccountTypeList ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div class="row" *ngIf="isbankAccountTypePage">
+                <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="previous_bankAccountType === false" color="primary"
+                        (click)="bankAccountType_previous()" id="rems-master-0041">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{present_bankAccountType}}
+                    <button mat-icon-button [disabled]="next_bankAccountType === false" color="primary"
+                        (click)="bankAccountType_next()" id="rems-master-0042">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

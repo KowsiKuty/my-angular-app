@@ -1,0 +1,2218 @@
+<div class="nav nav-tabs" style="margin-top: 1%;margin-left: 20px;">
+    <span class="nav-item nav-link  " data-toggle="tab" (click)="subModuleData(sub)" role="tab"
+    [class.inactive-tab]="!isActiveTab(sub)"
+        *ngFor="let sub of prpoPOList">
+        <!-- <span [routerLink]="['/po']" [queryParams]="{ tab: sub.name}" class="nav-item nav-link  " data-toggle="tab"  (click)="subModuleData(sub)" role="tab"
+        *ngFor="let sub of prpoPOList"> -->
+        {{sub.name}}
+    </span>
+</div>
+
+
+<div *ngIf="isPOcreateScreenTab">
+    <app-po-create (onSubmit)="PoCreateSubmit()" (onCancel)="PoCreateCancel()"></app-po-create>
+</div>
+<div *ngIf="isPOApproverScreenTab">
+    <app-po-approval (onSubmit)="PoApproverSubmit()" (onCancel)="PoApproverCancel()"     (PoProductListEmit)="Alert($event)"
+    ></app-po-approval>
+</div>
+<div *ngIf="isPOCloseScreenTab">
+    <app-poclosecreate (onSubmit)="PoCloseSubmit()" (onCancel)="PoCloseCancel()"></app-poclosecreate>
+</div>
+<div *ngIf="isPOCloseAppScreenTab">
+    <app-po-close-approval (onSubmit)="PoCloseAppSubmit()" (onCancel)="PoCloseAppCancel()">
+    </app-po-close-approval>
+</div>
+<div *ngIf="isPOCancelScreenTab">
+    <app-po-cancel (onSubmit)="PoCancelTabSubmit()" (onCancel)="PoCancelTabCancel()"></app-po-cancel>
+</div>
+<div *ngIf="isPOCancelAppScreenTab">
+    <app-po-cancel-approval (onSubmit)="PoCancelAppSubmit()" (onCancel)="PoCancelAppCancel()">
+    </app-po-cancel-approval>
+</div>
+<div *ngIf="isPOReopenScreenTab">
+    <app-po-reopen (onSubmit)="PoReopenSubmit()" (onCancel)="PoReopenCancel()"></app-po-reopen>
+</div>
+<div *ngIf="isPOAmendmentScreenTab">
+    <app-po-modification (onSubmit)="PoAmendmentSubmit()" (onCancel)="PoAmendmentCancel()"></app-po-modification>
+</div>
+
+<!-- ///////////////////////////////////////////////////    Summary         /////////////////////////////////////////////////////////// -->
+
+
+<!-- ///////////////////////////////////////////////////    PO Maker Summary  //////////////////////////////////////////////////////////// -->
+
+
+
+<div *ngIf="isPOmakerTab">
+    <!-- <div class="row">
+            <div class="col-12"> -->
+    <h2 class="headertitle">Purchase Order Summary</h2>
+    <form [formGroup]="POsummarySearchForm" (ngSubmit)="POsummarySearch()" autocomplete="off">
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field class="spacebtwfield">
+                        <input type="text" formControlName="no" matInput autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PO Number</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 30px;" (click)="getmakersupplier()">
+                        <mat-label>Supplier Name</mat-label>
+                        <input matInput #supplierInput placeholder="Select supplier" formControlName="name"
+                            [matAutocomplete]="supplier">
+                        <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+                            (opened)="autocompletesupplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                                    {{supplier.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="spacebtwfields">
+                        <input type="text" formControlName="amount" matInput autocomplete="off"
+                        (input)="AmountCalculation($event,POsummarySearchForm,'amount')">
+                        <mat-placeholder>PO Amount</mat-placeholder>
+                    </mat-form-field>
+                     <!-- (input)="AmountCalculation($event,POsummarySearchForm,'amount')" -->
+                </td>
+                <!-- (keypress)="numberOnly($event)" -->
+                <td>
+                    <mat-form-field class="spacebtwfieldd">
+                        <input type="text" formControlName="note_title" matInput autocomplete="off"
+                            >
+                        <mat-placeholder>Title Note</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                
+            </tr>
+            <tr>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getmakerbranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field   class="example-full-width" style="margin-left: 33px; width: 205px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select  formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary" type="submit"
+                        style="border-radius:40px;margin-left: 55px;margin-top: -2%;" color="primary">
+                        <!-- <i
+                            class="fa fa-search" aria-hidden="true"></i> -->
+                            <mat-icon>search</mat-icon>
+                        </button>
+                
+                    <button class=" btn btn-outline-primary" (click)="resetpo()" style="border-radius:40px; margin-left: 23px; margin-top: -7px;"
+                        type="submit" color="primary">Reset</button>
+                
+                    <button type="button" style="margin-left: 99px; margin-top: -8px; border-radius:40px;" class=" btn btn-outline-success" (click)="addPOdummy()">
+                        <!-- <span class="fa fa-plus"></span> -->
+                         <mat-icon>add</mat-icon>
+                    </button>
+                <!-- [disabled]="isPoMakerExport" -->
+                    <button  style="border-radius:40px;margin-left: 20px; margin-top: -7px;cursor: pointer" type="button"
+                    class="btn btn-outline-success" (click)="makerexceldownload()" >
+                  <span></span>Export </button>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <!-- </div>
+        </div> -->
+    <div class="table-responsive" style="margin-top: 2%;width: 95%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered">
+            <thead>
+                <tr class="table_header">
+                    <th> S.No</th>
+                    <th> Number</th>
+                    <th> Supplier Name</th>
+                    <th> Branch</th>
+                    <th> Raised By</th>
+                    <th> Date</th>
+                    <th> PO Amount</th>
+                    <th>Title Note</th>
+                    <th> Status</th>
+                    <!-- <th> Payment Ref No</th> -->
+                       <!-- <th> Payment Released</th> -->
+                    <!-- <th>Payment Remaining</th>    -->
+                    <th> Close Status</th>
+                    <th> Cancel Status</th>
+                    <th> Attachments</th>
+                    <th> PO PDF View</th>
+                    <!-- <th> PO PDF Download</th> -->
+                    <!-- <th> File</th> -->
+                    <th> View</th>
+                    <th> Justification Note</th>
+                    <th> Asset Number Generation</th>
+                    <th> Tran History</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let po of PoList; index as i">
+                    <td> {{(presentpage - 1)*pageSize +i+1 }} </td>
+                    <td *ngIf="po.grn_no"  data-toggle="modal" data-target="#prpomodal" style="color:blue" (click)="getpr(po)">{{po?.no}}</td> 
+                    <td *ngIf="!po.grn_no">{{po?.no}}</td>
+                    <td>{{ po?.supplierbranch_id?.name}}</td>
+                    <td>{{ po?.branch_id?.fullname}}</td>
+                    <td>{{po?.created_by?.full_name}}</td>
+                    <td>{{ po?.date | date:'dd-MM-yyyy'}}</td>
+                    <td class="rightalign">{{ po.amount  | amountPipeCustom }}</td>
+                    <td>{{po?.note_title}}</td>
+                    <td>{{po?.poheader_status}}</td>
+                    <!-- <td>{{po?.apreferences_no}}</td> -->
+                       <!-- <td>{{po?.payment_rel}}</td> -->
+                    <!-- <td>{{po?.payment_rem}}</td>     -->
+                    <td>
+                        <div *ngIf="po?.close === 0 ; else lock">
+                            Open
+                        </div>
+                        <ng-template #lock>Closed </ng-template>
+                    </td>
+                    <td>
+                        <div *ngIf="po?.cancel === 0 ; else lockcancel">
+                            No
+                        </div>
+                        <ng-template #lockcancel>Yes </ng-template>
+                    </td>
+                    <!-- <td><span class="fa fa-download" aria-hidden="true" (click)="HeaderFilesPOdownload(po)"
+                            data-toggle="modal" data-target=".bd-examplepopHeaderfiles-modal-lg"></span> -->
+                        <td>   <mat-icon aria-hidden="true" (click)="HeaderFilesPOdownload(po)"
+                            data-toggle="modal" data-target=".bd-examplepopHeaderfiles-modal-lg">get_app</mat-icon>
+                        </td>
+
+                    <td>
+                        <!-- <span class="material-icons" data-toggle="modal" data-target=".bd-examplepoppdf-modal-lg"
+                            (click)="pdfPopup(po)">
+                            visibility
+                        </span> -->
+
+
+                        <div *ngIf="po?.poheader_status == 'APPROVED' ; else lockjustNoteReopen">
+                            <!-- <span class="material-icons" 
+                                (click)="pdfPopup(po)">
+                                visibility
+                            </span> -->
+                            <mat-icon (click)="pdfPopup(po)">visibility</mat-icon>
+                            <!-- data-toggle="modal" data-target=".bd-examplepoppdf-modal-lg" -->
+                        </div>
+                        <ng-template #lockjustNoteReopen>
+                            <div *ngIf="po?.poheader_status == 'REOPENED' ; else lockjustsimple">
+                                <!-- <span class="material-icons"  (click)="pdfPopup(po)">
+                                    visibility
+                                </span> -->
+                                <mat-icon  (click)="pdfPopup(po)">visibility</mat-icon>
+                            </div>
+                        </ng-template>
+                        <ng-template #lockjustsimple> -- </ng-template>
+
+                    </td>
+                    <!-- <td> -->
+                        <!-- <span class="material-icons" (click)="POPDf(po)">
+                            picture_as_pdf
+                        </span> -->
+
+<!-- 
+                        <div *ngIf="po?.poheader_status == 'APPROVED' ; else lockjustNoteReopen">
+                            <span class="material-icons" (click)="POPDf(po)">
+                                visibility
+                            </span>
+                        </div>
+                        <ng-template #lockjustNoteReopen>
+                            <div *ngIf="po?.poheader_status == 'REOPENED' ; else lockjustsimple">
+                                <span class="material-icons" (click)="POPDf(po)">
+                                    visibility
+                                </span>
+                            </div>
+                        </ng-template>
+                        <ng-template #lockjustsimple> -- </ng-template>
+
+                    </td> -->
+
+                    <td>
+                        <!-- <span class="material-icons" (click)="getProductData(po)" (click)="dataOnHeader(po)"
+                            data-toggle="modal" data-target=".bd-exampletwo-modal-lg">
+                            visibility
+                        </span> -->
+                        <mat-icon  (click)="getProductData(po)" (click)="dataOnHeader(po)"
+                            data-toggle="modal" data-target=".bd-exampletwo-modal-lg">visibility</mat-icon>
+                    </td>
+                    <td>
+                        <!-- <span class="material-icons" 
+                            (click)="pdfPopupJustificationNote(po)">
+                            visibility  
+                        </span> -->
+                        <mat-icon  (click)="pdfPopupJustificationNote(po)">visibility</mat-icon>
+                        <!-- data-toggle="modal" data-target=".bd-examplepoppdf-modal-lg" -->
+
+
+                    </td>
+                    <td>
+                        <div *ngIf="po.is_asset == 1 ; else lockbarcode">
+                            <!-- <span class="material-icons" (click)="barcodePopup(po)">
+                                qr_code
+                            </span> -->
+                            <mat-icon (click)="barcodePopup(po)">qr_code</mat-icon>
+                        </div>
+                        <ng-template #lockbarcode> -- </ng-template>
+                    </td>
+                    <td>
+                        <!-- <span class="material-icons" (click)="gettranhistory(po,1)" data-toggle="modal"
+                            data-target=".bd-examplethree-modal-lg">
+                            history
+                        </span> -->
+                        <mat-icon (click)="gettranhistory(po,1)" data-toggle="modal"
+                            data-target=".bd-examplethree-modal-lg">history</mat-icon>
+                    </td>
+                     
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="PoList?.length==0; else paginationPO" class="NodataAlign">No Records Found...</div>
+<div class="row" *ngIf="posumm2" style="width: 85%;">
+    <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+        <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: -128px;">
+            Total Count: {{totalcount}}
+        </p>
+    </div>
+</div>
+    <ng-template #paginationPO>
+        <div class="cursor" style="font-size: small;text-align:right; margin-bottom:100px;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back
+                </mat-icon>
+            </button>
+            {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward
+                </mat-icon>
+            </button>
+        </div>
+    </ng-template>
+
+</div>
+
+
+
+
+
+
+<div class="modal fade bd-exampletwo-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">PO Details</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <!-- <div style="margin-left: 3%; margin: top 20px;;"> -->
+                   <!-- <table >
+                    <tr>
+                        <td  class="col-md-2"><b> Type : </b>{{PoType}}</td>
+                        <td class="col-md-2"><b> PO Number : </b>{{PoNumber}}</td>
+                        <td class="col-md-2"><b> Commodity : </b> {{pocommodityid}}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <td class="col-md-4"><b> Branch : </b> {{PoBranch}}</td>  
+                        <td class="col-md-4"><b> Supplier : </b> {{PoSupplier}}</td>
+                        <td class="col-md-4"><b> Payment Ref No : </b> {{payment}}</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4"></td>
+                        <td class="col-md-8">
+                             <mat-icon data-toggle="modal"  matTooltip="NotePad" style="margin-left: 45px;"
+                        data-target=".bd-example-modal-xls">description</mat-icon>
+                            <mat-icon data-toggle="modal"  matTooltip="NotePad" style="margin-left: 45px;"
+                        data-target=".bd-example-modal-xl">visibility</mat-icon>                           
+                     <button class="btn btn-sm btn-outline-primary" data-toggle="modal" style="border-radius: 40px;margin-left: 20px;"
+                  data-target=".jus_note"><span class="fa fa-file-text"></span>
+                  Justification Note
+                </button>
+                        </td>
+                    </tr>
+                </table> -->
+                <div class="flex-container">
+  <div class="flex-row">
+    <div class="flex-col"><b>Type :</b> {{PoType}}</div>
+    <div class="flex-col"><b>PO Number :</b> {{PoNumber}}</div>
+    <div class="flex-col"><b>Commodity :</b> {{pocommodityid}}</div>
+  </div>
+
+  <div class="flex-row">
+    <div class="flex-col"><b>Branch :</b> {{PoBranch}}</div>
+    <div class="flex-col"><b>Supplier :</b> {{PoSupplier}}</div>
+    <div class="flex-col"><b>Payment Ref No :</b> {{payment}}</div>
+  </div>
+
+  <div class="flex-row">
+    
+    <div class="flex-col flex-actions">
+      <mat-icon data-toggle="modal" matTooltip="NotePad"   matTooltipPosition="above"
+        style="margin-left: 20px;" data-target=".bd-example-modal-xls">description</mat-icon>
+
+      <mat-icon data-toggle="modal" matTooltip="Terms and Conditions" matTooltipPosition="above"
+        style="margin-left: 20px;" data-target=".bd-example-modal-xl">visibility</mat-icon>
+
+      <button class="btn btn-sm btn-outline-primary" data-toggle="modal" 
+        style="border-radius: 40px; margin-left: 20px;" data-target=".jus_note">
+        <span class="fa fa-file-text"></span> Justification Note
+      </button>
+    </div>
+  </div>
+</div>
+
+                <div class="table-responsive" style="margin-top: 2%;width: 95%; margin-left: 26px;">
+                    <div class="tablescroll">
+                        <table class="table scrolltable table-bordered">
+                            <thead>
+                                <tr class="table_header">
+                                    <th> S.No</th>
+                                    <!-- <th> Product_Category</th>-->
+                                    <th> Product Type</th> 
+                                    <th> Product Name</th>
+                                    <th matTooltip="New/Replacement">PO For</th>
+                                    <th> Make</th>
+                                    <th>Model</th>
+                                    <th>Configurations</th>
+                                    <th>Quotation No</th>
+                                    <!-- <th> Product_Desc</th> -->
+                                    <th> UOM</th>
+                                    <th> Quantity</th>
+                                    <th> Unit Price</th>
+                                    <th> Product Amount</th>
+                                    <th> Discount</th>
+                                    <th> BuyBack Amount</th>
+                                    <th> PO Amount</th>
+                                    <th> Download Attachments</th>
+                                    <!-- <th> View File</th> -->
+                                    <th> Asset Number Generation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let po of PoProductList; index as i">
+                                    <tr>
+
+                                    <!-- <tr *ngFor="let prod of po.product_data; index as j"> -->
+                                    <td> {{(presentpagepodetail - 1)*pageSize +i+1 }} </td>
+                                    <!-- <td>{{ prod?.category_id?.name }}</td>-->
+                                        <td>{{ po?.product_type?.name}}</td> 
+                                    <td>{{ po?.product_name}}</td>
+                                    <td>
+                                        <ng-container
+                                          *ngIf="po?.pr_request == 1; else replace"
+                                        >
+                                          <span>New</span>
+                                        </ng-container>
+                                        <ng-template #replace>
+                                          <button type="button" class="none">
+                                            <span
+                                              class="fa fa-money"
+                                              title="Asset Details"
+                                              data-toggle="collapse"
+                                              data-target="#assetDetails"
+                                              (click)="assetDetails(po?.id)"
+                                              
+                                              style="margin: 10px; font-size: 20px"
+                                            ></span>
+                                          </button>
+                                        </ng-template>
+                                      </td>
+                                    <td >{{ po?.item_name}}</td>
+                                    <td>{{ po?.model_name }}</td>
+                                    <td>{{ po?.specification}}</td>
+                                    <td>{{ po?.quotation?.supplier_quot}}</td>
+                                    <!-- <td>{{ po?.desc}}</td> -->
+                                    <td>{{ po?.uom}}</td>
+                                    <td>{{ po?.qty}}</td>
+                                    <td>{{ po?.unitprice | amountPipeCustom}}</td>
+                                    <td>{{ po?.amount | amountPipeCustom}}</td>
+                                    <td>{{ po?.discount | amountPipeCustom}}</td>
+                                    <td>{{ po?.buyback_amount | amountPipeCustom}}</td>
+                                    <td>{{ po?.totalamount| amountPipeCustom}}</td>
+                                    <!-- <td><i class="fa fa-download" aria-hidden="true"></i></td>
+                                    <td><i class="fa fa-picture-o" aria-hidden="true"></i></td> -->
+                                    <td style="cursor: pointer;margin-top: 0%;width: 50%;">
+                                        <!-- <i
+                                            class="fa fa-download"></i> -->
+                                            <mat-icon>get_app</mat-icon>
+                                            <br>
+                                        <div *ngIf="po.file_data?.length==0; else filePO" class="NodataAlign">No
+                                            Records Found...</div>
+                                        <ng-template #filePO>
+                                            <p *ngFor="let a of po.file_data ;index as i;" title="{{a.file_name }}"
+                                                (click)="fileDownloads(a.file_id,a.file_name )" class=" btn-btn-link">
+                                                {{i+1}}. {{a.file_name }}<br>
+                                            </p><br>
+                                        </ng-template>
+                                    </td>
+                                    <!-- <td style="margin-left:-1%">
+                                        <div *ngIf="po.file_data?.length==0; else fileactionPO" class="NodataAlign">
+                                            No
+                                            Records Found...</div>
+                                        <ng-template #fileactionPO>
+                                            <p class="btn btn-link" *ngFor="let a of po.file_data ;index as i;"
+                                                style="margin-left:-1%" data-target="#my-modal" data-toggle="modal"
+                                                (click)="commentPopup(a.file_id,a.file_name)">
+                                                <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                                <br>
+                                                (Note:Only image file can be viewed)
+                                            </p>
+                                        </ng-template>
+                                    </td> -->
+                                    <td>
+                                        <div *ngIf="po.is_asset == 1 ; else lockbarcodeindividual">
+                                            <!-- <span class="material-icons" (click)="barcodePopupIndividual(po)">
+                                                qr_code
+                                            </span> -->
+                                            <mat-icon (click)="barcodePopupIndividual(po)">qr_code</mat-icon>
+                                        </div>
+                                        <ng-template #lockbarcodeindividual> -- </ng-template>
+                                    </td>
+
+  
+                            </tr>
+                            <ng-container>
+                                <tr *ngIf="po.showAssetDetails">
+                                    <td colspan="14" class="pad">
+                                      <div class="table-responsive">
+                                        <table class="table scrolltable table-bordered fonts">
+                                          <thead>
+                                            <tr class="table_header">
+                                              <th>S.No</th>
+                                              <th>PR Number</th>
+                                              <th>Asset ID</th>
+                                              <th>Serial No</th>
+                                              <th>Product</th>
+                                              <th>Make</th>
+                                              <th>Model</th>
+                                              <th>Specification</th>
+                                              <th>Amount</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr *ngFor="let a of po.assetArrayPR; index as i">
+                                              <td>{{ i + 1 }}</td>
+                                              <td>{{a?.pr_no}}</td>
+                                              <td>{{ a.asset_id }}</td>
+                                              <td>{{ a.serial_no }}</td>
+                                              <td>{{ a.product_name }}</td>
+                                              <td>{{ a.item_name }}</td>
+                                              <td>{{ a.model_name }}</td>
+                                              <td>
+                                                <ng-container *ngIf="a.specification && a.specification !== '--'; else showEmpty">
+                                                  <ng-container *ngFor="let specKey of getSpecificationKeys(a.specification)">
+                                                    {{ specKey }}: {{ a.specification[specKey] }}<br />
+                                                  </ng-container>
+                                                </ng-container>
+                                                <ng-template #showEmpty>{{ a.specification }}</ng-template>
+                                              </td>
+                                              <td>{{a?.amount}}</td>
+                                            </tr>
+                                            <tr *ngIf="po.assetArrayPR.length == 0">
+                                                <td colspan="7" class="text-center">
+                                                    No Records Found!
+                                                </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </td>
+                                  </tr>
+                            </ng-container>
+                                    <!-- <td><span class="material-icons"
+                                                (click)="barcodePopupIndividual(po)">qr_code</span></td> -->
+                                </ng-container>
+                             
+                            </tbody>
+                        </table>
+
+                        <div class="row" *ngIf="poview" style="width: 85%;">
+                            <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                                <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -227px;">
+                                    Total Count: {{totalcount}}
+                                </p>
+                            </div>
+                        <div class="col-auto" style="font-size: small; margin-left: 940px; margin-top: -88px;">
+                            <button mat-icon-button [disabled]="has_previousdetail == false" color="primary"
+                                (click)="previousClickdetail()">
+                                <mat-icon>arrow_back
+                                </mat-icon>
+                            </button>
+                            {{presentpagepodetail}}
+                            <button mat-icon-button [disabled]="has_nextdetail == false" color="primary"
+                                (click)="nextClickdetail()">
+                                <mat-icon>arrow_forward
+                                </mat-icon>
+                            </button>
+                        </div>
+                        </div>
+                    </div>             
+                    <br> <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="showimagepopup" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade bd-examplethree-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">PO Transaction History</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive" style="margin-top: 2%;width: 95%;margin-left: 50px;">
+                    <table class="table scrolltable table-bordered">
+                        <thead>
+                            <tr class="table_header">
+                                <th> S.No</th>
+                                <th> PO Header No</th>
+                                <th> Transaction Date</th>
+                                <th> Status</th>
+                                <th> Raiser Name</th>
+                                <th> Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let tran of PoTranHistoryList; index as i">
+                                <td> {{i + 1}}</td>
+                                <td> {{tran?.ref_id?.no}} </td>
+                                <td> {{tran?.created_date | date:'medium'}} </td>
+                                <td> {{tran?.comments}} </td>
+                                <td> {{tran?.from_user_id?.full_name}} </td>
+                                <td> {{tran?.remarks}} </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br> <br>
+                    <div *ngIf="PoTranHistoryList?.length==0; else pagin" class="NodataAlign">No Records Found...</div>
+                    <div class="row align-items-center" *ngIf="smy" style="width: 85%;">
+                        <div class="col-sm-6" style="font-size: small; text-align: left; margin-top: -30px;">
+                            <p style="color: black; font-size: 18px; font-weight: 500;">
+                                Total Count: {{totalcount}}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <ng-template #pagin>
+                        <div class="cursor" style="font-size: small; margin-left: 953px; margin-top: -38px;">
+                            <button mat-icon-button [disabled]="has_previouss == false" color="primary" (click)="previouspage()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presenttpage}}
+                            <button mat-icon-button [disabled]="has_nextt == false" color="primary" (click)="nextpage()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- dd-MM-yyyy h:mm:ss a -->
+
+
+
+<div *ngIf="showHeaderimagepopup">
+    <div class="modal fade bd-examplepopHeaderfiles-modal-lg" tabindex="-1" role="dialog"
+        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title">Header Files</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <table class="table table-bordered" fixed-header
+                    style="margin-left: 50px;width: 90%;margin-top:2%;overflow-x:hidden;">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.no</th>
+                            <th>File Name</th>
+                            <th>Download File</th>
+                            <!-- <th>View File</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let file of fileListHeader;index as i">
+                            <td>{{ i+1 }}</td>
+                            <td>{{file.file_name}}</td>
+                            <td>
+                                <a (click)="fileDownload(file.file_id,file.file_name )">
+                                    <!-- <i class="fa fa-download"
+                                        style="color: green;">
+
+                                    </i> -->
+                                    <mat-icon style="color: green;">get_app</mat-icon>
+                                </a>
+                            </td>
+                            <!-- <td style="margin-left:-1%">
+                                <p class="btn btn-link" style="margin-left:-1%" data-target="#my-modal"
+                                    data-toggle="modal" (click)="commentPopupHeaderFiles(file.file_id,file.file_name)">
+                                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                    <br>
+                                    (Note:Only image file can be viewed)
+                                </p>
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showimageHeader" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- </div> -->
+
+<!-- /////////////////////////////////////////////////////////////////PO Approval/////////////////////////////////////////////////////////////////////////////// -->
+
+<div *ngIf="isPOapproverTab">
+
+    <h2 class="headertitle">Purchase Order Approval Summary</h2>
+    <form [formGroup]="POAppsummarySearchForm">
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="no" matInput autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PO Number</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 35px;" (click)="getappsupplier()">
+                        <mat-label>Supplier Name</mat-label>
+                        <input #supplierInput placeholder="Select supplier" matInput formControlName="suppliername"
+                            [matAutocomplete]="supplier">
+                        <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+                            (opened)="autocompletesupplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                                    {{supplier.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 250px;margin-left: 50px;" (click)="getappcommodity()">
+                        <mat-label>Commodity Name</mat-label>
+                        <input #comInput placeholder="Select Commodity" matInput formControlName="commodityname"
+                            [matAutocomplete]="com">
+                        <mat-autocomplete #com="matAutocomplete" [displayWith]="displayFncom"
+                            (opened)="autocompletecomScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let com of commodityList" [value]="com">{{com.name}}
+                                </mat-option>
+
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="note_title" matInput autocomplete="off"
+                            >
+                        <mat-placeholder>Title Note</mat-placeholder>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getappbranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field  class="example-full-width" style="margin-left: 50px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                
+                <td>
+                    <button class="buttonsize btn btn-outline-primary" (click)="POAppsummarySearch()"
+                        style="border-radius:40px;margin-left: 20px;" color="primary">
+                        <!-- <i class="fa fa-search"
+                            aria-hidden="true"></i> -->
+                            <mat-icon>search</mat-icon>
+                        </button>
+                <button class="buttonsize btn btn-outline-primary" (click)="resetpoApp()"
+                        style="margin-left: 50px;border-radius: 40px;"  color="primary">Reset</button>
+                </td>
+                <td>
+                    <!-- [disabled]="PoApproverExport" -->
+                    <button  style="border-radius:40px;margin-left: 50px;cursor: pointer" type="button"
+                class="btn btn-outline-success" (click)="checkerexceldownload()"
+               >
+                <span></span>Export </button>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <div class="table-responsive" style="margin-top: 2%;width: 95%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered">
+            <thead>
+                <tr class="table_header">
+                    <th> S.No</th>
+                    <th> PO Number</th>
+                    <th> Supplier Name</th>
+                    <th> Branch </th>
+                    <th> Raised By</th>
+                    <!-- <th> Commodity Name</th> -->
+                    <th> Date</th>
+                    <th>PO Amount</th>
+                    <th>Title Note</th>
+                    <th> Status</th>
+                    <th> Justification Note</th>
+                    <th> Attachments</th>
+                    <th> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let po of PoAppList; index as i">
+                    <td> {{(presentpageApp - 1)*pageSizeApp +i+1 }} </td>
+                    <td>{{ po?.no }}</td>
+                    <td>{{ po?.supplierbranch_id?.name}}</td>
+                    <td>{{ po?.branch_id?.fullname}}</td>
+
+                    <td>{{po?.created_by?.full_name}}</td>
+                    <!-- <td>{{po?.commodity_id?.name}}</td> -->
+                    <td>{{ po?.date | date:'dd-MM-yyyy'}}</td>
+                    <td class="rightalign">{{ po?.amount  | amountPipeCustom }}</td>
+                    <td>{{po?.note_title}}</td>
+                    <td>{{po?.poheader_status}}</td>
+                    <td> 
+                        <!-- <span class="material-icons" 
+                            (click)="pdfPopupJustificationNote(po)">
+                            visibility
+                        </span> -->
+                        <mat-icon (click)="pdfPopupJustificationNote(po)">visibility</mat-icon>
+                    </td>
+                        <!-- data-toggle="modal" data-target=".bd-examplepoppdf-modal-lg" -->
+                    <!-- <td><span class="material-icons">
+                                        visibility
+                                        </span></td> -->
+                    <td>
+                        <!-- <span class="fa fa-download" aria-hidden="true" (click)="HeaderFilesPOdownloadApp(po)"
+                            data-toggle="modal" data-target=".bd-examplepopHeaderfilesApp-modal-lg"></span> -->
+                            <mat-icon aria-hidden="true" (click)="HeaderFilesPOdownloadApp(po)"
+                            data-toggle="modal" data-target=".bd-examplepopHeaderfilesApp-modal-lg">get_app</mat-icon>
+                        </td>
+                    <td>
+                        <!-- <span class="material-icons" (click)="POapprovalscreen(po)">
+                            visibility
+                        </span> -->
+                        <mat-icon (click)="POapprovalscreen(po)">visibility</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div *ngIf="PoAppList?.length==0; else paginationPOApp" class="NodataAlign">No Records Found...</div>
+    <div class="row" *ngIf="pomakert" style="width: 85%;">
+        <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+            <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: -128px;">
+                Total Count: {{totalcount}}
+            </p>
+        </div>
+</div>
+    <ng-template #paginationPOApp>
+        <div class="cursor" style="font-size: small;text-align:right; margin-bottom:100px;">
+            <button mat-icon-button [disabled]="has_previousApp === false" color="primary" (click)="previousClickApp()">
+                <mat-icon>arrow_back
+                </mat-icon>
+            </button>
+            {{presentpageApp}}
+            <button mat-icon-button [disabled]="has_nextApp === false" color="primary" (click)="nextClickApp()">
+                <mat-icon>arrow_forward
+                </mat-icon>
+            </button>
+        </div>
+    </ng-template>
+</div>
+
+<!-- //////////////////////////////////////////////////////////////////////PO Close maker////////////////////////////////////////////////////////////// -->
+
+<div *ngIf="isPOclosemakerTab">
+    <h2 style="margin-left: 3%;">Purchase Order Close Maker Summary</h2>
+    <form [formGroup]="pocloseSearchForm" >
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="no" matInput autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PO Number</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 35px;" (click)="getclosesupplier()">
+                        <mat-label>Supplier Name</mat-label>
+                        <input #supplierInput placeholder="Select supplier" matInput formControlName="name"
+                            [matAutocomplete]="supplier">
+                        <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+                            (opened)="autocompletesupplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                                    {{supplier.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="amount" matInput autocomplete="off"
+                            (input)="AmountCalculation($event,pocloseSearchForm,'amount')">
+                        <mat-placeholder>PO Amount</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <!-- (keypress)="numberOnly($event)" -->
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getclosebranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+               
+                <td>
+                    <mat-form-field  class="example-full-width" style="margin-left: 50px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary" (click)="pocloseSearch()" style="border-radius:40px;margin-left: 50px;"
+                        color="primary">
+                        <!-- <i class="fa fa-search" aria-hidden="true"></i> -->
+                         <mat-icon>search</mat-icon>
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary cursor" (click)="resetpoClose()" 
+                        style="border-radius:40px;margin-left:30%;" color="primary">Reset</button>
+                </td>
+                <td>
+                    <!-- [disabled]="isPocloseMakerExport" -->
+                    <button  style="border-radius:40px;margin-left: 30%;cursor: pointer" type="button"
+                    class="btn btn-outline-success" (click)="closemakerexceldownload()" >
+                  <span></span>Export </button>
+                   </td>
+            </tr>
+        </table>
+    </form>
+    <div class="table-responsive" style="margin-top: 2%;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead class="table_header" fixed-header>
+                <tr>
+                    <th>S.No</th>
+                    <th>PO Number</th>
+                    <th>Supplier Name</th>
+                     <th> Branch </th>
+                    <th>PO Date</th>
+                    <th>PO Amount</th>
+                    <th>PO status</th>
+                    <th>PO Close Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let po of poCloseList; index as i">
+                    <td> {{(presentpagepoClose - 1)*pageSizeClose +i+1 }} </td>
+                    <td>{{ po?.no }}</td>
+                    <td>{{ po?.supplierbranch_id?.name}}</td>
+                    <td>{{ po?.branch_id?.fullname}}</td>
+                    <td>{{ po?.date | date:'dd-MM-yyyy'}}</td>
+                    <td>{{ po?.amount  | amountPipeCustom }}</td>
+                    <td>{{ po?.poheader_status}}</td>
+                    <!-- <td></td> -->
+                    <td>
+                        <div *ngIf="po.closedata?.length === 0 ; else lock">
+                            -
+                        </div>
+                        <ng-template #lock>{{po.closedata[0].poclose_status}} </ng-template>
+                    </td>
+                    <td>
+                        <!-- <span class="fa fa-eye" aria-hidden="true" (click)="sharePomakeClose(po)"></span> -->
+                         <mat-icon aria-hidden="true" (click)="sharePomakeClose(po)">visibility</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="poCloseList?.length==0 ; else showpaginationClose" style="text-align: center;">No Records
+            Found...</div>
+            <div class="row" *ngIf="pocancelt" style="width: 85%;">
+                <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                    <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: -128px;">
+                        Total Count: {{totalcount}}
+                    </p>
+                </div>
+        </div>
+        <ng-template #showpaginationClose>
+            <div class="cursor" style="font-size: small;text-align:right; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previouspoClose === false" color="primary"
+                    (click)="previousClickpoClose()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagepoClose}}
+                <button mat-icon-button [disabled]="has_nextpoClose === false" color="primary"
+                    (click)="nextClickpoClose()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<!-- //////////////////////////////////////////////////////////////////PO Close Approval///////////////////////////////////////////////////////////////// -->
+<div *ngIf="isPOcloseapproverTab">
+
+    <h2 style="margin-left: 3%;">Purchase Order Close Approval Summary</h2>
+    <form [formGroup]="pocloseAppSearchForm">
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="no" matInput autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PO Number</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 35px;" (click)="getcloseappsupplier()">
+                        <mat-label>Supplier Name</mat-label>
+                        <input #supplierInput placeholder="Select supplier" matInput formControlName="name"
+                            [matAutocomplete]="supplier">
+                        <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+                            (opened)="autocompletesupplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                                    {{supplier.name}}   
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="amount" matInput autocomplete="off"
+                            (input)="AmountCalculation($event,pocloseAppSearchForm,'amount')">
+                        <mat-placeholder>PO Amount</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <!-- (keypress)="numberOnly($event)" -->
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getcloseappbranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+                
+                <td>
+                    <mat-form-field  class="example-full-width" style="margin-left: 50px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary" (click)="pocloseAppSearch()"
+                        style="border-radius:40px;margin-left: 100px;margin-top:6%;" color="primary">
+                        <!-- <i
+                            class="fa fa-search" aria-hidden="true"></i> -->
+                            <mat-icon>search</mat-icon>
+                        </button>
+                </td>
+                <td><button class="btn btn-outline-primary cursor" (click)="resetpocloseApp()"
+                        style="border-radius:40px;margin-left:  40px;margin-top:-.5%" color="primary">Reset</button>
+                </td>
+                <td>
+                    <!-- [disabled]="poCloseApproval" -->
+                    <button  style="border-radius:40px;margin-left:  40px;margin-top:-.5%;cursor: pointer" type="button"
+                    class="btn btn-outline-success" (click)="closeappmakerexceldownload()" >
+                  <span></span>Export </button>
+                   </td>
+            </tr>
+        </table>
+    </form>
+    <div class="table-responsive" style="margin-top: 2%;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>PO Number</th>
+                    <th>Supplier Name</th>
+                    <th>Branch</th>
+                    <th>PO Date</th>
+                    <th>PO Amount</th>
+                    <th>PO status</th>
+                    <th>PO Close Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let po of pocloseAppList; index as i">
+
+                    <td> {{(presentpagepocloseApp - 1)*pageSizecloseApp +i+1 }} </td>
+                    <td>{{ po?.poheader?.no }}</td>
+                    <td>{{ po?.poheader?.supplierbranch_id?.name}}</td>
+                    <td>{{ po?.poheader?.branch_id?.fullname}}</td>
+                    <td>{{ po?.poclose_date | date:'dd-MM-yyyy'}}</td>
+                    <td>{{ po?.poheader?.amount  | amountPipeCustom }}</td>
+                    <td>{{ po?.poheader?.poheader_status}}</td>
+                    <td>{{ po?.poclose_status}}</td>
+
+                    <td>
+                        <!-- <span class="fa fa-eye" aria-hidden="true" (click)="sharePomakecloseApp(po)"></span> -->
+                         <mat-icon (click)="sharePomakecloseApp(po)">visibility</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="pocloseAppList?.length==0 ; else showpaginationcloseApp" style="text-align: center;">No Records
+            Found...</div>
+            <div class="row" *ngIf="poclosept" style="width: 85%;">
+                <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                    <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: -128px;">
+                        Total Count: {{totalcount}}
+                    </p>
+                </div>
+        </div>
+        <ng-template #showpaginationcloseApp>
+            <div class="cursor" style="font-size: small;text-align:right; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previouspocloseApp === false" color="primary"
+                    (click)="previousClickpocloseApp()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagepocloseApp}}
+                <button mat-icon-button [disabled]="has_nextpocloseApp === false" color="primary"
+                    (click)="nextClickpocloseApp()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<!-- //////////////////////////////////////////////////////////////////PO cancel maker /////////////////////////////////////////////////// -->
+
+
+<div *ngIf="isPOcancelmakerTab">
+    <h2 style="margin-left: 3%;">Purchase Order Cancel Maker Summary</h2>
+    <form [formGroup]="pocancelSearchForm">
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="no" matInput autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PO Number</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 35px;" (click)="getcancelsupplier()">
+                        <mat-label>Supplier Name</mat-label>
+                        <input #supplierInput placeholder="Select supplier" matInput formControlName="name"
+                            [matAutocomplete]="supplier">
+                        <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+                            (opened)="autocompletesupplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                                    {{supplier.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="amount" matInput autocomplete="off"
+                             (input)="AmountCalculation($event,pocancelSearchForm,'amount')">
+                        <mat-placeholder>PO Amount</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <!-- (keypress)="numberOnly($event)" -->
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getcancelbranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+               
+                <td>
+                    <mat-form-field  class="example-full-width" style="margin-left: 50px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary" (click)="pocancelSearch()"
+                        style="border-radius:40px;margin-left: 50px;margin-top: -2%;" color="primary">
+                        <!-- <i
+                            class="fa fa-search" aria-hidden="true"></i> -->
+                            <mat-icon>search</mat-icon>
+                        </button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary cursor" (click)="resetpoCancel()" 
+                        style="border-radius:40px;margin-left:  50px;margin-top:-2%" color="primary">Reset</button>
+
+                </td>
+                <td><button  style="border-radius:40px;margin-left:50px;margin-top:-2%;cursor: pointer" type="button"
+                    class="btn btn-outline-success" (click)="cancelmakerexceldownload()" >
+                  <span></span>Export </button>
+                   </td>
+            </tr>
+        </table>
+    </form>
+
+    <div class="table-responsive" style="margin-top: 2%;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>PO Number</th>
+                    <th>Supplier Name</th>
+                    <th> Branch </th>
+                    <th>PO Date</th>
+                    <th>PO Amount</th>
+                    <th>PO status</th>
+                    <th>PO Cancel Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let po of poCancelList; index as i">
+                    <td> {{(presentpagepoCancel - 1)*pageSizeCancel +i+1 }} </td>
+
+                    <td>{{ po?.no }}</td>
+                    <td>{{ po?.supplierbranch_id?.name}}</td>
+                    <td>{{ po?.branch_id?.fullname}}</td>
+                    <td>{{ po?.date | date:'dd-MM-yyyy'}}</td>
+                    <td>{{ po?.amount  | amountPipeCustom }}</td>
+                    <td>{{ po?.poheader_status}}</td>
+                    <td>
+                        <div *ngIf="po?.canceldata?.length === 0 ; else lock">
+                            -
+                        </div>
+                        <ng-template #lock>{{po?.canceldata[0].pocancel_status}} </ng-template>
+                    </td>
+                    <td>
+                        <!-- <span class="fa fa-eye" aria-hidden="true" (click)="sharePomakeCancel(po)"></span> -->
+                         <mat-icon (click)="sharePomakeCancel(po)">visibility</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="poCancelList?.length==0 ; else showpaginationCancel" style="text-align: center;">No Records
+            Found...</div>
+
+            <div class="row" *ngIf="pocanc" style="width: 85%;">
+                <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                    <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: -128px;">
+                        Total Count: {{totalcount}}
+                    </p>
+                </div>
+        </div>
+
+        <ng-template #showpaginationCancel>
+            <div class="cursor" style="font-size: small;text-align:right;margin-left:90%; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previouspoCancel === false" color="primary"
+                    (click)="previousClickpoCancel()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagepoCancel}}
+                <button mat-icon-button [disabled]="has_nextpoCancel === false" color="primary"
+                    (click)="nextClickpoCancel()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template>
+    </div>
+
+</div>
+
+<!-- //////////////////////////////////////////////////////////////////PO Cancel Approval ///////////////////////////////////////// -->
+
+<div *ngIf="isPOcancelapproverTab">
+
+    <h2 style="margin-left: 3%;">Purchase Order Cancel Approval Summary</h2>
+    <form [formGroup]="poCancelAppSearchForm" (ngSubmit)="poCancelAppSearch()">
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="no" matInput autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PO Number</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 35px;" (click)="getcancelappsupplier()">
+                        <mat-label>Supplier Name</mat-label>
+                        <input #supplierInput placeholder="Select supplier" matInput formControlName="name"
+                            [matAutocomplete]="supplier">
+                        <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+                            (opened)="autocompletesupplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                                    {{supplier.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="amount" matInput autocomplete="off"
+                             (input)="AmountCalculation($event,poCancelAppSearchForm,'amount')">
+                        <mat-placeholder>PO Amount</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getcancelappbranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+              
+                <td>
+                    <mat-form-field  class="example-full-width" style="margin-left: 50px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary" type="submit"
+                        style="border-radius:40px;margin-left: 50px;margin-top: -2%;" color="primary">
+                        <!-- <i
+                            class="fa fa-search" aria-hidden="true"></i> -->
+                            <mat-icon>search</mat-icon>
+                        </button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary cursor" (click)="resetpoCancelApp()" type="submit"
+                        style="border-radius:40px;margin-left:  20px;margin-top:-2%" color="primary">Reset</button>
+                </td>
+                <td>
+                    <!-- [disabled]="poCancelApproverExport" -->
+                    <button  style="border-radius:40px;margin-left:  20px;margin-top:-2%;cursor: pointer" type="button"
+                    class="btn btn-outline-success" (click)="cancelappexceldownload()" >
+                  <span></span>Export </button>
+                   </td>
+            </tr>
+        </table>
+    </form>
+    <div class="table-responsive" style="margin-top: 2%;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>PO Number</th>
+                    <th>Supplier Name</th>
+                    <th>Branch</th>
+                    <th>PO Date</th>
+                    <th>PO Amount</th>
+                    <th>PO status</th>
+                    <th>PO Cancel Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let po of poCancelAppList; index as i">
+                    <td> {{(presentpagepoCancelApp - 1)*pageSizeCancelApp +i+1 }} </td>
+                    <td>{{ po?.poheader?.no }}</td>
+                    <td>{{ po?.poheader?.supplierbranch_id?.name}}</td>
+                    <td>{{ po?.poheader?.branch_id?.fullname}}</td>
+                    <td>{{ po?.pocancel_date | date:'dd-MM-yyyy'}}</td>
+                    <td>{{ po?.poheader?.amount  | amountPipeCustom }}</td>
+                    <td>{{ po?.poheader?.poheader_status}}</td>
+                    <td>{{ po?.pocancel_status}}</td>
+
+                    <td>
+                        <!-- <span class="fa fa-eye" aria-hidden="true" (click)="sharePomakeCancelApp(po)"></span> -->
+                         <mat-icon (click)="sharePomakeCancelApp(po)">visibility</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="poCancelAppList?.length==0 ; else showpaginationCancelApp" style="text-align: center;">No
+            Records Found...</div>
+            <div class="row align-items-center" *ngIf="pocancelpt" style="width: 85%;">
+                <div class="col-sm-6" style="font-size: small; text-align: left;">
+                    <p style="color: black; font-size: 18px; font-weight: 500; margin-left: 70px; margin-top: -30px;">
+                        Total Count: {{totalcount}}
+                    </p>
+                </div>
+            </div>
+        <ng-template #showpaginationCancelApp>
+            <div class="cursor" style="font-size: small;text-align:right;margin-left:90%; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previouspoCancelApp === false" color="primary"
+                    (click)="previousClickpoCancelApp()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagepoCancelApp}}
+                <button mat-icon-button [disabled]="has_nextpoCancelApp === false" color="primary"
+                    (click)="nextClickpoCancelApp()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template>
+    </div>
+
+</div>
+
+
+<!-- ///////////////////////////////////////////////////////////////////////////PO Reopen/////////////////////////////////////////// -->
+
+
+<div *ngIf="isPOreopenTab">
+
+    <h2 style="margin-left: 3%;">Purchase Order Reopen Summary</h2>
+    <form [formGroup]="poReopenSearchForm" (ngSubmit)="poReopenSearch()">
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="no" matInput autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PO Number</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 35px;" (click)="getSupplier()">
+                        <mat-label>Supplier Name</mat-label>
+                        <input #supplierInput placeholder="Select supplier" matInput formControlName="name"
+                            [matAutocomplete]="supplier">
+                        <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+                            (opened)="autocompletesupplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                                    {{supplier.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <input type="text" formControlName="amount" matInput autocomplete="off"
+                             (input)="AmountCalculation($event,poReopenSearchForm,'amount')">
+                        <mat-placeholder>PO Amount</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getreopenbranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+               
+                <!-- <td>
+                    <mat-form-field  class="example-full-width" style="margin-left: 50px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td> -->
+                <td>
+                    <button class="btn btn-outline-primary" type="submit"
+                        style="border-radius:40px;margin-left: 50px;margin-top: -2%;" color="primary">
+                        <!-- <i
+                            class="fa fa-search" aria-hidden="true"></i> -->
+                            <mat-icon>search</mat-icon>
+                        </button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary cursor" (click)="resetpoReopen()" type="submit"
+                        style="border-radius:40px;margin-left:  20px;margin-top: -2%;" color="primary">Reset</button>
+                </td>
+                <td>
+                    <!--  [disabled]= "isReopenExportButton" -->
+                    <button style="border-radius:40px;margin-left:  20px;margin-top:-2%;cursor: pointer" type="button"
+                    class="btn btn-outline-success" (click)="Reopenexceldownload()" >
+                  <span></span>Export </button>
+                   </td>
+            </tr>
+        </table>
+    </form>
+    <div class="table-responsive" style="margin-top: 2%;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>PO Number</th>
+                    <th>Supplier Name</th>
+                    <th>Branch </th>
+                    <th>PO Date</th>
+                    <th>PO Amount</th>
+                    <th>PO status</th>
+                    <th>PO Close Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let po of poReopenList; index as i">
+                    <td> {{(presentpagepoReopen - 1)*pageSizeReopen +i+1 }} </td>
+                    <td>{{ po?.no }}</td>
+                    <td>{{ po?.supplierbranch_id?.name}}</td>
+                    <td>{{ po?.branch_id?.fullname}}</td>
+                    <td>{{ po?.date | date:'dd-MM-yyyy'}}</td>
+                    <td>{{ po?.amount  | amountPipeCustom }}</td>
+                    <td>{{ po?.poheader_status}}</td>
+                    <td>
+                        <div *ngIf="po?.closedata?.length === 0 ; else lock">
+                            -
+                        </div>
+                        <ng-template #lock>{{po?.closedata[0].poclose_status}} </ng-template>
+                    </td>
+                    <td>
+                        <!-- <span class="fa fa-eye" aria-hidden="true" (click)="sharePomakeReopen(po)"></span> -->
+                         <mat-icon (click)="sharePomakeReopen(po)">visibility</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="poReopenList?.length==0 ; else showpaginationReopen" style="text-align: center;">No Records
+            Found...</div>
+            <div class="row" *ngIf="poreopent" style="width: 85%;">
+                <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                    <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: -128px;">
+                        Total Count: {{totalcount}}
+                    </p>
+                </div>
+        </div>
+        <ng-template #showpaginationReopen>
+            <div class="cursor" style="font-size: small;text-align:right;margin-left:90%; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previouspoReopen === false" color="primary"
+                    (click)="previousClickpoReopen()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagepoReopen}}
+                <button mat-icon-button [disabled]="has_nextpoReopen === false" color="primary"
+                    (click)="nextClickpoReopen()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<!-- ///////////////////////////////////////////////////////////////////////PO Amendment///////////////////////////////////////////// -->
+
+<div *ngIf="isPOAmendmentTab">
+    <h2 style="margin-left: 3%;">Purchase Order Amendment Summary </h2>
+    <form [formGroup]="poamendmentSearch">
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field class="example-full-width" style="margin-left: 50px;">
+                        <input class="toolbar-search" type="text" matInput autocomplete="off" formControlName="no">
+                        <mat-placeholder>PO No</mat-placeholder>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style=" margin-left: 50px;">
+                        <mat-label>PO Date</mat-label>
+                        <input matInput readonly [matDatepicker]="picker1" placeholder="PO Date" formControlName="date">
+                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getamenbranch()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field  class="example-full-width" style="margin-left: 50px;">
+                        <mat-label>PO Status</mat-label>
+                            <mat-select formControlName="poheader_status">
+                                <mat-option *ngFor="let status of statuslist" [value]="status.text">
+                                    {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-outline-primary" type="submit" (click)="PoAmdmentSearch()"
+                        style="border-radius:40px;margin-left: 15px;" color="primary">
+                        <!-- <i class="fa fa-search"
+                            aria-hidden="true"></i> -->
+                            <mat-icon>search</mat-icon>
+                        </button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-primary" (click)="resetAmendment()" type="submit"
+                        style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+                </td>
+                <td>
+                    <!-- [disabled]="isAmendmentExport" -->
+                    <button  style="border-radius:40px;margin-left:  15px;cursor: pointer" type="button"
+                    class="btn btn-outline-success" (click)="Amendmentexceldownload()" >
+                  <span></span>Export </button>
+                   </td>
+            </tr>
+        </table>
+
+
+
+
+
+
+
+
+    </form>
+
+    <div class="table-responsive" style="margin-top: 2%;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>PO Number</th>
+                    <th> Branch </th>
+                    <th>PO Date</th>
+                    <th>PO Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let  amend of amendmentList; index as i">
+                    <td> {{(presentpagepoAmendment - 1)*pageSizeAmendment +i+1 }} </td>
+                    <td>{{amend?.no}}</td>
+                    <td>{{amend?.branch_id?.fullname}}</td>
+                    <td> {{amend?.date | date:'dd-MM-yyyy'}}</td>
+                    <td>{{amend?.amount  | amountPipeCustom }}</td>
+                    <td>{{amend?.poheader_status}}</td>
+                    <td>
+                        <button mat-icon-button matTooltip=" Edit" class="iconbutton" style="color: gray;"
+                            (click)="amendmentedit(amend)">
+                            <mat-icon aria-label="Edit">edit</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="amendmentList?.length==0 ; else showpaginationAmendment" style="text-align: center;">No Records
+            Found...</div>
+            <div class="row" *ngIf="poamendt" style="width: 85%;">
+                <div class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                    <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: -128px;">
+                        Total Count: {{totalcount}}
+                    </p>
+                </div>
+        </div>
+        <ng-template #showpaginationAmendment>
+            <div class="cursor" style="font-size: small;text-align:right;margin-left:90%; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previouspoAmendment === false" color="primary"
+                    (click)="previousClickpoAmendment()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagepoAmendment}}
+                <button mat-icon-button [disabled]="has_nextpoAmendment === false" color="primary"
+                    (click)="nextClickpoAmendment()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template>
+
+
+
+
+    </div>
+</div>
+
+
+
+
+<div *ngIf="showHeaderimagepopupApp" class="modal fade bd-examplepopHeaderfilesApp-modal-lg" tabindex="-1" role="dialog"
+    aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">Header Files</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <table class="table table-bordered" fixed-header
+                style="margin-left: 50px;width: 90%;margin-top:2%;overflow-x:hidden;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.No</th>
+                        <th>File Name</th>
+                        <th>Download File</th>
+                        <!-- <th>View File</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let file of fileListHeaderApp;index as i">
+                        <td>{{ i+1 }}</td>
+                        <td>{{file?.file_name}}</td>
+                        <td>
+                            <a (click)="fileDownloadApp(file.file_id,file.file_name )">
+                                <!-- <i class="fa fa-download"
+                                    style="color: green;">
+                                </i> -->
+                                <mat-icon  style="color: green;">get_app</mat-icon>
+                            </a>
+                        </td>
+                        <!-- <td style="margin-left:-1%">
+                            <p class="btn btn-link" style="margin-left:-1%" data-target="#my-modal" data-toggle="modal"
+                                (click)="commentPopupHeaderFilesApp(file.file_id,file.file_name)">
+                                <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                <br>
+                                (Note:Only image file can be viewed)
+                            </p>
+                        </td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showimageHeaderApp" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-examplepoppdf-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">PDF View</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false"
+                style="display: block;width: 800px; height: 800px;"></pdf-viewer>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" type="line-scale-party">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner>
+
+<div class="modal fade" id="prpomodal" tabindex="-1" role="dialog" aria-labelledby="prpomodalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+
+    <div class="modal-dialog modal-xl" role="document">
+        <!-- <div class="modal-dialog modal-xl"> -->
+
+        <div class="modal-content">
+
+            <div class="modal-header text-center">
+
+                <h4 class="modal-title  w-100 font-weight-bold" id="prpomodalLabel">PO Raised</h4>
+                
+                <button type="button" #closebttn class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6">
+                <h4 style="text-align: left;margin-left: 50px;font-weight: bold;">PO No : {{prno}}</h4>
+              </div>
+              <div class="col-6">
+                <span class="fa fa-download" style="margin-left: 500px;" aria-hidden="true"
+                                    (click)="download()" [class.disabled]="PrList?.length==0"></span>
+                                    <!-- <mat-icon style="margin-left: 500px;" aria-hidden="true"
+                                    (click)="download()" [class.disabled]="PrList?.length==0">get_app</mat-icon> -->
+                                    </div>
+                                    </div>
+                <div     class="table-responsive" style="margin-top: 2%;width: 95%;margin-left: 50px;">
+                    <table class="table scrolltable table-bordered">
+                        <thead>
+                            <tr class="table_header">
+                                <th> S.No</th>
+                                <th> Number</th>
+                                <th> Invoice Number</th>
+                                <th> Branch</th>
+                                <th> Raised By</th>
+                                <th>Quantity</th>
+                                <th> Date</th>
+                                <th> Status</th>
+                                <th> Payment Ref No</th>
+                                <th> Payment Released</th>
+                                <th>Payment Remaining</th>   
+                                <th>Payment Date</th>
+                                <th>Files</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let po of PrList; index as i">
+                                <!-- <td> {{(presentpage - 1)*pgsize +i+1 }} </td> -->
+                                <td>{{i+1}}</td>
+                                <td>{{ po?.code }}</td>
+                                <td>{{ po?.invoiceno}}</td>
+                                <td>{{ po?.branch}}</td>
+                                <td>{{po?.created_by}}</td>
+                                <td>{{po?.quantity}}</td>
+                                <td>{{ po?.date | date:'dd-MM-yyyy'}}</td>
+                                <td>{{po?.grn_status}}</td>
+                                <td>{{po?.apreferences_no}}</td>
+                                <td>{{po?.paid_popayment}}</td>
+                                <td>{{po?.payment_remaining}}</td> 
+                                <td>{{po?.payment_date}}</td>
+                                <td style="text-align: center;">
+                                    <!-- <span class="fa fa-download" aria-hidden="true" (click)="PORaisedFile(po)" data-toggle="modal"
+                                        data-target="#POfilemodal"></span> -->
+                                        <mat-icon (click)="PORaisedFile(po)" data-toggle="modal"
+                                        data-target="#POfilemodal">get_app</mat-icon>
+                                </td>   
+                        </tbody>
+                    </table>
+                    <div *ngIf="PrList?.length==0">No Records Found...</div>
+                    <!-- <ng-template>
+                        <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="getPRsummary('previous')">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{presentpage}}
+                            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="getPRsummary('next')">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </ng-template> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div *ngIf="showporaisedpopup" id="POfilemodal" class="modal fade bd-examplepopbrHeaderfiles-modal-lg" tabindex="-1" role="dialog"
+    aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title"> Files</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <table class="table table-bordered" fixed-header
+                style="margin-left: 50px;width: 90%;margin-top:2%;overflow-x:hidden;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.NO</th>
+                        <th>File Name</th>
+                        <th>Download File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let file of porList, index as i">
+                        <td>{{ i+1 }}</td>
+                        <td>{{file.file_name}}</td>
+                        <td>
+                            <a>
+                                <!-- <i class="fa fa-download"
+                                    style="color: green;" (click)="POFileDownload(file.file_name )">
+                                </i> -->
+                                <mat-icon  style="color: green;" (click)="POFileDownload(file.file_name )">get_app</mat-icon>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div> 
+
+<button
+  type="button"
+  class="d-none"
+  id="openModalButton"
+  data-toggle="modal"
+  data-target="#showWarn"
+></button>
+
+<div
+  class="modal fade custom-modal"
+  id="showWarn"
+  tabindex="-1"
+  data-backdrop="static"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Review Required</h3>
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button> -->
+      </div>
+      <div class="modal-body">
+        <h4>
+           <p>
+            This PO Request includes Replacement Asset details,
+           </p>
+          <p>
+            Please Review and Approve!.
+          </p> 
+        </h4>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-success"
+          data-dismiss="modal"
+        >
+          Proceed
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form [formGroup]="termsForm">
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog"
+                    aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="exampleModalLongTitle">
+                                    Terms And Conditions
+                                </h2>
+                            </div>
+                            <br>
+                            <div style="margin-left: 50px;width:90%;height: 70%;">
+                                <div>
+                                    <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled"
+                                        (blur)="onBlur()" (mediaDelete)="onDelete($event)"
+                                        (summernoteInit)="summernoteInit($event)" formControlName="terms_text">
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" style="border-radius: 40px;margin-left: 10px;"
+                                    class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+        class="modal fade jus_note"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myExtraLargeModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header" style="background: #ddefdd">
+              <h2
+                class="modal-title"
+                id="exampleModalLongTitle"
+              >
+                Justification Note
+              </h2>
+             
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <br />
+            <div style="margin-left: 50px; width: 90%; height: 70%">
+              <div>
+                <div
+                  [ngxSummernote]="config1"
+                  [ngxSummernoteDisabled]="editorDisabled"
+                  (blur)="onBlur()"
+                  (mediaDelete)="onDelete($event)"
+                  (summernoteInit)="summernoteInit($event)"
+                  formControlName="justification"
+                >
+                  <!-- <div
+              [ngxSummernote]="config"
+              [ngxSummernoteDisabled]="editorDisabled"
+              (blur)="onBlur()"
+              (mediaDelete)="onDelete($event)"
+              (summernoteInit)="summernoteInit($event)"
+              formControlName="notepad"
+            ></div> -->
+                  <!-- <div
+            id="summernote"
+            [ngxSummernote]="config"
+            [ngxSummernoteDisabled]="editorDisabled"
+            formControlName="notepad"
+          ></div> -->
+                </div>
+              </div>
+            </div>
+            <br />
+            <div class="modal-footer">
+              <button
+                type="button"
+                style="border-radius: 40px; margin-left: 10px"
+                class="btn btn-outline-primary"
+                data-dismiss="modal"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade bd-example-modal-xls" tabindex="-1" role="dialog"
+                    aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="exampleModalLongTitle">
+                                    NotePad
+                                </h2>
+                            </div>
+                            <br>
+                            <div style="margin-left: 50px;width:90%;height: 70%;">
+                                <div>
+                                    <div [ngxSummernote]="config2" [ngxSummernoteDisabled]="editorDisabled"
+                                        (blur)="onBlur()" (mediaDelete)="onDelete($event)"
+                                        (summernoteInit)="summernoteInit($event)" formControlName="notepad">
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" style="border-radius: 40px;margin-left: 10px;"
+                                    class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+      </form>

@@ -1,0 +1,302 @@
+
+<div class="container">
+    <br>
+	<h2>Expense GL Mapping</h2>
+    <div>
+        <form [formGroup]="expence_mapping">
+            <div class="col col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field (click)="expgrp_dropdown('summary','expgrp_summary')" appearance="outline">
+                            <mat-label>Expense Group </mat-label>
+                            <input #expgrp_summary_input placeholder="Expence Group " matInput formControlName="expgrp_summary" [matAutocomplete]="exp_grp_summary_auto">
+                            <mat-autocomplete #exp_grp_summary_auto="matAutocomplete" [displayWith]="displayfnexpgrpsummary" (opened)="expensegrpScroll('summary','expgrp_summary_input')">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let expense of expense_grp_summary" [value]="expense">
+                                        {{expense.name}} 
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>   
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field (click)="exphead_dropdown('summary','exp_summary')" appearance="outline">
+                            <mat-label>Expence Head </mat-label>
+                            <input #exphead_summary_input placeholder="Expence Head" matInput formControlName="exp_summary" [matAutocomplete]="exp_head_summary_auto">
+                            <mat-autocomplete #exp_head_summary_auto="matAutocomplete" [displayWith]="displayfnexphead_summary" (opened)="expenseheadScroll('summary','exphead_summary_input')">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let expense of expense_head_summary" [value]="expense">
+                                        {{expense.head}} 
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>   
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field (click)="expcat_dropdown('summary','cat_summary')" appearance="outline">
+                            <mat-label>Category</mat-label>
+                            <input #expcat_summary_input placeholder="Category" matInput formControlName="cat_summary" [matAutocomplete]="exp_cat_summary_auto">
+                            <mat-autocomplete #exp_cat_summary_auto="matAutocomplete" [displayWith]="displayfncat_summary" (opened)="catScroll('summary','expcat_summary_input')">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let cat of cat_summary_list" [value]="cat">
+                                        {{cat.name}} 
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>   
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field (click)="subcat_dropdown('summary','subcat_summary')" appearance="outline">
+                            <mat-label>Sub-Category</mat-label>
+                            <input #subcat_summary_input placeholder="Sub Category" matInput formControlName="subcat_summary" [matAutocomplete]="sub_cat_summary_auto">
+                            <mat-autocomplete #sub_cat_summary_auto="matAutocomplete" [displayWith]="displayfnsub_cat_summary" (opened)="subcatScroll('summary','subcat_summary_input')">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let subcat of subcat_summary_List" [value]="subcat">
+                                        {{subcat.name}} 
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>   
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field appearance="outline">
+                            <mat-label>GL-No</mat-label>
+                            <input matInput type="number" formControlName="gl_no_summary" autocomplete="off" placeholder="GL No">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" (click)="expance_summary_search(expence_mapping.value)">Search</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" style="border-radius: 40px; text-align: end;" (click)="expense_reset(4)" class="btn btn-outline-primary">Clear</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" data-toggle="modal" data-target=".em-expensemapping-modal-lg" style="border-radius: 40px; text-align: end;" class="btn btn-outline-primary">Expense-GL Mapping</button>
+                    </div>
+                </div>
+            </div>
+        </form> 
+        <div>
+            <div class="table-responsive" class="tablescroll" style="margin-top: 2%;width: 95%;margin-left: 10px;">
+                <table class="table table scrolltable table-bordered">
+                    <thead class="table_header" style="text-align: center;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Expense Group</th>
+                            <th>Expense Head</th>
+                            <th>Category</th>
+                            <th>Sub-Category</th>
+                            <th>GL-No</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor='let exp_mapping of expense_summary;let ind=index'>
+                            <td>{{ind+1}}</td>
+                            <td>{{exp_mapping.expensegrpname}}</td>
+                            <td>{{exp_mapping.expensename}}</td>
+                            <td>({{exp_mapping.cat_no}}){{exp_mapping.cat_name}}</td>
+                            <td>({{exp_mapping.subcat_no}}){{exp_mapping.subcat_name}}</td>
+                            <td>{{exp_mapping.gl_no}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="hasprevious === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentpage}}
+            <button mat-icon-button [disabled]="hasnext === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+        </div>
+    </div>
+    <div class="modal fade em-expensemapping-modal-lg" data-toggle="modal" data-backdrop="static"
+		data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabels">
+		<div class="modal-dialog modal-lg"
+			style="max-width: 100%;max-height: 100%;width: 100%; height: 100%;border-radius: 0;  width: 100%;height: 100%;padding-left: 20px;padding-bottom: -264px; padding-right: 19px;display: block;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title">Expense GL Mapping</h2>
+
+					<button type="button" class="close" (click)="expense_reset(5)" #closepopup data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row" style="margin-bottom: 2%;    overflow: auto;">
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div>
+                                            <p style="text-align: start;white-space: pre;">Expense Group and Expense  Mapping </p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body" style="    display: flex;
+                                    justify-content: center;">
+                                        <form [formGroup]="expence_mapping">
+                                            <div class="row-md-6">
+                                                <div class="col">
+                                                    <div class="row-md-3">
+                                                        <mat-form-field (click)="expgrp_dropdown('expgrp','expgrp')" appearance="outline">
+                                                            <mat-label>Expense Group </mat-label>
+                                                            <input #expgrp_input placeholder="Expence Group " matInput formControlName="expgrp" [matAutocomplete]="exp_grpauto">
+                                                            <mat-autocomplete #exp_grpauto="matAutocomplete" [displayWith]="displayfnexpgrp" (opened)="expensegrpScroll('expgrp','expgrp_input')">
+                                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                                <ng-container *ngIf="!isLoading">
+                                                                    <mat-option *ngFor="let expense of expense_grpList" [value]="expense">
+                                                                        {{expense.name}} 
+                                                                    </mat-option>
+                                                                </ng-container>
+                                                            </mat-autocomplete>
+                                                        </mat-form-field>   
+                                                    </div>
+                                                    <div class="row-md-3">
+                                                        <mat-form-field (click)="exphead_dropdown('expgrp','exphead')" appearance="outline">
+                                                            <mat-label>Expence Head </mat-label>
+                                                            <input #exphead_input placeholder="Expence Head" matInput formControlName="exphead" [matAutocomplete]="exp_headauto">
+                                                            <mat-autocomplete #exp_headauto="matAutocomplete" [displayWith]="displayfnexphead" (opened)="expenseheadScroll('expgrp','exphead_input')">
+                                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                                <ng-container *ngIf="!isLoading">
+                                                                    <mat-option *ngFor="let expense of expense_headList" [value]="expense">
+                                                                        {{expense.head}} 
+                                                                    </mat-option>
+                                                                </ng-container>
+                                                            </mat-autocomplete>
+                                                        </mat-form-field>   
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form> 
+                                    </div>
+                                    <div class="card-footer">
+                                        <div style="float: right;">
+                                            <button type="submit" style="border-radius: 40px;" (click)="expense_mapping(1,expence_mapping.value)" class="btn btn-outline-primary">Submit</button> &nbsp;&nbsp;                          
+                                            <button type="submit" style="border-radius: 40px;" (click)="expense_reset(1)" class="btn btn-outline-primary">Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div>
+                                            <p style="text-align: start;white-space: pre">Expense  And Category Mapping </p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body" style="    display: flex;
+                                    justify-content: center;">
+                                        <form [formGroup]="expence_mapping">
+                                            <div class="row-md-6">
+                                                <div class="col">
+                                                    <div class="row-md-3">
+                                                        <mat-form-field (click)="exphead_dropdown('exphead','exp_head')" appearance="outline">
+                                                            <mat-label>Expence Head </mat-label>
+                                                            <input #exphead_input1 placeholder="Expence Head" matInput formControlName="exp_head" [matAutocomplete]="exp_headauto1">
+                                                            <mat-autocomplete #exp_headauto1="matAutocomplete" [displayWith]="displayfnexp_head" (opened)="expenseheadScroll('exphead','exphead_input1')">
+                                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                                <ng-container *ngIf="!isLoading">
+                                                                    <mat-option *ngFor="let expense of expense_head" [value]="expense">
+                                                                        {{expense.head}} 
+                                                                    </mat-option>
+                                                                </ng-container>
+                                                            </mat-autocomplete>
+                                                        </mat-form-field>   
+                                                    </div>
+                                                    <div class="row-md-3">
+                                                        <mat-form-field (click)="expcat_dropdown('exphead','cat_list')" appearance="outline">
+                                                            <mat-label>Category</mat-label>
+                                                            <input #expcat_input placeholder="Category" matInput formControlName="cat_list" [matAutocomplete]="exp_catauto">
+                                                            <mat-autocomplete #exp_catauto="matAutocomplete" [displayWith]="displayfncat" (opened)="catScroll('exphead','expcat_input')">
+                                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                                <ng-container *ngIf="!isLoading">
+                                                                    <mat-option *ngFor="let cat of cat_List" [value]="cat">
+                                                                        {{cat.name}} 
+                                                                    </mat-option>
+                                                                </ng-container>
+                                                            </mat-autocomplete>
+                                                        </mat-form-field>   
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form> 
+                                    </div>
+                                    <div class="card-footer">
+                                        <div style=" float: right;">
+                                            <button type="submit" style="border-radius: 40px;" (click)="expense_mapping(2,expence_mapping.value)" class="btn btn-outline-primary">Submit</button>&nbsp; &nbsp;
+                                            <button type="submit" style="border-radius: 40px;" (click)="expense_reset(2)" class="btn btn-outline-primary">Clear</button>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div>
+                                            <p style="text-align: start;white-space: pre">Category And Sub-Category Mapping</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body" style="    display: flex;
+                                    justify-content: center;">
+                                        <form [formGroup]="expence_mapping">
+                                            <div class="row-md-6">
+                                                <div class="col">
+                                                    <div class="row-md-3">
+                                                        <mat-form-field (click)="expcat_dropdown('expcat','cat')" appearance="outline">
+                                                            <mat-label>Category</mat-label>
+                                                            <input #expcat_input1 placeholder="Category" matInput formControlName="cat" [matAutocomplete]="exp_catauto1">
+                                                            <mat-autocomplete #exp_catauto1="matAutocomplete" [displayWith]="displayfn_cat" (opened)="catScroll('expcat','expcat_input1')">
+                                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                                <ng-container *ngIf="!isLoading">
+                                                                    <mat-option *ngFor="let cat of catList" [value]="cat">
+                                                                        {{cat.name}} 
+                                                                    </mat-option>
+                                                                </ng-container>
+                                                            </mat-autocomplete>
+                                                        </mat-form-field>   
+                                                    </div>
+                                                    <div class="row-md-3">
+                                                        <mat-form-field (click)="subcat_dropdown('subcat','sub_cat')" appearance="outline">
+                                                            <mat-label>Sub-Category</mat-label>
+                                                            <input #subcat_input placeholder="Sub Category" matInput formControlName="sub_cat" [matAutocomplete]="sub_catauto">
+                                                            <mat-autocomplete #sub_catauto="matAutocomplete" [displayWith]="displayfnsub_cat" (opened)="subcatScroll('subcat','subcat_input')">
+                                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                                <ng-container *ngIf="!isLoading">
+                                                                    <mat-option *ngFor="let subcat of subcat_list" [value]="subcat">
+                                                                        {{subcat.name}} 
+                                                                    </mat-option>
+                                                                </ng-container>
+                                                            </mat-autocomplete>
+                                                        </mat-form-field>   
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div style="float: right;">
+                                            <button type="submit" style="border-radius: 40px;" (click)="expense_mapping(3,expence_mapping.value)" class="btn btn-outline-primary">Submit</button> &nbsp; &nbsp;
+                                            <button type="submit" style="border-radius: 40px;" (click)="expense_reset(3)" class="btn btn-outline-primary">Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" (click)="expense_reset(5)" class="btn btn-outline-dark" data-dismiss="modal"> Close </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+</div>

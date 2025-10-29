@@ -1,0 +1,250 @@
+<div class="container" style="max-width: 1301px;">
+    
+    <h2 style="margin-left: 2%;font-family:Times New Roman;font-size:20px;color:blue;font-weight:bold;">Asset Category Change Maker Summary</h2>
+        <form [formGroup]="categorychangesearch" (ngSubmit)="getCategoryChange()" >
+        
+            <div class=" row col-md-12">
+                
+            <!-- Asset Category  -->
+            <div class="col-md-3">
+                <mat-form-field  (click)="asset_Category()" style="width: 220px;">
+                    <mat-label>New Asset Category</mat-label>
+                    <input #CategoryInput  placeholder="Select Asset Category" matInput formControlName="category"
+                    [matAutocomplete]="CategoryAutoComplete"   >
+                    <!-- <mat-error *ngIf="vendorSearchForm.controls.Category.errors?.matchRequired">
+                        Please select a character from the list.
+                      </mat-error> -->
+                <mat-autocomplete #CategoryAutoComplete="matAutocomplete" [displayWith]="displayFnAssest" (opened)="autocompleteScrollcategory()" >
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option   *ngFor="let Category of Category" [value]="Category">{{Category.subcatname}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+                <!-- <mat-error *ngIf="vendorSearchForm.controls['Category'].hasError('incorrect')">
+                    Please select a valid project
+                </mat-error> -->
+                
+                </mat-form-field>
+            </div>
+             <!--End Asset Category  -->
+
+           <!-- Branch Name -->
+           <div class="col-md-3">
+                    <mat-form-field  (click)="Branch()" style="width:220px">
+                        <mat-label>Branch Name</mat-label>
+                        <input #BranchInput placeholder="Select Branch Name" matInput formControlName="branch_name" (focusout)="onFocusOutEvent($event)"
+                        [matAutocomplete]="branch"   >
+                    <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFn" (opened)="autocompleteScroll()" >
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option   *ngFor="let employee of employeeList" [value]="employee">{{employee.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+
+                    <!-- End Branch Name -->           
+           <!-- Asset barcode -->
+           <div class="col-md-3" >
+            <mat-form-field   style="width: 220px;">
+                <!-- (click)="Assetbarcode()" -->
+                <mat-label >Select Asset Barcode</mat-label>
+                <input #AssetInput placeholder="Select Asset Barcode" matInput formControlName="barcode"
+                   >
+                   <!-- [matAutocomplete]="asset" -->
+            <!-- <mat-autocomplete #asset="matAutocomplete" [displayWith]="displayFnAssestId" (opened)="autocompleteScrollAssetId()">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option   *ngFor="let details of assetDetails" [value]="details">{{details.barcode}}
+                    </mat-option>
+                </ng-container>
+            </mat-autocomplete> -->
+            </mat-form-field>
+        </div>
+    <!-- End Asset barcode -->
+        <!-- cap date -->
+
+        <div class="col-md-3">
+            <mat-form-field>
+                <mat-label>Capitalization Date</mat-label>
+                <input matInput [matDatepicker]="excemfrom" formControlName="capdate_Value">
+                <mat-datepicker-toggle matSuffix [for]="excemfrom"></mat-datepicker-toggle>
+                <mat-datepicker #excemfrom disabled="false"></mat-datepicker>
+            </mat-form-field>
+        </div>
+        </div>
+        <div class="row col-md-12">
+        <!-- end Cap Date -->
+        <!-- Asset Value -->
+        <div class="col-md-3">
+            <mat-form-field style="width:220px">
+                <mat-label>Asset Value</mat-label>
+                <input type="text" formControlName="asset_value" (keypress)="decimalFilter($event)" matInput
+                    placeholder="Asset Value">
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field style="width:220px">
+                <mat-label>CR No.</mat-label>
+                <input type="text" formControlName="crno"  matInput  [matTooltip]="categorychangesearch.get('crno').value"
+                    placeholder="crno">
+            </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field style="width:220px"> 
+                    <mat-label>From Date</mat-label>
+                    <input [max]="previousDate" [matDatepicker]="fromdate"  matInput formControlName="fromdate" (dateChange)="fromdateSelection($event.value)">
+                    <mat-datepicker-toggle matSuffix [for]="fromdate"></mat-datepicker-toggle>
+                    <mat-datepicker #fromdate></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field>
+                    <mat-label>To Date</mat-label>
+                    <input formControlName="todate" [matDatepicker]="todate" matInput [min]="select" [max]="previousDate">
+                    <mat-datepicker-toggle matSuffix [for]="todate"></mat-datepicker-toggle>
+                    <mat-datepicker #todate></mat-datepicker>
+                </mat-form-field>
+            </div>
+            </div>
+        <!-- end Asset Value -->
+      <div class="row col-md-12" style="gap:10px;justify-content: end;margin-right :15px ;">
+        <div >
+    <button type="submit" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;"><i class="fa fa-search" aria-hidden="true">Search</i>
+     
+    </button>
+
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-primary" (click)="clearSearch()"
+            style="border-radius:40px;height: 44px; margin-top: 12px;">Clear
+        </button>
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-primary" [routerLink]='"/fa/categorychangeadd"'
+            skipLocationChange style="border-radius: 132px;  margin-top: 12px;height: 44px;"><span class="fa fa-plus"></span>
+            Add</button>
+    
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;" (click)="fa_min_Expense_Reports_Download()">Download</button>
+    
+    </div>
+    <div>
+    <button type="button" class="btn btn-outline-primary"  routerLink="/fa/fa"
+    style="border-radius:40px;height: 44px; margin-top: 12px;">Back</button>
+    </div>
+</div>
+  </form>
+</div>  
+
+        
+
+<div class="table-responsive" style="margin-left:25px">
+    <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 20px;">
+        <thead class="table_header " fixed-header>
+            <tr>
+                <th>S.No</th> 
+                <th>Asset Barcode ID</th>     
+                <th>CR No</th>        
+                  <th>New Sub-Category</th>
+                  <th>Old Sub-Category</th>
+                  <th>Capitalisation Date</th>
+                  <th>Asset Value</th>
+                  <th>Product Name</th>
+                  <th>Branch Name</th>
+                  <th>Location</th>
+                  <th>Reason</th>
+                  <th>Asset Category Change Date</th>
+                  <th>Asset Category Change Created Date</th>
+                  <th>Maker</th>
+                  <th>Approver</th>
+                  <th>Status</th>
+                  <th>Category Status</th>
+                  <th>Entry View</th>
+                  
+                  
+                 
+              </tr>
+        </thead>
+        <tbody *ngFor="let value of categoryadd;index as i">
+            <tr>
+                <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+        <td>{{value.barcode}}</td>
+        <td>{{value?.crnum}}</td>
+        <td>{{value.new_categtory}}</td>
+        <td>{{value.old_categtory}}</td>
+        <td style="text-align:center;">{{value.capdate| date:'dd-MMM-yyyy ' }}</td>
+        <td style="text-align:end;">{{value.assetdetails_value}}</td>
+        <td>{{value.product_name}}</td>
+        <td>{{value?.branch?.name}}</td>
+        <td>{{value?.location?.name}}</td>
+        <td><button type="button" (click)="clickreason(value)" style="background: none;border: none;"><span [matTooltip]="value?.reason" style="color:orange">Reason</span></button></td>
+        <td>{{value.catchangedate | date:'dd-MMM-yyyy'}}</td>
+        <td>{{value.createdate | date:'dd-MMM-yyyy '}}</td>
+        <td>{{value?.maker_name}}</td>
+        <td>{{value?.approver_name}}</td>
+        <td>{{value.assetdetails_status}}</td>
+        <td>{{value.category_status}}</td>
+        <td><button mat-icon-button color="primary" (click)="expandentrydata(i)"><mat-icon *ngIf="value.sub_enb==false">arrow_drop_down_circle</mat-icon> <mat-icon *ngIf="value.sub_enb==true">arrow_drop_up</mat-icon></button></td>           
+            </tr>
+            <tr  *ngIf="value.sub_enb">
+                <td colspan="16">
+                    <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;">Asset Category Change Entry Summary</h2>
+                    <table class="table table-bordered" style="width:90%">
+                        <thead class="table_header">
+                            <tr>
+                                
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Sub Category</th>
+                                <th>ENtry GL</th>
+                                <th>Entry Amount</th>
+                                <th>Transaction Date</th>
+                                <th>Entry Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let subdta of value.entry_details;let j=index">
+                                
+                                <td style="text-align: center;">{{subdta?.type == "C"?'Credit':'Debit'}}</td>
+                                <td style="text-align: center;">{{subdta?.Category}}</td>
+                                <td style="text-align: center;">{{subdta?.subcategory}}</td>
+                                <td style="text-align: center;">{{subdta?.gl}}</td>
+                                <td style="text-align: center;">{{subdta?.amount  | number:'1.2-2'}}</td>
+                                <td style="text-align: center;">{{subdta?.trandate}}</td>
+                                <td style="text-align: center;">{{subdta?.status}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>   
+        </tbody>
+    </table>
+    
+    <div *ngIf="categoryadd ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+</div>
+    <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back</mat-icon>
+        </button> {{presentpage}}
+        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+   
+
+</div>
+<div style="text-align: center;margin-top: -5%;"><h2>Reason:{{reason}}</h2></div>
+<!-- </div> -->
+<ngx-spinner
+            bdColor="rgba(51,51,51,0.8)"
+            size="medium"
+            color="#fff"
+            type="ball-scale-multiple"
+          >
+            <p style="font-size: 20px; color: white">Loading...</p>
+          </ngx-spinner>

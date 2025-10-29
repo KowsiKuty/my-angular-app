@@ -1,0 +1,71 @@
+<div class="p-5" *ngIf="document_screen">
+    <div class="row d-flex justify-content-between">
+        <div class="col">
+            <h2 class="">Documents Summary</h2>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <div class="left_btn col-md-5">
+                <from [formGroup]="Document_form" class="cus-matInput" id="matInput-size">
+                    <mat-form-field appearance="outline">
+                        <mat-label>File Name</mat-label>
+                        <input matInput type="text" formControlName="name">
+                    </mat-form-field>
+                </from>
+            </div>
+            <div class="left_btn">
+                <button class="nor_btm" (click)="document_search(this.Document_form)">Search</button>
+            </div>
+            <div class="left_btn">
+                <button class="btn_clear ml" (click)="back_to_mainscreen()">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="">
+        <table class="table table-bordered" fixed-header>
+            <thead class="table_color">
+                <tr>
+                    <th class="text_center">S.No</th>                    
+                    <th class="text_center">File Name</th>
+                    <th class="text_center">Employee Name</th>
+                    <th class="text_center">Date-Time</th>
+                    <th class="text_center">Type</th>
+                    <th class="text_center">Status</th>
+                    <th class="text_center">Download</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let summary of summary_list;let i=index">
+                    <td class="text_center">{{(presentspage-1)*10+i + 1 }}</td>                   
+                    <td class="text_center">{{summary.file_name}}</td>
+                    <td class="text_center">{{summary.emp_name ? summary.emp_name : '-'}}</td>
+                    <td class="text_center">{{summary.date}}</td>
+                    <td class="text_center">{{summary.type == 1 ? 'Raw query Download' : '-'}}</td>
+                    <td class="text_center">
+                        <button class="status-btn" [ngClass]="summary.status==1 ? 'processing' : summary.status==2 ? 'uploaded':summary.status==4 ? 'success' : summary.status==3 ? 'danger' : 'none'">
+                            {{((summary.status == 1) ? 'Started' : (summary.status == 2) ? 'Processing' : (summary.status == 4 )?'Success' :(summary.status == 3 ) ? 'No Data found' : '-')}}
+                        </button>
+                    </td>  
+                    <td class="text_center"><div class="btnprimary" (click)="summary.status == 4  ? view_download(summary) : ''"><mat-icon  [ngStyle]="{  'color':summary.status == 4 ? 'blue' : 'gray','cursor':  summary.status == 4 ? 'pointer':'default'}">download</mat-icon></div></td>       
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <p *ngIf="!data_found" class="text_center" >Data Not Found</p>
+        </div>
+        <div class="table-pagination">
+            <button mat-icon-button [disabled]="hass_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_circle_left</mat-icon>
+            </button> {{presentspage}}
+            <button mat-icon-button [disabled]="hass_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_circle_right</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="mainscreen">
+    <app-ppr-summary></app-ppr-summary>
+</div>

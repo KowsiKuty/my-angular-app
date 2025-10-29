@@ -1,0 +1,285 @@
+<div>
+    <form [formGroup]="PARmakerForm">
+        <div class="header">
+            <!-- <h2>
+                Budget Proposal Approval (BPA Maker)
+            </h2> -->
+
+            <h2>
+                Budget Proposal Approval (BPA Maker)
+            </h2>
+            <div *ngIf="statusbool != false" >
+            <div *ngIf= "status === 'APPROVED'; else error" style="text-align:center;">
+                <div class="alert alert-success" role="alert">
+                    BPA Status : "{{status}}" &nbsp; &nbsp; Remarks: "{{statusremarks}}"
+                </div>
+                
+            </div>
+            <ng-template #error>
+                <div class="alert alert-danger" role="alert" style="text-align:center;">
+                    BPA Status : "{{status}}" &nbsp; &nbsp; Remarks: "{{statusremarks}}"
+                </div>
+            </ng-template>
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field class="inputformat">
+                            <mat-label>BPA Number</mat-label>
+                            <input matInput placeholder="BPA Number" formControlName="no" 
+                            autocomplete="off" disabled [readonly]="this.statusbool == true">
+                        </mat-form-field>
+                    </td>
+                    
+
+                    <td>
+                        <mat-form-field class="inputformat">
+                            <mat-label> Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker1" placeholder="Start Date"
+                                formControlName="date"  required >
+                            <!-- <mat-datepicker-toggle matSuffix  [for]="picker1"> -->
+                                <mat-datepicker-toggle matSuffix readonly [for]="picker1">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker1 [disabled]="this.statusbool == true"></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    
+                    <td>
+                        
+                        <mat-form-field style="width: 175px; margin-left: 50px;">
+                            <mat-label>Year</mat-label>
+                            <mat-select formControlName="year" [disabled]="this.statusbool == true">
+                                <mat-option *ngFor="let year of FinancialYearList" [value]="year.text">
+                                    {{year.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="inputformat">
+                            <mat-label> BPA Amount</mat-label>
+                            <input matInput type="number" placeholder="BPA Amount" 
+                            (keypress)="numberOnly($event)" min=1 (click)="valid()" autocomplete="off"
+                                formControlName="amount" required [readonly]="this.statusbool == true">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="inputformatlongdesc">
+                            <mat-label> BPA Name</mat-label>
+                            <input matInput placeholder="BPA Name" formControlName="desc" autocomplete="off" [readonly]="this.statusbool == true">
+                        </mat-form-field>
+                    </td>
+                    
+                    <td>
+                         <!-- <span class="material-icons" type="button" data-toggle="modal"
+                            data-target=".bd-example-modal-xl">description</span> -->
+                            <mat-icon type="button" data-toggle="modal"
+                            data-target=".bd-example-modal-xl">description</mat-icon>
+                        </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="inputformat">
+                            <mat-label>Contingency %</mat-label>
+                            <input matInput placeholder="Contigency %" type="number" 
+                                formControlName="contigency" autocomplete="off" minlength="1" maxlength="3" size="45" 
+                                (keyup)="ContigencyCalculation($event)" (click)="contivalue()"  (focusout)="convalidation($event)"
+                                (keypress)="omit_special_charcter($event)"   pattern="[0-9]{1,3}" required >
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="exampleModalLongTitle">
+                            Note Pad
+                        </h2>
+                    </div>
+                    <br>
+                    <div style="margin-left: 50px;width:90%;height: 70%;">
+                        
+                        <div>
+                            
+                            <!-- <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                                (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                                formControlName="content">
+                            </div> -->
+
+                            <div *ngIf="statusbool == true" [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                                (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                                formControlName="content">
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" style="border-radius: 40px;margin-left: 10px;"
+                            class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- //6558  -->
+        <!-- <div style="margin: 10px 10px 5px 30px;">
+            <form [formGroup]="PARmakerconForm"> -->
+                <!-- <form [formGroup]="PARmakerconForm" (ngSubmit)="PARconFormSubmit()"> -->
+
+
+               
+
+                <!-- <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary"
+                    [disabled]="PARmakerconForm.invalid || clicked">Submit</button>
+                <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 10px;"
+                    (click)="onCancelClick()">Cancel</button> -->
+
+            <!-- </form>
+        </div> -->
+<!-- //6558   -->
+
+
+        <h1 style="margin-left: 4%;">BPA Details</h1>
+        <div><button type="button" class="btn btn-outline-success" (click)="addSection(this.PARmakerForm.get('pardetails').value)"
+            style="margin-left: 1000px; border-radius:40px;"><span class="fa fa-plus"></span></button></div>
+
+        <div class="table-responsive" style="margin-top: 2%;width: 90%;margin-left: 50px;">
+            <table class="table scrolltable table-bordered" fixed-header>
+                <thead>
+                    <tr class="table_header" fixed-header>
+                        <th>S.No</th>
+                        <th>Expense Type</th>
+                        <th>Request For</th>
+                        <th>Description</th>
+                        <th>Year</th>
+                        <th>Amount</th>
+                        <th>Remarks</th>
+                        <th>Contigency Amount</th>
+                        <th>Total Amount</th>
+                        <th *ngIf="statusbool==false">File Upload</th>
+                        <th *ngIf="statusbool==false">Remove</th>
+                    </tr>
+                </thead>
+                <tbody formArrayName="pardetails" *ngFor="let section of getSections(PARmakerForm); let i = index">
+                    <tr [formGroupName]="i">
+
+                        <td>{{i+1}}</td>
+                        <td>
+                            <mat-form-field style="width: 175px;">
+                                <mat-label>Expense</mat-label>
+                                <mat-select formControlName="exptype" [disabled]="this.statusbool == true">
+                                    <mat-option *ngFor="let type of expensetype" [value]="type.text">{{type.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="inputformatlong" (click)="getreqforFK()">
+                                <mat-label>Request For</mat-label>
+                                <input #rforInput placeholder="Search Request For" matInput formControlName="requestfor"
+                                    [matAutocomplete]="rfor" [readonly]="this.statusbool == true">
+                                    <!-- [matAutocomplete]="rfor" readonly> -->
+                                <mat-autocomplete #rfor="matAutocomplete" [displayWith]="displayFnrfor.bind(this)"
+                                    (opened)="autocompleterforScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let rfor of requestforList" [value]="rfor.name">
+                                            {{rfor.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        
+                        <td>
+                            <mat-form-field>
+                                <input matInput placeholder="Description" formControlName="desc" autocomplete="off"
+                                    required [readonly]="this.statusbool == true">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field>
+                                <input matInput placeholder="Year"   maxlength="4" formControlName="year" autocomplete="off" required [readonly]="this.statusbool == true">
+                            </mat-form-field>
+                        </td>
+                        <!-- <td>
+                            <mat-form-field>
+                                <input matInput type="number" placeholder="Amount"
+                                    formControlName="amount" (focusout)="datasums()" autocomplete="off" required>
+                            </mat-form-field>
+                        </td> -->
+                    <!-- // BUG ID:6558 -->
+                    <td>
+                        <mat-form-field>
+                            <input matInput type="number" pattern="\d*" maxlength="16" placeholder="Amount" (keypress)="omit_special_num($event)" (keyup)="ContigencyCal($event,section,i)"
+                                formControlName="amount" (focusout)="datasums()" autocomplete="off" required [readonly]="this.statusbool == true">
+                        </mat-form-field>
+                    </td>
+              <!-- //6558       -->
+
+                        <td>
+                            <mat-form-field>
+                                <input matInput placeholder="Remarks" formControlName="remarks" autocomplete="off"
+                                    required [readonly]="this.statusbool == true">
+                            </mat-form-field>
+                        </td>
+
+                        <!-- //6558 -->
+                        <td>
+                            <mat-form-field>
+                                <input matInput readonly formControlName="perce" autocomplete="off" 
+                                    required>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field>
+                                <input matInput readonly formControlName="perceTotal" autocomplete="off"
+                                     required>
+                            </mat-form-field>   
+                        </td>
+    <!-- //6558 -->
+                       
+                        <td *ngIf="statusbool== false">
+                            <input type="file" #fileInput id="uploadFile" class="choose-file"
+                                (change)="onFileSelected($event, i)" style="width:250px;" name="uploadFile" />
+                        </td>
+                        <td *ngIf="statusbool==false">
+                        <!-- <span  (click)="removeSection(i, section)"
+                            class="material-icons">delete</span> -->
+                            <mat-icon (click)="removeSection(i, section)">delete</mat-icon>
+                            </td>
+                    </tr>
+                </tbody>
+                <!-- <tr>
+                    <th class="totaldisplay" colspan="5">Total Amount:</th>
+                    <td class="rightaligntotal">{{sum  | amountPipeCustom  }}</td>
+                </tr> -->
+
+                <tr>
+                    <th class="totaldisplay" colspan="5">Total Amount:</th>
+                    <td class="rightaligntotal">{{sum  | amountPipeCustom  }}</td>
+                    <td class="totaldisplay" colspan="3" style="margin-left: 50px;">{{perceTotalsum  | amountPipeCustom  }} </td> 
+
+                </tr>
+                                <!-- //bug id:6558 -->
+            </table>
+        </div>
+        <div style="margin: 50px 0 100px 50px;">
+            <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary"
+                (click)="parmakerSubmit()" [disabled]="clicked">Submit</button>
+            <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 10px;"
+                (click)="onCancelClick()">Cancel</button>
+        </div>
+    </form>
+</div>
+        
+
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" type="line-scale-party">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner>  

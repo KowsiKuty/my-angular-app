@@ -1,0 +1,345 @@
+<div style="margin-left: 20px;margin-top: 15px;">
+  <form [formGroup]="accountsearch" class="search-auto-fit">
+    <div id="matInput-size">
+      <mat-form-field  appearance="outline">
+        <mat-label>Account number</mat-label>
+        <input matInput formControlName="accountnumber" />
+      </mat-form-field>
+    </div>
+    <div id="matInput-size">
+      <!-- <mat-form-field class="formfieldsize">
+            <mat-label>Template</mat-label>
+            <mat-select formControlName="temp_name">
+              <mat-option *ngFor="let temp of templatearray" [value]="temp.template_name">
+                {{temp.template_name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+      <mat-form-field appearance="outline">
+        <mat-label>Template</mat-label>
+        <input
+          type="text"
+          #temp_name_input1
+          matInput
+          formControlName="temp_name"
+          [matAutocomplete]="temp_auto"
+          (keyup)="gettemplate()"
+        />
+        <mat-autocomplete
+          #temp_auto="matAutocomplete"
+          (opened)="autocompletewisefinxlScroll()"
+        >
+          <mat-option
+            *ngFor="let temp of templatearray"
+            [value]="temp.template_name"
+          >
+            {{ temp.template_name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div style="margin-top: 5px;">
+      <button
+        ngbTooltip="Search Records"
+        class="btn btn-outline-success"
+        style="border-radius: 25px"
+        color="primary"
+        (click)="account_search()"
+      >
+        <i class="fa fa-search" aria-hidden="true"></i>
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        ngbTooltip="Clear Entries"
+        style="margin-left: 20px; border-radius: 25px; margin-left: 10px"
+        (click)="datassearchreset()"
+      >
+        Clear
+      </button>
+      <span style="margin-left: 10px"
+        ><button
+          class="btn btn-outline-info"
+          style="border-radius: 30px"
+          (click)="resetmapping()"
+        >
+          Mapping
+        </button></span
+      >
+    </div>
+  </form>
+
+  <div class="table-responsive" style="width: 98%">
+    <table class="table table-hover" id="commonstyle" style="border: none;">
+      <thead  style="text-align: left;background-color: #DEF7DE;font-size: 16px;">
+        <tr>
+          <th style="font-weight: 600;">S.no</th>
+          <th style="font-weight: 600;">Account number</th>
+          <th style="font-weight: 600;">Template name</th>
+          <th style="font-weight: 600;">Rule</th>
+          <th style="font-weight: 600;">Delete</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let sum of accountsummaryarray; index as ind">
+          <td>{{ (pagination.index - 1) * limit + ind + 1 }}</td>
+          <td>{{ sum.account_number }}</td>
+          <td>{{ sum.template_name }}</td>
+          <td>
+            <span *ngFor="let value of sum.rule" style="margin-left: -10px;">
+              <button class="badge-btn">
+                {{ value }}
+              </button></span
+            >
+          </td>
+          <td>
+            <mat-icon style="cursor: pointer" (click)="deleteaccount(sum)"
+              >delete</mat-icon
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="accountsummaryarray?.length == 0" style="margin-left: 42%">
+      <h3>Sorry data not found...</h3>
+    </div>
+    <div class="row">
+      <div
+        class="col-sm-12"
+        style="font-size: small; text-align: right; margin-bottom: 50px"
+      >
+        <button
+          mat-icon-button
+          [disabled]="pagination.has_previous === false"
+          color="primary"
+          (click)="prevpages()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        {{ pagination.index }}
+        <button
+          mat-icon-button
+          [disabled]="pagination.has_next === false"
+          color="primary"
+          (click)="nextpages()"
+        >
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="boxlevelform"
+  aria-hidden="true"
+  id="editdatas"
+  #editdatas
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #ddefdd">
+        <b class="modal-title" style="color: black">Account Mapping</b>
+        <button
+          type="button"
+          #closebuttonclosed
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <mat-card>
+          <div>
+            <span style="font-size: 15px; font-weight: 600"
+              >Single Mapping</span
+            >
+          </div>
+          <hr />
+          <form [formGroup]="accountform" class="search-auto-fit">
+            <div id="matInput-size">
+              <mat-form-field appearance="outline">
+                <mat-label>Account number</mat-label>
+                <input matInput formControlName="accountnumber" />
+              </mat-form-field>
+            </div>
+            <div id="matInput-size">
+              <!-- <mat-form-field >
+                          <mat-label>Template</mat-label>
+                          <mat-select formControlName="template">
+                            <mat-option *ngFor="let temp of templatearray" [value]="temp.template_name" (click)="getrule_temp(temp.template_name)">
+                              {{temp.template_name}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>  -->
+              <mat-form-field appearance="outline">
+                <mat-label>Template</mat-label>
+                <input
+                  type="text"
+                  #temp_name_input2
+                  matInput
+                  formControlName="template"
+                  [matAutocomplete]="temp_auto1"
+                  (keyup)="gettemplate1()"
+                />
+                <mat-autocomplete
+                  #temp_auto1="matAutocomplete"
+                  (opened)="autocompletewisefinxlScroll1()"
+                >
+                  <mat-option
+                    *ngFor="let temp of templatearray"
+                    [value]="temp.template_name"
+                    (click)="getrule_temp(temp.template_name)"
+                  >
+                    {{ temp.template_name }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+            <div id="matInput-size">
+              <mat-form-field appearance="outline">
+                <mat-label>Rule</mat-label>
+                <mat-select formControlName="rule" multiple>
+                  <mat-option
+                    *ngFor="let data of rulearray"
+                    [value]="data.id"
+                    >{{ data.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div  style=" margin-right: -8px;margin-top: 5px;">
+              <span
+                ><button
+                  class="btn btn-outline-secondary"
+                  style="border-radius: 30px"
+                  (click)="map_reset()"
+                >
+                  Reset
+                </button></span
+              >
+              <span style="margin-left: 10px"
+                ><button
+                  class="btn btn-outline-success"
+                  style="border-radius: 30px"
+                  (click)="map_account()"
+                >
+                  Submit
+                </button></span
+              >
+            </div>
+          </form>
+        </mat-card>
+        <mat-card style="margin-top: 15px">
+          <div style="display: flex;gap: 10px;">
+            <span style="font-size: 15px; font-weight: 600">Bulk Mapping Account Template</span>
+            <span>
+            
+                <button class="btn btn-outline-info refresh_status" style="margin-top: -10px;" (click)="clicktodowntemp()" ><mat-icon  ngbTooltip="Download Template" placement="right" >download</mat-icon></button>
+         
+            </span>
+          </div>
+          <hr />
+          <form [formGroup]="bulkuploadform" >
+            <div class="search-auto-fit">
+              <div
+                style="
+                  border: 2px solid #d9d9d9;
+                  padding: 10px;
+                  border-radius: 4px;
+                  height: 52px;
+                  margin-top: 4px;
+                "
+              >
+                <input
+                  type="file"
+                  id="fileInput"
+                  style="border: none !important"
+                  formControlName="file"
+                  (change)="onFileSelected($event)"
+                />
+              </div>
+              <div id="matInput-size" style="margin-top: 5px;">
+                <!-- <mat-form-field style="width: 150px;">
+                      <mat-label>Template</mat-label>
+                      <mat-select formControlName="template" panelClass="custom-select-panel">
+                        <mat-option *ngFor="let temp of templatearray" [value]="temp.template_name" (click)="getrule_temp1(temp.template_name)">
+                          {{temp.template_name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field> -->
+                <mat-form-field  appearance="outline">
+                  <mat-label>Template</mat-label>
+                  <input
+                    type="text"
+                    #temp_name_input3
+                    matInput
+                    formControlName="template"
+                    [matAutocomplete]="temp_auto2"
+                    (keyup)="gettemplate2()"
+                  />
+                  <mat-autocomplete
+                    #temp_auto2="matAutocomplete"
+                    (opened)="autocompletewisefinxlScroll2()"
+                  >
+                    <mat-option
+                      *ngFor="let temp of templatearray"
+                      [value]="temp.template_name"
+                      (click)="getrule_temp1(temp.template_name)"
+                    >
+                      {{ temp.template_name }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div id="matInput-size" style="margin-top: 5px;">
+                <mat-form-field  appearance="outline">
+                  <mat-label>Rule</mat-label>
+                  <mat-select
+                    formControlName="rule"
+                    multiple
+                    panelClass="custom-select-panel"
+                  >
+                    <mat-option
+                      *ngFor="let data of rulearray1"
+                      [value]="data.id"
+                      >{{ data.name }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div style="margin-top: 10px;">
+                <button
+                  class="btn btn-outline-success"
+                  type="submit"
+                  style="border-radius: 50px"
+                  (click)="submitsForm()"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </mat-card>
+      </div>
+      <div class="modal-footer">
+        <div style="float: right">
+          <button
+            style="margin-left: 15px; border-radius: 50px"
+            class="btn btn-outline-secondary"
+            data-dismiss="modal"
+          >
+            Back
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+<div class="container">
+    <br>
+	<h2>PPR Label</h2>
+   
+    <form [formGroup]="ppr_label">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input placeholder="" matInput formControlName="sort_order">                       
+                    </mat-form-field>           
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field>
+						<mat-label>Status</mat-label>
+						<mat-select formControlName="active_status">
+							<mat-option *ngFor="let status of Active_status_list" [value]="status">
+								{{status.name}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" (click)="ppr_report_label_summary(ppr_label.value)">Search</button>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" (click)="ppr_label_clear()">Reset</button>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" (click)="ppr_labels_rowadd()">Add</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <mat-card>
+        <form [formGroup]="label_grp">
+            <div style="margin-top: 6%; white-space: nowrap;overflow: auto;" class="tableFixHead" formArrayName="sort_arr">
+                <table class="table table-bordered" id="commonstyle" fixed-header>
+                    <thead style="background-color: #ddefdd;">
+                        <th>S.No</th>
+                        <th>Name</th> 
+                        <th>Level</th>
+                        <th>Sort Order</th>                        
+                        <th>Status</th>                        
+                        <th>Action</th>
+                    </thead>
+                    <ng-container *ngIf="report_label_array?.length!=0">
+                    <tbody *ngFor="let arr_val of label_grp.controls.sort_arr['controls']; let ind=index">
+                       
+                        <tr  [formGroupName]="ind" [hidden]="array_hide">
+                            <td>{{(presentpage - 1)*10 + ind+1 }}</td>
+                            <td>
+                                <div *ngIf="arr_val.value.isEditable==true;else label_nameelse">
+                                    {{arr_val.value.label_name}}
+                                </div>
+                                <ng-template #label_nameelse>
+                                    <mat-form-field   [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                        <mat-label>Name</mat-label>
+                                        <input placeholder="Name" matInput formControlName="label_name" >                                        
+                                    </mat-form-field>   
+                                </ng-template>
+                            </td>
+                            <td>
+                                <div *ngIf="arr_val.value.isEditable==true;else label_name_else">
+                                    {{arr_val.value.reportlevel}}
+                                </div>
+                                <ng-template #label_name_else>
+                                    <mat-form-field   [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                        <mat-label>Level</mat-label>
+                                        <input type="number" placeholder="Level" matInput formControlName="reportlevel" >                                        
+                                    </mat-form-field>   
+                                </ng-template>
+                            </td>
+                            <td>
+                                <div *ngIf="arr_val.value.isEditable==true;else sort_arrelse">
+                                    {{arr_val.value.sort_order}}
+                                </div>
+                                <ng-template #sort_arrelse>
+                                    <mat-form-field   [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                        <mat-label>Sort Order</mat-label>
+                                        <input placeholder="Sort Order" matInput formControlName="sort_order" >                                        
+                                    </mat-form-field>   
+                                </ng-template>
+                            </td>
+                          
+                            <td>{{arr_val.value.status===0?'In-Active':'Active'}}</td>
+                           
+                            <td style="font-size: 13px;">
+                                <button mat-icon-button class="material-icons app-toolbar-menu save-button" matTooltip="Save Changes"
+                                 (click)="saveexpgrp_mapping(arr_val,ind)"
+                                  *ngIf="!arr_val.value.isEditable" style="color:'#0297ff'">
+                                  <mat-icon>check_circle</mat-icon>
+                                </button>
+              
+                                <button mat-icon-button class="material-icons app-toolbar-menu cancel-button"
+                                  matTooltip="Cancel Changes" color="warn" (click)="cancelexpgrp_mapping(arr_val,ind)"
+                                  *ngIf="!arr_val.value.isEditable">
+                                  <mat-icon>cancel</mat-icon>
+                                </button>
+              
+                                <button  mat-icon-button class="material-icons app-toolbar-menu save-button" [hidden]="arr_val.value.status == 0"
+                                  *ngIf="arr_val.value.isEditable" matTooltip="Edit" style="color:'#66bb6a'"
+                                  (click)="Editexpgrp_mapping(arr_val,ind)">
+                                  <mat-icon >edit</mat-icon>
+                                </button>             
+                               
+                                  <button mat-icon-button class="material-icons app-toolbar-menu delete-button" (click)="deletelabel(arr_val,ind)"
+                                  *ngIf="arr_val.value.isEditable" [ngStyle]="{'color':arr_val.value.status == 0 ? 'red'  :'#66bb6a'  }" [matTooltip]="arr_val.value.status == 0 ? 'Active' : 'In-Active' " color="warn">
+                                  <mat-icon>delete</mat-icon>
+                                </button>
+                              
+                            </td>
+                        </tr>
+                    </tbody>
+                    </ng-container>
+                    <div *ngIf="report_label_array?.length==0" style="margin-left: 42%;">
+						<h3> data not found!.. </h3>
+					</div>
+                </table>
+            </div>
+        </form>
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        
+        </div>
+    </mat-card>
+</div>

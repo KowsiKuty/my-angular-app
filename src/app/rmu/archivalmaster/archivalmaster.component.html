@@ -1,0 +1,2122 @@
+<section>
+    <div class="comp-header" *ngIf="showaddnew">
+        <i class="fa fa-arrow-left" style="cursor:pointer" (click)="back_btn()"></i> <span
+            style="font-weight: 600;">Archival</span>
+    </div>
+
+    <div class="filter-aling-2" *ngIf="showmainsummary">
+        <h2>Archival</h2>
+        <form [formGroup]="archivalmasterForm" style="padding-top: 2%;">
+            <div class="row">
+                <div class="col-md-3" class="npm-mat-edit" style="padding-left: 1%;">
+                    <mat-form-field class="npm-mat-edit" appearance="outline">
+                        <mat-label>Archival Date</mat-label>
+                        <input matInput [matDatepicker]="picker3" placeholder="Date" autocomplete="off"
+                            formControlName="archival_date" readonly>
+                        <mat-datepicker-toggle class="rmudatetoggle" matSuffix [for]="picker3">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker3 startView="multi-year"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3" class="npm-mat-edit" style="padding-left: 1%;">
+                    <!-- <mat-form-field appearance="outline" class="npm-mat-edit">
+                        <mat-label>Vendor</mat-label>
+                        <mat-select matInput formControlName="vendor">
+                            <mat-option *ngFor="let val of vendorlist" [value]="val.vendor_master_id">
+                                {{val.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field> -->
+                    <mat-form-field class="npm-mat-edit" (click)="getvendorValue('')"
+                        matTooltip="{{vendor_input.value}}" appearance="outline">
+                        <mat-label>Vendor</mat-label>
+                        <input #vendor_input type="text" matInput formControlName="vendor"
+                            [matAutocomplete]="vendor_auto" (keyup)="getvendorValue($event.target.value)">
+                        <mat-autocomplete #vendor_auto="matAutocomplete" (opened)="vendor_Scroll()"
+                            [displayWith]="vendor_display">
+                            <mat-option *ngFor="let vendor of vendorlist" [value]="vendor" matTooltip={{vendor.name}}>
+                                {{vendor.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3" class="npm-mat-edit" style="padding-left: 1%;">
+                    <mat-form-field class="npm-mat-edit" (click)="box_name('')" matTooltip="{{box_name_input.value}}"
+                        appearance="outline">
+                        <mat-label>Box Name</mat-label>
+                        <input #box_name_input type="text" matInput formControlName="box_names"
+                            [matAutocomplete]="box_name_auto" (keyup)="box_name($event.target.value)">
+                        <mat-autocomplete #box_name_auto="matAutocomplete" (opened)="box_name_Scroll()"
+                            [displayWith]="box_display">
+                            <mat-option *ngFor="let box of box_name_DownData" [value]="box" matTooltip={{box.name}}>
+                                {{box.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 1%;">
+                    <mat-form-field appearance="outline" class="npm-mat-edit" (click)="status_ddown()">
+                        <mat-label>Status</mat-label>
+                        <mat-select matInput formControlName="status_name">
+                            <mat-option *ngFor="let status of status_listed" [value]="status">
+                                {{status.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 1%;">
+                    <mat-form-field appearance="outline" (click)="VendorDropDown('',1)">
+                        <mat-label>Storage Vendor</mat-label>
+                        <input [matAutocomplete]="autostorage" matInput formControlName="Vendor"
+                            (keyup)="VendorDropDown($event.target.value,1)">
+                        <mat-autocomplete #autostorage="matAutocomplete" (opened)="vendorStorageScroll()"
+                            [displayWith]="VendorDisplay">
+                            <mat-option *ngIf="isloading">Loading...</mat-option>
+                            <ng-container *ngIf="!isloading">
+                                <mat-option *ngFor="let data of VendorDropDownData" [value]="data">
+                                    {{data?.name}}
+                                </mat-option>
+                                <mat-option *ngIf="!VendorDropDownData.length">No Records Found</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+
+                <!-- <div class="col-md-1">
+                    <button matTooltip="Search" class="btn btn-outline-success" color="primary"
+                        style="border-radius: 40px; "
+                        ><mat-icon>search</mat-icon></button>
+                </div>
+                <div class="col-md-1">
+                    <button matTooltip="Search" class="btn btn-outline-success" color="primary"
+                        style="border-radius: 40px; " ><mat-icon>replay</mat-icon></button>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" style="border-radius: 40px; " class="btn btn-outline-success"
+                        (click)="addnewarchival()">New Archival</button>
+                </div> -->
+                <div class="col-md-6">
+                    <!-- <div id="rmubtngrp"> -->
+                    <button matTooltip="Search Records" matTooltipClass="rmutooltip"
+                        (click)="archievalsummarySearch(archivalmasterForm.value)" class="btn btn-outline-success"
+                        style="margin-left:2%" id="rmubtn" color="primary"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+
+                    <button class="btn btn-warning" matTooltipClass="rmutooltip" (click)="master_reset()"
+                        [matTooltip]="'Clear Entries'" style="margin-left:2%" id="rmubtn">Clear</button>
+                    <button matTooltip="New Archival" matTooltipClass="rmutooltip" type="button"
+                        (click)="addnewarchival()" class="btn btn-outline-success" id="rmubtn" style="margin-left: 2%;">
+                        New Archival</button>
+                    <button matTooltip="Auto Generate Barcode" matTooltipClass="rmutooltip" type="button"
+                        (click)="CreateUpload()" class="btn btn-outline-success" id="rmubtn" style="margin-left: 2%;">
+                        Auto Generate Barcode</button>
+                    <!-- </div> -->
+                </div>
+                <div class="col-md-3">
+
+                </div>
+            </div>
+        </form>
+
+        <div style="margin-top: 2%;">
+            <div class="tableFixHead">
+                <table class="table table-bordered" fixed-header id="datatable">
+                    <thead class="table_header" style="top:0;position: sticky;z-index: 2; background-color: #ddefdd;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Box No</th>
+                            <th>Box Name</th>
+                            <th>Product</th>
+                            <th>Archival Date</th>
+                            <th>Archival Status</th>
+                            <th>Vendor Barcode</th>
+                            <th>Document Count</th>
+                            <th>Storage Vendor</th>
+                            <th>Created Date</th>
+                            <th>Occupied Count</th>
+                            <th class="icon_width">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let summary of archivalsummary;let i=index">
+                            <td>{{(presentpagearchal-1)*10+i + 1 }}</td>
+                            <td>{{summary?.box_number}}</td>
+                            <td>{{summary?.box_data?.name}}</td>
+                            <td (click)="summary.archival_data?.archival_status===2?product_name(summary):''" [ngStyle]="{ 
+                                cursor: summary.archival_data?.archival_status === 2 ? 'pointer' : 'default', 
+                                color: summary.archival_data?.archival_status === 2 ? 'blue' : 'black' 
+                              }">{{summary?.product_data.name}}</td>
+                            <td> {{ summary?.archival_data?.archival_date !="None" ?
+                                (summary?.archival_data?.archival_date | date:'dd-MMM-yyyy') : ''
+                                }}</td>
+                            <td>{{summary.archival_data?.archival_status===1 ?'Partially Occupied':
+                                (summary.archival_data?.archival_status===2 ?'Ready For Dispatch':
+                                (summary.archival_data?.archival_status==3 ?'Archived':'--'))}}</td>
+                            <td>{{summary.archival_data?.vendor_barcode}}</td>
+                            <td>{{summary.box_count}}</td>
+                            <td>{{summary.archival_data?.vendor_id?.name}}</td>
+                            <td>{{summary.archival_created_date | date:'dd-MMM-yyyy'}}</td>
+                            <td>{{summary.occupied_count}}</td>
+                            <td>
+                                <!-- <div class="row" style="flex-direction: row;  align-items: flex-start;margin-left: 5%;" >
+                                            <button [matTooltip]="!(summary.archival_status?.id === 1 ) ? '' : 'Edit'"  data-toggle="modal" [disabled]="!(summary.archival_status?.id === 1)"  [ngStyle]="{border: 'none',background: 'white', cursor: summary.archival_status?.id === 1 ? 'pointer' : ''}"
+                                            href="#edit_master" (click)="master_edit(summary)" >
+                                                <mat-icon  [style.color]="!(summary.archival_status?.id === 1) ? 'gray' : 'green'">edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button matTooltip="view"  class="iconbutton" color="primary" style="color: green;" (click)="master_view(summary)">
+                                            <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                        </button>
+                                    </div> -->
+                                <div class="row" style="display: flex; align-items: center; margin-left: 5%;">
+                                    <!-- Edit Button -->
+                                    <button [matTooltip]="!(summary.archival_data?.archival_status===1) ? '' : 'Edit'"
+                                        [disabled]="!(summary.archival_data?.archival_status===1 )" [ngStyle]="{ 
+                                                border: 'none', 
+                                                background: 'white', 
+                                                cursor: (summary.archival_data?.archival_status===1 ) ? 'pointer' : '' 
+                                            }" (click)="master_edit(summary)" style="margin-right: 10px;">
+                                        <mat-icon
+                                            [style.color]="!(summary.archival_data?.archival_status===1 )? 'gray' : 'green'">
+                                            edit
+                                        </mat-icon>
+                                    </button>
+
+                                    <!-- View Button -->
+                                    <button mat-icon-button [matTooltip]="'View'" class="iconbutton" color="primary"
+                                        matTooltipClass="rmutooltip" style="color: green;"
+                                        (click)="master_view_data(summary)" id="rmubtn">
+                                        <mat-icon class="enabled_icon" aria-label="view">
+                                            visibility
+                                        </mat-icon>
+                                    </button>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="text-align: center;" *ngIf="!datass_found">No data Found...</p>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="has_previousarchal === false" color="primary"
+                        (click)="previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpagearchal}}
+                    <button mat-icon-button [disabled]="has_nextarchal === false" color="primary" (click)="nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section *ngIf="edit_screen">
+    <div class="comp-header">
+        <i class="fa fa-arrow-left" style="cursor:pointer" (click)="back_btn()"></i> <span
+            style="font-weight: 600;">Archival</span>
+    </div>
+    <mat-card>
+        <!-- <mat-accordion>
+            <mat-expansion-panel style="background-color: white;">
+                <mat-expansion-panel-header (click)="getarchivalECF('')" style="height: 64px;background-color: #DDEFDD;">
+                    <mat-panel-title> -->
+        <h2 style="margin: 0; color: black; font-weight: bold;">File Data</h2>
+        <!-- </mat-panel-title>
+                </mat-expansion-panel-header>  (click)="arch_productedit_dd()"-->
+        <form [formGroup]="archival_edit" style="margin-top:1%;margin-left:15px">
+            <div class="row" style="display: flex;gap: 2%;margin-bottom:10px">
+                <div class="npm-mat-edit">
+                    <mat-form-field class="npm-mat-edit" matTooltip="{{arch_productedit.value}}" appearance="outline">
+                        <mat-label>Product</mat-label>
+                        <input #arch_productedit type="text" matInput formControlName="product"
+                            [matAutocomplete]="arch_productedit_auto" (keyup)="arch_productedit_dd()" readonly>
+                        <mat-autocomplete #arch_productedit_auto="matAutocomplete" (opened)="arch_productedit_Scroll()"
+                            [displayWith]="productedit_display">
+                            <mat-option *ngFor="let product of product_arcvaledit_list" [value]="product"
+                                matTooltip={{product.name}}>
+                                {{product.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <!-- <div class="npm-mat-edit" style="padding-left: 2%;">
+                            <mat-form-field appearance="outline" class="npm-mat-edit" (click)="archivaledit_box_dd()">
+                                <mat-label>Box Name</mat-label>
+                                <mat-select matInput formControlName="box_name">
+                                    <mat-option *ngFor="let box of archedit_box_list" (click)="boxedit_number(box)"
+                                        [value]="box">
+                                        {{box.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div> (click)="boxedit_name('')" -->
+
+                <div class="col-md-3" class="npm-mat-edit">
+                    <mat-form-field class="npm-mat-edit" matTooltip="{{boxedit_name_input.value}}" appearance="outline">
+                        <mat-label>Box Name</mat-label>
+                        <input #boxedit_name_input type="text" matInput formControlName="box_name"
+                            [matAutocomplete]="boxedit_name_auto" (keyup)="boxedit_name($event.target.value)" readonly>
+                        <mat-autocomplete #boxedit_name_auto="matAutocomplete" (opened)="boxedit_name_Scroll()"
+                            [displayWith]="boxedit_display">
+                            <mat-option *ngFor="let box of boxedit_name_DownData" (click)="boxedit_number(box)"
+                                [value]="box" matTooltip={{box.name}}>
+                                {{box.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit">
+                    <!-- <mat-form-field appearance="outline" class="npm-mat-edit">
+                                <mat-label>Box Number</mat-label>
+                                <mat-select matInput formControlName="boxno">
+                                    <mat-option *ngFor="let box of box_numberedit_list" (click)="archivaledit_boxnumber_dd(box)" [value]="box">
+                                        {{box.box_number}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>  (click)="boxedit_numbers('')" -->
+                    <mat-form-field class="npm-mat-edit" matTooltip="{{boxedit_number_input.value}}"
+                        appearance="outline">
+                        <mat-label>Box Number</mat-label>
+                        <input #boxedit_number_input type="text" matInput formControlName="boxno"
+                            [matAutocomplete]="boxedit_number_auto" (keyup)="boxedit_numbers($event.target.value)"
+                            readonly>
+                        <mat-autocomplete #boxedit_number_auto="matAutocomplete"
+                            (opened)="boxedit_numbers_name_Scroll()" [displayWith]="boxedit_number_display">
+                            <mat-option *ngFor="let box of box_numberedit_list" (click)="archivaledit_boxnumber_dd(box)"
+                                [value]="box" matTooltip={{box.box_number}}>
+                                {{box.box_number}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit">
+                    <!-- <mat-form-field appearance="outline" class="npm-mat-edit" (click)="status_dd_arch()">
+                                <mat-label>Status</mat-label>
+                                <mat-select matInput formControlName="status_name">
+                                    <mat-option *ngFor="let status of status_lists" (click)="status_value(status)" [value]="status">
+                                        {{status.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field> -->
+                    <mat-form-field appearance="outline" class="npm-mat-edit" (click)="status_dd_arch()">
+                        <mat-label>Status</mat-label>
+                        <input matInput placeholder="Status" formControlName="status_name"
+                            [matAutocomplete]="Status_Type" autocomplete="off">
+                        <mat-autocomplete #Status_Type="matAutocomplete" [displayWith]="Status_display">
+                            <mat-option *ngFor="let status of status_lists" (click)="status_value(status)"
+                                [value]="status"> {{ status.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Max Doc Count </mat-label>
+                        <input matInput formControlName="count" readonly>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>CR Number</mat-label>
+                        <input matInput formControlName="crno" (keyup.enter)="cr_no_data($event)">
+                    </mat-form-field>
+                </div>
+                <!-- <div class="col-md-3">
+                            <label class="custom-file-upload">
+                                <input #inputFile type="file" formControlName="file_fas_upload" style="display: none;"
+                                    (change)="FileInputs($event)">
+                                <i class="fa fa-cloud-upload"></i>File upload
+                            </label>
+                            <span *ngIf="fas_file_names" class="file-details">
+                                <span class="file-name">{{ fas_file_names?.name }}</span>
+                                <mat-icon type="button" class="delete-file-btn" (click)="deleteFiles()">delete</mat-icon>
+                            </span>
+                        </div>
+                        <div class="padleft15">
+
+                            <button matTooltip="File Upload" class="btn btn-outline-success" id="rmubtn"
+                                (click)="FileUploads()" color="primary"><i class="fa fa-arrow-up"
+                                    aria-hidden="true"></i></button>
+
+                        </div> -->
+                <div style="padding-left: 1%;">
+                    <button matTooltip="Search" class="btn btn-outline-success" id="rmubtn"
+                        (click)="getarchivalECF(archival_edit.value)" color="primary"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+                </div>
+                <div style="padding-left: 1%;">
+                    <button matTooltip="Reset" class="btn btn-outline-success" id="rmubtn"
+                        (click)="getarchivalECF_edit_reset()" color="primary"><i class="fa fa-refresh"
+                            aria-hidden="true"></i></button>
+                </div>
+
+                <div style="padding-left: 1%;" *ngIf="checkbox_select">
+                    <button matTooltip="Submit" class="btn btn-outline-success" id="submit-btn" (click)="submit()">
+                        Submit
+                    </button>
+                </div>
+                <div style="padding-left: 1%;">
+                    <button type="button" class="btn btn-outline-primary" (click)="box_close()">Box Close
+                    </button>
+                </div>
+                  <div style="padding-left: 1%;" *ngIf="checkbox_select && PopUpIcon">
+                    <button matTooltip="Submit" class="btn btn-outline-success" id="submit-btn" (click)="BatchClose(archival_edit)">
+                        Batch Close
+                    </button>
+                </div>
+                 <div class="m-left" *ngIf="EditData?.if_batch">
+                    <div class="matCheckbox-list">
+                        <mat-checkbox (change)="WithBatch($event)" disabled [checked]="PopUpIcon">With Batch</mat-checkbox>
+                    </div>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;" *ngIf="PopUpIcon">
+                     <mat-form-field appearance="outline" class="npm-mat-edit" (click)="GetFilterData('')">
+                        <mat-label>Batch</mat-label>
+                        <input matInput placeholder="Status" formControlName="Batch"
+                            [matAutocomplete]="Batchh" autocomplete="off" (keyup)="GetFilterData($event)">
+                        <mat-autocomplete #Batchh="matAutocomplete" [displayWith]="BatchWidth">
+                            <mat-option *ngFor="let status of BatchRmuData" 
+                                [value]="status" (click)="BatchClick(status,'')"> {{ status.batch_barcode }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;" *ngIf="PopUpIcon">
+                    <mat-form-field appearance="outline" class="npm-mat-edit">
+                        <mat-label>Batch Capacity</mat-label>
+                        <input matInput formControlName="BatchCount" readonly>
+                    </mat-form-field>
+                </div>
+                  <div class="OccupiedCount" *ngIf="OccupiedCountData>=0">
+                    Occupied Count:{{OccupiedCountData}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="tableFixHead" style="overflow-x: auto; max-height: 400px;"
+                        *ngIf="table_show_hide==true">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <thead class="table_header"
+                                style="top:0;position: sticky;z-index: 2; background-color: #ddefdd;">
+                                <th>S.No</th>
+                                <th>CR Number</th>
+                                <!-- <th>File Barcode</th> -->
+                                <!-- <th>Select ({{(chechbox_id?.length + occupied_counts) || 0 }}/{{(document_count_data) ||
+                            0}})
+                            <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) > document_count_data || (document_count_data === 0))">
+                            </mat-checkbox>
+                        </th> -->
+                                <th>
+                                    Select ({{( edit_type === 'edit' ? (data_id_count + selected_check_box_datas?.length) : (selected_check_box_datas?.length)) || 0 }}/{{document_count_data || 0 }})
+                                    <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                        [disabled]="((disabled_check_box === false) ||  (edit_type === 'edit' ? (data_id_count + selected_check_box_datas?.length) : (selected_check_box_datas?.length)) >= document_count_data || (document_count_data === 0)) || ArchivalEditCheck()">
+                                    </mat-checkbox>
+                                </th>
+                                <th>Delete</th>
+                            </thead>
+                            <tbody *ngFor="let lists of archivalsummarylists;index as ind">
+                                <td>{{(presentarchivalECFpage-1)*50+ind+1}}</td>
+                                <td>{{lists?.cr_no}}</td>
+                                <!-- <td>{{lists?.file_barcode}}</td> -->
+                                <td *ngIf="data_file_edit">
+                                    <mat-checkbox [checked]="lists.selected==true"
+                                        (change)="((data_id_count + selected_check_box_datas?.length) === document_count_data) ? '' : singleCheckbox($event, lists,'')"
+                                        [disabled]="((disabled_check_box === false) ||  (edit_type === 'edit' ? (data_id_count + selected_check_box_datas?.length) :(selected_check_box_datas?.length)) >= document_count_data || (document_count_data === 0)) || ArchivalEditCheck()">
+                                    </mat-checkbox>
+                                </td>
+                                <td><button mat-icon-button [disabled]="archival_edit.value?.status_name?.id==1"
+                                        (click)="delete_mapping(lists)" color="green">
+                                        <mat-icon>delete</mat-icon>
+                                    </button></td>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- <p style="text-align: center;" *ngIf="!data_file_edit">No data Found...</p> -->
+                    <div class="tableFixHead" style="overflow-x: auto; max-height: 400px;"
+                        *ngIf="table_show_hide==false">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <thead class="table_header"
+                                style="top:0;position: sticky;z-index: 2; background-color: #ddefdd;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th *ngFor="let column of columns">{{ column }}</th>
+                                    <!-- <th>Select ({{(chechbox_id?.length + occupied_counts) || 0 }}/{{(document_count_data) ||
+                                0}})
+                                <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                    [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) > document_count_data || (document_count_data === 0))">
+                                </mat-checkbox>
+                            </th> -->
+                                    <th>
+                                        Select ({{ ( edit_type === 'edit' ? this.CheckReturnData() : (selected_check_box_datas?.length)) || 0
+                                        }}/{{ BatchEditReturn() || 0 }})
+                                        <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                            [disabled]="((disabled_check_box === false) ||  (edit_type === 'edit' ? (data_id_count + selected_check_box_datas?.length) : (selected_check_box_datas?.length)) >= document_count_data || (document_count_data === 0)) || ArchivalEditCheck()">
+                                        </mat-checkbox>
+                                    </th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let lists of archivalsummarylists;index as ind">
+                                    <ng-container *ngIf="lists">
+                                        <td>{{(presentarchivalECFpage-1)*50+ind+1}}</td>
+                                        <td *ngFor="let column of keys">
+                                            {{lists[column] === null || lists[column] === 'None' || lists[column] ===
+                                            '0' || lists[column] === 0 ? '' : lists[column] }}
+                                        </td>
+                                        <td *ngIf="data_file_edit">
+                                            <mat-checkbox [checked]="lists.selected" (change)="
+                                                edit_type === 'edit'? ((data_id_count + selected_check_box_datas?.length) < document_count_data 
+                                                      ? singleCheckbox($event, lists, '') : null)
+                                                  : (selected_check_box_datas?.length < document_count_data 
+                                                      ? singleCheckbox($event, lists, '') 
+                                                      : '')
+                                              " [disabled]="
+                                                disabled_check_box === false || 
+                                                (edit_type === 'edit' 
+                                                  ? (data_id_count + selected_check_box_datas?.length) >= document_count_data 
+                                                  : (chechbox_id?.length + occupied_counts) >= document_count_data
+                                                ) || 
+                                                document_count_data === 0 || archival_edit?.get('status_name')?.value?.id==2
+                                              ">
+                                            </mat-checkbox>
+
+                                        </td>
+                                        <td><button mat-icon-button [disabled]="archival_edit.value?.status_name?.id==1"
+                                                (click)="delete_mapping(lists)" color="green">
+                                                <mat-icon>delete</mat-icon>
+                                            </button></td>
+                                    </ng-container>
+                                </tr>
+                            </tbody>
+                        </table>                        
+                    </div>
+                    <p style="text-align: center;" *ngIf="!data_file_edit">No data Found...</p>
+                        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                            <button (click)="previous_master_Click()" mat-icon-button
+                                [disabled]="hasarchivalECF_previous === false" color="primary">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentarchivalECFpage}}
+                            <button (click)="nexts_masterClick()" mat-icon-button
+                                [disabled]="hasarchivalECF_next === false" color="primary">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tableFixHead" style="overflow-x: auto; max-height: 400px;">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <thead class="table_header"
+                                style="top:0;position: sticky;z-index: 2; background-color: #ddefdd;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <!-- <th *ngFor="let column of columns">{{ column }}</th> -->
+                                    <th>CR No</th>
+                                    <!-- <th>Select ({{(chechbox_id?.length + occupied_counts) || 0 }}/{{(document_count_data) ||
+                                0}})
+                                <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                    [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) > document_count_data || (document_count_data === 0))">
+                                </mat-checkbox>
+                            </th> -->
+                                    <th>
+                                        Select ({{ (selected_check_box_datas?.length) || 0 }}/{{ document_count_data ||
+                                        0 }})
+                                        <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                            [disabled]="((disabled_check_box === false) ||  (edit_type === 'edit' ? occupied_counts : (chechbox_id?.length + occupied_counts)) >= document_count_data || (document_count_data === 0))">
+                                        </mat-checkbox>
+                                    </th>
+                                    <!-- <th>Delete</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let lists of selected_check_box_datas;index as ind">
+                                    <ng-container *ngIf="lists">
+                                        <td>{{ind+1}}</td>
+                                        <!-- <td *ngFor="let column of keys">
+                                            {{lists[column] === null || lists[column] === 'None' || lists[column] ===
+                                            '0' || lists[column] === 0 ? '' : lists[column] }}
+                                        </td>  [disabled]="((disabled_check_box === false) ||  (edit_type === 'edit' ? occupied_counts  : (chechbox_id?.length +occupied_counts)) >= document_count_data || (document_count_data === 0))"-->
+                                        <td>{{lists?.display_name}}</td>
+                                        <td *ngIf="data_file_edit">
+                                            <mat-checkbox [checked]="lists.selected"
+                                                (change)="occupied_counts >= document_count_data ? '' : singleCheckbox($event, lists,'second')">
+                                            </mat-checkbox>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </form>
+        <!-- </mat-expansion-panel>
+        </mat-accordion> -->
+    </mat-card>
+</section>
+
+
+<section *ngIf="UploadDocuments">
+    <app-uploaddocument [InputData]="ChildData" (Onback)="BackUploadScreen()"></app-uploaddocument>
+</section>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trackingArch" aria-hidden="true" id="trackingArch"
+    #trackingArch>
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Archival Request Cancellation</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <br>
+            <br>
+            <form [formGroup]="cancelrequest">
+                <div class="modal-body">
+                    <mat-form-field>
+                        <mat-label>Comments</mat-label>
+                        <input matInput formControlName="comments">
+                    </mat-form-field>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" #modalclose id="rmubtn" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+                <button type="button" id="rmubtn" class="btn btn-outline-primary" (click)="deletesinglerecord()">Request
+                    Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createLegitimate" aria-hidden="true"
+    data-bs-backdrop="static" id="createLegitimate" #createLegitimate>
+    <div class="modal-dialog modal" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Create Legitimate File</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <br>
+            <br>
+            <div style="margin-left:10px;">
+                <form [formGroup]="createLegitimates">
+                    <br><br>
+                    <section class="row">
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Product Barcode:</mat-label>
+                                <input matInput formControlName="barcode_no" required>
+                            </mat-form-field>
+                        </div>
+                    </section>
+                    <section class="row">
+                        <div class="col-md-3">
+                            <!-- <mat-form-field> -->
+                            <!-- <mat-label>Legitimate Date</mat-label>
+                                <input matInput formControlName="scheduled_date" type="number"> 
+                                <input matInput [matDatepicker]="datepicker" formControlName="legit_date">
+                                <mat-hint>MM/DD/YYYY</mat-hint> 
+                                <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+                                <mat-datepicker #datepicker>
+                                    <mat-datepicker-actions>
+                                        <button mat-button matDatepickerCancel>Cancel</button>
+                                        <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                                    </mat-datepicker-actions>
+                                </mat-datepicker> -->
+                            <!-- </mat-form-field> -->
+                        </div>
+                    </section>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Comments</mat-label>
+                                <input matInput formControlName="comment" required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <section class="row" style="text-align:center;margin-left:10px;" (click)="submitLegitimate()">
+                        <button class="btn btn-outline-success" id="rmubtn">Submit</button>
+                        <button data-dismiss="modal" class="btn btn-outline-primary" id="rmubtn"
+                            style="margin-left: 20px;" #closebtn>Close</button>
+                    </section>
+                </form>
+                <br><br>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">File Level View</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="container"></div>
+            <div class="modal-body">
+                <div style="margin-left:10px;">
+                    <table class="table table-bordered" id="boxlevel">
+                        <thead class="table_header">
+                            <th>S.No</th>
+                            <th>Product </th>
+                            <th>Product Barcode</th>
+                            <th>Retention Date</th>
+                            <th>Status</th>
+                            <th>Legitimate</th>
+                        </thead>
+                        <tbody *ngFor="let lists of filelevellists;index as ind">
+                            <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                            <td>{{lists.product.name}}</td>
+                            <td>{{lists.product_barcode}}</td>
+                            <td>{{lists.retention_date | date:'dd-MM-yyyy'}}</td>
+                            <td>{{lists.archival_status.value}}</td>
+                            <td>
+                                <div>
+                                    <div class="btn-group" role="group" aria-label="buttons">
+                                        <button type="button" class="btn btn-light" data-toggle="modal" href="#myModal2"
+                                            (click)="legitimatedata(lists)">✓</button>
+                                        <button type="button" class="btn btn-light">View</button>
+                                        <button type="button" class="btn btn-light">X</button>
+                                    </div>
+
+                                    <!-- <a data-toggle="modal" data-target="#" ><i class="fa fa-plus-square" matTooltip="Create"></i></a>
+                                    <a data-toggle="modal" data-target="#" style="margin-left:15px;"><i class="fa fa-eye" matTooltip="View"></i></a>
+                                    <a data-toggle="modal" data-target="#" style="margin-left:15px;"><i class="fa fa-minus-square" matTooltip="Delete"></i></a>
+                                    <a  *ngIf="archstatus[lists.archival_status.value] == 'REQUESTED' " data-toggle="modal" data-target="#trackingArch" (click)="canceldata(lists)"><i class="fa fa-trash" matTooltip="Cancel"></i></a> -->
+
+                                    <!-- <a  *ngIf="archstatus[lists.archival_status.value] == 'SCHEDULED' " data-toggle="modal" data-target="#trackingArch" (click)="canceldata(lists)"><i class="fa fa-trash" matTooltip="Cancel"></i></a> -->
+                                </div>
+                            </td>
+                        </tbody>
+                    </table>
+
+                    <div *ngIf="!filelevellists.length" style="margin-left: 42%;">
+                        <h3>Sorry no data found!... </h3>
+                    </div>
+
+                    <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                        <button (click)="prevpages()" mat-icon-button [disabled]="pagination.has_previous === false"
+                            color="primary">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{pagination.index}}
+                        <button (click)="nextpages()" mat-icon-button [disabled]="pagination.has_next === false"
+                            color="primary">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" data-dismiss="modal" class="btn">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="myModal2" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Legitimate</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="container"></div>
+            <div class="modal-body">
+                <form [formGroup]="createLegitimates">
+                    <br><br>
+                    <section class="row">
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Legitimate Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker3" placeholder="Date" autocomplete="off"
+                                    formControlName="legitimate_date" required>
+                                <mat-datepicker-toggle class="rmudatetoggle" matSuffix [for]="picker3">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker3 startView="multi-year"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                    </section>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Comments</mat-label>
+                                <input matInput formControlName="comment" required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <section class="row" style="text-align:center;margin-left:10px;" (click)="submitLegitimate()">
+                        <button class="btn btn-outline-success" id="rmubtn">Submit</button>
+                        <button data-dismiss="modal" class="btn btn-outline-primary" id="rmubtn"
+                            style="margin-left: 20px;" #closebtn>Close</button>
+                    </section>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="singlerecordform" aria-hidden="true"
+    id="singlerecordform" #singlerecordform>
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">View Single Record</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <br>
+            <br>
+            <div style="margin-left:10px;">
+                <table class="table table-bordered table-responsive" id="singlerecord">
+                    <thead class="table_header">
+                        <th>Archival Date</th>
+                        <th>Archival Code</th>
+                        <!-- <th>Barcode Type</th> -->
+                        <!-- <th>Name</th>
+                <th>Address</th>
+                <th>Contact number </th> -->
+
+                        <th>Branch Code</th>
+                        <th> Branch Name</th>
+                        <th>Vendor</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody>
+                        <td>{{singlerecord.archival_date | date:'dd-MM-yyyy'}}</td>
+                        <td>{{singlerecord.archival_code}}</td>
+                        <!-- <td>{{singlerecord['archival_details[0]'].barcode_type.name}}</td> -->
+                        <!-- <td>{{singlerecord['contact_person']}}</td> -->
+                        <!-- <td>{{singlerecord['contact_person']}}</td>
+                <td>{{singlerecord['archival_code']}}</td> -->
+                        <!-- <td>{{singlerecord['archival_details'][0].barcode_type.name}}</td> -->
+                        <td>{{singlerecord.branch?.code}}</td>
+                        <td>{{singlerecord.branch?.name}}</td>
+                        <td>{{singlerecord.vendor?.name}}</td>
+                        <td>{{singlerecord.archival_status?.value}}</td>
+                        <!-- <td>{{singlerecord['contact_person']}}</td>
+                <td>{{singlerecord['contact_person']}}</td>
+                <td>{{singlerecord['contact_person']}}</td> -->
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="boxlevelform" tabindex="-1" aria-labelledby="boxlevelform" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title mb-0" id="boxlevelform" style="font-weight: 600;">Box Level View</p>
+                <button type="button" class="close" data-dismiss="modal" #closeachievalpopup aria-label="Close"
+                    (click)="closedpopup()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <lib-vs-cbox-summary [SummaryDetails]="archival_summary_popup"
+                    [SummaryApiObj]="archieval_summaryapi"></lib-vs-cbox-summary>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="filelevelform" tabindex="-1" aria-labelledby="filelevelform" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title mb-0" id="filelevelform" style="font-weight: 600;">File Level View</p>
+                <button type="button" class="close" data-dismiss="modal" #closeachievalpopup aria-label="Close"
+                    (click)="closedpopup()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <lib-vs-cbox-summary [SummaryDetails]="archival_summary_popup1"
+                    [SummaryApiObj]="archieval_summaryapi_popup"></lib-vs-cbox-summary>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addNew" tabindex="-1" aria-labelledby="addNew" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title mb-0" id="addNew" style="font-weight: 600;">New Archival Request</p>
+                <button type="button" class="close" data-dismiss="modal" #closearchivalecode aria-label="Close"
+                    (click)="closedpopup()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form [formGroup]="archivalrequestForm">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>No. Of Boxes</mat-label>
+                                <input matInput formControlName="num_of_boxes" required type="number">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-4">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Vendor</mat-label>
+                                <mat-select matInput formControlName="vendor" required>
+                                    <mat-option *ngFor="let val of vendorlist" [value]="val.vendor_master_id">
+                                        {{val.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-4">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Comments</mat-label>
+                                <textarea style="max-height:100px; " rows="1" matInput formControlName="comments"
+                                    required></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <input style="border-bottom-style:none;width: 100%;" type="file"
+                                (change)="uploadchoose($event)" accept=".xls, .xlsx, .xlsm, .csv" name="filedata"
+                                formControlName="filedata">
+                        </div>
+                        <div class="col-sm-5">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Products</mat-label>
+                                <mat-select matInput formControlName="productlist" required>
+                                    <mat-option *ngFor="let val of productlist" [value]="val.id">
+                                        {{val.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-1" style="    margin-top: 1%;">
+                            <button class="btn btn-light" matTooltip="Download Example Format" matTooltipPosition="left"
+                                type="submit" style="border-radius:40px;" color="primary" (click)="formatdownload()">
+                                <i class="fa fa-download" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Employee Code</mat-label>
+                                <input matInput formControlName="contact_person" required readonly="true">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-3">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Phone Number</mat-label>
+                                <input matInput formControlName="contact_no" type="number" required>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-4">
+                            <mat-form-field appearance="outline" style="width:100%">
+                                <mat-label>Pickup Address</mat-label>
+                                <textarea [readonly]="mychoice" style="max-height:100px; " rows="4" cols="25" matInput
+                                    formControlName="contact_address" [(ngModel)]="addrdetails" required></textarea>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-2">
+                            <mat-checkbox color="primary" style="margin-left:15px;" [checked]="enableAddress()">
+                                <mat-label>Address Change</mat-label>
+                            </mat-checkbox>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-success" (click)="submitArchivalrequest()">Submit</button>
+                <button class="btn btn-outline-secondary" #closearchivalecode (click)="closedpopup()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="showaddnew">
+    <mat-accordion>
+        <mat-expansion-panel [expanded]="showDataFetch || showFileUpload">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    File Upload/Fetch
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="button-group-container" *ngIf="showaddnew">
+                <mat-button-toggle-group #group="matButtonToggleGroup">
+                    <mat-button-toggle value="upload" (click)="fileUpload()">File Upload</mat-button-toggle>
+                    <mat-button-toggle value="fetch" (click)="dataFetch()">Fetch API</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+
+            <div *ngIf="showDataFetch">
+                <br>
+                <!-- <br> -->
+                <form [formGroup]="dataFetchForm" style="margin-top:1%;margin-left:15px">
+                    <div class="row">
+
+                        <!-- <div class="npm-mat-edit">
+                            <mat-form-field class="npm-mat-edit" (click)="fetch_prod_dd('',1)"
+                            matTooltip="{{fetch_prod.value}}" appearance="outline">
+                            <mat-label>Product</mat-label>
+                            <input #fetch_prod type="text" matInput formControlName="product"
+                                [matAutocomplete]="fetch_prod_auto" (keyup)="fetch_prod_dd($event.target.value,1)">
+                            <mat-autocomplete #fetch_prod_auto="matAutocomplete" (opened)="fetch_prod_dd_Scroll()"
+                                [displayWith]="product_fetch_display">
+                                <mat-option *ngFor="let product of product_fetch_list" [value]="product"
+                                    matTooltip={{product.name}}>
+                                    {{product.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        </div> -->
+                    </div>
+                    <div class="row">
+                        <div class="npm-mat-edit">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>From Date</mat-label>
+                                <input matInput [matDatepicker]="picker1" placeholder="Date" autocomplete="off"
+                                    formControlName="from_date" (dateChange)="selected_date()">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1 startView="multi-year"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="npm-mat-edit" style="padding-left: 2%;">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>To Date</mat-label>
+                                <input matInput [matDatepicker]="picker2" [min]="dataFetchForm.value.from_date"
+                                    placeholder="Date" autocomplete="off" formControlName="to_date">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2 startView="multi-year"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="npm-mat-edit" style="padding-left: 2%;">
+                                <mat-form-field appearance="outline" style="width: 100%;">
+                                    <mat-label>Status</mat-label>
+                                    <mat-select matInput formControlName="status">
+                                        <mat-option>
+
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div> -->
+                        <div class="col-md-3" style="padding-left: 2%;">
+                            <button matTooltip="Fetch Records" class="btn btn-outline-success" id="rmubtn"
+                                (click)="searcharchival()" color="primary"><i class="fa fa-arrow-down"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+                <!-- <lib-vs-search-cmp class="npm-mat-edit" [SearchArr]="data_fetchInputs" [Outputtype]="searcharchievalvar"
+                (dataoutput)="archievalsummarySearch($event)" [ButtonArr]="archievalbutton"> -->
+                <!-- </lib-vs-search-cmp> -->
+            </div>
+            <div *ngIf="showFileUpload">
+                <form [formGroup]="dataUploadform" style="margin-top:1%;margin-left:15px">
+                    <br>
+                    <div class="row">
+                        <div class="npm-mat-edit">
+                            <!-- <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Product </mat-label>
+                                <input matInput formControlName="product">
+                                 
+                            </mat-form-field> -->
+                            <mat-form-field class="npm-mat-edit" (click)="fetch_prod_upload_dd('',1)"
+                                matTooltip="{{fetch_prod.value}}" appearance="outline">
+                                <mat-label>Product</mat-label>
+                                <input #fetch_prod type="text" matInput formControlName="product"
+                                    [matAutocomplete]="fetch_prod_upload_auto"
+                                    (keyup)="fetch_prod_upload_dd($event.target.value,1)">
+                                <mat-autocomplete #fetch_prod_upload_auto="matAutocomplete"
+                                    (opened)="fetch_prod_dd_upload_Scroll()"
+                                    [displayWith]="product_fetch_upload_display">
+                                    <mat-option *ngFor="let product of fetch_prod_upload_DropDownData" [value]="product"
+                                        matTooltip={{product.name}}>
+                                        {{product.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+
+
+                        </div>
+                        <div class="padleft15">
+                            <button class="btn btn-outline-success" (click)="archivaldetails()">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="padleft15">
+                            <button class="btn btn-outline-success" (click)="Clearbtn()">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="custom-file-upload">
+                                <input #inputFile type="file" formControlName="file_fas_upload" style="display: none;"
+                                    (change)="FileInput($event)">
+                                <i class="fa fa-cloud-upload"></i>File upload
+                            </label>
+                            <span *ngIf="fas_file_name" class="file-details">
+                                <span class="file-name">{{ fas_file_name?.name }}</span>
+                                <mat-icon type="button" class="delete-file-btn" (click)="deleteFile()">delete</mat-icon>
+                            </span>
+                        </div>
+                        <div class="padleft15">
+
+                            <button matTooltip="File Upload" class="btn btn-outline-success" id="rmubtn"
+                                (click)="FileUpload()" color="primary"><i class="fa fa-arrow-up"
+                                    aria-hidden="true"></i></button>
+
+                        </div>
+                        <div class="padleft15">
+                            <button matTooltip="Template Download" class="btn btn-outline-success" id="rmubtn"
+                                (click)="DownloadTemplate()" color="primary"><i class="fa fa-arrow-down"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                        <div class="padleft15">
+                            <button matTooltip="Template Creation" class="btn btn-outline-success" id="rmubtn"
+                                (click)="UploadScreen()" color="primary">Template Creation For Upload Document</button>
+                        </div>
+                        <div class="padleft15">
+                            <button matTooltip="Valid/Invalid Summary" class="btn btn-outline-success" id="rmubtn"
+                                (click)="valid_fuc()" color="primary">Valid/Invalid Summary</button>
+                        </div>
+                    </div>
+                </form>
+                <div *ngIf="search_product_upload">
+                    <div id="rmucontent" class="table-responsive">
+                        <table class="table table-bordered" id="rmutable">
+                            <thead class="table_header">
+                                <th>S.no</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Field Type</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let data of SearchSummary;let i=index">
+                                    <td>{{(FileUploadPagination?.index-1)*10+i+1}}</td>
+                                    <td>{{data?.code}}</td>
+                                    <td>{{data?.name}}</td>
+                                    <td>{{data?.created_date | date:'dd-MMM-yyyy'}}</td>
+                                    <td>{{data?.field_type?.name}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div *ngIf="!SearchSummary?.length" style="margin-left: 42%;">
+                        <h3>Sorry no data found!... </h3>
+                    </div>
+                    <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                        <button type="button" mat-icon-button [disabled]="FileUploadPagination.has_prev == false"
+                            (click)="PreviousSearch()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{FileUploadPagination.index}}
+                        <button type="button" mat-icon-button [disabled]="FileUploadPagination.has_next == false"
+                            (click)="NextSearch()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div *ngIf="valida_invalid_summary">
+                    <div id="rmucontent" class="table-responsive">
+                        <table class="table table-bordered" id="rmutable">
+                            <thead class="table_header">
+                                <th>S.No</th>
+                                <th>Product Name</th>
+                                <th>File Name</th>
+                                <th>Valid Count</th>
+                                <th>Invalid Count</th>
+                                <th>View</th>
+                            </thead>
+                            <tbody *ngFor="let sum of validsummary;index as ind">
+                                <td>{{(presentpage_valid-1)*limit+ind+1}}</td>
+                                <td>{{sum.product_name}}</td>
+                                <td>{{sum.file_name}} </td>
+                                <td>{{sum.valid_count}}</td>
+                                <td (click)="sum?.invalid_count!=0?invalid_download(sum):''" [ngStyle]="{ 
+                                cursor: sum?.invalid_count !=0 ? 'pointer' : 'default', 
+                                color: sum?.invalid_count !=0? 'blue' : 'black' 
+                              }">{{sum.invalid_count}}</td>
+                                <td>
+                                    <mat-icon style="margin-left: 7%; font-size: 25px; cursor: pointer;"
+                                        matTooltip="File Download"
+                                        (click)="file_download(sum)">cloud_download</mat-icon>
+                                </td>
+                            </tbody>
+                        </table>
+                        <div *ngIf="!validsummary?.length" style="margin-left: 42%;">
+                            <h3>Sorry no data found!... </h3>
+                        </div>
+
+                        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                            <button (click)="previousvalid_serch_Click()" mat-icon-button
+                                [disabled]="has_previousvalid === false" color="primary">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentpage_valid}}
+                            <button (click)="valid_serch_Click()" mat-icon-button [disabled]="has_nextvalid === false"
+                                color="primary">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
+<br>
+<mat-accordion *ngIf="showaddnew">
+    <mat-expansion-panel>
+        <mat-expansion-panel-header (click)="archival_serch_details('')">
+            <mat-panel-title>
+                Archival Details
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form [formGroup]="archival_details" style="margin-top:1%;margin-left:15px">
+            <div class="row">
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field class="npm-mat-edit" (click)="product_dd('',1)"
+                        matTooltip="{{product_details.value}}" appearance="outline">
+                        <mat-label>Product</mat-label>
+                        <input #product_details type="text" matInput formControlName="product"
+                            [matAutocomplete]="product_auto" (keyup)="product_dd($event.target.value,1)">
+                        <mat-autocomplete #product_auto="matAutocomplete" (opened)="product_Scroll()"
+                            [displayWith]="product_auto_display">
+                            <mat-option *ngFor="let product of product_list" (click)="product_box_gen()"
+                                [value]="product" matTooltip={{product.name}}>
+                                {{product.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" class="npm-mat-edit" (click)="box_dd()">
+                        <mat-label>Box Name</mat-label>
+                        <mat-select matInput formControlName="box_name">
+                            <mat-option *ngFor="let box of box_list" [value]="box" (click)="box_name_count_fetch()">
+                                {{box.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Box Capacity</mat-label>
+                        <input matInput formControlName="box_count" (keyup)="box_capacity($event)">
+                    </mat-form-field>
+                </div>
+                <div style="padding-left: 1%;">
+                    <button matTooltip="Submit" class="btn btn-outline-success" id="submit-btn" (click)="generate()">
+                        Generate
+                    </button>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" class="npm-mat-edit" (click)="status_dd()">
+                        <mat-label>Status</mat-label>
+                        <mat-select matInput formControlName="status_name">
+                            <mat-option *ngFor="let status of status_list" [value]="status">
+                                {{status.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Box Number</mat-label>
+                        <input matInput formControlName="box_number">
+                    </mat-form-field>
+                </div>
+                <div style="padding-left: 1%;">
+                    <button matTooltip="Search" class="btn btn-outline-success" id="rmubtn" color="primary"
+                        (click)="archival_serch_details(archival_details.value)"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+                </div>
+                <div style="padding-left: 1%;">
+                    <button matTooltip="Reset" class="btn btn-outline-success" id="rmubtn" color="primary"><i
+                            (click)="archival_serch_reset()" class="fa fa-refresh" aria-hidden="true"></i></button>
+                </div>
+
+            </div>
+
+            <table class="table table-bordered" id="archivetable" style=" line-height: 50px;">
+                <thead class="table_header">
+                    <th>S.No</th>
+                    <th>Product Name</th>
+                    <th>Box Name</th>
+                    <th>Status</th>
+                    <th>Box Capacity</th>
+                    <th>Box Number</th>
+                </thead>
+                <tbody *ngFor="let lists of archivalsummarydetails;index as ind">
+                    <td>{{(presentpagearchaldetails-1)*limit+ind+1}}</td>
+                    <td>{{lists?.product_data?.name}}</td>
+                    <td>{{lists?.box_data?.name}}</td>
+                    <td>{{lists.box_status==2 ?'Partially Occupied': (lists.box_status==3 ?'Fully occupied':
+                        (lists.box_status==4 ?'Box Closed':'Un
+                        Occupied'))}}</td>
+                    <td>{{lists?.box_count}}</td>
+                    <td>{{lists?.box_number}}</td>
+                </tbody>
+            </table>
+            <p style="text-align: center;" *ngIf="!datass_founddetails">No data Found...</p>
+            <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                <button (click)="previous_serch_Click()" mat-icon-button
+                    [disabled]="has_previousarchaldetails === false" color="primary">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{presentpagearchaldetails}}
+                <button (click)="next_serch_Click()" mat-icon-button [disabled]="has_nextarchaldetails === false"
+                    color="primary">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </mat-expansion-panel>
+</mat-accordion>
+<br>
+<!-- (click)="getarchivalECF('')" -->
+<mat-accordion *ngIf="showaddnew">
+    <mat-expansion-panel>
+        <mat-expansion-panel-header (click)="FileDataExpand()">
+            <mat-panel-title>
+                File Data
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form [formGroup]="filedatagroup" style="margin-top:1%;margin-left:15px">
+            <div class="row" style="padding: 1%;">
+                <div class="npm-mat-edit">
+                    <mat-form-field class="npm-mat-edit" (click)="arch_product_dd('',1)"
+                        matTooltip="{{arch_product.value}}" appearance="outline">
+                        <mat-label>Product</mat-label>
+                        <input #arch_product type="text" matInput formControlName="product"
+                            [matAutocomplete]="arch_product_auto" (keyup)="arch_product_dd($event.target.value,1)">
+                        <mat-autocomplete #arch_product_auto="matAutocomplete" (opened)="arch_product_Scroll()"
+                            [displayWith]="product_display">
+                            <mat-option *ngFor="let product of product_arcval_list" (click)="product_select()"
+                                [value]="product" matTooltip={{product.name}}>
+                                {{product.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" class="npm-mat-edit" (click)="archival_box_dd()">
+                        <mat-label>Box Name</mat-label>
+                        <mat-select matInput formControlName="box_name">
+                            <mat-option *ngFor="let box of arch_box_list" (click)="box_number(box)" [value]="box">
+                                {{box.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <!-- <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Box Number </mat-label>
+                            <input matInput formControlName="boxno">
+                        </mat-form-field> -->
+                    <mat-form-field appearance="outline" class="npm-mat-edit">
+                        <mat-label>Box Number</mat-label>
+                        <mat-select matInput formControlName="boxno">
+                            <mat-option *ngFor="let box of box_number_list" (click)="archival_boxnumber_dd(box)"
+                                [value]="box">
+                                {{box.box_number}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" class="npm-mat-edit" (click)="status_dd_arch()">
+                        <mat-label>Status</mat-label>
+                        <input matInput placeholder="Status" formControlName="status_name"
+                            [matAutocomplete]="Status_Type1" autocomplete="off">
+                        <mat-autocomplete #Status_Type1="matAutocomplete" [displayWith]="Status_display1">
+                            <mat-option *ngFor="let status of status_lists" (click)="status_value(status)"
+                                [value]="status"> {{ status.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Box Capacity</mat-label>
+                        <input matInput formControlName="count">
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" *ngIf="rmu_checkbox === false">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>CR Number</mat-label>
+                        <input matInput formControlName="crno" (keyup.enter)="cr_no_data($event)">
+                    </mat-form-field>
+                </div>
+                <ng-container *ngIf="rmu_checkbox">
+                    <div class="col-md-3">
+                        <label class="custom-file-upload">
+                            <input #inputFile type="file" formControlName="file_fas_upload" style="display: none;"
+                                (change)="FileInputs($event)">
+                            <i class="fa fa-cloud-upload"></i>File upload
+                        </label>
+                        <span *ngIf="fas_file_names" class="file-details">
+                            <span class="file-name">{{ fas_file_names?.name }}</span>
+                            <mat-icon type="button" class="delete-file-btn" (click)="deleteFiles()">delete</mat-icon>
+                        </span>
+                    </div>
+                    <div class="padleft15">
+                        <button matTooltip="File Upload" class="btn btn-outline-success" id="rmubtn"
+                            (click)="FileUploads()" color="primary"><i class="fa fa-arrow-up"
+                                aria-hidden="true"></i></button>
+                    </div>
+
+                    <div class="padleft15">
+                        <button matTooltip="Template Download" class="btn btn-outline-success" id="rmubtn"
+                            (click)="DownloadTemplates()" color="primary"><i class="fa fa-arrow-down"
+                                aria-hidden="true"></i></button>
+                    </div>
+                    <div class="padleft15">
+                        <button matTooltip="Match/Mismatched" class="btn btn-outline-success"
+                            (click)="archivalvalid_serch_details(filedatagroup.value)"
+                            color="primary">Match/Mismatched</button>
+                    </div>
+                </ng-container>
+                <div class="m-left" *ngIf="filedatagroup.value.product?.is_ecf">
+                    <div class="matCheckbox-list">
+                        <mat-checkbox (change)="bulk_upload($event)" matTooltip="Submit">CR No Upload</mat-checkbox>
+                    </div>
+                    <!-- <button matTooltip="Submit" class="btn btn-outline-success" id="submit-btn">
+                           CR No Upload </button>   -->
+                </div>
+                <div style="padding-left: 1%;">
+                    <button matTooltip="Search" class="btn btn-outline-success" id="rmubtn" color="primary" (click)="getarchivalECF(filedatagroup.value)"><i
+                             class="fa fa-search"
+                            aria-hidden="true"></i></button>
+                </div>
+                <div style="padding-left: 1%;">
+                    <button matTooltip="Reset" class="btn btn-outline-success" id="rmubtn" color="primary" (click)="getarchivalECF_reset()"><i
+                             class="fa fa-refresh" aria-hidden="true"></i></button>
+                </div>
+                <div class="m-left">
+                    <div class="matCheckbox-list">
+                        <mat-checkbox (change)="WithBatch($event)" [checked]="PopUpIcon">With Batch</mat-checkbox>
+                    </div>
+                </div>
+                <div style="padding-left: 1%;" *ngIf="PopUpIcon">
+                    <button matTooltip="Reset" class="btn btn-outline-success" id="rmubtn" color="primary" (click)="BatchGenerateFunc()" >
+                        Batch Generate
+                    </button>
+                </div>
+                <div style="padding-left: 1%;" *ngIf="checkbox_select && PopUpIcon">
+                    <button matTooltip="Submit" class="btn btn-outline-success" id="submit-btn" (click)="BatchClose(filedatagroup)">
+                        Batch Close
+                    </button>
+                </div>
+                <div style="padding-left: 1%;" *ngIf="PopUpIcon?CheckBoxSubmit?.length:checkbox_select">
+                    <button matTooltip="Submit" class="btn btn-outline-success" id="submit-btn" (click)="submit()" [ngClass]="PopUpIcon && checkbox_select?'PointerEventsNone':''">
+                        Submit
+                    </button>
+                </div>
+                
+                <div class="npm-mat-edit" style="padding-left: 2%;" *ngIf="PopUpIcon">
+                     <mat-form-field appearance="outline" class="npm-mat-edit" (click)="GetFilterData('')">
+                        <mat-label>Batch</mat-label>
+                        <input matInput placeholder="Status" formControlName="Batch"
+                            [matAutocomplete]="Batchh" autocomplete="off" (keyup)="GetFilterData($event)">
+                        <mat-autocomplete #Batchh="matAutocomplete" [displayWith]="BatchWidth">
+                            <mat-option *ngFor="let status of BatchRmuData" 
+                                [value]="status" (click)="BatchClick(status,'Create')"> {{ status.batch_barcode }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="npm-mat-edit" style="padding-left: 2%;" *ngIf="PopUpIcon">
+                    <mat-form-field appearance="outline" class="npm-mat-edit">
+                        <mat-label>Batch Capacity</mat-label>
+                        <input matInput formControlName="BatchCount" readonly>
+                    </mat-form-field>
+                </div>
+                <div style="padding-left: 1%;" *ngIf="filedatagroup.get('boxno').value">
+                    <button class="btn btn-outline-success" (click)="BoxNumberDownload()" matTooltip="Download">
+                        <i class="fa fa-download"></i>
+                    </button>
+                </div>
+                <div class="OccupiedCount" *ngIf="OccupiedCountData>=0">
+                    Occupied Count:{{OccupiedCountData}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" *ngIf="table_values_table_hide === true">
+                <div >
+                    <div class="tableFixHead" style="overflow-x: auto; max-height: 400px;"
+                        *ngIf="table_show_hide==true">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <thead class="table_header"
+                                style="top:0;position: sticky;z-index: 2; background-color: #ddefdd;">
+                                <th>S.No</th>
+                                <th>CR Number</th>
+                                <!-- <th>File Barcode</th> -->
+                                <th>Select ({{(selected_check_box_datas?.length) || 0 }}/{{(document_count_data) ||
+                                    0}})
+                                    <!-- <input [checked]="ischeckedall" type="checkbox" (change)="toggleCheckboxAll($event)" [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) >= document_count_data || (document_count_data === 0))"> -->
+                                    <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                        [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) >= document_count_data || (document_count_data === 0))">
+                                    </mat-checkbox>
+                                </th>
+                            </thead>
+                            <tbody *ngFor="let lists of archivalsummarylists;index as ind">
+                                <td>{{(presentarchivalECFpage-1)*50+ind+1}}</td>
+                                <td>{{lists?.cr_no}}</td>
+                                <!-- <td>{{lists?.file_barcode}}</td> -->
+                                <td *ngIf="data_file_edit">
+                                    <!-- <mat-checkbox [checked]="lists.selected" (change)="occupied_counts >= document_count_data ? '' : singleCheckbox($event, lists,'')"
+                                        [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) >= document_count_data || (document_count_data === 0))">
+                                    </mat-checkbox> -->
+                                    <mat-checkbox [checked]="lists?.selected" (change)="(selected_check_box_datas?.length < document_count_data) ? singleCheckbox($event, lists,''): null" 
+                                    [disabled]="disabled_check_box === false || (chechbox_id?.length + occupied_counts) >= document_count_data ||  document_count_data === 0 || selected_check_box_datas?.length >= document_count_data  ">
+                                    </mat-checkbox>
+
+                                </td>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- <p style="text-align: center;" *ngIf="!data_file_edit">No data Found...</p> -->
+                    <div class="tableFixHead" style="overflow-x: auto; max-height: 400px;"
+                        *ngIf="table_show_hide == false">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <thead class="table_header"
+                                style="top:0;position: sticky;z-index: 2; background-color: #ddefdd;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th *ngFor="let column of columns">{{ column }}</th>
+                                    <th>
+                                        Select ({{ selected_check_box_datas?.length || 0 }}/{{ document_count_data || 0
+                                        }})
+                                        <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                            [disabled]="CheckCondition()">
+                                        </mat-checkbox>
+                                        <!-- "!disabled_check_box ||
+      selected_check_box_datas.length >= document_count_data ||
+      document_count_data === 0" -->
+                                     
+                                <!-- <input [checked]="ischeckedall" type="checkbox" (change)="toggleCheckboxAll($event)" [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) >= document_count_data || (document_count_data === 0))"> -->
+
+                                    </th>
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let lists of archivalsummarylists;index as ind">
+                                    <ng-container *ngIf="lists">
+                                        <td>{{(presentarchivalECFpage-1)*50+ind+1}}</td>
+                                        <td *ngFor="let column of keys">
+                                            {{lists[column] === null || lists[column] === 'None' || lists[column] ===
+                                            '0' ||
+                                            lists[column] === 0 ? '' : lists[column]}}
+                                        </td>
+                                        <td *ngIf="data_file_edit">
+                                            <!-- <mat-checkbox [checked]="lists?.selected"
+                                                (change)="occupied_counts >= document_count_data ? '' : singleCheckbox($event, lists,'')"
+                                                [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) >= document_count_data || (document_count_data === 0))">
+                                            </mat-checkbox> -->
+                                            <mat-checkbox [checked]="lists?.selected" (change)="
+    (selected_check_box_datas?.length < document_count_data) 
+      ? singleCheckbox($event, lists,'') 
+      : null
+  " [disabled]="
+    disabled_check_box === false || 
+    (chechbox_id?.length + occupied_counts) >= document_count_data || 
+    document_count_data === 0 ||
+    selected_check_box_datas?.length >= document_count_data
+  ">
+                                            </mat-checkbox>
+
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <p style="text-align: center;" *ngIf="!data_file_edit">No data Found...</p>
+                        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                            <button (click)="previous_master_Click()" mat-icon-button
+                                [disabled]="hasarchivalECF_previous === false" color="primary">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentarchivalECFpage}}
+                            <button (click)="nexts_masterClick()" mat-icon-button
+                                [disabled]="hasarchivalECF_next === false" color="primary">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                </div>
+                <div [ngClass]="table_values_table_hide ? 'col-md-6' : 'col-md-12'"
+                    *ngIf="archivalsummarylists?.length !=0 ">
+                    <div class="tableFixHead" style="overflow-x: auto; max-height: 400px;">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <thead class="table_header"
+                                style="top:0;position: sticky;z-index: 2; background-color: #ddefdd;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>CR No</th>
+                                    <!-- <th>Select ({{(chechbox_id?.length + occupied_counts) || 0 }}/{{(document_count_data) ||
+                                0}})
+                                <mat-checkbox [checked]="ischeckedall" (change)="toggleCheckboxAll($event)"
+                                    [disabled]="((disabled_check_box === false) || (chechbox_id?.length + occupied_counts) > document_count_data || (document_count_data === 0))">
+                                </mat-checkbox>
+                            </th> -->
+                                    <th>
+                                        Select ({{ selected_check_box_datas?.length }}/{{ document_count_data || 0 }})
+                                        <mat-checkbox [checked]="ischeckedall"
+                                            (change)="rmu_checkbox ? '' : toggleCheckboxAll($event)"
+                                            [disabled]="((disabled_check_box === false) ||  (edit_type === 'edit' ? occupied_counts : (chechbox_id?.length + occupied_counts)) >= document_count_data || (document_count_data === 0))">
+                                        </mat-checkbox>
+                                    </th>
+                                    <!-- <th>Delete</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let lists of selected_check_box_datas;index as ind">
+                                    <ng-container *ngIf="lists">
+                                        <td>{{ind+1}}</td>
+                                        <!-- <td *ngFor="let column of keys">
+                                            {{lists[column] === null || lists[column] === 'None' || lists[column] ===
+                                            '0' || lists[column] === 0 ? '' : lists[column] }}
+                                        </td> -->
+                                        <td>{{lists?.display_name}}</td>
+                                        <td *ngIf="data_file_edit">
+                                            <mat-checkbox [checked]="lists.status===1"
+                                                (change)="occupied_counts >= document_count_data ? '' : singleCheckbox($event, lists,'second')">
+                                            </mat-checkbox>
+                                        </td>
+                                        <!-- <td><button mat-icon-button [disabled]="archival_edit.value?.status_name?.id==1"
+                                                (click)="delete_mapping(lists)" color="green">
+                                                <mat-icon>delete</mat-icon>
+                                            </button></td> -->
+                                    </ng-container>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </mat-expansion-panel>
+</mat-accordion>
+<br>
+<div class="modal fade" id="master_viewpopup" tabindex="-1" aria-labelledby="master_viewpopup" aria-hidden="true">
+    <div class="modal-dialog  modal-xl">
+        <div class="modal-content" style="width: 108%;">
+            <div class="modal-header">
+                <p class="modal-title mb-0" id="master_viewpopup" style="font-weight: 600;">Archival Master View</p>
+                <button type="button" class="close" data-dismiss="modal" #closeachievalpopup aria-label="Close"
+                    (click)="closedpopup()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div>
+                    <div class="tableFixHead">
+                        <table class="table table-bordered" fixed-header id="datatable">
+                            <thead class="table_header" style=" top: 0;position: sticky;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Box No</th>
+                                    <th>CR NO</th>
+                                    <th>Product</th>
+                                    <th>Archival Date</th>
+                                    <th>Archival Status</th>
+                                    <th>Vendor Barcode</th>
+                                    <th>Document Count</th>
+                                    <th>Occupied Count</th>
+                                    <th>Storage Vendor</th>
+                                    <th>Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let summary of archivalsummaryview;let i=index">
+                                    <td>{{(presentpagearchalview-1)*10+i + 1 }}</td>
+                                    <td>{{summary?.archival_box_data?.box_number}}</td>
+                                    <td>{{(summary.rmu_approved_data?.cr_no)?(summary.rmu_approved_data?.cr_no):summary?.rmu_approved_data?.reference_data}}
+                                    </td>
+                                    <td>{{summary.archival_box_data?.product_id?.name}}</td>
+                                    <td>{{summary?.archival_date | date:'dd-MMM-yyyy'}}</td>
+                                    <!-- <td>{{summary.archival_status?.name }}</td> -->
+                                    <td>{{summary?.archival_status?.name}}</td>
+                                    <td>{{summary.vendor_barcode}}</td>
+                                    <td>{{summary.archival_box_data?.box_count}}</td>
+                                    <td>{{summary?.occupied_count}}</td>
+                                    <td>{{summary.vendor?.name}}</td>
+                                    <td>{{summary?.created_date | date:'dd-MMM-yyyy'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="text-align: center;" *ngIf="!datass_foundview">No data Found...</p>
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button mat-icon-button [disabled]="has_previousarchalview === false" color="primary"
+                                (click)="previousviewClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{presentpagearchalview}}
+                            <button mat-icon-button [disabled]="has_nextarchalview === false" color="primary"
+                                (click)="nextviewClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalUploadBarcode" tabindex="-1" aria-labelledby="ModalUploadBarcode" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        Auto Generate Barcode
+                    </h2>
+                    <button type="button" #ModalDisplayBar class="close" data-dismiss="modal" aria-label="Close"
+                        (click)="BackCreateUpload()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="CreateForm">
+
+                        <div class="storageUploadFlex">
+                            <div class="npm-mat-edit">
+                                <mat-form-field appearance="outline" (click)="VendorDropDown('',1)">
+                                    <mat-label>Storage Vendor</mat-label>
+                                    <input [matAutocomplete]="autostorage" matInput formControlName="Vendor"
+                                        (keyup)="VendorDropDown($event.target.value,1)">
+                                    <mat-autocomplete #autostorage="matAutocomplete" (opened)="vendorStorageScroll()"
+                                        [displayWith]="VendorDisplay">
+                                        <mat-option *ngIf="isloading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isloading">
+                                            <mat-option *ngFor="let data of VendorDropDownData" [value]="data">
+                                                {{data?.name}}
+                                            </mat-option>
+                                            <mat-option *ngIf="!VendorDropDownData.length">No Records Found</mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="npm-mat-edit">
+                                <mat-form-field appearance="outline" (click)="BoxNameDropDown('',1)">
+                                    <mat-label>Box Name</mat-label>
+                                    <input [matAutocomplete]="autostorage1" matInput formControlName="BoxName"
+                                        (keyup)="BoxNameDropDown($event.target.value,1)">
+                                    <mat-autocomplete #autostorage1="matAutocomplete" (opened)="BoxNameScroll()"
+                                        [displayWith]="VendorDisplay">
+                                        <mat-option *ngIf="isloading">Loading</mat-option>
+                                        <ng-container *ngIf="!isloading">
+                                            <mat-option *ngFor="let data of BoxNameDropDownData" [value]="data">
+                                                {{data?.name}}
+                                            </mat-option>
+                                            <mat-option *ngIf="!BoxNameDropDownData.length">
+                                                No Records Found
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="npm-mat-edit">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>
+                                        From Session
+                                    </mat-label>
+                                    <input matInput formControlName="FromSession" maxlength="13">
+                                </mat-form-field>
+                            </div>
+                            <div class="npm-mat-edit">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>
+                                        To Session
+                                    </mat-label>
+                                    <input matInput formControlName="ToSession" maxlength="13">
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" #ModalDisplayBar
+                        (click)="BackCreateUpload()">Cancel</button>
+                    <button class="btn btn-outline-success" (click)="StorageSubmit()">Submit</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="archival_approve" tabindex="-1" aria-labelledby="archival_approve" aria-hidden="true">
+    <div class="modal-dialog  modal-xl">
+        <div class="modal-content" style="width: 108%;">
+            <div class="modal-header">
+                <p class="modal-title mb-0" id="archival_approve" style="font-weight: 600;">Archival Vendor Approval</p>
+                <button type="button" class="close" data-dismiss="modal" #closeachieval_approve_popup aria-label="Close"
+                    (click)="archival_approve_popup_close()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+            <!-- <div class="modal fade" id="archival_approve" tabindex="-1" aria-labelledby="archival_approve" aria-hidden="true">
+    <div class="modal-dialog  modal-xl">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 108%;">
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                
+                    </h2>
+                    <button type="button" #closeachieval_approve_popup class="close" data-dismiss="modal" aria-label="Close"
+                        (click)="archival_approve_popup_close()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> -->
+            <div class="modal-body">
+
+                <!-- <mat-card> -->
+                <!-- <mat-accordion>
+                                <mat-expansion-panel style="background-color: white;">
+                                    <mat-expansion-panel-header (click)="file_data_fun()" style="height: 64px;background-color: #DDEFDD;">
+                                        <mat-panel-title> -->
+                <!-- <h2 style="margin: 0; color: black; font-weight: bold;">Product Details</h2> -->
+                <!-- </mat-panel-title>
+                                    </mat-expansion-panel-header> -->
+                <!-- <div class="row"
+                                style="display: flex; align-items: center; justify-content: space-between;  background-color: white; margin-bottom: 16px;">
+                    
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                                <p>
+                                    <strong>Box No: </strong>
+                                    <span>{{edit_data?.box_number}}</span>
+                                </p>
+                                <p>
+                                    <strong>Box Name: </strong>
+                                    <span>{{edit_data?.box_data?.name}}</span>
+                                </p>
+                                <p>
+                                    <strong>Product Name: </strong>
+                                    <span>{{edit_data?.product_data?.name}}</span>
+                                </p>
+                                <p>
+                                    <strong>Archival Date: </strong>
+                                    <span>
+                                        {{ edit_data?.archival_data?.archival_date !="None" ?
+                                        (edit_data?.archival_data?.archival_date | date:'dd-MMM-yyyy') : ''
+                                        }}
+                                    </span>
+                                </p>
+                                <p>
+                                    <strong>Vendor Barcode: </strong>
+                                    <span>{{edit_data?.archival_data?.vendor_barcode}}</span>
+                                </p>
+                                <p>
+                                    <strong>Document Count: </strong>
+                                    <span>{{edit_data?.box_count}}</span>
+                                </p>
+                                <p>
+                                    <strong>Storage Vendor: </strong>
+                                    <span>{{edit_data?.archival_data?.vendor_id?.name}}</span>
+                                </p>
+                                <p>
+                                    <strong>Created Date: </strong>
+                                    <span>{{edit_data?.crated_date | date:'dd-MMM-yyyy'}}</span>
+                                </p>
+                                <p>
+                                    <strong>Occupied Count: </strong>
+                                    <span>{{edit_data?.occupied_count}}</span>
+                                </p>
+                            </div> -->
+                <!-- </mat-expansion-panel>
+                            </mat-accordion> -->
+                <!-- </mat-card> -->
+                <div>
+                    <mat-card>
+                        <form [formGroup]="edit_master_update">
+                            <div class="row">
+                                <div class="npm-mat-edit" style="padding-left: 2%;">
+                                    <mat-form-field appearance="outline" style="width: 100%;">
+                                        <mat-label>Archival Date</mat-label>
+                                        <input matInput [matDatepicker]="picker4" placeholder="Date" autocomplete="off"
+                                            formControlName="archivaldate" [disabled]="true" readonly>
+                                        <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker4></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                                <div class="npm-mat-edit" style="padding-left: 2%;">
+                                    <mat-form-field appearance="outline" style="width: 100%;"
+                                        (click)="BarCodeDropDown('',1)">
+                                        <mat-label>Vendor Barcode </mat-label>
+                                        <input matInput formControlName="boxno" maxlength="13"
+                                            [matAutocomplete]="vendorBar"
+                                            (keyup)="BarCodeDropDown($event.target.value,1)">
+                                        <mat-autocomplete #vendorBar="matAutocomplete" (opened)="VendorbarcodeScroll()"
+                                            [displayWith]="DisplayBarcode">
+                                            <mat-option *ngIf="isloading">Loading...</mat-option>
+                                            <ng-container *ngIf="!isloading">
+                                                <mat-option *ngFor="let data of BarCodeDropDownData" [value]="data">
+                                                    {{data?.bar_code_number}}
+                                                </mat-option>
+                                                <mat-option *ngIf="!BarCodeDropDownData.length">
+                                                    No Records Found
+                                                </mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete>
+
+                                    </mat-form-field>
+                                </div>
+                                <div class="npm-mat-edit" style="padding-left: 2%;">
+                                    <mat-form-field appearance="outline" (click)="VendorDropDown('',1)">
+                                        <mat-label>Storage Vendor</mat-label>
+                                        <input [matAutocomplete]="autostoragevendor" matInput formControlName="vendor"
+                                            (keyup)="VendorDropDown($event.target.value,1)">
+                                        <mat-autocomplete #autostoragevendor="matAutocomplete"
+                                            (opened)="vendorStorageEditScroll()" [displayWith]="VendorDisplay">
+                                            <mat-option *ngIf="isloading">Loading...</mat-option>
+                                            <ng-container *ngIf="!isloading">
+                                                <mat-option *ngFor="let data of VendorDropDownData" [value]="data">
+                                                    {{data?.name}}
+                                                </mat-option>
+                                                <mat-option *ngIf="!VendorDropDownData.length">No Records
+                                                    Found</mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                                <div class="npm-mat-edit" style="padding-left: 2%;">
+                                    <button type="button" class="btn btn-outline-primary" [disabled]="Approval_diasble"
+                                        style="margin-right: 20px;"
+                                        (click)="master_approve(edit_master_update.value)">Approve</button>
+                                    <!-- <button type="button" class="btn btn-outline-primary"
+                                            (click)="master_close(edit_master_update.value)">Box Close & Approve
+                                        </button> -->
+                                </div>
+                            </div>
+                        </form>
+                    </mat-card>
+                </div>
+                <div class="box mt-3" class="row"
+                    style="display: flex; align-items: center; justify-content: space-between;  background-color: white; margin-bottom: 16px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;padding: 2%;">
+                        <mat-card>
+                            <canvas id="chartCanvas1"></canvas>
+                        </mat-card>
+                        <mat-card class="card-container">
+                            <p class="card-item">
+                                <strong>Box No: </strong>
+                                <span>{{product_datas_view?.box_number}}</span>
+                            </p>
+                            <p class="card-item">
+                                <strong>Product: </strong>
+                                <span>{{product_datas_view?.product_data?.name}}</span>
+                            </p>
+                            <p class="card-item">
+                                <strong>Document Count: </strong>
+                                <span>{{product_datas_view?.box_count}}</span>
+                            </p>
+                            <p class="card-item">
+                                <strong>Created Date: </strong>
+                                <span>{{ product_datas_view?.archival_created_date !="None" ?
+                                    (product_datas_view?.archival_created_date| date:'dd-MMM-yyyy') : ''
+                                    }}</span>
+                            </p>
+                            <p class="card-item">
+                                <strong>Occupied Count: </strong>
+                                <span>{{product_datas_view?.occupied_count}}</span>
+                            </p>
+                            <!-- <p>
+                                <strong>Box No: </strong>
+                                <span>{{product_datas_view?.box_number}}</span>
+                            </p>
+                            <p>
+                                <strong>Box Name: </strong>
+                                <span>{{product_datas_view?.box_data?.name}}</span>
+                            </p>
+                            <p>
+                                <strong>Product Name: </strong>
+                                <span>{{product_datas_view?.product_data?.name}}</span>
+                            </p>
+                            <p>
+                                <strong>Archival Date: </strong>
+                                <span>
+                                    {{ product_datas_view?.archival_data?.archival_date !="None" ?
+                                    (product_datas_view?.archival_data?.archival_date | date:'dd-MMM-yyyy') : ''
+                                    }}
+                                </span>
+                            </p>
+                            <p>
+                                <strong>Vendor Barcode: </strong>
+                                <span>{{product_datas_view?.archival_data?.vendor_barcode}}</span>
+                            </p>
+                            <p>
+                                <strong>Document Count: </strong>
+                                <span>{{product_datas_view?.box_count}}</span>
+                            </p>
+                            <p>
+                                <strong>Storage Vendor: </strong>
+                                <span>{{product_datas_view?.archival_data?.vendor_id?.name}}</span>
+                            </p>
+                            <p>
+                                <strong>Created Date: </strong>
+                                <span>{{product_datas_view?.crated_date | date:'dd-MMM-yyyy'}}</span>
+                            </p>
+                            <p>
+                                <strong>Occupied Count: </strong>
+                                <span>{{product_datas_view?.occupied_count}}</span>
+                            </p> -->
+                        </mat-card>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" #closeachieval_approve_popup
+                    (click)="archival_approve_popup_close()">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="archival_upload_file" tabindex="-1" aria-labelledby="archival_upload_file"
+    aria-hidden="true">
+    <div class="modal-dialog  modal-xl">
+        <div class="modal-content" style="width: 108%;">
+            <div class="modal-header">
+                <p class="modal-title mb-0" id="archival_upload_file" style="font-weight: 600;">Archival Upload Summary
+                </p>
+                <button type="button" class="close" data-dismiss="modal" #closeachieval_upload_popup aria-label="Close"
+                    (click)="archival_upload_file_popup_close()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div>
+                    <mat-card>
+                        <div>
+                            <div id="rmucontent" class="table-responsive">
+                                <table class="table table-bordered" id="rmutable">
+                                    <thead class="table_header">
+                                        <th>S.No</th>
+                                        <th>Product Name</th>
+                                        <th>File Name</th>
+                                        <th>Valid Count</th>
+                                        <th>Invalid Count</th>
+                                        <th>View</th>
+                                    </thead>
+                                    <tbody *ngFor="let sum of archivalvalidsummary;index as ind">
+                                        <td>{{(archivpresentpage_valid-1)*limit+ind+1}}</td>
+                                        <td>{{sum.product_name}}</td>
+                                        <td>{{sum.file_name}} </td>
+                                        <td>{{sum.valid_count}}</td>
+                                        <td (click)="sum?.invalid_count!=0?invalid_download(sum):''" [ngStyle]="{ 
+                                cursor: sum?.invalid_count !=0 ? 'pointer' : 'default', 
+                                color: sum?.invalid_count !=0? 'blue' : 'black' 
+                              }">{{sum.invalid_count}}</td>
+                                        <td>
+                                            <mat-icon style="margin-left: 7%; font-size: 25px; cursor: pointer;"
+                                                matTooltip="File Download"
+                                                (click)="file_download(sum)">cloud_download</mat-icon>
+                                        </td>
+                                    </tbody>
+                                </table>
+                                <div *ngIf="!archivalvalidsummary?.length" style="margin-left: 42%;">
+                                    <h3>Sorry no data found!... </h3>
+                                </div>
+
+                                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                                    <button (click)="archivalpreviousvalid_serch_Click()" mat-icon-button
+                                        [disabled]="archivalhas_previousvalid === false" color="primary">
+                                        <mat-icon>arrow_back</mat-icon>
+                                    </button>
+                                    {{archivpresentpage_valid}}
+                                    <button (click)="archivalvalid_serch_Click()" mat-icon-button
+                                        [disabled]="archivalhas_nextvalid === false" color="primary">
+                                        <mat-icon>arrow_forward</mat-icon>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </mat-card>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" #closeachieval_upload_popup
+                    (click)="archival_upload_file_popup_close()">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div [ngClass]="BatchGenerate?'popup-open':'popup'" id="matInput-v17">
+    <div class="popup-container-md">
+        <div class="popup-head">
+            <div class="popup-title">
+                <b>Product Name:</b><span>{{filedatagroup.get('product')?.value?.name}}</span>
+            </div>
+            <button type="button" class="close-popup" (click)="closePopup()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <div class="popup-body ">
+            <div class="BoxDisplay">
+                <div>
+                    <b>Box Name:</b><span>{{filedatagroup.get('box_name')?.value?.name}}</span>
+                </div>
+                <div>
+                    <b>Box Number:</b><span>{{filedatagroup.get('boxno')?.value?.box_number}}</span>
+                </div>
+            </div>
+            <div class="npm-mat-edit">
+                  <mat-form-field appearance="outline" class="width100per">
+                <mat-label>Batch Capacity</mat-label>
+                <input type="number" (keyup)="BatchCountFunc($event)" matInput [formControl]="batchcount">
+            </mat-form-field>
+            </div>
+        </div>
+        <div class="popup-footer">
+            <button class="btn btn-outline-success" (click)="GenerateFunc()" [ngClass]="batchcount?.value>50?'PointerEventsNone':''">Generate</button>
+        </div>
+    </div>
+</div>

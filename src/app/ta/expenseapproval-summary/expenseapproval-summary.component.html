@@ -1,0 +1,221 @@
+<div  style="margin-left: 15px;max-width: fit-content;margin-top: 15px;">
+    <h3 style="color:black;font-size: 20px;font-weight: 500" >
+        Claim Approval
+   </h3>
+    <div class="row">
+        <div class="col-12">
+            <form [formGroup]="tourApprovalSearchForm">
+                <mat-form-field style="width:175px;margin-left: 40px;">
+                    <mat-label>Tour No</mat-label>
+                    <input matInput placeholder="Tour No" formControlName="tourno"
+                    type="text" #inputRef >
+                </mat-form-field>
+               
+                    <mat-form-field style="width:210px;margin-left: 40px;" id="tasumspace">
+                        <mat-label>Tour Requested Date</mat-label>
+                        <input matInput readonly [matDatepicker]="picker1" 
+                                placeholder="Request Date" autocomplete="off" formControlName="requestdate">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                  </mat-form-field>
+                  <!-- <mat-form-field style="width: 175px;">
+                    <input matInput name="status"  [(ngModel)]="toursearch.claim_status_id" #accbybank="ngModel" placeholder="status" [matAutocomplete]="auto" required>
+                      <mat-autocomplete #auto="matAutocomplete">
+                          <mat-option *ngFor="let status of statusList" [value]="status.value" (click)="getstatus(status.name)">
+                              {{status.name}}
+                          </mat-option>
+                      </mat-autocomplete>
+                  </mat-form-field> -->
+                  <mat-form-field style="width:210px;margin-left: 40px;"(click)='getbranch()'>
+                    <mat-label>Branch</mat-label>
+                    <input  matInput formControlName="branch" autocomplete="off" [matAutocomplete]="branch_auto" #branchinput placeholder="Select Branch">
+                    <mat-autocomplete #branch_auto="matAutocomplete" [displayWith]="displayfnbranch" (opened)="autocomplete_branchScroll()">
+                        <!-- <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                </mat-option> -->
+                        <!-- <ng-container *ngIf="!isLoading"> -->
+                        <mat-option *ngFor="let branches of branchdata" [value]="branches">
+                            ({{branches.code}}) {{branches.name}}
+                        </mat-option>
+                        <!-- </ng-container> -->
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field style="width:210px;margin-left: 40px;margin-right: 250px;"(click)='getemployee()'>
+                    <mat-label>Employees</mat-label>
+                    <input type="text" placeholder="Select Employee" matInput [matAutocomplete]="empc" #employeeinput formControlName="employee">
+                    <mat-autocomplete #empc="matAutocomplete" [displayWith]="displayFn" (opened)="autocomplete_empScroll()">
+                        <mat-option *ngFor="let emp of empList" [value]="emp">
+                            {{emp.full_name}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field style="width:175px;margin-left: 40px;">
+                    <mat-label>Grade</mat-label>
+                    <input matInput placeholder="Grade" formControlName="Grade"
+                    type="text" >
+                </mat-form-field>
+                <mat-form-field style="width:175px;margin-left: 40px;">
+                    <mat-label>Claim Amount</mat-label>
+                    <input matInput formControlName="claimAmount" placeholder="Claim amount" (input)="validateInput($event)"/>
+                  </mat-form-field>
+                <button class="btn btn-outline-success" type="submit"  (click)="tourApproverSearch()" style="border-radius:40px;" id="tasumspace" matTooltip="Search"
+                            color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+
+                <button class="btn btn-outline-success" type="submit"(click)="reset()" style="border-radius:40px;margin-left: 15px;"
+                color="primary">Clear</button>
+
+                <mat-form-field style="width: 200px;margin-left: 40px;">
+                    <mat-label>Status Filter</mat-label>
+                    <mat-select  [(value)]="statusselected" readonly="readonly" (selectionChange)="onStatusChange($event.value)">
+                        <mat-option *ngFor="let status of statusList" [value]="status.name">
+                            {{status.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </form>
+        </div>
+    </div>
+    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+        <thead class="table_header" style="text-align: left;">
+    <tr>
+    <th>S.No</th>
+    <th>Tour No</th>
+    <th>Tour Requested Date</th>
+    <th>CR Number</th>
+    <th>From Date</th>
+    <th>To Date</th>
+    <th>From Place</th>
+    <th>To Place</th>
+    <th>Tour Reason</th>
+    <th>Employee</th>
+    <th>Branch</th>
+    <th>Raised By</th>
+    <th>Employee Grade</th>
+    <th>Claim Amount</th>
+    <th>Status</th>
+    <th>Action</th>
+    
+    </tr>
+    </thead>
+    <tbody> 
+        <tr *ngFor="let approvexpence of getapprovexpenceList; index as i">
+       <td scope="row"  style="vertical-align: middle;">{{(currentpage - 1)*pageSize +i+1 }}</td>
+        <td>{{approvexpence.requestno}}</td>
+        <td>{{approvexpence.requestdate}}</td>
+        <td>{{approvexpence.crno}}</td>
+        <td>{{approvexpence.startdate}}</td>
+        <td>{{approvexpence.enddate}}</td>
+        <td>{{approvexpence.from_place}}</td>
+        <td>{{approvexpence.to_place}}</td>
+        <td>{{approvexpence.reason}}</td>
+        <td>({{approvexpence.employee_code}}) {{approvexpence.employee_name}}</td>
+        <td>({{approvexpence.branch_code}}) {{approvexpence.branch_name}}</td>
+        <td>({{approvexpence?.onbehalfof?.code}}) {{approvexpence?.onbehalfof?.full_name}}</td>
+        <td>{{approvexpence.empgrade}}</td>
+        <td>{{approvexpence.claim_amount | currency:"INR"}}</td>
+        <td><p *ngIf="approvexpence.claim_status_id == 1">
+            Tour Claim Requested</p>
+
+            <p *ngIf="approvexpence.claim_status_id == 3 && approvexpence.applevel== 1">
+            Tour Claim Forwarder Approved</p>
+
+            <p *ngIf="approvexpence.claim_status_id == 4  && approvexpence.applevel== 1">
+                Tour Claim Rejected from Forwarder</p>
+
+              <p *ngIf="approvexpence.claim_status_id == 2 && approvexpence.applevel== 1">
+              Tour Claim Submitted To Forwarder</p>
+
+              <p *ngIf="approvexpence.claim_status_id == 5 && approvexpence.applevel== 1">
+                Tour Claim Returned from Forwarder</p>
+
+            <p *ngIf="approvexpence.claim_status_id == 4  && approvexpence.applevel== 2">
+              Tour Claim Rejected from Checker</p>
+
+            <p *ngIf="approvexpence.claim_status_id == 2 && approvexpence.applevel== 2">
+            Tour Claim Verified and Submitted To Checker</p>
+
+            <p *ngIf="approvexpence.claim_status_id == 5 && approvexpence.applevel== 2">
+              Tour Claim Returned from Checker</p>
+
+              <p *ngIf="approvexpence.claim_status_id == 3 && approvexpence.applevel== 2">
+                Tour claim verified and Checker Approved</p>
+          </td>
+        <td><button mat-icon-button matTooltip="View" class="iconbutton" color="primary"
+            (click)="approveexpenceEdit(approvexpence)">
+            
+            <mat-icon style="color: green;"class="material-icons">
+                visibility</mat-icon>
+        </button>
+        </td>
+            
+        </tr>
+        <tr *ngIf="getapprovexpenceList?.length==0; else pagepm"  style="text-align: center;" class="NodataAlign"><td colspan="14">No Records Found</td></tr>
+        <ng-template #pagepm>
+        <tr>
+            <td colspan="2">Total Count:{{this.total_count}}</td>
+            <td colspan="6">
+                <mat-form-field appearance="outline"style='width: 140px;border:none'>
+                  <mat-label>Page Size</mat-label>
+                  <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange($event.value)">
+                    <mat-option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              
+                <!-- <mat-paginator
+                  (page)="handlePageEventSchedule($event)"
+                  [length]="total_count"
+                  [pageSize]="pageSize"
+                  [showFirstLastButtons]="true"
+                  [pageIndex]="pageIndex"
+                  aria-label="Select page">
+                </mat-paginator> -->
+              </td>
+              
+            <td colspan="10">
+            <div style="text-align: right;">
+              <button mat-icon-button color="primary"
+              (click)="TourapprovefirstClick()" matTooltip="First Page">
+              <mat-icon>first_page</mat-icon>
+              </button>
+                <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                    (click)="TourapprovepreviousClick()" matTooltip="Previous Page">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{currentpage}}
+                <button mat-icon-button [disabled]="has_next=== false" color="primary" (click)="TourapprovenextClick()" matTooltip="Next Page">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+                <button mat-icon-button color="primary"
+                (click)="TourapprovelastClick()" matTooltip="Last Page">
+                <mat-icon>last_page</mat-icon>
+                </button>
+            </div>
+            </td>
+        </tr>
+        </ng-template>
+    </tbody>
+    </table>
+    <!-- <div *ngIf="getapprovexpenceList ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+    <div class="row" *ngIf="isTourChecker">
+        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+            <button mat-icon-button color="primary"
+            (click)="TourapprovefirstClick()">
+            <mat-icon>first_page</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="!has_previous" color="primary"
+            (click)="TourapprovepreviousClick()">
+            <mat-icon >arrow_back</mat-icon>
+            </button>
+            {{currentpage}}
+            <button mat-icon-button [disabled]="!has_next" color="primary"
+            (click)="TourapprovenextClick()">
+            <mat-icon >arrow_forward</mat-icon>
+            </button>
+            <button mat-icon-button color="primary"
+            (click)="TourapprovelastClick()">
+            <mat-icon>last_page</mat-icon>
+        </button>
+            </div>
+    </div> -->
+    </div>

@@ -1,0 +1,741 @@
+<div style="font-size: small" class="pl-5 pr-5 pt-3" *ngIf="Roa_summary">
+  <form [formGroup]="roaSearchForm">
+
+    <div class="row mb-3">
+      <div class="ml-3 mr-3">
+        <mat-form-field (click)="finyear_dropdown()" appearance="outline">
+          <mat-label>Fin Year</mat-label>
+          <input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput [matAutocomplete]="fin_year"
+            required>
+          <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let finyearname of finyearList" [value]="finyearname">
+                {{finyearname.finyer}} </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+
+        </mat-form-field>
+      </div>
+      <div class="ml-3 mr-3">
+        <mat-form-field appearance="outline">
+          <mat-label>From Month</mat-label>
+          <mat-select formControlName="frommonth">
+            <mat-option *ngFor="let month of from_month" (click)="to_reset()" [value]="month">
+              {{month.month}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="ml-3 mr-3">
+        <mat-form-field appearance="outline">
+          <mat-label>To Month </mat-label>
+          <mat-select formControlName="tomonth">
+            <mat-option *ngFor="let month of from_month" (click)="all_data_rest()" [value]="month">
+              {{month.month}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="ml-3 mr-3" *ngIf="view_branch">
+        <mat-form-field appearance="outline">
+          <mat-label>View Type</mat-label>
+          <mat-select formControlName="view">
+            <mat-option *ngFor="let view of view_List" (click)="branch_hide(view)" [value]="view">
+              {{view.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="ml-3 mr-3" *ngIf="do_view">
+        <mat-form-field (click)="branch_do_name()" appearance="outline">
+          <mat-label>DO List</mat-label>
+          <input #branch_do_Input placeholder="DO List" matInput formControlName="branch_do" #branchContactInput
+            [matAutocomplete]="branch_dos">
+          <mat-autocomplete #branch_dos="matAutocomplete" [displayWith]="displayfnbranch_do"
+            (opened)="autocompletebranch_do_nameScroll()">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let branch of branch_do_List" (click)="do_view_dd(branch)" [value]="branch">
+                {{branch.code}}-{{branch.name}} </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="ml-3 mr-3" *ngIf="brach_dd_hide">
+        <mat-form-field (click)="branchname()" appearance="outline">
+          <mat-label>Branch</mat-label>
+          <input #branchInput placeholder="Branch" matInput formControlName="branch_id" #branchContactInput
+            [matAutocomplete]="branch">
+          <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+            (opened)="autocompletebranchnameScroll()">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let branch of branchList" [value]="branch">
+                {{branch.code}}-{{branch.name}} </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="ml-3 mr-3">
+        <mat-form-field (click)="Business_dropdown()" appearance="outline">
+          <mat-label>Business</mat-label>
+          <input placeholder="Business" matInput formControlName="business" #businessInput
+            [matAutocomplete]="business_name">
+          <mat-autocomplete #business_name="matAutocomplete" [displayWith]="displayfnbusiness"
+            (opened)="autocompletebusinessnameScroll()">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let business of businessList" (click)="bs_clear()" [value]="business">
+                {{business.name}}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-md-3">
+        <mat-form-field (click)="bsname_dropdown()" appearance="outline">
+          <mat-label>BS</mat-label>
+          <input placeholder="BS" matInput formControlName="bs_id" #bsInput [matAutocomplete]="bs">
+          <mat-autocomplete #bs="matAutocomplete" [displayWith]="displayfnbs"
+            (opened)="autocompletebsnameScroll()">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let bs of bsList" [value]="bs" (click)="bs_cc_clear()"
+                (focusout)="selectbsSection(bs)" > {{bs.name}} </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field (click)="ccname_dropdown()" appearance="outline">
+          <mat-label>CC</mat-label>
+          <input #bsclear_nameInput placeholder="CC" matInput formControlName="cc_id" #ccInput
+            [matAutocomplete]="cc_name">
+          <mat-autocomplete #cc_name="matAutocomplete" [displayWith]="displayfncc"
+            (opened)="autocompletccnameScroll()">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let cc of ccList"  [value]="cc"> {{cc.name}} </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div> -->
+      <div class="ml-3 mr-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Amount Denomination</mat-label>
+          <mat-select formControlName="amount">
+            <mat-option *ngFor="let amt of Amount_List" [value]="amt">
+              {{amt.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="ml-3 mr-3 mt-2">
+        <button class="btn btn-outline-primary" type="submit" (click)="roa_summary_Search(roaSearchForm.value,'sum')"
+          style="border-radius:40px; margin-left: 10%;" color="primary"><i class="fa fa-search"
+            aria-hidden="true"></i></button>
+      </div>
+      <div class="ml-3 mr-3 mt-2">
+        <button type="button" style="border-radius: 40px;margin-left: 10%;" class="btn btn-outline-primary"
+          (click)="reset()">Reset</button>
+      </div>
+      <div class="ml-3 mr-3 mt-2">
+        <button matTooltip="Download" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 10%;"
+          (click)="Screendownload()"><i class="fa fa-download" aria-hidden="true"></i></button>
+      </div>
+      <div class="ml-3 mr-3 mt-2">
+        <button class="btn btn-outline-primary cardachart" matTooltip="Dashboard"
+          (click)="roa_summary_Search(roaSearchForm.value,'dash')"><i class="fa fa-bar-chart"
+            aria-hidden="true"></i></button>
+      </div>
+      <div class="ml-3 mr-3 mt-2">
+        <button class="btn btn-outline-primary cardachart" matTooltip="ROA Run"
+          (click)="roa_run()">ROA Run</button>
+      </div>
+    </div>
+  </form>
+  <div class="table_div" *ngIf="card_hide">
+    <div  style="display: flex;justify-content: flex-end;" *ngIf="runupdatestatus">          
+      <h2 style="font-size: large;">Last Updated Date: <span style="color: blue;font-size: large;">{{RunDate}}</span>
+      </h2>&nbsp;&nbsp;
+      <h2 style="font-size: large;">UpTo Month: <span style="color: blue;font-size: large;">{{RunTo_mon}}</span>
+      </h2>
+    </div>
+    <mat-card  style="width: fit-content;">
+      <div style="display: flex; ">
+        <h2 style="margin: 0;font-size: x-large;">
+          Branch Name: <span style="color: rgb(27 196 30);">{{branch_name_show}}</span>
+        </h2>
+        <h2 style="color: blue; margin: 0;margin-left: 35%;padding-right: 5%;font-size: x-large;">{{div_Amt_show}}</h2>
+        
+      </div>
+      <div class="tableFixHead">
+        <table class="table table-bordered" fixed-header id="datatable">
+          <thead class="table_header">
+            <tr>
+              <ng-container *ngFor="let sec of header_names;let i=index">
+                <th [ngClass]="i == 0 ? 'left_sticky' : ''">{{sec}}</th>
+              </ng-container>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let datas of transformed_report_list; let i = index">
+              <ng-container *ngIf="checkCondition(datas.name); else fullRow">
+                <td [attr.colspan]="header_names.length"
+                  style="text-align: center; font-weight: 500; background-color: #DDEFDD;">
+                  {{datas.name}}
+                </td>
+              </ng-container>
+
+              <ng-template #fullRow>
+                <td [ngStyle]="{
+                            'padding-left': datas.padding,
+                            'background-color': '#DDEFDD',
+                            'font-weight': '500'
+                          }" class="left_sticky td_min">
+                  {{datas.name}}
+                </td>
+
+
+              </ng-template>
+
+              <ng-container *ngIf="checkCondition(datas.name); else noMatch">
+                <!-- <td></td> -->
+              </ng-container>
+
+              <ng-template #noMatch>
+                <ng-container *ngFor="let com of datas.business_dict.Amount; let j = index">
+                  <td class="td_min"
+                    [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">
+                    <div style="text-align: right;">
+                      {{datas?.business_dict?.Amount[j] | number: '1.2-2': 'en-IN'}}
+                      <ng-container *ngIf="i >= transformed_report_list.length - 2">%</ng-container>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <td class="td_min"
+                  [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}"
+                  *ngIf="datas?.business_dict.length == 0">0.00</td>
+              </ng-template>
+            </tr>
+
+          </tbody>
+        </table>
+        <div *ngIf="data_not_found" style="text-align: center;">
+          <h2>Sorry No Data Found...</h2>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>
+
+
+<mat-card #pdfContent class='div_position ' id="chart-summary" *ngIf="chart_summary">
+  <div class="row chart_back ml-2 mr-1" id="cardTextContent">
+    <!-- <h2>Dashboard</h2> -->
+    <div class="row max_width ml-2">
+      <h3 *ngIf="roaSearchForm.value.finyear" class="mr-2 lable_font_style" (click)="downloadPDF()">Fin Year : <span
+          style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.finyear.finyer}}</span></h3>
+      <h3 *ngIf="roaSearchForm.value.frommonth" class="mr-2 lable_font_style">From Month : <span
+          style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.frommonth.month}}</span></h3>
+      <h3 *ngIf="roaSearchForm.value.tomonth" class="mr-2 lable_font_style">To month : <span
+          style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.tomonth.month}}</span></h3>
+      <h3 *ngIf="roaSearchForm.value.view" class="mr-2 lable_font_style">View Type : <span
+          style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.view.name}}</span></h3>
+      <h3 *ngIf="roaSearchForm.value.branch_id" class="mr-2 lable_font_style">Branch : <span
+          style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.branch_id.name}}</span></h3>
+      <h3 *ngIf="roaSearchForm.value.business" class="mr-2 lable_font_style">business : <span
+          style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.business.name}}</span></h3>
+      <h3 *ngIf="roaSearchForm.value.amount" class="mr-2 lable_font_style">Amount In : <span
+          style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.amount.name}}</span></h3>
+    </div>
+    <div class="chart_back">
+      <div>
+        <!-- <button *ngIf="!pdf_download" type="submit" class="btn  btn-success mb-3 coustom-button clear" (click)="downloadPDF()">PDF</button> -->
+        <div class="filter-container">
+          <button mat-icon-button class="filter-icon" (click)="toggleAdvancedSearch()">
+            <mat-icon>search</mat-icon>
+          </button>
+
+          <!-- Search Form Initially Hidden -->
+          <div *ngIf="isAdvancedSearchVisible" class="advanced-search-form">
+            <form [formGroup]="roaSearchForm">
+
+              <div class="row mb-3">
+                <div class="ml-3 mr-3">
+                  <mat-form-field (click)="finyear_dropdown()" appearance="outline">
+                    <mat-label>Fin Year</mat-label>
+                    <input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput
+                      [matAutocomplete]="fin_year" required>
+                    <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">
+                      <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let finyearname of finyearList" [value]="finyearname">
+                          {{finyearname.finyer}} </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+
+                  </mat-form-field>
+                </div>
+                <div class="ml-3 mr-3">
+                  <mat-form-field appearance="outline">
+                    <mat-label>From Month</mat-label>
+                    <mat-select formControlName="frommonth">
+                      <mat-option *ngFor="let month of from_month" (click)="to_reset()" [value]="month">
+                        {{month.month}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="ml-3 mr-3">
+                  <mat-form-field appearance="outline">
+                    <mat-label>To Month </mat-label>
+                    <mat-select formControlName="tomonth">
+                      <mat-option *ngFor="let month of from_month" (click)="all_data_rest()" [value]="month">
+                        {{month.month}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="ml-3 mr-3" *ngIf="view_branch">
+                  <mat-form-field appearance="outline">
+                    <mat-label>View Type</mat-label>
+                    <mat-select formControlName="view">
+                      <mat-option *ngFor="let view of view_List" (click)="branch_hide(view)" [value]="view">
+                        {{view.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="ml-3 mr-3" *ngIf="do_view">
+                  <mat-form-field (click)="branch_do_name()" appearance="outline">
+                    <mat-label>DO List</mat-label>
+                    <input #branch_do_Input placeholder="DO List" matInput formControlName="branch_do"
+                      #branchContactInput [matAutocomplete]="branch_dos">
+                    <mat-autocomplete #branch_dos="matAutocomplete" [displayWith]="displayfnbranch_do"
+                      (opened)="autocompletebranch_do_nameScroll()">
+                      <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let branch of branch_do_List" (click)="do_view_dd(branch)" [value]="branch">
+                          {{branch.code}}-{{branch.name}} </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="ml-3 mr-3" *ngIf="brach_dd_hide">
+                  <mat-form-field (click)="branchname()" appearance="outline">
+                    <mat-label>Branch</mat-label>
+                    <input #branchInput placeholder="Branch" matInput formControlName="branch_id" #branchContactInput
+                      [matAutocomplete]="branch">
+                    <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+                      (opened)="autocompletebranchnameScroll()">
+                      <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let branch of branchList" [value]="branch">
+                          {{branch.code}}-{{branch.name}} </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="ml-3 mr-3">
+                  <mat-form-field (click)="Business_dropdown()" appearance="outline">
+                    <mat-label>Business</mat-label>
+                    <input placeholder="Business" matInput formControlName="business" #businessInput
+                      [matAutocomplete]="business_name">
+                    <mat-autocomplete #business_name="matAutocomplete" [displayWith]="displayfnbusiness"
+                      (opened)="autocompletebusinessnameScroll()">
+                      <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let business of businessList" (click)="bs_clear()" [value]="business">
+                          {{business.name}}
+                        </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="ml-3 mr-3">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Amount Denomination</mat-label>
+                    <mat-select formControlName="amount">
+                      <mat-option *ngFor="let amt of Amount_List" [value]="amt">
+                        {{amt.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+            </form>
+            <div class="felx">
+              <button mat-raised-button color="danger" type="submit" class="mr-3"
+                (click)="toggleAdvancedSearch()">Cancel</button>
+              <button mat-raised-button color="primary" type="submit"
+                (click)="roa_summary_Search(roaSearchForm.value,'dash')">Search</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="btn  btn-success mb-3 coustom-button clear" (click)="downloadPDF()">PDF</button>
+      </div>
+      <div>
+        <button type="submit" class="btn  mb-3 ml-2 coustom-button clear" (click)="back_to_roa()">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row main_row">
+    <div class="col-md-2 mt-3">
+      <mat-card class="mat_new_card">
+        <div class="para_div">
+          <p class="para">Bussiness</p>
+        </div>
+        <tr *ngFor="let sec of dashboard_buss">
+          <td class="p-2" [style.--dynamic-padding]="sec.padding">
+            <div class="d-flex align-items-center">
+              <mat-icon *ngIf="!pdf_download" class="f_sy mt-1">dashboard</mat-icon>
+              <span (click)="show_monthwise(sec)"
+                [ngClass]="buzname === sec.name ? 'font_style_green padding-important' : 'font_style padding-important'"
+                class="ml-2">{{ sec.name }}</span>
+            </div>
+          </td>
+        </tr>
+
+      </mat-card>
+    </div>
+    <div class="col-md-10 preformatted" id="pdf-content" #preformattedDiv>
+
+      <div *ngIf="Some_lable">
+        <div class="row">
+          <ng-container *ngFor="let item of transformed_report_list">
+            <ng-container
+              *ngIf="(item.name === 'Average Assets' || item.name == 'Net Interest Income' || item.name == 'Operating profit before credit costs' || item.name == 'NET PROFIT')">
+              <div class="col-md-3 mt-3 cardhover">
+                <mat-card
+                  [ngClass]="pdf_download ? 'equal-height-card pdfdownload' : 'equal-height-card linior_gradiant'">
+                  <div (click)="level_data_api(item.code,item.name)" class="header">
+                    <span>{{ item.name }}</span>
+                  </div>
+                  <mat-card-content class="mt-1">
+                    <div class="content-container">
+                      <span *ngIf="item.business_dict.Amount.length != 0">
+                        <p *ngFor="let value of item.business_dict.Amount; let j = index" class="flex mb-0">
+                          <span *ngIf="j == [item.business_dict.Amount.length - 1]" class="total-text">
+                            <span [ngClass]="{
+                                    'grand-green': item?.business_dict?.Amount[total_index] * -1 >= 0,
+                                    'grand-red ': item?.business_dict?.Amount[total_index] * -1 < 0
+                                  }">{{ item?.business_dict?.Amount[total_index] | number: '1.2-2': 'en-IN' }}</span>
+                          </span>
+                        </p>
+                      </span>
+                      <span *ngIf="item.business_dict.Amount.length == 0" class="mt-2">
+                        <p>
+                          <span class="grand-green">0.00</span>
+                        </p>
+                      </span>
+                      <!-- <img src="assets/circle.svg" class="image" alt="circle-image"> -->
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="All_lable">
+        <div class="row">
+          <ng-container *ngFor="let item of transformed_report_list">
+            <ng-container>
+              <div class="col-md-3 mt-3 cardhover">
+                <mat-card
+                  [ngClass]="pdf_download ? 'equal-height-card pdfdownload' : 'equal-height-card linior_gradiant'">
+                  <div (click)="level_data_api(item.code,item.name)" class="header">
+                    <span>{{ item.name }}</span>
+                  </div>
+                  <mat-card-content class="mt-1">
+                    <div class="content-container">
+                      <span *ngIf="item.business_dict.Amount.length != 0">
+                        <p *ngFor="let value of item.business_dict.Amount; let j = index" class="flex mb-0">
+                          <span *ngIf="j == [item.business_dict.Amount.length - 1]" class="total-text">
+                            <span [ngClass]="{
+                                      'grand-green': item?.business_dict?.Amount[total_index] * -1 >= 0,
+                                      'grand-red ': item?.business_dict?.Amount[total_index] * -1 < 0
+                                    }">{{ item?.business_dict?.Amount[total_index] | number: '1.2-2': 'en-IN' }}</span>
+                          </span>
+                        </p>
+                      </span>
+                      <span *ngIf="item.business_dict.Amount.length == 0" class="mt-2">
+                        <p>
+                          <span class="grand-green">0.00</span>
+                        </p>
+                      </span>
+                      <!-- <img src="assets/circle.svg" class="image" alt="circle-image"> -->
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="mt-2 pt-3 pb-0 lable_name" [ngClass]="pdf_download == true ? 'lable_name_mb' : 'lable_name'">
+        <h4 class="lable_name_dict">{{ (level_dash_name && buzname ? 'NET PROFIT' : level_dash_name) + (level_dash_name
+          && buzname ? ' - ' : '') + (buzname ? buzname : '') }}</h4>
+        <div class="margin_auto para">
+          <h3 *ngIf="roaSearchForm.value.amount" class="mr-2 lable_font_style">Amount In : <span
+              style="color: rgb(67, 193, 186);">{{ roaSearchForm.value.amount.name == 'Actuals' ? 'Crores' :
+              roaSearchForm.value.amount.name}}</span></h3>
+          <div class="mr-2" *ngIf="All_lable && !pdf_download" (click)="level_show('Some_lable')"
+            matTooltip="Show Less"><mat-icon>expand_less</mat-icon></div>
+          <div class="mr-2" *ngIf="Some_lable && !pdf_download" (click)="level_show('All_lable')"
+            matTooltip="Show More"><mat-icon>expand_more</mat-icon></div>
+        </div>
+
+      </div>
+
+      <div class="graph-container">
+        <div class="box alin_center" id="divChart1">
+          <canvas id="myChart1"></canvas>
+        </div>
+      </div>
+
+      <mat-card class="mt-3 pb-2 mb-2">
+        <h4 class="all_heading_names mb-0">{{perticullar_buz == true ? buzname: 'Top Five Business In Percentage' }}
+        </h4>
+        <div class="percentage_div pb-2">
+          <ng-container *ngFor="let item of top6_data;let i=index">
+            <ng-container *ngIf="!pdf_download">
+              <div class="col-md-3 mt-3 max-w">
+                <mat-card>
+                  <div class="para">
+                    <span class="downf">{{ item.label }}</span>
+                  </div>
+                  <mat-card-content class="mt-1">
+                    <!-- Circular Progress Bar -->
+                    <div class="circular-progress-wrapper">
+                      <svg class="circular-progress" viewBox="0 0 36 36">
+                        <path class="circle-bg" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle"
+                          [ngClass]="(i == 0 ? 'circle_red' : (i == 1 ?  'circle_yellow' : ( i == 2 ? 'circle_green' : (i == 3 ? 'circle_violet' : i == 4 ? 'circle_blue' : 'circle_blue'))))"
+                          [attr.stroke-dasharray]="getPercentage(item.amount, item.sort) + ', 100'" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      </svg>
+                      <div class="percentage-text">{{ getPercentage(item.amount, item.sort) | number: '1.2-2': 'en-IN'
+                        }}%</div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="pdf_download">
+              <div class="col-md-3 mt-3 max-w">
+                <mat-card>
+                  <div class="para">
+                    <span class="downf">{{ item.label }}</span>
+                  </div>
+                  <mat-card-content class="mt-1">
+                    <div class="progress-circle">
+                      <div class="circle-background">
+                        <div class="circle-foreground"
+                          [ngStyle]="{'background': 'conic-gradient(' + getProgressColor(i) + ' 0% ' + getPercentagepdf(item.amount, item.sort) + '%, #eee ' + getPercentagepdf(item.amount, item.sort) + '% 100%)'}">
+                          <div class="inner-circle"></div>
+                        </div>
+                      </div>
+                      <div class="percentage-text">
+                        {{ getPercentagepdf(item.amount, item.sort) | number: '1.2-2': 'en-IN' }}%
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </ng-container>
+          </ng-container>
+
+        </div>
+      </mat-card>
+
+      <div class="rowofprogess">
+        <mat-card class="progess_div mt-3">
+          <h4 class="all_heading_names">{{perticullar_buz == true ? buzname: 'Top Five Business' }}</h4>
+          <table [ngClass]="pdf_download ? 'table' : 'table table-striped'">
+            <thead>
+              <tr class="brnone">
+                <th scope="col">Sno</th>
+                <th scope="col"> {{perticullar_buz == true ? 'Particulars' : 'Bussiness'}}</th>
+                <th scope="col" *ngIf="perticullar_buz == true">Year - Month</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="perticullar_buz == false">
+              <tr *ngFor="let datas of top6_data;let i=index">
+                <td>{{i+1}}</td>
+                <td class="downf">{{datas.label}}</td>
+                <td class="downf">{{datas.amount | number: '1.2-2': 'en-IN' }}</td>
+                <td class="middle wigth_t"
+                  matTooltip="{{ ((datas.amount / datas.sort)* 100) |number: '1.2-2': 'en-IN'}}%">
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-background">
+                      <div class="progress-bar-fill" [ngStyle]="{
+                                'width': (getPercentage(datas.amount, datas.sort) | number: '1.0-0') + '%', 
+                                'background-color': getProgressColor(i)
+                              }">
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="perticullar_buz == true">
+              <tr *ngFor="let data of label_amount; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>ABG</td>
+                <td>{{ label_data[i] }}</td>
+                <td>{{ data | number: '1.2-2': 'en-IN' }}</td>
+                <td class="middle wigth_t" matTooltip="{{ ((data / totalamt) * 100) | number: '1.2-2': 'en-IN' }}%">
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-background">
+                      <div class="progress-bar-fill" [ngStyle]="{
+                                'width': (getPercentage(data, totalamt)) + '%', 
+                                'background-color': getProgressColor(i)
+                              }">
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-card>
+        <mat-card class="mt-3" id="divChart">
+          <h4 class="all_heading_names">{{perticullar_buz == true ? buzname: 'Top Five Business' }}</h4>
+          <canvas id="myChart"></canvas>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isAdvancedSearchVisible" class="overlay"></div>
+
+</mat-card>
+
+
+<div *ngIf="roa_runscreen">
+  <!-- <app-roarunscreen></app-roarunscreen> -->
+  <div class="pl-5 pr-5 pt-3" >   
+    <h2 style="font-size: x-large;">ROA RUN </h2>    
+    <form [formGroup]="roarun">
+        <div class="row mb-3">
+            <div class="ml-3 mr-3">
+                <mat-form-field (click)="finyear_dropdown_run()" appearance="outline">
+                    <mat-label>Fin Year</mat-label>
+                    <input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput
+                        [matAutocomplete]="fin_year" >
+                    <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear_run">                      
+                            <mat-option *ngFor="let finyearname of finyearListrun" (click)="to_month_fetch()" [value]="finyearname">
+                                {{finyearname.finyer}} </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline" >
+                    <mat-label>From Month</mat-label>
+                    <mat-select formControlName="frommonth" [disabled]="run_disable">
+                        <mat-option *ngFor="let month of from_month" 
+                        [disabled]="tomonthid < month.id" (click)="to_month_patch()" [value]="month">
+                            {{month.month}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>To Month </mat-label>
+                    <!-- <mat-select formControlName="tomonth" [disabled]="true">
+                        <mat-option *ngFor="let month of from_month" [value]="month">
+                            {{month.month}}
+                        </mat-option>
+                    </mat-select> -->
+                    <input matInput formControlName="tomonth" readonly autocomplete="off">
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Status</mat-label>
+                    <input matInput formControlName="status" [matAutocomplete]="aws_status">
+                    <mat-autocomplete #aws_status="matAutocomplete" [displayWith]="displayStatus">
+                        <mat-option *ngFor="let status of status_list" [value]="status">
+                            {{status.name}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="ml-3 mr-3 mt-3">
+                <button class="btn btn-outline-primary" type="submit" (click)="roa_run_summary(roarun.value)"
+                  style="border-radius:40px; margin-left: 10%;" color="primary"><i class="fa fa-search"
+                    aria-hidden="true"></i></button>
+              </div>             
+              <div class="ml-3 mr-3 mt-2">
+                <button type="button" style="border-radius: 40px;margin-left: 10%;margin-top: 10%;" class="btn btn-outline-primary"
+                  (click)="reset_run()">Reset</button>
+              </div>
+              <div class="ml-3 mr-3 mt-2">
+                <button matTooltip="Trigger" class="btn btn-outline-primary" style="border-radius: 40px;margin-top: 10%;" [disabled]="run_disable"
+                  (click)="roa_run_trigger()">ROA Run</button>
+              </div>
+              <div class="ml-3 mr-3 mt-2">
+                <!-- <mat-icon style="cursor: pointer;">keyboard_backspace</mat-icon> -->
+                <button type="button" style="border-radius: 40px;margin-left: 10%;margin-top: 10%;" class="btn btn-outline-primary"
+                (click)="roa_summary_run()">Back</button>
+            </div>
+              
+
+        </div>
+    </form>
+    <div class="tableFixHead">
+        <table class="table table-bordered" fixed-header id="datatable" >
+            <thead style="    background-color: #00800021; top: 0;position: sticky;">
+                <tr>
+                    <th>S.No</th>
+                    <th>Finyear</th>
+                    <th>From Month</th>
+                    <th>To Month</th>
+                    <th>Date</th>
+                    <th>Employee Name</th>
+                    <th>File Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let roa of summary_data;index as ind">
+                    <td >{{(presentpage-1)*10+ind+1}}</td>
+                    <td>{{roa.finyear}}</td>
+                    <td>{{roa.from_month}}</td>
+                    <td>{{roa.to_month}}</td>
+                    <td>{{roa.date}}</td>
+                    <td>{{roa.created_name}}</td>
+                    <td >{{roa.file_name}}</td>
+                    <td>{{(roa.status == 1 ? "Started" : (roa.status == 2 ? "Processing" : (roa.status == 3 ? "No Data Found" :(roa.status == 4 ? "Success" : "--"))))}}</td>                    
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <p *ngIf="!data_found" style="text-align: center;">Data Not Found ...</p>
+        </div>
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+</div>

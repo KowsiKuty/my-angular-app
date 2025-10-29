@@ -1,0 +1,199 @@
+<div style="margin-left:4%;">
+    <h1 style="font-weight:bold;color:blue;font-family:Times New Roman;font-size:20px">Bucket Summary View</h1>
+</div>
+<div class="container">
+    <form [formGroup]="searchForm">
+        <div class="row">
+            <!-- <div class="col-md-3">
+                <mat-form-field>
+                    <mat-label>Bucket Name</mat-label>
+                    <input type="text" matInput formControlName="frombucket" [matAutocomplete]="fromdata">
+                    <mat-autocomplete #fromdata="matAutocomplete" [displayWith]="frombucketinterface">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of fromBucketList" [value]="d" (focusout)="focusoutdata(d)">{{d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div> -->
+            <div >
+                <mat-form-field class="example-chip-list" appearance="fill" style="width: 600px;">
+                    <mat-label>Bucket Name</mat-label>
+                    <mat-chip-list #chipList aria-label="Fruit selection">
+                      <mat-chip
+                        *ngFor="let e of adddata"
+                        (removed)="remove(e)">
+                        {{e}}
+                       
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                        
+                      </mat-chip>
+                      <input
+                       
+                        #frombtInput
+                        formControlName="frombucket"
+                        [matAutocomplete]="auto"
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        (matChipInputTokenEnd)="add($event)">
+                    </mat-chip-list>
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                      <mat-option *ngFor="let d of fromBucketList " [value]="d" (focusout)="focusoutdata(d)">
+                        {{d.name}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+            </div>
+        </div>
+    </form>
+</div>
+<h2 style="margin-left:2%;">Additions:</h2>
+<div style="margin-left:2%;width:85%;font-size:15px">
+    <div class="table-hover ">
+        <table class="table  table-bordered" >
+            <thead>
+                <tr class="table_header">
+                    <!-- <th>S No.</th>
+                    <th>CR Number</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Invoice Number</th>
+                    <th>Invoice Date</th>
+                    <th>Qty</th>
+                    <th>Invoice value</th>
+                    <th>Asset Value</th> -->
+                    <th>Expand</th>
+                    <th>S No.</th>
+                    <th>Doctype</th>
+                    <th>Bucket Name</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let d of additionData;let i=index">
+                <tr >
+                    <td><button mat-icon-button (click)="getcitydata(d,i)" color="primary" class="btn btn-danger" style="border-radius: 40px;"><mat-icon *ngIf="d.con">expand_less</mat-icon><mat-icon *ngIf="d.con==false">expand_more</mat-icon></button></td>
+                    <td scope="row">{{ (currentpage-1)*pageSize+i+1 }}</td>
+                    <td>{{ d.doctype}}</td>
+                    <td>{{ d.name }}</td>
+                   
+                </tr>
+                <tr *ngIf="d.con">
+                    <td colspan="4">
+                        <table class="table table-bordered">
+                            <thead class="table-header">
+                                <th>S.No</th>
+                                <th>CR Number</th>
+                                <th>Product Name</th>
+                                <th>QTY</th>
+                                <th>Balance QTY</th>
+                               
+                                
+                                <th>Tax Amount</th>
+                                <th>Taxable Amount</th>
+                                <th>Asset Value</th>
+                                <th>Action</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let dta of d['clearing_header'][0]['clearing_details'];let j=index">
+                                    <td class="text-right">{{j+1}}</td>
+                                    <td class="text-right">{{dta['ecfnum']}}</td>
+                                    <td class="text-left">{{dta['productname']}}</td>
+                                    <td class="text-right">{{dta['qty'] |  number:'1.2-2'}}</td>
+                                    <td class="text-right">{{dta['balanceqty'] | number:'1.2-2'}}</td>
+                                    <td class="text-right">{{dta['tottaxamount'] | number:'1.2-2'}}</td>
+                                    <td class="text-right">{{dta['totinvoiceamount'] | number:'1.2-2'}}</td>
+                                   
+                                    <td class="text-right">{{dta['totamount'] | number:'1.2-2'}}</td>
+                                    <td class="text-right"><input type="checkbox" (click)="datachange($event,j,i)"></td>
+                                </tr>
+                                <tr *ngIf="d['clearing_header'][0]['clearing_details'].length==0">
+                                    <td colspan="9">No Records Found..</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+            <!-- <tr *ngIf="additionData.length !=0">
+                <td colspan="7">Total</td>
+                <td>{{sum_add_invoice_value}}</td>
+                <td>{{sum_add_asset_value}}</td>
+            </tr> -->
+
+        </table>
+
+    </div>
+</div>
+<div class="text-center">
+    <form [formGroup]="searchForm">
+        <div class="row">
+            <div class="col-md-3">
+                <mat-form-field>
+                    <mat-label>Select Bucket Name</mat-label>
+                    <input type="text" #todataInput matInput formControlName="tobucket" [matAutocomplete]="todata">
+                    <mat-autocomplete #todata="matAutocomplete" [displayWith]="tobucketinterface" (opened)="autocompletecommodityScroll_tobucket()">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of toBucketList" [value]="d">{{d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="text-center">
+    <button type="button" [disabled]="btndisable" (click)="submitteddata()" class="btn btn-outline-success" style="border-radius: 40px;height: 40px;">Move To Bucket</button>&nbsp;&nbsp;&nbsp;
+    <button type="button" class="btn btn-outline-danger" routerLink="/fa/bucketsummary" style="border-radius: 40px;height: 40px;">Cancel</button>
+
+</div>
+<!-- <h1 style="margin-left:2%">Removals:</h1>
+
+   
+        <table class="table table-bordered  table-hover" style="width:96%;margin-left:2%;font-size:15px">
+            <thead>
+                <tr class="table_header">
+                    <th>S No.</th>
+                    <th>CR Number</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Invoice Number</th>
+                    <th>Invoice Date</th>
+                    <th>Qty</th>
+                    <th>Invoice value</th>
+                    <th>Asset Value</th>
+                    <th>Capitalised Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let d of removalData;let i=index">
+                    <td>{{(i-1)*presentremovepage+i+1}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                    <td>{{d.name}}</td>
+                </tr>
+                <tr *ngIf="removalData.length==0">
+                    <td colspan="10">No Records Found..</td>
+                </tr>
+                <tr *ngIf="removalData.length !=0">
+                    <td colspan="7">Total</td>
+                    <td>{{sum_rem_invoice_value}}</td>
+                    <td>{{sum_rem_asset_value}}</td>
+                    <td>{{sum_rev_cap_value}}</td>
+                </tr>
+                <tr *ngIf="removalData.length !=0">
+                    <td colspan="9"><b>Net Bucket Value</b></td>
+                    <td>{{sum_total_net_value}}</td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <button type="button" class="btn btn-outline-success"
+        style="border-radius:40px;margin-left: 50px;margin-bottom: 30%;" [routerLink]='"/fa/bucketsummary"'><span
+            class="fa fa-arrow-left">  </span>Go Back</button> -->

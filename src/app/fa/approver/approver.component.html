@@ -1,0 +1,848 @@
+<div class="container row col-12" style="font-family: 'Times New Roman', Times, serif;margin-left:2%;margin-top:2%">
+    <mat-radio-group #group="matRadioGroup" [(ngModel)]="currentpv_value" [(value)]="currentpv_value" color="primary"
+        (change)="onValueChange(group.value)">
+        <mat-radio-button *ngIf="is_admin_branch" value="pvserialnoupdate"> Serial No Approver</mat-radio-button>
+        <mat-radio-button value="pvapprover">PV Approver</mat-radio-button>
+    </mat-radio-group>
+</div>
+<div *ngIf="pvserialnoupdate">
+    <h2 style="color: blueviolet;margin-left: 35px;;">PV Serial No Approve</h2>
+    <hr>
+    <form [formGroup]="assetgroupform" (ngSubmit)="finalSubmitted()">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- <td> -->
+                    <mat-form-field style="width: 200px;margin-left: 25px;">
+                        <mat-label>Asset ID Search</mat-label>
+                        <input matInput placeholder="Asset" formControlName="Asset_id" #assetidInput autocomplete="off"
+                            [matAutocomplete]="autoasset">
+                        <mat-autocomplete #autoasset="matAutocomplete" #Asset_id>
+                            <!-- <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let asset of listcomments"
+                                        (focusout)="assetgrps_assetid(asset)" [value]="asset.barcode">
+                                        {{asset.barcode}}
+                                    </mat-option> -->
+                            <!-- </ng-container> -->
+                        </mat-autocomplete>
+                    </mat-form-field>
+                <!-- </td> -->
+            <!-- </div> -->
+            <!-- <div class="col-sm-3">
+        <td>
+            <mat-form-field style="width: 200px;margin-left: 25px;">
+                <mat-label>Asset Edit Search</mat-label>
+                <input matInput placeholder="Asset" formControlName="Asset_edit"  #assetideditInput
+                    autocomplete="off" [matAutocomplete]="autoasset" >
+                    <mat-autocomplete  #autoasset="matAutocomplete" #Asset_id> -->
+            <!-- <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let asset of listcomments"
+                                    (focusout)="assetgrps_assetid(asset)" [value]="asset.barcode">
+                                    {{asset.barcode}}
+                                </mat-option> -->
+            <!-- </ng-container> -->
+            <!-- </mat-autocomplete>
+            </mat-form-field>
+        </td>
+    </div> -->
+            <!-- <div class="col-sm-3">
+        <td>
+            <mat-form-field (click)="asset_category()" style="width: 200px;margin-left: 25px;">
+                <mat-label>Asset Category</mat-label>
+                <input #categoryInput placeholder="Select Asset Category" matInput formControlName="asset_cat"
+                    [matAutocomplete]="categoryAutoComplete">
+                <mat-autocomplete #categoryAutoComplete="matAutocomplete" 
+                    >
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let category of category" [value]="category.subcatname" (focusout)="categoryClick(category)">
+                            {{category.subcatname}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </td>
+    </div> -->
+            <!-- <div class="col-sm-2">
+                <td> -->
+                     <mat-form-field style="width: 200px;margin-left: 25px;"(click)="get_productdatas()">
+                                <mat-label>Product </mat-label>
+                                <input #inputproduct placeholder="Product" matInput  formControlName="product" [matAutocomplete]="products">
+                                <mat-autocomplete #products="matAutocomplete"  [displayWith]="display_prod">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of productlist" [value]="d">
+                                           {{d.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                    </mat-form-field> 
+                <!-- </td>
+            </div> -->
+            <!-- <div class="col-sm-2">
+      <td>
+        <mat-form-field style="width: 200px;margin-left: 25px;">
+            <mat-label>Asset Capdate</mat-label>
+            <input matInput  [matDatepicker]="picker1" assetmakerplaceholder="Start Date" autocomplete="off"
+                formControlName="invoicedate">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+    </td>
+    </div> -->
+            <!-- <div class="col-sm-2">
+                <td> -->
+                    <mat-form-field style="width: 200px;margin-left: 25px;">
+                        <mat-label>Asset Cost</mat-label>
+                        <input matInput placeholder="Asset Cost" formControlName="asset_cost" #assetidInput [step]="0.1"
+                            autocomplete="off" [matAutocomplete]="autoasset">
+                        <mat-autocomplete #autoasset="matAutocomplete" #Asset_id>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                <!-- </td>
+            </div>
+            <div class="col-sm-2">
+                <td> -->
+                    <mat-form-field style="width: 200px;margin-left: 25px;">
+                        <mat-label>CR No</mat-label>
+                        <input matInput placeholder="Asset" formControlName="crno" #assetidInput autocomplete="off">
+
+                    </mat-form-field>
+                <!-- </td>
+            </div>  
+            <div class="col-sm-2">
+                <td> -->
+                    <mat-form-field (click)="getbranchcode()" style="width: 200px;margin-left: 25px;">
+                       <mat-label>Branch</mat-label>
+                       <input #branchInput placeholder="Branch" matInput formControlName="branch_admin"
+                        (keyup)="getbranchcode()" [matAutocomplete]="is_branch">
+                        <mat-autocomplete #is_branch="matAutocomplete" [displayWith]="display_branch" (opened)="autocompletebranchcodeScroll()">
+                            <mat-option *ngFor="let branch of branch_code_list" [value]="branch">
+                             {{branch.code}}-{{branch.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                <!-- </td> 
+            </div>         -->
+            <!-- <div class="col-sm-3">
+        <td>
+
+            <mat-form-field class="example-full-width">
+                <mat-label>Branch</mat-label>
+                <input class="toolbar-search" type="text" matInput autocomplete="off" matInput [matAutocomplete]="checkerbranch" [hidden]="hideBranch" #branchidInput formControlName="branch" style="width:250px">
+                <mat-placeholder>Branch</mat-placeholder>
+                <mat-autocomplete #checkerbranch="matAutocomplete" #branch (opened)="autocompleteScroll_branch()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container>
+                        <mat-option *ngFor="let d of branchdata" [value]="d.name" (focusout)="checker_branchs(d)">
+                            {{d.name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        
+        </td>
+    </div> -->
+            <!-- <div class="col-sm-2"> -->
+                <button mat-mini-fab color="success" matTooltip="Search" aria-label="search icon" (click)="search_one()"
+                    style="margin-left: 25px;background-color: rgb(82, 134, 86);">
+                    <mat-icon>search</mat-icon>
+                </button>
+                <button type="button" (click)="reset_pvserialno()" mat-raised-button color="success"
+                    style="margin-left: 10px;background-color: rgb(82, 134, 86);">Reset</button>
+
+            </div>
+
+
+        </div>
+    </form>
+    <div class="Container" style="margin-left: 2%;" *ngIf="false">
+        <h1 style="font-family: 'Times New Roman', Times, serif;color: blue;font-size: 15px;">FA-PV File Download And
+            Upload</h1>
+        <table class="table table-bordered">
+            <tr>
+                <th>S.No</th>
+                <th>FA-PV File Prepare</th>
+                <th>FA-PV File Download</th>
+                <th>FA-PV File Select</th>
+                <th>FA-PV FIle Upload</th>
+            </tr>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <button type="button" class="btn btn-outline-primary" style="border-radius: 30px;"
+                            (click)="fapvfileprepare()">FA-PV File Prepare
+                            <mat-icon *ngIf="first"><mat-spinner color="accent" diameter="20">
+                                </mat-spinner></mat-icon>
+                            <mat-icon *ngIf="!first" inline=true style="color:black">download</mat-icon>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-primary" style="border-radius: 30px;"
+                            (click)="fapvfiledownload()">FA-PV File Download</button>
+                    </td>
+                    <td>
+                        <input type="file" accept="xlsx" (change)="fapvfileget($event)">
+                    </td>
+                    <td>
+                        <button type="fapvfileafterupload()" class="btn btn-outline-primary"
+                            style="border-radius: 30px;" (click)="fapvfileafterupload()">Upload</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table_header">
+                <tr>
+                    <th>S.No</th>
+                    <th>Asset ID</th>
+                    <th>Product Name</th>
+                    <th>Branch Code</th>
+                    <th>Branch Name</th>
+                    <th>Asset Cost</th>
+                    <th>Asset Value</th>
+                    <th>CR No.</th>
+                    <th>Asset Make</th>
+                    <th>Asset Model</th>
+
+                    <th>Previous Serial No</th>
+                    <th>New Serial No</th>
+                    <th>Action
+                        <mat-checkbox type="checkbox" [(ngModel)]="selectall_chbx"
+                            (change)="oncheckboxselectAll()"></mat-checkbox>
+
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of listcomments; index as i">
+                    <td>{{(presentpagebuk-1)*selectPage + i+1}}</td>
+                    <td>{{data.barcode}}</td>
+                    <td>{{data.product_id}}</td>
+                    <td>{{data?.branch_id?.code}}</td>
+                    <td>{{data?.branch_id?.name}}</td>
+                    <td>{{data?.assetdetails_cost}}</td>
+                    <td>{{data?.assetdetails_value}}</td>
+                    <td>{{data?.ecfnum}}</td>
+                    <td>{{data?.make}}</td>
+                    <td>{{data?.model}}</td>
+                    <td>{{data?.oldserialno}}</td>
+                    <td>{{data?.newserialno}}</td>
+                    <td style="align-items:center">
+                        <mat-checkbox type="checkbox" [checked]="data?.enb" [(ngModel)]="data.enb"
+                            (change)="onCheckboxChange($event,data,i)"></mat-checkbox>
+                    </td>
+                </tr>
+                <tr *ngIf="listcomments?.length !=0">
+                    <td colspan="2">
+                        Count:{{this.serial_count}} &nbsp;&nbsp;
+
+                    </td>
+                    <td colspan="2">
+                        <mat-form-field>
+                            <mat-select [(ngModel)]="selectPage" (selectionChange)="paginationChange($event)"
+                                [(value)]="selectPage">
+                                <mat-option value="10" ngDefaultControl>10</mat-option>
+                                <mat-option value="20">20</mat-option>
+                                <mat-option value="30">30</mat-option>
+                                <mat-option value="40">40</mat-option>
+                                <mat-option value="50">50</mat-option>
+                                <mat-option value="100">100</mat-option>
+                                <mat-option value="200">200</mat-option>
+                                <mat-option value="250">250</mat-option>
+
+
+                            </mat-select>
+                            <mat-placeholder>Select Pagination Count</mat-placeholder>
+                        </mat-form-field>
+
+                    </td>
+                    <td colspan="9">
+                        <div style="text-align:right">
+                            <button mat-icon-button [disabled]="has_previousbuk === false" color="primary"
+                                (click)="previousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{presentpagebuk}}
+                            <button mat-icon-button [disabled]="has_nextbuk === false" color="primary"
+                                (click)="nextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="listcomments?.length==0">
+                    <td colspan="12">No Records Found..</td>
+                </tr>
+                <tr>
+                    <td colspan="13">
+                        <div class="row col-12" style="text-align: center;">
+                            <button type="button" class="btn btn-success" (click)="approvedata()">Approve</button>
+                            <button type="button" class="btn btn-danger" style="margin-left: 50px;"
+                                (click)="rejectdata()">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div *ngIf="pvapprover">
+    <h2 style="color: blueviolet;margin-left: 35px;;">PV-Approver</h2>
+    <hr>
+    <form [formGroup]="assetgroupform" (ngSubmit)="finalSubmitted()">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- <td> -->
+                    <mat-form-field style="width: 200px;margin-left: 25px;">
+                        <mat-label>Asset ID Search</mat-label>
+                        <input matInput placeholder="Asset" formControlName="Asset_id" #assetidInput autocomplete="off"
+                            [matAutocomplete]="autoasset">
+                        <mat-autocomplete #autoasset="matAutocomplete" #Asset_id>
+                            <!-- <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let asset of listcomments"
+                                        (focusout)="assetgrps_assetid(asset)" [value]="asset.barcode">
+                                        {{asset.barcode}}
+                                    </mat-option> -->
+                            <!-- </ng-container> -->
+                        </mat-autocomplete>
+                    </mat-form-field>
+                <!-- </td>
+            </div> -->
+            <!-- <div class="col-sm-3">
+        <td>
+            <mat-form-field style="width: 200px;margin-left: 25px;">
+                <mat-label>Asset Edit Search</mat-label>
+                <input matInput placeholder="Asset" formControlName="Asset_edit"  #assetideditInput
+                    autocomplete="off" [matAutocomplete]="autoasset" >
+                    <mat-autocomplete  #autoasset="matAutocomplete" #Asset_id> -->
+            <!-- <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let asset of listcomments"
+                                    (focusout)="assetgrps_assetid(asset)" [value]="asset.barcode">
+                                    {{asset.barcode}}
+                                </mat-option> -->
+            <!-- </ng-container> -->
+            <!-- </mat-autocomplete>
+            </mat-form-field>
+        </td>
+    </div> -->
+            <!-- <div class="col-sm-3">
+        <td>
+            <mat-form-field (click)="asset_category()" style="width: 200px;margin-left: 25px;">
+                <mat-label>Asset Category</mat-label>
+                <input #categoryInput placeholder="Select Asset Category" matInput formControlName="asset_cat"
+                    [matAutocomplete]="categoryAutoComplete">
+                <mat-autocomplete #categoryAutoComplete="matAutocomplete" 
+                    >
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let category of category" [value]="category.subcatname" (focusout)="categoryClick(category)">
+                            {{category.subcatname}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </td>
+    </div> -->
+            <!-- <div class="col-sm-2">
+                <td> -->
+                    <!-- <mat-form-field style="width: 200px;margin-left: 25px;">
+                        <mat-label>Product Search</mat-label>
+                        <input #inputproduct placeholder="Select Asset Category" matInput formControlName="product"
+                            [matAutocomplete]="products">
+                        <mat-autocomplete #products="matAutocomplete">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let d of product" [value]="d.name" (focusout)="product123(d)">
+                                    {{d.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field> -->
+
+                    <mat-form-field style="width: 200px;margin-left: 25px;"(click)="get_productdatas()">
+                                <mat-label>Product </mat-label>
+                                <input #inputproduct placeholder="Product" matInput  formControlName="product" [matAutocomplete]="products">
+                                <mat-autocomplete #products="matAutocomplete"  [displayWith]="display_prod">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of productlist" [value]="d">
+                                           {{d.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                    </mat-form-field> 
+                <!-- </td>
+            </div> -->
+            <!-- <div class="col-sm-2">
+      <td>
+        <mat-form-field style="width: 200px;margin-left: 25px;">
+            <mat-label>Asset Capdate</mat-label>
+            <input matInput  [matDatepicker]="picker1" assetmakerplaceholder="Start Date" autocomplete="off"
+                formControlName="invoicedate">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+    </td>
+    </div> -->
+            <!-- <div class="col-sm-2">
+                <td> -->
+                    <mat-form-field style="width: 200px;margin-left: 25px;">
+                        <mat-label>Asset Cost</mat-label>
+                        <input matInput placeholder="Asset Cost" formControlName="asset_cost" #assetidInput [step]="0.1"
+                            autocomplete="off" [matAutocomplete]="autoasset">
+                        <mat-autocomplete #autoasset="matAutocomplete" #Asset_id>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                <!-- </td>
+            </div>
+            <div class="col-sm-2">
+                <td> -->
+                    <mat-form-field style="width: 200px;margin-left: 25px;">
+                        <mat-label>CR No.</mat-label>
+                        <input matInput placeholder="Asset" formControlName="crno" #assetidInput autocomplete="off">
+
+                    </mat-form-field>
+                <!-- </td>
+            </div>
+              <div class="col-sm-2" *ngIf="is_admin_branch">
+                <td> -->
+        <mat-form-field *ngIf="is_admin_branch" (click)="getbranchcode()" style="width: 200px;margin-left: 25px;">
+            <mat-label>Branch</mat-label>
+            <input #branchInput placeholder="Branch" matInput formControlName="branch_admin"
+                (keyup)="getbranchcode()" [matAutocomplete]="is_branch">
+            <mat-autocomplete #is_branch="matAutocomplete" [displayWith]="display_branch"
+                    (opened)="autocompletebranchcodeScroll()">
+                <mat-option *ngFor="let branch of branch_code_list" [value]="branch">
+                    {{branch.code}}-{{branch.name}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <!-- </td> 
+    </div> -->
+            <!-- <div class="col-sm-3">
+        <td>
+
+            <mat-form-field class="example-full-width">
+                <mat-label>Branch</mat-label>
+                <input class="toolbar-search" type="text" matInput autocomplete="off" matInput [matAutocomplete]="checkerbranch" [hidden]="hideBranch" #branchidInput formControlName="branch" style="width:250px">
+                <mat-placeholder>Branch</mat-placeholder>
+                <mat-autocomplete #checkerbranch="matAutocomplete" #branch (opened)="autocompleteScroll_branch()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container>
+                        <mat-option *ngFor="let d of branchdata" [value]="d.name" (focusout)="checker_branchs(d)">
+                            {{d.name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        
+        </td>
+    </div> -->
+            <!-- <div class="col-sm-2"> -->
+                <button mat-mini-fab color="success" matTooltip="Search" aria-label="search icon" (click)="searchData()"
+                    style="margin-left: 25px;background-color: rgb(82, 134, 86);">
+                    <mat-icon>search</mat-icon>
+                </button>
+                <button type="button" (click)="resetPV()" mat-raised-button color="success"
+                    style="margin-left: 10px;background-color: rgb(82, 134, 86);">Reset</button>
+
+            </div>
+
+
+        </div>
+        <!-- <div class="row d-flex justify-content-end">
+            <div class="col-sm-4 d-flex justify-content-end">
+                <button mat-raised-button type="button" class="btn btn-primary" color="primary"
+                    matTooltip="Total Branch Download" (click)="allBranchDownload_t()"
+                    style="border-radius: 40px;height: 40px;">
+                    Prepare Excel
+                    <mat-icon *ngIf="second_t">
+                        <mat-spinner color="accent" diameter="20"></mat-spinner>
+                    </mat-icon>
+                    <mat-icon *ngIf="!second_t" inline="true" style="color:black">download</mat-icon>
+                </button>
+
+                <button mat-raised-button type="button" class="btn btn-primary" color="primary"
+                    matTooltip="Total Branch Download" (click)="allDownload_d()"
+                    style="border-radius: 40px;height: 40px; margin-left: 20px;" [disabled]='download_d==false'>
+                    Excel Download
+                    <mat-icon *ngIf="second_d">
+                        <mat-spinner color="accent" diameter="20"></mat-spinner>
+                    </mat-icon>
+                    <mat-icon *ngIf="!second_d" inline="true" style="color:black">download</mat-icon>
+                </button>
+            </div>
+        </div> -->
+
+
+    </form>
+    <!-- <form [formGroup]="assetgroupform" (ngSubmit)="finalSubmitted()">
+    <div class="row">
+        <div class="col-sm-4">
+             <td>
+
+            <mat-form-field class="example-full-width" style="margin-left: 25px;">
+                <mat-label>Branch</mat-label>
+                <input class="toolbar-search" type="text" matInput autocomplete="off" matInput [matAutocomplete]="checkerbranch" [readonly]="flagSearch" #branchidInput formControlName="branch" style="width:250px">
+                <mat-placeholder>Branch</mat-placeholder>
+                <mat-autocomplete #checkerbranch="matAutocomplete" #branch (opened)="autocompleteScroll_branch()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container>
+                        <mat-option *ngFor="let d of branchdata" [value]="d.name" (focusout)="checker_branchs(d)">
+                            {{d.name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        
+        </td>
+        </div>
+        <div class="col-sm-4">
+            <td>
+
+           <mat-form-field class="example-full-width" style="margin-left: 25px;">
+               <mat-label>Branch DO</mat-label>
+               <input class="toolbar-search" type="text" matInput autocomplete="off" [readonly]='doBranch' matInput [matAutocomplete]="checkerbranchdo" #branchdoidInput formControlName="branch_do" style="width:250px">
+               <mat-placeholder>Branch DO</mat-placeholder>
+               <mat-autocomplete #checkerbranchdo="matAutocomplete" #branch_do (opened)="autocompleteScroll_branchdo()">
+                   <mat-option *ngIf="isLoading">Loading..</mat-option>
+                   <ng-container>
+                       <mat-option *ngFor="let d of branchdata_do" [value]="d.name" (focusout)="checker_branchs_do(d)">
+                           {{d.name}}
+                       </mat-option>
+                   </ng-container>
+               </mat-autocomplete>
+           </mat-form-field>
+       
+       </td>
+       </div>
+        <div class="col-sm-2">
+                <button
+                  mat-fab 
+                  color="success" matTooltip="Search" [hidden]="searchFlag"
+                  aria-label="search icon" (click)="search()"
+                >
+                
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <div class="col-sm-2">   
+                <button
+                  mat-fab
+                  color="success" matTooltip="Go Back"
+                  aria-label="search icon" [hidden]="goBack_new" (click)="goBack()"
+                >
+                <mat-icon>arrow_back</mat-icon>
+                </button>
+              </div>
+            </div>
+            </form> -->
+    <hr>
+    <form [formGroup]="assetsave" (ngSubmit)="savesub()">
+        <!-- <div class="row"> 
+    <div class="col-sm-3">
+    <h2 style="color: blueviolet;margin-left: 35px;;">Summary Report</h2> 
+    </div>
+    <div class="col-sm-1">
+        <button mat-mini-fab aria-label="Download" matTooltip="Download" color="warn" (click)="createBranchXLS()">
+            <mat-icon>arrow_downward</mat-icon>
+          </button>
+    </div>
+    <div class="col-sm-4">
+    <button mat-raised-button type="button" class="btn btn-primary" color="primary" matTooltip="Total Branch Download"
+    (click)="allBranchDownload()"  style="border-radius: 40px;height: 40px;" [hidden] = 'role_download'>
+        Upload
+            <mat-icon *ngIf="first"><mat-spinner color="accent" diameter="20">
+            </mat-spinner></mat-icon>
+            <mat-icon *ngIf="!first" inline=true style="color:black">download</mat-icon>
+      </button>
+      <button mat-raised-button type="button" class="btn btn-primary" color="primary" matTooltip="Total Branch Download"
+    (click)="allDownload()"  style="border-radius: 40px;height: 40px;margin-left: 20px;" [hidden] = 'download==false'>
+        Download
+            <mat-icon *ngIf="second"><mat-spinner color="accent" diameter="20">
+            </mat-spinner></mat-icon>
+            <mat-icon *ngIf="!second" inline=true style="color:black">download</mat-icon>
+      </button>
+    </div>
+    <div class="col-sm-4">
+        <button mat-raised-button type="button" class="btn btn-primary" color="primary" matTooltip="Total Branch Download"
+        (click)="allBranchDownload_t()"  style="border-radius: 40px;height: 40px;">
+            Prepare Excel
+                <mat-icon *ngIf="second_t"><mat-spinner color="accent" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!second_t" inline=true style="color:black">download</mat-icon>
+          </button>
+          <button mat-raised-button type="button" class="btn btn-primary" color="primary" matTooltip="Total Branch Download"
+        (click)="allDownload_d()"  style="border-radius: 40px;height: 40px;margin-left: 20px;" [disabled] = 'download_d==false'>
+            Excel Download
+                <mat-icon *ngIf="second_d"><mat-spinner color="accent" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!second_d" inline=true style="color:black">download</mat-icon>
+          </button>
+        </div>
+</div> -->
+        <!-- <div class="container" style="margin-left: 25px;width: max-content;">
+    <table class="table table-bordered ">
+        <thead class="table_header" style="width:100%;">
+            <tr *ngFor="let row of head" [ngClass]="row.is_Checked ? 'changeColor':''">
+                <th>{{ row.s_no }}</th>
+                <th>{{ row.branch_code }}</th>
+                <th>{{ row.branch_name }}</th>
+                <th>{{ row.pv_done }}</th>
+                <th>{{ row.pv_date }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr  *ngFor="let assetcat of listcomments1; index as listIndex"
+            [ngClass]="assetcat.is_Checked ? 'changeColor':''">
+            <th style="font-weight: bold;">1</th>
+      
+            <td>{{ assetcat.branch_code}}</td>
+            <td>{{ assetcat.branch_name}}</td>
+            <td>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>None</mat-label>
+                    <mat-select formControlName="pv_done">
+                      <mat-option *ngFor="let stat of pv_done" [value]="stat.value" (click)="save(assetcat,listIndex)">
+                        {{stat.viewValue}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+            </td>
+            <td>
+                Maker pending: {{assetcat.maker_date}}<br>
+                Checker pending: {{assetcat.checker_date}}<br>
+                Completed: {{assetcat.completed_date}}
+            </td>
+            </tr>
+            <tr *ngIf="listcomments1 ?.length == 0">
+                <td colspan="17">
+                    No records
+                </td>
+            </tr>
+        </tbody>
+        </table>
+        </div> -->
+        <div class="row">
+            <div class="col-sm-4">
+                <h2 style="color: blueviolet;margin-left: 35px;;">Detailed Report</h2>
+            </div>
+            <!-- <div class="col-sm-4" *ngIf="flag==true">
+            <mat-form-field appearance="fill">
+                <mat-label>Branch DO</mat-label>
+                <mat-select>
+                  <mat-option *ngFor="let d of branchDO" [value]="d.branch_name" (focusout)="checker_branchdo_filter(d)">
+                    {{d.branch_name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div> -->
+            <!-- <div class="col-sm-4"> -->
+                <!-- <button mat-mini-fab aria-label="Download" matTooltip="Download" color="warn" (click)="createFullXLS()">
+                    <mat-icon>arrow_downward</mat-icon>
+                </button> -->
+            <!-- </div> -->
+        </div>
+        <div class="container-f" style="margin-left: 25px;">
+            <div class="table-responsive">
+                <table class="table table-bordered ">
+                    <thead class="table_header">
+                        <tr *ngFor="let row1 of head1">
+                            <th>{{ row1.s_no }}</th>
+                            <th>{{ row1.asset_id }}</th>
+                            <th>{{ row1.product_name }}</th>
+                            <th>{{ row1.branch_code }}</th>
+                            <th>{{ row1.branch_name }}</th>
+                            <th>{{row1.istransfer}}</th>
+                            <th>{{row1.tran_branch}}</th>
+                            <th>{{ row1.asset_tag }}</th>
+                            <th>{{ row1.make }}</th>
+                            <th>{{row1.model}}</th>
+                            <th>{{row1.asset_spec}}</th>
+                            <th>{{ row1.serial_no }}</th>
+                            <th>{{ row1.cr_number }}</th>
+                            <!-- <th>{{ row1.kvb_asset_id }}</th> -->
+                            <th>{{ row1.condition }}</th>
+                            <th>{{row1.assetusedemp}}
+                            <th>{{ row1.status }}</th>
+                            <th>{{ row1.remarks }}</th>
+                            <th>{{row1.document}}</th>
+                            <!-- <th>{{ row1.asset_tag1 }}</th>
+                   <th>{{ row1.make1 }}</th>
+                   <th>{{ row1.serial_no1 }}</th>
+                   <th>{{ row1.condition1 }}</th> -->
+                           <th>
+  Action
+  <mat-checkbox [(ngModel)]="selectAllChecked"
+                (change)="oncheckboxselectAlls($event)"></mat-checkbox>
+</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let assetcat_full of listcomments; index as listIndex"
+                            [ngClass]="assetcat_full.is_Checked ? 'changeColor':''">
+                            <th scope="row">{{ (presentpagebuk-1)*pageSize+listIndex+1 }}</th>
+                            <td>{{ assetcat_full?.barcode }}</td>
+                            <td>{{ assetcat_full?.product_name}}</td>
+                            <td>{{ assetcat_full?.branch_code}}</td>
+                            <td>{{ assetcat_full?.branch_name}}</td>
+                            <td>{{assetcat_full?.is_asset_tfr }}</td>
+                            <td>{{assetcat_full?.asset_tfr_name }}</td>
+                            <td>{{ assetcat_full?.asset_tag }}</td>
+                            <td>{{ assetcat_full?.make }}</td>
+                            <td>{{assetcat_full?.model}}</td>
+                            <td>{{assetcat_full?.product_spec}}</td>
+                            <td>{{ assetcat_full?.serial_no }}</td>
+                            <td>{{ assetcat_full?.cr_number }}</td>
+                            <!-- <td>{{ assetcat_full?.kvb_asset_id }}</td> -->
+                            <td>{{ assetcat_full?.condition }}</td>
+                            <td>{{assetcat_full?.asset_ownername}}</td>
+                            <td>{{ assetcat_full?.status }}</td>
+                            <td>{{ assetcat_full?.remarks }}</td>
+                            <td>
+  <i class="material-icons"
+     matTooltip="Document"
+     data-toggle="modal"
+     data-target="#exampleModal1"
+    (click)="assetcat_full?.documents_data === '' ? '' : documents(assetcat_full?.documents_data)"
+   [ngStyle]="{color: assetcat_full?.documents_data == '' ? 'gray' : 'green',
+      cursor: assetcat_full?.documents_data == '' ? 'not-allowed' : 'pointer',
+      'margin-left': '10%'}">
+    description
+  </i>
+</td>
+                            <!-- <td>{{ assetcat_full.asset_tag }}</td>
+                        <td>{{ assetcat_full.make }}</td>
+                        <td>{{ assetcat_full.serial_no }}</td>
+                        <td>{{ assetcat_full.condition }}</td> -->
+                          <td>
+
+  <mat-checkbox [checked]="selectedItems.has(assetcat_full?.id)"
+                (change)="onCheckboxChanges($event,assetcat_full, listIndex)">
+  </mat-checkbox>
+</td>
+
+                        <tr *ngIf="listcomments?.length !=0">
+                            <td colspan="2">
+                                Count:{{this.serial_counts}} &nbsp;&nbsp;
+
+                            </td>
+                            <td colspan="2">
+                                <mat-form-field>
+                                    <mat-select [(ngModel)]="selectPages" (selectionChange)="paginationChangePV($event)"
+                                        [(value)]="selectPages">
+                                        <mat-option value="10" ngDefaultControl>10</mat-option>
+                                        <mat-option value="20">20</mat-option>
+                                        <mat-option value="30">30</mat-option>
+                                        <mat-option value="40">40</mat-option>
+                                        <mat-option value="50">50</mat-option>
+                                        <mat-option value="100">100</mat-option>
+                                        <mat-option value="200">200</mat-option>
+                                        <mat-option value="250">250</mat-option>
+
+
+                                    </mat-select>
+                                    <mat-placeholder>Select Pagination Count</mat-placeholder>
+                                </mat-form-field>
+
+                            </td>
+                            <td colspan="18">
+                                <div style="text-align:right">
+                                    <button mat-icon-button [disabled]="has_previousbukPV === false" color="primary"
+                                        (click)="previousClickPV()">
+                                        <mat-icon>arrow_back</mat-icon>
+                                    </button> {{presentpagebukPV}}
+                                    <button mat-icon-button [disabled]="has_nextbukPV === false" color="primary"
+                                        (click)="nextClickPV()">
+                                        <mat-icon>arrow_forward</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="listcomments?.length == 0">
+                            <td colspan="14">
+                                No records
+                            </td>
+                        </tr>
+                         <tr>
+                    <td colspan="18">
+                        <div class="row col-12" style="text-align: center;">
+                            <button type="button" class="btn btn-success" (click)="markedYes()">Approve</button>
+                            <button type="button" class="btn btn-danger" style="margin-left: 50px;"
+                                (click)="markedNO()">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+    <!-- <div class="row">
+        <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="has_previousbuk === false" color="primary"
+                        (click)=" bukpreviousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{presentpagebuk}}
+                    <button mat-icon-button [disabled]="has_nextbuk === false" color="primary" (click)=" buknextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+
+                    </div>
+                </div> -->
+</div>
+
+<ngx-spinner bdOpacity=0.9 bdColor="rgba(51,51,51,0.8)" size="default" color="#fff" type="ball-scale-multiple"
+    [fullScreen]="false">
+    <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+<br>
+<br>
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 700px;">
+            <div class="modal-header" style="width: 700px; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: left; font-size: large;"><b>Document View</b></h5>
+                <button type="button" class="close" data-dismiss="modal" #closepopup aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tr style="background-color: #00800021">
+                        <th>S.No</th>
+                        <th>File Name</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr *ngFor="let document of document_list;let i=index">
+                        <td>{{i + 1 }}</td>
+                        <td>{{document.file_name}}</td>
+                        <td>
+                            <button type="button" mat-icon-button matTooltip="Download" class="iconbutton"
+                                color="primary" (click)="downloadfiledocument(document)"
+                                style="border-radius:40px;">
+                                <mat-icon class="enabled_icon">download</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

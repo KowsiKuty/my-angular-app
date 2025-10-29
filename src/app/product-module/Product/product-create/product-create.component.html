@@ -1,0 +1,302 @@
+<div class="container">
+    <mat-card class="mt-2 mb-2">
+        <h2>Product Creation</h2>
+
+        <div class="row">
+
+
+
+
+
+            <div class="col-sm-8 col-md-8 col-lg-8">
+                <form [formGroup]="ProductForm">
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-form-field>
+                                    <mat-label>Name</mat-label>
+                                    <input type="text" matInput autocomplete="off" formControlName="name">
+                                </mat-form-field>
+                            </td>
+                            <td>
+
+
+                                <mat-form-field class="ml-5">
+                                    <mat-label>Category</mat-label>
+                                    <input #catInput type="text" matInput
+                                        (keyup)="catDD(this.ProductForm.value.category_id)"
+                                        formControlName="category_id" [matAutocomplete]="cat">
+                                    <mat-autocomplete #cat="matAutocomplete" [displayWith]="displayFncat">
+                                        <mat-option *ngFor="let cat of productCreateObjects.categoryList" [value]="cat">
+                                            {{cat.name}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+
+
+                            </td>
+
+                            <td>
+
+
+                                <mat-form-field class="ml-5">
+                                    <mat-label>SubCategory</mat-label>
+                                    <input #subcatInput type="text" matInput
+                                        (keyup)="subcatDD(this.ProductForm.value.subcategory_id, this.ProductForm.value.category_id?.id)"
+                                        formControlName="subcategory_id" [matAutocomplete]="subcat">
+                                    <mat-autocomplete #subcat="matAutocomplete" [displayWith]="displayFnsubcat">
+                                        <mat-option *ngFor="let sub of productCreateObjects.subcategoryList"
+                                            [value]="sub">
+                                            {{sub.name}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+
+
+                            </td>
+
+                        <tr>
+                            <td colspan="4">
+
+                                <mat-form-field id="longInput">
+                                    <mat-label>Details</mat-label>
+                                    <textarea matInput autocomplete="off" placeholder="Details"
+                                        formControlName="details">
+                                    </textarea>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+
+                    </table>
+                </form>
+                <div>
+                    <h2>Additional Info</h2>
+                <small>Note:
+                    For Additional Information please fill 'Label field' and 'Type of field' above (eg: Date field, Text
+                    field,
+                    Number field)
+                </small> <br>
+
+                <form [formGroup]="OptionalFields">
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-form-field class="ml-4">
+                                    <mat-label>Label</mat-label>
+                                    <input matInput formControlName="name" type="text" #NameOfText>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="ml-4">
+                                    <mat-label>Type Of Field</mat-label>
+                                    <mat-select formControlName="type" placeholder="Choose">
+                                        <mat-option *ngFor="let boolean of DataDropDown" title=" {{boolean.text}}"
+                                            [value]="boolean.type">
+                                            {{boolean.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                            <td> <button class="btn btn-light ml-4" id="buttonsWhite"
+                                    (click)="SelectedCreateFormData()">Add</button>
+                            </td>
+                        </tr>
+
+                    </table>
+
+
+                </form>
+
+
+
+
+                <form [formGroup]="additional_info">
+                    <div *ngFor="let control of SelectedDataJson" class="row ml-2">
+
+                        <div class="col" *ngIf="[ 'text', 'number', 'date'].includes(control.type)">
+                            <mat-form-field>
+                                <mat-label *ngIf="control.label !== ''">{{ control.label }}</mat-label>
+                                <input matInput [type]="control.type" [formControlName]="control.name"
+                                    value="control.value">
+                            </mat-form-field>
+                            <mat-icon (click)="removecontrol(control.name)">close</mat-icon>
+
+                        </div>
+
+                        <div class="col" *ngIf="control.type == 'textarea' ">
+
+                            <!-- <mat-label *ngIf="control.label !== ''">{{ control.label }}</mat-label>
+                            <textarea [formControlName]="control.name" cols="10" rows="10"></textarea> -->
+                            <mat-form-field>
+                                <mat-label *ngIf="control.label !== ''">{{ control.label }}</mat-label>
+                                <textarea matInput [formControlName]="control.name"></textarea>
+                            </mat-form-field>
+
+
+                            <!-- <div class="col"> -->
+                            <mat-icon (click)="removecontrol(control.name)">close</mat-icon>
+                            <!-- </div> -->
+                        </div>
+
+                    </div>
+
+                </form>
+
+
+
+
+
+                <button id="buttonsSubmit" class="btn btn-light" (click)="SubmitFinalDataProduct()"> Submit</button>
+
+                <button id="buttonsWhite" class="btn btn-light" (click)="ProductCancel()"> Cancel</button>
+
+                </div>
+            </div>
+
+            
+
+
+
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <!-- <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <label class="toggles" for="fileInput">
+                                <img [src]="jpgUrls ? jpgUrls : '' ">
+                                <div class="textshow"><small>Choose Product Image</small></div>
+                                <div class="background"></div>
+                            </label>
+                            <br />
+                            <input id="fileInput" type='file' (change)="onFileSelected($event)"> 
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <small *ngIf="jpgUrls" (click)="deleteFile()" id="hyperlink">Remove</small>
+                        </div>
+
+                    </div> -->
+
+                 
+                    <!-- <label class="toggles" for="fileInput">
+                        <img [src]="jpgUrls ? jpgUrls : '' ">
+                        <div class="card-img-top textshow"><small>Choose Product Image</small></div>
+                        <div class="background"></div>
+                    </label> -->
+
+                    <img [src]="jpgUrls" width="200" height="200">
+                    <!-- <span>Something else</span> -->
+                    <input #fileInpfileInputValueut id="fileInput" type='file' (change)="onFileSelected($event)">
+                     <br>
+                    <span ><label id="hyperlink" for="fileInput"><small>Choose Files</small></label></span> 
+                    <span *ngIf="jpgUrls" > / <small (click)="deleteFile()" id="hyperlink">Remove</small></span>
+                
+
+
+                <!-- <label class="toggles" for="fileInput">
+                                <img [src]="jpgUrls ? jpgUrls : '' ">
+                                <div class="textshow"><small>Choose Product Image</small></div>
+                                <div class="background"></div>
+                            </label> 
+                            <input id="fileInput" type='file' (change)="onFileSelected($event)"> 
+                            <small *ngIf="jpgUrls" (click)="deleteFile()" id="hyperlink">Remove</small> -->
+
+
+
+
+
+            </div>
+            <!-- </div> -->
+
+
+
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                
+            </div>
+        </div>
+
+    </mat-card>
+</div>
+
+<!-- <pre>
+    {{additional_info?.value | json}}
+</pre> -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- <div class="ml-2">
+            <div style="vertical-align: center;">Thumbnail: </div>
+            <div class="input-group mb-3" id="inputCMTFile01">
+                <div class="custom-file">
+                    <input type="file" (change)="onFileSelected($event)" multiple class="custom-file-input"
+                        id="inputGroupFile01">
+                    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                </div>
+            </div>
+
+
+            <div *ngIf="Documentfilearray?.length > 0">
+                <p> Attachments:</p>
+                <div style="display:inline" *ngFor="let files of Documentfilearray; let indexfile = index">
+
+                    <div class="btn-group mr-2 mb-2" role="group" aria-label="First group">
+                        <button style="font-size:14px;border-top-left-radius: 40px;border-bottom-left-radius: 40px;"
+                            type="button" class="btn btncolor" (click)="filepreview(files)" data-toggle="modal"
+                            data-target="#my-modalpreview">{{indexfile+1}}.{{files?.name}}</button>
+                        <button style="border-top-right-radius: 40px;border-bottom-right-radius: 40px;" type="button"
+                            class="btn btncolor" (click)="deleteInlineFile(indexfile, '')">X</button>
+                    </div>
+
+                </div>
+
+                <div *ngIf="showimageHeaderPreview" id="my-modalpreview" class="modal fade"
+                    aria-labelledby="my-modalLabel" aria-hidden="true" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div class="modal-body">
+                                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="showimageHeaderPreviewPDF" id="my-modalpreview" class="modal fade"
+                    aria-labelledby="my-modalLabel" aria-hidden="true" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background:#bce6ed;">
+                                <h2 class="modal-title">PDF View</h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <pdf-viewer [src]="pdfurl" [render-text]="true" [original-size]="false"
+                                style="display: block;width: 500px; height: 800px;"></pdf-viewer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>  -->
+
+
+
+
+<!-- <div style="vertical-align: center;">Thumbnail: </div>
+            <div class="input-group mb-3" id="inputCMTFile01">
+                <div class="custom-file">
+                    <input type="file" (change)="onFileSelected($event)" multiple class="custom-file-input"
+                        id="inputGroupFile01">
+                    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                </div>
+            </div>
+                    <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;"> -->

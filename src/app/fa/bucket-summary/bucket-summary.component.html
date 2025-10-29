@@ -1,0 +1,415 @@
+<div style="margin-left: 2%;">
+    <mat-tab-group #tabref  (selectedTabChange)="invoiceBtn(tabref.selectedIndex)" style="font-weight: bold;font-size: 25px;font-family: Georgia, 'Times New Roman', Times, serif;width: auto;"  mat-align-tabs="start">
+        <mat-tab label="Bucket Summary">
+            
+        </mat-tab>
+        <mat-tab label="Bucket History Maintain" disabled></mat-tab>
+    </mat-tab-group>
+</div>
+<div *ngIf="first">
+        <div>
+            <h1 style="font-weight:bold;color:blue;font-family:Times New Roman; margin-left:3%;">Bucket Summary</h1>
+        </div>
+        <div style="margin-left:2%">
+            <form [formGroup]="searchForm">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field style="width:200px">
+                            <mat-label>Select Bucket Name </mat-label>
+                            <input type="text" matInput  #assetidinputvalue  formControlName="assetid" [matAutocomplete]="todata">
+                            <mat-autocomplete #todata="matAutocomplete" (opened)="autocompleteScrollbucket()">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of assetIddata" [value]="d.name">{{d.name}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                            <!-- <mat-autocomplete #assetidvalue #bucketid="matAutocomplete" [displayWith]="assetiddisplay" (opened)='autocompleteassetid()'>[matAutocomplete]="bucketid"
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>(keyup)="clickoff()"
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of assetIddata" [value]="d">{{d.name}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete> -->
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" (click)="searchdata()" mat-icon-button  style="border-radius:30px;background-color:lightblue;margin-top:2%"><mat-icon matSuffix>search</mat-icon></button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" matTooltip="Bucket Movement" class="btn btn-outline-success" (click)="viewofpage()" style="border-radius:40px;margin-left: 10px"
+                    ><span class="fa fa-plus"></span>Move To Bucket</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        <div style="margin-left:1%;width:90%;font-size:15px;">
+            <div class=" table-responsive">
+                <table class="table table-bordered">
+                    <tr class="table_header">
+                        <!-- <th>Expand</th> -->
+                        <th>S No.</th>
+                        <th>Doctype</th>
+                        <th>Bucket Id</th>
+                        <th>Bucket Name</th>
+                        <th>Invoice Count</th>
+                        <!-- <th>Total Amount</th> -->
+                        <th>Total Tax Amount</th>
+                        <th>Capitalised Amount</th>
+                        <th>Balance Amount</th>
+                        <th>Total Invoice Amount</th>
+                       
+                        <th>Action</th>
+                    </tr>
+                    <tbody *ngFor="let d of bucketdata;let i=index">
+                        <tr >
+                            <!-- <td><button mat-icon-button (click)="getcitydata(d,i)" color="primary" class="btn btn-danger" style="border-radius: 40px;"><mat-icon *ngIf="d.con">expand_less</mat-icon><mat-icon *ngIf="d.con==false">expand_more</mat-icon></button></td> -->
+
+                            <td>{{(currentPage-1)*pageSize+i+1}}</td>
+                            <td>{{d.doctype }}</td>
+                            <td>{{d.code?d.code:''}}</td>
+                            <td>{{d.name}}</td>
+                            <td>{{d.count?d.count:''}}</td>
+                            <td>{{d['clearing_header'].length != 0 ?d['clearing_header'][0].tottaxamount:'-'}}</td>
+
+                            <!-- <td>{{d['clearing_header'].length !=0?d['clearing_header'][0]['totamount']:'-'}}</td> -->
+                            <td>{{d['clearing_header'].length !=0 ?d['clearing_header'][0].capitalizedamount:'-'}}</td>
+                            <td>{{d['clearing_header'].length !=0 ?d['clearing_header'][0].balanceamount:'-'}}</td>
+                            <td>{{d['clearing_header'].length !=0 ?d['clearing_header'][0].totamount:'-'}}</td>
+                            <td><button type="button" style="color:blue ;border: none;background: none;" data-toggle="modal" data-target="#split_qty" (click)="clicktoview(d)">View</button></td>
+                        </tr>
+                    
+                        <!-- <tr *ngIf="d.con">
+                            <td colspan="9">
+                                <table class="table table-bordered" style="width: 80%;">
+                                    <thead class="table-header">
+                                        <th>S.No</th>
+                                        <th>CR Number</th>
+                                        <th>Product Name</th>
+                                        <th>QTY</th>
+                                        <th>Balance QTY</th>
+                                        <th>Amount</th>
+                                        <th>Invoice Amount</th>
+                                        <th>Tax Amount</th>
+                                    
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let dta of d['clearing_header'].length!=0?d['clearing_header'][0]['clearing_details']:d['clearing_header'];let j=index">
+                                            <td>{{j+1}}</td>
+                                            <td>{{dta['ecfnum']?dta['ecfnum']:''}}</td>
+                                            <td>{{dta['productname']?dta['productname']:''}}</td>
+                                            <td>{{dta['qty']?dta['qty']:''}}</td>
+                                            <td>{{dta['balanceqty']?dta['balanceqty']:''}}</td>
+                                            <td>{{dta['totamount']?dta['totamount']:0}}</td>
+                                            <td>{{dta['totinvoiceamount']?dta['totinvoiceamount']:0}}</td>
+                                            <td>{{dta['tottaxamount']?dta['tottaxamount']:''}}</td>
+                                            
+                                        </tr>
+                                        <tr *ngIf="d['clearing_header'].length==0">
+                                            <td colspan="9">No Records Found..</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr> -->
+                        <tr *ngIf="d.con">
+                            <td colspan="11">
+                                <h1 style="font-size:18px;font-family:'Times New Roman', Times, serif;color:blue;">Addition</h1>
+                                <table class="table table-bordered" style="width: 80%;">
+                                    
+                                    <thead class="table-header">
+                                        <th>S.No</th>
+                                        <th>CR Number</th>
+                                        <th>Product Id</th>
+                                        <th>Product Name</th>
+                                        <th>Invoice Number</th>
+                                        <th>Invoice Date</th>
+                                        <th>QTY</th>
+                                        <th>Invoice Value</th>
+                                        <th>Asset Value</th>
+                                    
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let dta of d['clearing_header'].length!=0?d['clearing_header'][0]['clearing_details']:d['clearing_header'];let j=index">
+                                            <td>{{j+1}}</td>
+                                            <td>{{dta['ecfnum']?dta['ecfnum']:''}}</td>
+                                            <td></td>
+                                            <td>{{dta['productname']?dta['productname']:''}}</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>dta['balanceqty']?dta['balanceqty']:''</td>
+                                            <td></td>
+                                            <td>{{dta['totinvoiceamount']?dta['totinvoiceamount']:0}}</td>
+                                            <!-- <td>{{dta['ecfnum']?dta['ecfnum']:''}}</td>
+                                            <td>{{dta['productname']?dta['productname']:''}}</td>
+                                            <td>{{dta['qty']?dta['qty']:''}}</td>
+                                            <td>{{dta['balanceqty']?dta['balanceqty']:''}}</td>
+                                            <td>{{dta['totamount']?dta['totamount']:0}}</td>
+                                            <td>{{dta['totinvoiceamount']?dta['totinvoiceamount']:0}}</td>
+                                            <td>{{dta['tottaxamount']?dta['tottaxamount']:''}}</td> -->
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td colspan="7">
+                                                <b>Total</b>
+                                            </td>
+                                            <td><b>{{addinvoicevalue | number:'1.2-2'}}</b></td>
+                                            <td><b>{{addassetvalue | number:'1.2-2'}}</b></td>
+                                        </tr>
+                                        <tr *ngIf="d['clearing_header'].length==0">
+                                            <td colspan="9">No Records Found..</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr *ngIf="d.con">
+                            <td colspan="11">
+                                <h1 style="font-size:18px;font-family:'Times New Roman', Times, serif;color:blue;">Removals</h1>
+                                <table class="table table-bordered" style="width: 80%;">
+                                   
+                                    <thead class="table-header">
+                                        <th>S.No</th>
+                                        <th>CR Number</th>
+                                        <th>Product Id</th>
+                                        <th>Product Name</th>
+                                        <th>Invoice Number</th>
+                                        <th>Invoice Date</th>
+                                        <th>QTY</th>
+                                        <th>Invoice Value</th>
+                                        <th>Asset Value</th>
+                                        <th>Capitalised Value</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let dta of d['clearing_header'].length!=0?d['clearing_header'][0]['clearing_details']:d['clearing_header'];let j=index">
+                                            <td>{{j+1}}</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <!-- <td>{{dta['ecfnum']?dta['ecfnum']:''}}</td>
+                                            <td>{{dta['productname']?dta['productname']:''}}</td>
+                                            <td>{{dta['qty']?dta['qty']:''}}</td>
+                                            <td>{{dta['balanceqty']?dta['balanceqty']:''}}</td>
+                                            <td>{{dta['totamount']?dta['totamount']:0}}</td>
+                                            <td>{{dta['totinvoiceamount']?dta['totinvoiceamount']:0}}</td>
+                                            <td>{{dta['tottaxamount']?dta['tottaxamount']:''}}</td> -->
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td colspan="8"><b>Total</b></td>
+                                            <td>{{reminvoicevalue | number:'1.2-2'}}</td>
+                                            <td>{{remassetvalue | number:'1.2-2'}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="8">
+                                                <b>New Bucket Value</b>
+                                            </td>
+                                            <td colspan="2">
+                                                {{newbucketvalue | number:'1.2-2'}}
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="d['clearing_header'].length==0">
+                                            <td colspan="10">No Records Found..</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr *ngIf="bucketdata.length==0">
+                            <td colspan="8">No Records Found..</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-right">
+                <button [disabled]="!has_previous" mat-icon-button type="button" color="primary" (click)="previouspage()"><mat-icon>arrow_backward</mat-icon></button>
+                {{currentPage}}
+                <button [disabled]="!has_next" mat-icon-button type="button" color="primary" (click)="nextpage()"><mat-icon>arrow_forward</mat-icon></button>
+
+            </div>
+        </div>
+        
+</div>
+<div *ngIf="second" class="container">
+    <div>
+        <h1 style="font-weight:bold;color:blue;font-family:Times New Roman; margin-left:3%;">Bucket History Maintain</h1>
+    </div>
+    <form [formGroup]="searchFormn">
+        <div class="row">
+            <div class="col-md-3">
+                <mat-form-field style="width:250px;">
+                    <mat-label>Select Bucket Name</mat-label>
+                    <input type="text" matInput formControlName="frombucket" [matAutocomplete]="todata">
+                    <mat-autocomplete #todata="matAutocomplete" [displayWith]="tobucketinterface" (opened)="autocompleteScrollbucket()">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of fromBucketList" [value]="d">{{d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <button type="button" (click)="getsummarydata_history_search()" mat-mini-fab color="primary"><mat-icon>search</mat-icon></button>
+            </div>
+        </div>
+    </form><br>
+    <table class="table table-bordered" style="font-size:15px;">
+        <thead >
+            <tr class="table_header">
+                <th>S.No</th>
+                <th>Bucket Name</th>
+                <th>Capitalized Amount</th>
+                <th>Balance Amount</th>
+                <th>Total Amount</th>
+                <th>Invoice Count</th>
+                <th>Created Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let d of buckethistory;index as i">
+                <td>{{(has_hpage-1)*pageSize+i+1}}</td>
+                <td class="text-left">{{d.bucket}}</td>
+                <td class="text-right">{{d.totinvoiceamount | number:'1.2-2'}}</td>
+                <td class="text-right">{{d.balanceamount | number:'1.2-2'}}</td>
+                <td class="text-right">{{d.totamount | number:'1.2-2'}}</td>
+                <td class="text-right">{{d.invoicecount}}</td>
+                <td>{{d.date | date:'dd-MMM-yyyy hh:mm:ss a'}}</td>
+            </tr>
+            <tr *ngIf="buckethistory.length==0">
+                <td colspan="9">No Records Found..</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="text-right">
+        <button [disabled]="!has_hprevious" mat-icon-button type="button" color="primary" (click)="previouspagehistory()"><mat-icon>arrow_backward</mat-icon></button>
+        {{has_hpage}}
+        <button [disabled]="!has_hnext" mat-icon-button type="button" color="primary" (click)="nextpagehistory()"><mat-icon>arrow_forward</mat-icon></button>
+
+    </div>
+</div>
+<div class="container">
+    <button type="button" class="btn btn-outline-success"
+        style="border-radius:40px;margin-left: 50px;margin-bottom: 30%;" [routerLink]='"/fa/assetmaker"'><span
+            class="fa fa-arrow-left"></span>Go Back</button>
+</div>
+<div class="modal fade" id="split_qty" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl"  >
+        <div class="modal-content" style="height:auto ;overflow-y: auto;overflow-x: auto;">
+            <div class="modal-header" style="background-color: rgb(80, 146, 80);">
+               <h1 class="modal-title" style="font-size: 18px;font-family:'Times New Roman', Times, serif;margin-left: 32%;color: black;">Bucket History Data</h1>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h1 style="font-size:18px;font-family:'Times New Roman', Times, serif;color:blue;">Addition</h1>
+                <table class="table table-bordered table-responsive" style="font-size:15px;">
+                    
+                    <thead class="table-header">
+                        <th>S.No</th>
+                        <th>CR Number</th>
+                        <th>Product Id</th>
+                        <th>Product Name</th>
+                        <th>Invoice Number</th>
+                        <th>Invoice Date</th>
+                        <th>QTY</th>
+                        <th>Invoice Value</th>
+                        <th>Asset Value</th>
+                    
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dta of adddataList;let j=index">
+                            <td class="text-right">{{j+1}}</td>
+                            <td class="text-right">{{dta.ecfnum?dta.ecfnum:''}}</td>
+                            <td class="text-right">{{dta.product_id?dta.product_id:''}}</td>
+                            <td class="text-left">{{dta.productname?dta.productname:''}}</td>
+                            <td class="text-center">{{dta.ecfnum?dta.ecfnum:''}}</td>
+                            <td class="text-center">{{dta.invoicedate | date:'dd-MMM-yyyy'}}</td>
+                            <td class="text-right">{{dta.qty?dta.qty:''}}</td>
+                            <td class="text-right">{{dta.tottaxvalue?(dta.tottaxvalue | number:'1.2-2') :''}}</td>
+                            <td class="text-right">{{(dta.assetvalue *dta.qty) | number:'1.2-2' }}</td>
+                            
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <b>Total</b>
+                            </td>
+                            <td><b>{{addinvoicevalue | number:'1.2-2'}}</b></td>
+                            <td><b>{{addassetvalue | number:'1.2-2'}}</b></td>
+                        </tr>
+                        <tr *ngIf="adddataList.length==0">
+                            <td colspan="9">No Records Found..</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h1 style="font-size:18px;font-family:'Times New Roman', Times, serif;color:blue;">Removals</h1>
+                <table class="table table-bordered table-responsive">
+                   
+                    <thead class="table-header" style="font-size: 15px;">
+                        <th>S.No</th>
+                        <th>Asset Barcode</th>
+                        <th>Asset Transaction Id</th>
+                        <th>Product Id</th>
+                        <th>Product Name</th>
+                        <th>Invoice Number</th>
+                        <th>Capitalization Date</th>
+                        <th>QTY</th>
+                        <!-- <th>Invoice Value</th> -->
+                        <th>Asset Value</th>
+                        <!-- <th>Capitalised Value</th> -->
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dta of remdataList;let j=index">
+                            <td class="text-right">{{j+1}}</td>
+                            <td class="text-right">{{dta.barcode?dta.barcode:''}}</td>
+                            <td class="text-right">{{dta.assetdetails_id?dta.assetdetails_id:''}}</td>
+                            <td class="text-right">{{dta.product_id?dta.product_id:''}}</td>
+                            <td class="text-left">{{dta.product_name?dta.product_name:''}}</td>
+                            <td class="text-center">{{dta.ecfnum?dta.ecfnum:''}}</td>
+                            <td class="text-center">{{dta.date | date:'dd-MMM-yyyy'}}</td>
+                            <td class="text-right">{{dta.quantity?dta.quantity:''}}</td>
+                            <!-- <td class="text-right">{{dta.totamount?(dta.totamount | number:'1.2-2'):''}}</td> -->
+                            <td class="text-right">{{dta.asset_value?(dta.asset_value | number:'1.2-2'):''}}</td>
+                            <!-- <td class="text-right">{{dta.captalizedamount?(dta.captalizedamount | number:'1.2-2'):''}}</td> -->
+                        </tr>
+                        <tr>
+                            <td colspan="8"><b>Total</b></td>
+                            <!-- <td>{{reminvoicevalue | number:'1.2-2'}}</td> -->
+                            <td>{{remassetvalue | number:'1.2-2'}}</td>
+                            <!-- <td>{{sumcapitalizedvalue | number:'1.2-2'}}</td> -->
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <b>New Bucket Value</b>
+                            </td>
+                            <td colspan="2">
+                                {{newbucketvalue | number:'1.2-2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <b>Expense Amount</b>
+                            </td>
+                            <td colspan="2">
+                                {{expamount | number:'1.2-2'}}
+                            </td>
+                        </tr>
+                        <tr *ngIf="remdataList.length==0">
+                            <td colspan="10">No Records Found..</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-12 text-center">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

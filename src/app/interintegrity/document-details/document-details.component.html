@@ -1,0 +1,134 @@
+<div>
+    <form [formGroup]="docsummary">
+    <div class="row" style="margin-top: 2%;margin-left: 1%;width: 99%;">
+       <div class="col-md-2" >
+           <mat-form-field  appearance="outline" style="width:auto">
+             <mat-label>Choose a date</mat-label>
+             <input matInput formControlName="summarydate" [matDatepicker]="picker1" [max]="endDate">
+             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+             <mat-datepicker #picker1></mat-datepicker>
+           </mat-form-field>
+        </div>
+        <div  class="col-md-2" style="margin-left: 7%;">
+           <mat-form-field appearance="outline">
+               <mat-label>Upload Type</mat-label>
+               <mat-select placeholder="" appearance="outline" formControlName="summarytype" (selectionChange)="uploadtype($event)">
+               <mat-option *ngFor="let obj of typeValues" [value]="obj.id">
+                 {{ obj.viewoption }}
+               </mat-option>
+             </mat-select>
+           </mat-form-field>
+       </div>
+       <div  class="col-md-2" style="margin-left: 4%;">
+        <mat-form-field appearance="outline">
+            <mat-label>File Name</mat-label>
+            <input matInput formControlName="summaryfilename" maxlength="50">
+        </mat-form-field>
+      </div>
+       <div  class="col-md-1" style="margin-right:2%;    margin-top: 1%;
+       margin-left: 6%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;" type="submit"  (click)="summary_search()">Search</button>
+       </div>
+       <div class="col-md-1"  style="margin-top:1%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;" type="clear"  (click)="summary_clear()">Clear</button>
+       </div>
+       <!-- <div class="col-md-1" style="margin-top:0.5% ;">
+        <button class="btn btn-outline-success" style="border-radius:40px;margin-left: -89%;font-size: larger;" color="primary"  data-toggle="modal" href="#myModal" (click)="summary_clear()">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
+       </div> -->
+       <!-- <div class="col-md-1"   style="margin-top:1%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;" type="clear"  (click)="backintegrity()">Back</button>
+       </div> -->
+    </div>
+   </form>
+</div>
+  <!-- <div  class="col-sm-1" style="position: relative;left: 74%;top: -4.5em;">
+    <button class="btn btn-outline-primary" style="border-radius:25px;font-size: 95%;margin-top: 6%; margin-left: 20%;" type="submit"  (click)="Run_s3()">Run</button>
+   </div> -->
+
+    <div class="modal" id="myModal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Integrity Process</h4>
+                    <button type="button" class="close" #popupclose data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                <form [formGroup]="documentform">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field  appearance="outline" style="width:auto">
+                              <mat-label>Choose a date<label style="color: red;">*</label></mat-label>
+                              <input matInput formControlName="uploadDate" [matDatepicker]="picker2" 
+                               [max]="endDate" >
+                              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                              <mat-datepicker #picker2></mat-datepicker>
+                            </mat-form-field>
+                          </div>
+                        <div style="margin-left:10px;margin-right: -1%;" class="col-md-3">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Upload Type<label style="color: red;">*</label></mat-label>
+                                <mat-select placeholder="" appearance="outline" formControlName="ctrl_uploadtype" (selectionChange)="uploadtype($event)">
+                                <mat-option *ngFor="let obj of typeValues" [value]="obj.id">
+                                  {{ obj.viewoption }}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                            <div class="col-md-3">
+                                <input id="sect" style="border-bottom-style:none;color:black;margin-left: 13%;
+                                  font-size: smaller;
+                                  margin-top: 8%;" type="file" accept=".xlsx" (change)="uploadchooses($event)" name="filedata" formControlName="ctrl_upload">
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;" type="submit"  (click)="documentupload()">Submit</button>
+                            </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div style=" margin-left: 4%;">
+    <table class="table table-bordered" id="boxlevel" style="margin-left: -2%;">
+        <thead class="table_header">
+            <th>S.No</th>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Action</th>   
+        </thead>
+        <tbody *ngFor="let sum of document_summery; let i=index">
+            <td>{{ (presentpagetab -1) * limit + i + 1 }}</td>
+            <td>{{sum.date}}</td>
+            <td>{{sum.file_name}}</td>
+            <td>{{(sum.type == 2 ? "External" : (sum.type == 1 ? "Wisefin": (sum.type == 3 ? "Integrity" : sum.type)))}}</td>
+            <td>                
+                {{(sum.status == 1? "Active": (sum.status == 0? "Inactive": (sum.status == 4? "Success": (sum.status == 3? "Processing": (sum.status == 2? "Started":(sum.status == 10? "Failed":sum.status))))))}}</td>
+            <td>
+                <mat-icon matTooltip="Download" (click)="s3_download(sum.id,sum.file_name)" style="cursor: pointer;"  >
+                   {{ 'file_download' }}
+                </mat-icon>
+
+            <!-- <mat-icon  matTooltip="Download" (click)="s3_download(sum.id)" style="cursor: pointer;" [ngStyle]="{'color':'green'}">{{ sum.type === 3 ? 'minimize' : 'file_download' }}</mat-icon> -->
+                <mat-icon   (click)="status_modify(sum.type,sum.date,sum.status)" style="margin-left: 20%; cursor: pointer;" >delete</mat-icon>
+            </td> 
+    </table>
+    <div>
+        <p *ngIf="!data_found" style="text-align: center;">Data Not Found..</p>
+    </div>
+    <div style="font-size: small;text-align:right;margin-right: 1%;">
+        <button mat-icon-button [disabled]="has_previoustab === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back</mat-icon>
+        </button> {{presentpagetab}}
+        <button mat-icon-button [disabled]="has_nexttab === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    </div>
+</div>
+

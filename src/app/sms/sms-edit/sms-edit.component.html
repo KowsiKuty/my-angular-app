@@ -1,0 +1,320 @@
+<div class="container">
+    <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;font-size: 23px;">AMC Edit</h2>
+    <hr />
+</div>
+<div class="container">
+        <form [formGroup]="assetgroupform" (ngSubmit)="finalSubmitted()">
+            <div class="row">
+                <!-- <div class="col-md-2">
+                    <mat-form-field style="width: 200px;margin-left: 15px;">
+                        <mat-label>Choose Property</mat-label>
+                        <input type="text" matInput formControlName="property" [matAutocomplete]="proref" (keypress)="kyenbdata($event)">
+                        <mat-autocomplete #proref="matAutocomplete" >
+                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let d of propertyList" [value]="d.">{{d.name}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div> -->
+                <div class="col-md-2">
+                
+                        <mat-form-field style="width: 200px; margin-left: 50px;">
+                            <mat-label>Asset Barcode Search</mat-label>
+                            <input matInput placeholder="Asset" formControlName="Asset_id" #assetidInput autocomplete="off" [matAutocomplete]="autoasset" (keypress)="kyenbdata($event)" />
+                            <mat-autocomplete #autoasset="matAutocomplete" >
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of assetidList" [value]="d.barcode">{{d.barcode}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    
+                </div>
+                <div class="col-md-2">
+                    
+                        <mat-form-field class="example-full-width" style="margin-left: 100px;width: 200px;">
+                            <mat-label>Branch</mat-label>
+                            <input class="toolbar-search" type="text" matInput autocomplete="off" #branchidInput [matAutocomplete]="branchref" formControlName="branch" style="width: 250px;" (keypress)="kyenbdata($event)"/>
+                            <mat-autocomplete #branchref="matAutocomplete" [displayWith]="branchintreface">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of branchList" [value]="d">{{d.name}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    
+                </div>
+                <div class="col-md-2">
+                    <mat-form-field style="width: 200px;margin-left: 150px;">
+                        <mat-label>Category</mat-label>
+                        <input type="text" matInput formControlName="category" [matAutocomplete]="datacate" (keypress)="kyenbdata($event)">
+                        <mat-autocomplete #datacate="matAutocomplete" [displayWith]="categoryintreface">
+                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let d of categoryList" [value]="d">{{d.subcatname}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-2" style="margin-left: 170px;">
+                    <button mat-mini-fab color="primary" matTooltip="Search" aria-label="search icon" >
+                        <mat-icon>search</mat-icon>
+                    </button>
+                    <button class="btn btn-outline-danger" style="margin-left: 20px;border-radius: 40px;" type="button" >Reset</button>
+                </div>
+            
+            </div>
+        </form>
+        <div class="container" style="margin-left: 30px; width:80%;font-size: 15px;">
+            <div>
+                <form [formGroup]="assetsave" (ngSubmit)="savesub()">
+                    <table class="table table-bordered">
+                        <thead class="table_header" style="width: 100%;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Branch Name</th>
+                                 <th>Asset Name</th>
+                                <th>Asset Barcode</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr *ngFor="let assetcat of listcomments; index as listIndex" >
+                                <th scope="row">{{ (presentpagebuk-1)*pageSize+listIndex+1 }}</th>
+                                <td>{{assetcat['branch_id'].name}}</td>
+                                <td>{{assetcat['product_id'].name}}</td>
+                                <td>{{assetcat.assetdetails_id}}</td>
+                                <td>
+                                    <button mat-mini-fab color="success"  matTooltip="Edit" aria-label="arrow back icon" [ngClass]="assetcat['con']?'active':''" (click)="edit(assetcat,listIndex)" aria-label="Example icon button with a home icon" style="border-radius: 20px;">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="listcomments.length==0">
+                                <td colspan="5">
+                                    No Records Found..
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        <tfoot>
+                            <td class="text-left" colspan="2">
+                                <span>
+                                    Total Count:<br />
+                                    <b class="text-centre"> {{pageLength_popup}}</b>
+                                </span>
+                            </td>
+                            <td class="text-right" colspan="3">
+                                <div  style="font-size: small; text-align: right;">
+                                    <button mat-icon-button [disabled]="!has_previousbuk" color="primary" (click)=" bukpreviousClick()">
+                                        <mat-icon>arrow_back</mat-icon>
+                                    </button>
+                                    {{presentpagebuk}}
+                                    <button mat-icon-button [disabled]="!has_nextbuk" color="primary" (click)=" buknextClick()">
+                                        <mat-icon>arrow_forward</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tfoot>
+                    </table>
+                </form>
+                <!-- <div class="row">
+                    <div class="col-sm-12" style="font-size: small; text-align: right; margin-bottom: 100px;">
+                        <button mat-icon-button [disabled]="has_previousbuk === false" color="primary" (click)=" bukpreviousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{presentpagebuk}}
+                        <button mat-icon-button [disabled]="has_nextbuk === false" color="primary" (click)=" buknextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <form class="container" [formGroup]="smscreateform" (ngSubmit)="createsms()">
+            <div class="row">
+                <div class="col-md-4">
+                    
+                        <mat-form-field style="width: 300px; margin-left: 15px;">
+                            <mat-label>AMC Header Name</mat-label>
+                            <input matInput placeholder="Asset" formControlName="amcHeaderName" #assetidInput autocomplete="off" [matAutocomplete]="autoasset" />
+                            <mat-autocomplete #autoasset="matAutocomplete" #Asset_id> </mat-autocomplete>
+                        </mat-form-field>
+                   
+                </div>
+                <div class="col-md-4" >
+                   
+                        <mat-form-field  style="width:300px">
+                            <mat-label>AMC Period From</mat-label>
+                            <input matInput [matDatepicker]="pick" formControlName="fromdate" [max]="latest_date" required>
+                            <mat-datepicker-toggle matSuffix [for]="pick"></mat-datepicker-toggle>
+                            <mat-datepicker #pick></mat-datepicker>
+                        </mat-form-field>
+                   
+                </div>
+                <div class="col-md-4">
+                    
+                        <mat-form-field  style="width: 300px;">
+                            <mat-label>AMC Period To</mat-label>
+                            <input matInput  [matDatepicker]="picker1" placeholder="End date" formControlName="todate"  [max]="latest_date"  required />
+                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                <!-- <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon> -->
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md">
+                   
+                        <mat-form-field class="example-full-width" style="margin-left:15px;width:300px">
+                            <mat-label>Vendor Name</mat-label>
+                            <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="checkerbranchs" #vendorInput formControlName="vendor" style="width: 250px;" />
+                           
+                            <mat-autocomplete #checkerbranchs="matAutocomplete" #branch [displayWith]="vendorinterface">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option title="{{d.code+' - '+d.name}}" *ngFor="let d of vendorList" [value]="d" >
+                                    {{d.name}}
+                                </mat-option>
+                            </ng-container> 
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    
+                </div>
+                <div class="col-md">
+                   
+                        <mat-form-field  style="width: 300px">
+                            <mat-label>Service Period</mat-label>
+                            <mat-select formControlName="servicePeriod">
+                                <mat-option *ngFor="let stat of servicePeriod" [value]="stat.value" (click)="servicePeriodSMSEdit(stat.value)">
+                                    {{stat.viewValue}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                   
+                </div>
+                <div class="col-md">
+                    
+                        <mat-form-field class="example-full-width" style="width: 300px;">
+                            <mat-label>AMC Total Amount</mat-label>
+                            <input   type="number" matInput autocomplete="off" #branchidInput formControlName="amcTotalAmount" style="width: 250px;" />
+                            
+                        </mat-form-field>
+                    
+                </div>
+            </div>
+        </form>
+        <div class="container" style="margin-left: 30px; width: 90%;font-size: 15px;">
+            <div >
+                <form [formGroup]="assetsave" (ngSubmit)="createsms2()">
+                    <table class="table table-bordered">
+                        <thead class="table_header" style="width: 100%;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Branch Name</th>
+                                <th>Asset Name</th>
+                                <th>Asset Barcode</th>
+                                <th>Remarks</th>
+                                <th>AMC Detail Amount</th>
+                                <th><mat-checkbox [formControl]="checkbox" (click)="splitequal($event)"></mat-checkbox>Split Equal</th>
+                            </tr>
+                        </thead>
+                        <tbody formArrayName="listproduct">
+                            <tr *ngFor="let assetcat of listcomments1; index as listIndex" >
+                                <th scope="row">{{ (presentpagebuk_new-1)*pageSize+listIndex+1 }}</th>
+                                <td>{{assetcat['branch_id'].name}}</td>
+                                <td>{{assetcat['product_id'].name}}</td>
+                                <td>{{assetcat.assetdetails_id}}</td>
+                                <td >
+                                    <div  [formGroupName]="listIndex">
+                                        <mat-form-field appearance="outline" style="width: 250px;">
+                                            <mat-label>Remarks</mat-label>
+                                            <input  type="text" matInput autocomplete="off"  formControlName="remarks"  />
+                                        </mat-form-field>
+                                    </div>
+                                </td>
+                                <td >
+                                    <div [formGroupName]="listIndex">
+                                        <mat-form-field appearance="outline" style="width: 200px;">
+                                            <mat-label>Amount</mat-label>
+                                            <input  type="number" matInput autocomplete="off"  formControlName="amount" #ipt (keyup)="amountdata($event,listIndex,ipt.value)" />
+                                        </mat-form-field>
+                                    </div>
+                                </td>
+                                <td >
+                                    <button mat-icon-button color="success" matTooltip="Delete" aria-label="arrow back icon" (click)="delete(assetcat,listIndex)" aria-label="Example icon button with a home icon">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="listcomments1.length==0">
+                                <td colspan="7"> 
+                                    No Records Found..
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        <tfoot>
+                            <td class="text-left" colspan="2">
+                                <span>
+                                    Total Count:{{listcomments1.length}}<br />
+                                    <b class="text-centre"> {{pageLength_popup}}</b>
+                                </span>
+                            </td>
+                            <td class="text-right" colspan="5">
+                                <div class="col-sm-12" style="font-size: small; text-align: right;">
+                                    <button mat-icon-button [disabled]="!has_previousbuk_new" color="primary" (click)=" bukpreviousClick()">
+                                        <mat-icon>arrow_back</mat-icon>
+                                    </button>
+                                    {{presentpagebuk_new}}
+                                    <button mat-icon-button [disabled]="!has_nextbuk_new" color="primary" (click)=" buknextClick()">
+                                        <mat-icon>arrow_forward</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tfoot>
+                    </table>
+                </form>
+                    <!-- <div class="row">
+                        <div class="col-sm-12" style="font-size: small; text-align: right; margin-bottom: 100px;">
+                            <button mat-icon-button [disabled]="has_previousbuk_new === false" color="primary" (click)=" bukpreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentpagebuk_new}}
+                            <button mat-icon-button [disabled]="has_nextbuk_new === false" color="primary" (click)=" buknextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div> -->
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <tr>
+                        <td style="width: 250px;">
+                            AMC Total Amount:
+                        </td>
+                        <td>&#8377;{{smscreateform.value.amcTotalAmount}}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <td style="width: 250px;">
+                            AMC Detail Total Amount:
+                        </td>
+                        <td>&#8377;{{details_total_amount}}</td>
+                    </tr>
+                </div>
+                <div class="col-md-5" style="text-align: right;">
+                    <button type="button" class="btn btn-outline-primary" (click)="approvedata()" style="border-radius: 40px;font-size: 20px;height: 50px;" >Submit</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type="button" class="btn btn-outline-danger" style="border-radius: 40px;font-size: 20px;height: 50px;" routerLink="/sms/smstransaction" >Cancel</button>
+                </div>
+            </div>
+        </div>
+</div>
+<ngx-spinner bdOpacity="0.9" bdColor="rgba(51,51,51,0.8)" size="default" color="#fff" type="ball-scale-multiple" [fullScreen]="false">
+    <p style="font-size: 20px; color: white;">Loading...</p>
+</ngx-spinner>
+<br />
+<br />

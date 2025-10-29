@@ -1,0 +1,180 @@
+<br>
+
+<h2 style="margin-left: 40px; ">
+    Rent Schedule Add/Edit 
+</h2>
+<div class="main-content">
+  
+    <div>
+        <form [formGroup]="ScheduleLeasedForm" (ngSubmit)="ScheduleLeasedFormCreate()">
+            <table>
+                
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Rent Type</mat-label>
+                            <mat-select formControlName="renttype" required id="rent-schedule-leased-0001">
+                                <mat-option *ngFor="let rent of rentTypeData" [value]="rent.id">
+                                    {{rent.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Term Number</mat-label>
+                            <input matInput placeholder="Term Number" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="term_number" required id="rent-schedule-leased-0002">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker" formControlName="start_date" 
+                                (dateChange)="setDate($event.value)" required
+                                placeholder="Start Date" id="rent-schedule-leased-0003">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker [disabled]="DateisDisabled"></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <input matInput readonly [matDatepicker]="picker2" formControlName="end_date"  (dateChange)="enddate($event.value)"
+                                placeholder="End Date" required id="rent-schedule-leased-0004">
+                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2 [disabled]="DateisDisabled"></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                     <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Term Period(in Months)</mat-label>
+                            <input matInput placeholder="Term Period(in Months)" [readonly] = "true" autocomplete="off" (keypress)="numberOnly($event)" [(ngModel)]="termPeriod"
+                                formControlName="term_period" required id="rent-schedule-leased-0005">
+                        </mat-form-field>
+                    </td> 
+                    <td *ngIf = "isRentAmont">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Rent Amount</mat-label>
+                            <input matInput placeholder="Rent Amount" step=".01"  autocomplete="off" formControlName="rent_amount"
+                               (keyup)="amtclick($event);" (input)="validate($event)" required id="rent-schedule-leased-0006">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf = "isamenities">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Amenities Amount</mat-label>
+                            <input matInput placeholder="Amenities Amount" autocomplete="off"
+                            (keyup)="amtclick($event);" (input)="validate($event)" formControlName="amenties_amount"required id="rent-schedule-leased-0007">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf = "ismaintenance">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Maintenance Amount</mat-label>
+                            <input matInput placeholder="Maintenance Aamount" autocomplete="off"
+                            (keyup)="amtclick($event);" (input)="validate($event)"  formControlName="maintenance_amount"required id="rent-schedule-leased-0008">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td *ngIf = "isRentIncrement">
+                        <mat-form-field class="input-style">
+                            <mat-label>Rent Increment %</mat-label>
+                            <input matInput placeholder="Rent Increment %" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="rent_increment" required id="rent-schedule-leased-0009">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf = "isAmenitiesIncrement">
+                        <mat-form-field class="input-style">
+                            <mat-label>Amenities Increment</mat-label>
+                            <input matInput placeholder="Amenities Increment" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="amenties_increment"required id="rent-schedule-leased-0010">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf = "isMaintenanceIncrement">
+                        <mat-form-field class="input-style">
+                            <mat-label>Maintenance Increment</mat-label>
+                            <input matInput placeholder="Maintenance Increment" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="maintenance_increment"required id="rent-schedule-leased-0011">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Recurring Frequency</mat-label>
+                            <mat-select formControlName="recurring_frequency" required id="rent-schedule-leased-0012">
+                                <mat-option *ngFor="let f of frqData" [value]="f.id">
+                                    {{f.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Recurring Day</mat-label>
+                            <input matInput placeholder="Recurring Day" autocomplete="off" required
+                                (keypress)="numberOnly($event)" maxlength="2" formControlName="recurring_date" id="rent-schedule-leased-0013">
+                        </mat-form-field>
+                    </td> 
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput placeholder="Remarks" autocomplete="off" 
+                                 formControlName="remarks" id="rent-schedule-leased-0014">
+                        </mat-form-field>
+                    </td> 
+                    <td>
+                        <mat-checkbox class="example-margin" style="margin-left: 60px;" formControlName="edit_flag">
+                            Edit Required 
+                        </mat-checkbox>
+                    </td>
+                </tr>
+            </table>
+
+                <div class="table-responsive" style="width: 60%;"class="center">
+                    <table class="table table-bordered" fixed-header>
+                        <thead class="table_header">
+                                <tr>
+                                    <th>Sl.No</th>
+                                    <th>Landlord Name</th>
+                                    <th>Share%</th>
+                                    <th>Share Amount</th>
+                                </tr>
+                            </thead> 
+                            <ng-container formArrayName="landlord_allocation" *ngFor="let details of ScheduleLeasedForm.get('landlord_allocation')['controls']; let i = index;">
+                                <tr [formGroupName]="i">
+                                    <td>{{i+1}}</td>
+                                    <td>
+                                        <mat-form-field style="width: 300px;">
+                                            <input matInput [readonly] = "true" formControlName="landlord" id="rent-schedule-leased-0015">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field>
+                                            <input matInput  [readonly] = "true" formControlName="share" id="rent-schedule-leased-0016">
+                                        </mat-form-field>
+                                    </td>
+                                      <td>
+                                        <mat-form-field>
+                                            <input matInput placeholder="Amount" [readonly]='isDisabled' step=".01" formControlName="rent_amount" type = "number"
+                                            (input)="validate($event)"
+                                             (keypress)="omit_special_char($event)" autocomplete="off" required id="rent-schedule-leased-0017">
+                                        </mat-form-field>
+                                        <!-- [ngClass]="{error: !details.controls.rent_amount.valid}" (input)="validate($event)" -->
+                                      </td>
+                                  
+                                </tr>
+                            </ng-container>
+                    </table>
+                </div>
+
+
+            <div class="btn-bottom">
+                <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" id="rent-schedule-leased-0018">Submit</button>
+                <button type="button" (click)="onCancelClick()" style="border-radius: 40px;margin-left: 10px;"
+                    class="btn btn-outline-primary" id="rent-schedule-leased-0019">Cancel</button>
+            </div>
+            
+        </form>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+<mat-tab-group style="margin-left: 2%;"  (selectedTabChange)="tabClick($event)">
+    <mat-tab label="FA-ACTIVE ASSETS"> <div >
+        <h1>Active Assets</h1>
+        <form>
+            <mat-form-field>
+                <mat-label>Asset ID</mat-label>
+                <input matInput placeholder="Enter the Asset ID">
+            </mat-form-field>
+
+            <button class="btn btn-outline-primary btnsearch" type="submit" matTooltip="search" (click)="get_active_summary()"
+            color="primary"><i class="fa fa-search"
+                aria-hidden="true"></i></button>
+            <button class="btn btn-outline-primary btnsearch" matTooltip="Reset" (click)="reset('active')" color="primary">Reset
+            </button>    
+            <button type="button" (click)="back_btn()" class="btn btn-outline-success" style="border-radius:30px;height:40px;margin-left:10px"><span
+                class="fa fa-arrow-left">Go Back</span></button>  
+        </form>
+        <div class="table-responsive table-bordered">
+            <table class="table">
+                <thead class="table_header">
+                    <th>SI no</th>
+                    <th>Cr number</th>
+                    <th>AssetID</th>
+                    <th>Capdate</th>
+                    <th>Enddate</th>
+                    <th>Purchase Cost</th>
+                    <th>Asset value</th>
+                    <th>Branch</th>
+                    <th>Action <input type="checkbox" [(ngModel)]="selectAll"
+                        (change)="toggleAllSelection_active($event)"></th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of active_summary;index as i">
+                        <td>{{(act_present_page-1) * pagesize+i+1}}</td>
+                        <td>{{data?.crnum}}</td>
+                        <td>{{data?.barcode}}</td>
+                        <td>{{data?.capdate}}</td>
+                        <td>{{data?.enddate | date :'yyyy-mm-dd'}}</td>
+                        <td>{{data?.assetdetails_cost}}</td>
+                        <td>{{data?.assetdetails_value}}</td>
+                        <td>{{data?.branch_id?.name}}</td>
+                        <td><input type="checkbox"  [(ngModel)]="data.selected" (change)="toggleSelection_active(data)"></td>
+                        </tr>
+                    <tr  *ngIf="active_summary?.length==0 else pagination_non">
+                        <td class="norecords" colspan="10">No Records Found....</td>
+    
+                    </tr>
+                    <ng-template #pagination_non>
+                        <tr>
+                            <td colspan="10">
+                                <div style="text-align: right;">
+                                    <button mat-icon-button [disabled]="active_has_prevoius === false" style="font-size: small;" color="primary"
+                                    (click)="get_active_haspre()">
+                                    <mat-icon >arrow_back</mat-icon>
+                                    </button>
+                                    {{act_present_page}}
+                                    <button mat-icon-button [disabled]="active_has_next === false" style="font-size: small;" color="primary"
+                                    (click)="get_active_hasnext()">
+                                    <mat-icon >arrow_forward</mat-icon>
+                                    </button>
+                                </div>    
+                            </td>
+                        </tr>
+    
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label > Enter a reason</mat-label>
+                <input matInput [(ngModel)]="reason_active" required>
+            </mat-form-field>
+            <button type="button"  class="btn btn-outline-success" style="border-radius:30px;height:40px;margin-left:10px" (click)="raise_inactive('active')">
+                Request to raise Inactive</button>  
+        </div>
+        </div>
+    </mat-tab> 
+    <mat-tab label="FA-Inactive Assets" [disabled]="true">
+        <div>
+            <h1>In active Assets</h1>
+        </div>
+    </mat-tab>   

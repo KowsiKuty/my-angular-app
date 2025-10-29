@@ -1,0 +1,416 @@
+ 
+  <div class="row topcard" *ngIf="showdatatable">
+    <div class="col-sm-12 col-md-12 col-lg-12"  *ngIf="campaign">
+      <p style="margin-left: 20px" (click)="campaignEmit.emit()" id="hyperlink"><span class="material-icons"
+          style="vertical-align: middle;">arrow_back</span>Campaign</p>
+    </div>
+    <!-- Campaign -->
+
+
+    <!-- <div class="row"> -->
+      <div class="col-sm-4 col-md-4 col-lg-4" *ngIf="campaign" aria-label="campaignView">
+        <mat-card>
+        <table class="table paddsTable" >
+          <tr>
+            <td style="padding-left: 10px; vertical-align: middle;"> Lead Count :</td><td> <button mat-mini-fab class="buttonsBG"  > {{this.campaignData?.lead_count}} </button></td>
+          </tr>
+          <tr>
+            <td style="padding-left: 10px; vertical-align: middle;"> Customer Count : </td><td>   <button mat-mini-fab  class="buttonsBG" >{{this.campaignData?.customer_count}} </button></td>
+          </tr>
+          <tr>
+            <td style="padding-left: 10px;vertical-align: middle;"> Total Count :</td><td>   <button mat-mini-fab class="buttonsBG" > {{this.campaignData?.total_count}}</button></td>
+          </tr>
+        </table>
+        </mat-card>
+      </div>
+
+      <div class="col-sm-8 col-md-8 col-lg-8" *ngIf="campaign" aria-label="campaignView">
+
+        <mat-card>
+          <div class="table-responsive" id="scrollSet">
+            <table class="table" id="tableGlobal" style="width: 90%;">
+              <thead>
+                <tr>
+                  <th>Sl.No</th>
+                  <th>Vendor Name</th>
+                  <th>Total Count</th>
+                  <th>Lead To Customer</th>
+                  <th>Not Interested</th>
+                  <th>Remaining Leads</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of VendorCountsList; let venIndex = index">
+                  <td>{{venIndex+1}}</td>
+                  <td>{{data?.vendor_name}}</td>
+                  <td>{{data?.LEADCOUNT}}</td>
+                  <td>{{data?.LEADTOCUSTOMER}}</td>
+                  <td>{{data?.NOTINTERESTEDLEAD}}</td>
+                  <td>{{data?.remaining_leads}}</td>
+                </tr>
+              </tbody>
+
+
+            </table>
+          </div>
+        </mat-card>
+
+
+      </div>
+      </div>
+
+      <!-- <div class=" col-sm-12 col-md-12 col-lg-12">
+
+      </div> -->
+
+
+      <div class=" col-sm-12 col-md-12 col-lg-12">
+        <mat-card>
+          <div class="table-responsive">
+            <table class="table" id="tableGlobal">
+              <thead>
+                <tr>
+                  <th style="padding-left: 11px;"> No. </th>
+                  <th class="th-lg">Lead Name</th>
+                  <th *ngIf="campaign">Lead/Customer</th>
+                  <th *ngIf="campaign">Vendor</th> 
+                  <th *ngIf="!campaign">Aadhaar No</th>
+                  <th *ngIf="!campaign">Pan No</th>
+
+                </tr>
+              </thead>
+
+              <tbody *ngFor="let lists of leadssummarylist;index as ind">
+                <tr (click)="viewLeadDetails(lists.id)">
+                  <td style="padding-left: 11px;">
+                    {{(pagination.index-1)*limit+ind+1}}
+                  </td>
+
+                  <td class="leadname">{{lists.first_name}} {{lists.middle_name}} {{lists.last_name}}</td>
+                  <td *ngIf="campaign">
+                    <label *ngIf="lists.lead_status == 2;else led">
+                      Customer
+                    </label>
+                    <ng-template #led>
+                      Lead
+                    </ng-template>
+
+                  </td>
+                  <td *ngIf="campaign"> ({{lists?.vendor_id?.code}}) {{lists?.vendor_id?.name}}</td> 
+                  <td *ngIf="!campaign"> {{lists?.pan_no}}  </td>
+                  <td *ngIf="!campaign"> {{lists?.aadhaar_no}}  </td>
+
+                </tr>
+              </tbody>
+
+            </table>
+            <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+              <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false"
+                color="primary">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+              {{pagination.index}}
+              <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+
+            </div>
+          </div>
+        </mat-card>
+
+
+
+        <!-- <div class="table-responsive">
+              <table class="table" id="leadtable">
+                <thead>
+                  <tr>
+                    <th style="padding-left: 11px;">
+                      No.
+                    </th>
+                    <th style="width: 120px;"></th>
+                    <th class="th-lg">Lead Name</th> 
+                    <th *ngIf="campaign">Lead/Customer</th>
+
+                  </tr>
+                </thead>
+                <tbody *ngFor="let lists of leadssummarylist | searchfilter : searchText;index as ind">
+                  <tr (click)="viewLeadDetails(lists.id)">
+                    <td style="padding-left: 11px;">
+                      {{(pagination.index-1)*limit+ind+1}}
+                    </td>
+                    <td></td>
+
+                    <td class="leadname">{{lists.first_name}} {{lists.middle_name}} {{lists.last_name}}</td>
+                    <td *ngIf="campaign">
+                      <label *ngIf="lists.lead_status == 2;else led">
+                        Customer
+                      </label>
+                      <ng-template #led>
+                        Lead
+                      </ng-template>
+
+                    </td>
+
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false"
+                  color="primary">
+                  <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{pagination.index}}
+                <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+
+              </div>
+            </div>  -->
+      </div>
+
+    <!-- </div> -->
+
+
+ 
+
+  <div *ngIf="showleadsview"
+    style="margin:1%;display:flex;box-shadow: 0 4px 10px rgba(0,0,0,0.16), 0 4px 10px rgba(0,0,0,0.23);border-radius: 15px;">
+    <div appResizable id="topSectionTitle" style="padding:1%;width:100%" class="sectionTitle">
+
+
+      <div>
+
+        <h4 class="card-title" style="font-size:21px;">
+          <button mat-icon-button (click)="gotoDatapage()">
+            <mat-icon class="alignvertical">
+              arrow_back
+            </mat-icon>
+          </button>
+          {{leadsview?.first_name}}&nbsp;{{leadsview?.middle_name}}&nbsp;{{leadsview?.last_name}}&nbsp;&nbsp;
+          - <span style="font-size:17px;"> {{leadsview?.occupancy}}</span>
+        </h4>
+
+
+        <hr>
+
+        <h3 style="margin-left:3%">Lead Information</h3>
+        <form #form="ngForm">
+
+          <div style="margin-bottom:1%" class="row" *ngFor="let item of leadDetails">
+            <div class="col-md-2 heading">
+              <mat-label>
+                {{item.name1}}
+              </mat-label>
+            </div>
+
+            <div class="col-md-4 value" [appEditable]="{dataKey:'lead_data',label: item?.name1, value:item?.value1,
+              key: item?.key1, source: item?.url, field: item?.fields?.length > 0 ? item.fields[0] : null
+              , additions: item?.additions?.length > 0 ? item.additions[0] : null, data: item}">
+              <div>
+                {{item.value1}}
+              </div>
+            </div>
+            <div class="col-md-3 heading">
+              <mat-label>
+                {{item.name2}}
+              </mat-label>
+            </div>
+            <div class="col-md-3 value" [appEditable]="{dataKey:'lead_data',label: item?.name2, value:item?.value2,
+              key: item?.key2, source: item?.url, field: item?.fields?.length > 1 ?
+              item.fields[1] : null
+              , additions: item?.additions?.length > 1 ? item.additions[1] : null, data:
+              item}">
+              <div>
+                {{item.value2}}
+              </div>
+            </div>
+
+          </div>
+
+        </form>
+        <mat-accordion>
+          <mat-expansion-panel #panel>
+            <mat-expansion-panel-header>
+
+              <div *ngIf=" !panel.expanded">More Details</div>
+              <div *ngIf="panel.expanded">Hide Details</div>
+
+            </mat-expansion-panel-header>
+
+            <label class="mainheading">Address Details</label>
+            <br>
+
+            <div class="row maincontent" *ngFor="let item of addressDetails">
+              <div class="col-md-2 heading">
+                <mat-label>
+                  {{item.name1}}
+                </mat-label>
+              </div>
+
+              <div class="col-md-4 value" [appEditable]="{dataKey:'lead_data',label: item?.name1, value:item?.value1,
+              key: item?.key1, source: item?.url, field: item?.fields?.length > 0 ? item.fields[0] : null
+              , additions: item?.additions?.length > 0 ? item.additions[0] : null, data: item}">
+                <mat-label>
+                  {{item.value1}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 heading">
+                <mat-label>
+                  {{item?.name2}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 value" [appEditable]="{dataKey:'lead_data',label: item?.name2, value:item?.value2,
+              key: item?.key2, source: item?.url, field: item?.fields?.length > 1 ?
+              item.fields[1] : null
+              , additions: item?.additions?.length > 1 ? item.additions[1] : null, data:
+              item}">
+                <mat-label>
+                  {{item?.value2}}
+                </mat-label>
+              </div>
+
+            </div>
+            <label class=" mainheading">Family Details</label>
+            <br>
+
+            <div class="row maincontent" *ngFor="let item of familyDetails">
+              <div class="col-md-2 heading">
+                <mat-label>
+                  {{item.name1}}
+                </mat-label>
+              </div>
+
+
+
+
+              <div class="col-md-4 value" [appEditable]="{dataKey:'lead_data',label: item?.name1, value:item?.value1,
+              key: item?.key1, source: item?.url, field: item?.fields?.length > 0 ? item.fields[0] : null
+              , additions: item?.additions?.length > 0 ? item.additions[0] : null, data: item}">
+                <mat-label>
+                  {{item.value1}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 heading">
+                <mat-label>
+                  {{item.name2}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 value" [appEditable]="{dataKey:'lead_data', label: item?.name2, value:item?.value2,
+              key: item?.key2, source: item?.url, field: item?.fields?.length > 1 ?
+              item.fields[1] : null
+              , additions: item?.additions?.length > 1 ? item.additions[1] : null, data:
+              item}">
+                <mat-label>
+                  {{item?.value2}}
+                </mat-label>
+              </div>
+
+            </div>
+            <label class=" mainheading">Bank Details</label>
+            <br>
+
+            <div class="row maincontent" *ngFor="let item of bankDetails">
+              <div class="col-md-2 heading">
+                <mat-label>
+                  {{item?.name1}}
+                </mat-label>
+              </div>
+
+              <div class="col-md-4 value" [appEditable]="{dataKey:'lead_data',label: item?.name1, value:item?.value1,
+              key: item?.key1, source: item?.url, field: item?.fields?.length > 0 ? item.fields[0] : null
+              , additions: item?.additions?.length > 0 ? item.additions[0] : null, data: item}">
+                <mat-label>
+                  {{item?.value1}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 heading">
+                <mat-label>
+                  {{item?.name2}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 value" [appEditable]="{dataKey:'lead_data',label: item?.name2, value:item?.value2,
+              key: item?.key2, source: item?.url, field: item?.fields?.length > 1 ?
+              item.fields[1] : null
+              , additions: item?.additions?.length > 1 ? item.additions[1] : null, data:
+              item}">
+                <mat-label>
+                  {{item?.value2}}
+                </mat-label>
+              </div>
+
+            </div>
+
+            <div class="row maincontent">
+              <label class=" mainheading">Lead Details History</label>
+              <br>
+              <table class="table table-bordered">
+                <thead class="table_header">
+                  <!-- <th>S.No</th> -->
+                  <th style=" font-size: 85%;padding: 0px;">Field</th>
+                  <th style=" font-size: 85%;padding: 0px;">Value</th>
+                  <!-- <th>Updated From</th> -->
+                  <!-- <th>Field</th>
+                  <th>value</th> -->
+
+                </thead>
+                <tbody
+                  *ngFor="let data of dynamicupdatehistorydata|paginate: { itemsPerPage: pageSize, currentPage: historycurrentpage };index as i">
+                  <tr *ngIf="data.field">
+                    <!-- <td style="">{{i+1}}</td> -->
+                    <td style="font-size: 85%;padding: 0px;">{{data?.field}}</td>
+                    <td style=" font-size: 85%;padding: 0px;"><B>{{data?.value}}</B></td>
+                    <!-- <td style="">{{data?.lead_source_id}}</td> -->
+                    <!-- <td>{{data?.lead_data?.first_name}}</td>
+                    <td>{{data?.lead_data?.last_name}}</td> -->
+
+
+                  </tr>
+
+
+
+                  <tr *ngIf="!data.field">
+                    <!-- <td  style=" font-size: 85%;line-height: 0%;"></b></td> -->
+                    <td colspan="2" style=" font-size: 85%;padding: 0px;"> Source:<b>{{(data?.lead_source_id == '' ||
+                        data?.lead_source_id == null )? 'Manual':data?.lead_source_id}} </b> <b
+                        style="margin-left: 150px;"> {{data?.created_date | date:'medium'}} </b> </td>
+
+                  </tr>
+
+                  <!-- <tr colspan="2">{{data?.created_date}}</tr>                  -->
+                </tbody>
+                <tbody>
+                  <tr>
+                    <td colspan="2">
+                      <div class="pagination">
+                        <pagination-controls responsive="true"
+                          (pageChange)="historycurrentpage = $event"></pagination-controls>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+
+              </table>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+      </div>
+
+
+    </div>
+
+    <div style="padding:1%;width:100%">
+      <mat-tab-group (selectedTabChange)="loadOn($event)" [selectedIndex]="tabIndex">
+        <mat-tab label="Lead-Product List">
+          <app-follow-up-leads-and-task></app-follow-up-leads-and-task>
+        </mat-tab>
+        <mat-tab label="Task">
+          <app-employee-task-edit *ngIf="tabIndex == 1"></app-employee-task-edit>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+
+<!-- </div>  -->

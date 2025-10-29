@@ -1,0 +1,4290 @@
+<div class="Container" style="margin-left: 20px">
+  <nav>
+    <div class="nav nav-tabs" style="margin-top: 1%">
+      <span
+        class="nav-item nav-link"
+        data-toggle="tab"
+        data-toggle="modal"
+        data-target="#claimModal"
+        (click)="subModuleData(sub)"
+        role="tab"
+        [ngClass]="{ active: activeTab === sub }"
+        *ngFor="let sub of InwardMenuList"
+      >
+        {{ sub.name }}
+      </span>
+    </div>
+  </nav>
+</div>
+
+<div *ngIf="isinwardAdd">
+  <app-inward-form
+    (onSubmit)="inwardCreateEditSubmit()"
+    (onCancel)="inwardCreateEditCancel()"
+  >
+  </app-inward-form>
+</div>
+
+<div *ngIf="isinwarddetail">
+  <app-inward-details (onCancel)="InwardDetailCancel()"></app-inward-details>
+</div>
+
+<div *ngIf="isinwardsummary">
+  <form [formGroup]="InwardsummarySearchForm">
+    <h2 style="margin-left: 5%" class="headertitle">Inward Summary</h2>
+    <table>
+      <tr>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 30px">
+            <input
+              class="toolbar-search"
+              type="text"
+              formControlName="inward_no"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Inward No</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 30px">
+            <input
+              class="toolbar-search"
+              type="text"
+              maxlength="64"
+              formControlName="inwardfrom"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Inward From</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" style="margin-left: 30px">
+            <mat-label>From Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker1"
+              placeholder="From Date"
+              formControlName="fromdate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" style="margin-left: 30px">
+            <mat-label>To Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker2"
+              placeholder="To Date"
+              formControlName="todate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker2"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field style="margin-left: 30px">
+            <mat-label>Channel</mat-label>
+            <mat-select formControlName="channel_id" placeholder="Channel">
+              <mat-option
+                *ngFor="let channel of ChannelList"
+                [value]="channel.id"
+              >
+                {{ channel.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field
+            style="width: 200px; margin-left: 30px"
+            (click)="getCourierFK()"
+          >
+            <mat-label>Courier</mat-label>
+            <input
+              #CourierInput
+              placeholder="Select Courier"
+              type="text"
+              matInput
+              formControlName="courier_id"
+              [matAutocomplete]="Courier"
+            />
+            <mat-autocomplete
+              #Courier="matAutocomplete"
+              [displayWith]="displayFnCourier.bind(this)"
+              (opened)="autocompleteCourierScroll1()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let Courier of CourierList"
+                  [value]="Courier.id"
+                >
+                  {{ Courier.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 30px">
+            <input
+              class="toolbar-search"
+              type="text"
+              maxlength="20"
+              formControlName="awb_no"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>AWB NO</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <td>
+          <button
+            class="buttonsize btn btn-outline-primary"
+            (click)="getInwardsummary('')"
+            color="primary"
+          >
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+          <button
+            class="buttonsize btn btn-outline-primary"
+            (click)="resetInward()"
+            color="primary"
+          >
+            Reset
+          </button>
+
+          <button
+            type="button"
+            class="buttonsize btn btn-outline-success"
+            (click)="inwardRoute()"
+          >
+            <span class="fa fa-plus"></span>
+          </button>
+          <button
+            type="button"
+            class="buttonsize btn btn-outline-success"
+            (click)="downloadFileXLSX('inwardsummary')"
+            style="border-radius: 40px"
+          >
+            <span class="fa fa-download"></span> Report
+          </button>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <div
+    class="table-responsive"
+    style="margin-top: 1%; width: 94%; margin-left: 50px"
+  >
+    <table class="table scrolltable table-bordered" fixed-header>
+      <thead>
+        <tr class="table_header" fixed-header style="text-align: center">
+          <th>S.No</th>
+          <th>NO</th>
+          <th>Date</th>
+          <th>Channel</th>
+          <th>Inward From</th>
+          <th>Agents</th>
+          <th>No of Packets</th>
+          <th>AWB NO</th>
+          <th>Status</th>
+          <!-- <th>Action</th> -->
+          <!-- bug id:4972 -->
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inward of inwardSummaryList; index as i">
+          <!-- <td scope="row">{{(currentpage - 1)*pageSize +i+1 }}</td> -->
+          <td>{{ (inwardpresentpage - 1) * pageSize_ecf + i + 1 }}</td>
+          <td>{{ inward?.no }}</td>
+          <td>{{ inward?.date | date : "dd-MMM-yyyy " }}</td>
+          <td>{{ inward?.channel_id?.name }}</td>
+          <td title="{{ inward?.inwardfrom }}">
+            {{
+              inward?.inwardfrom?.length > 25
+                ? (inward?.inwardfrom | slice : 0 : 25) + ".."
+                : inward?.inwardfrom
+            }}
+          </td>
+          <td>
+            <span *ngIf="inward?.courier_id?.name; else nullCouier">
+              {{ inward?.courier_id?.name }}
+            </span>
+            <ng-template #nullCouier>
+              <label>--</label>
+            </ng-template>
+          </td>
+
+          <td>{{ inward?.noofpockets }}</td>
+          <td>
+            <span *ngIf="inward?.awbno; else nullAwbno">
+              {{ inward?.awbno }}
+            </span>
+            <ng-template #nullAwbno>
+              <label>--</label>
+            </ng-template>
+          </td>
+          <!-- <td><button mat-icon-button matTooltip="View" class="iconbutton" 
+                        (click)="detailView(inward)" >
+                        <mat-icon style="color: gray;">edit</mat-icon>
+                    </button></td> -->
+          <td>
+            <!-- {{inward?.status}} -->
+            <span>
+              <!-- {{ inward?.awbno}} -->
+              {{ inward?.inwardstatus }}
+            </span>
+          </td>
+          <td>
+            <div
+              *ngIf="
+                inward?.inwardstatus == 'Completed' ||
+                  inward?.inwardstatus == 'Partial Completed';
+                else greyEditView
+              "
+            >
+              <button
+                mat-icon-button
+                class="iconbutton"
+                [matTooltip]="
+                  inward.inwardstatus == 'Completed'
+                    ? 'Completed'
+                    : 'Partial Completed'
+                "
+                [disabled]="true"
+              >
+                <mat-icon style="color: grey">edit</mat-icon>
+              </button>
+            </div>
+            <ng-template #greyEditView>
+              <button
+                mat-icon-button
+                matTooltip="Edit"
+                class="iconbutton"
+                (click)="editInwardMaker(inward, inwardpresentpage)"
+              >
+                <mat-icon style="color: green">edit</mat-icon>
+              </button>
+            </ng-template>
+            <!-- <button mat-icon-button matTooltip="View" class="iconbutton" (click)="editInwardMaker(inward)">
+                        <mat-icon style="color: gray;">edit</mat-icon>
+                    </button> -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      *ngIf="inwardSummaryList?.length == 0; else pagination"
+      class="NodataAlign"
+    >
+      No Records Found...
+    </div>
+    <!-- <ng-template #pagination>
+            <div style="font-size: small;text-align: right;margin-bottom: 100px;cursor: pointer;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                    (click)="getInwardsummary('previous')">
+                    <mat-icon style="cursor: pointer;">arrow_back</mat-icon>
+                </button>
+                {{currentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary"
+                    (click)="getInwardsummary('next')">
+                    <mat-icon style="cursor: pointer;">arrow_forward</mat-icon>
+                </button>
+            </div>
+        </ng-template> -->
+  </div>
+  <!-- //BUG ID:6048 -->
+  <ng-template #pagination>
+    <div class="row" *ngIf="issummarypage" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+        <p
+          style="
+            color: black;
+            font-size: 18px;
+            font-weight: 500;
+            margin-left: -190px;
+          "
+        >
+          Total Count:{{ totalcount }}
+        </p>
+      </div>
+      <div
+        class="col-sm-9"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: right;
+          left: 15%;
+        "
+      >
+        <mat-paginator
+          (page)="handlePageEvent($event)"
+          [length]="length_ecf"
+          [pageSize]="pageSize_ecf"
+          [showFirstLastButtons]="showFirstLastButtons"
+          [pageSizeOptions]="pageSizeOptions"
+          [pageIndex]="pageindex"
+          [hidePageSize]="true"
+          aria-label="Select page"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+  </ng-template>
+  <!-- ////// -->
+</div>
+
+<div *ngIf="isinwarddetailsummary">
+  <form [formGroup]="InwardDetailSummarySearchForm">
+    <h2 style="margin-left: 3%">Inward Detail Summary</h2>
+    <table>
+      <tr>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              formControlName="inward_no"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Inward No</mat-placeholder>
+          </mat-form-field>
+        </td>
+
+        <td>
+          <mat-form-field class="example-full-width" style="margin-left: 50px">
+            <mat-label>From Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker1"
+              placeholder="From Date"
+              formControlName="fromdate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </td>
+
+        <td>
+          <mat-form-field class="example-full-width" style="margin-left: 50px">
+            <mat-label>To Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker2"
+              placeholder="To Date"
+              formControlName="todate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker2"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              maxlength="64"
+              formControlName="inwardfrom"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Inward From</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <!-- <td>
+                    <mat-form-field style="margin-left: 50px;">
+                        <mat-label>Channel</mat-label>
+                        <mat-select formControlName="channel_id" placeholder="Channel">
+                            <mat-option *ngFor="let channel of ChannelList" [value]="channel.id">
+                                {{channel.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td> -->
+      </tr>
+      <tr class="text-center">
+        <!-- <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getbranchFK()">
+                        <mat-label>Select Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch.bind(this)"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" [value]="branch.id">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td> -->
+      <td>
+
+      </td>
+        <td>
+          <button
+            class="btn btn-outline-primary"
+            (click)="getInwardDetailsummary('')"
+            style="border-radius: 40px;    margin-left: 237px;
+"
+            color="primary"
+          >
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+        </td>
+        <td>
+          <button
+            class="btn btn-outline-primary"
+            (click)="resetInwardDetail()"
+            style="border-radius: 40px;
+                margin-left: -45px;
+                "
+            color="primary"
+          >
+            Reset
+          </button>
+<button
+            type="button"
+            class="buttonsize btn btn-outline-success"
+            (click)="downloadFileXLSX('inwarddetails')"
+            style="border-radius: 40px;    margin-right: -58px;
+"
+          >
+            <span class="fa fa-download"></span> Report
+          </button>
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <div
+    class="table-responsive"
+    style="margin-top: 1%; width: 94%; margin-left: 50px"
+  >
+    <table class="table scrolltable table-bordered" fixed-header>
+      <thead>
+        <tr class="table_header" fixed-header style="text-align: center">
+          <th>S.No</th>
+          <th>Inward NO</th>
+          <th>Date</th>
+          <th>Branch</th>
+          <!-- <th>Channel</th> 9079-->
+          <th>Inward From</th>
+          <th>No Of Packets</th>
+          <!-- <th>Doc Type</th> -->
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inwardDetail of InwardDetailSummaryList; index as i">
+          <!-- <td scope="row">{{(currentpagedet - 1)*pageSize +i+1 }}</td> -->
+          <td>{{ (inwarddetpresentpage - 1) * pageSize_indet + i + 1 }}</td>
+          <td>{{ inwardDetail?.no }}</td>
+          <td>{{ inwardDetail?.date | date : "dd-MMM-yyyy" }}</td>
+          <td>{{ inwardDetail?.branch_id?.fullname }}</td>
+          <!-- <td>{{ inwardDetail?.channel_id?.name}}</td>  9079-->
+          <td title="{{ inwardDetail?.inwardfrom }}">
+            {{
+              inwardDetail?.inwardfrom?.length > 25
+                ? (inwardDetail?.inwardfrom | slice : 0 : 25) + ".."
+                : inwardDetail?.inwardfrom
+            }}
+          </td>
+          <td>{{ inwardDetail?.noofpockets }}</td>
+          <!-- <td>{{ inwardDetail?.doccount}}</td> -->
+          <td>{{ inwardDetail?.inwardstatus }}</td>
+          <td>
+            <div
+              *ngIf="
+                inwardDetail?.inwardstatus == 'Completed' ||
+                  inwardDetail?.inwardstatus == 'Partial Completed';
+                else greyEditView
+              "
+            >
+              <button
+                mat-icon-button
+                class="iconbutton"
+                [disabled]="true"
+                [matTooltip]="
+                  inwardDetail.inwardstatus == 'Completed'
+                    ? 'Completed'
+                    : 'Partial Completed'
+                "
+                
+              >
+                <mat-icon style="color: grey">edit</mat-icon>
+              </button>
+            </div>
+            <ng-template #greyEditView>
+              <button
+                mat-icon-button
+                class="iconbutton"
+                matTooltip="Edit"
+                (click)="detailView(inwardDetail)"
+              >
+                <mat-icon style="color: green">edit</mat-icon>
+              </button>
+            </ng-template>
+            <!-- <button mat-icon-button matTooltip="View" class="iconbutton" (click)="detailView(inwardDetail)">
+                            <mat-icon style="color: gray;">edit</mat-icon>
+                        </button> -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      *ngIf="InwardDetailSummaryList?.length == 0; else paginationdetail"
+      class="NodataAlign"
+    >
+      No Records Found...
+    </div>
+    <!-- <ng-template #paginationdetail>
+            <div style="font-size: small;text-align: right;margin-bottom: 100px;cursor: pointer;">
+                <button mat-icon-button [disabled]="has_previousdet == false" color="primary"
+                    (click)="getInwardDetailsummary('previous')">
+                    <mat-icon style="cursor: pointer;">arrow_back</mat-icon>
+                </button>
+                {{currentpagedet}}
+                <button mat-icon-button [disabled]="has_nextdet == false" color="primary"
+                    (click)="getInwardDetailsummary('next')">
+                    <mat-icon style="cursor: pointer;">arrow_forward</mat-icon>
+                </button>
+            </div>
+        </ng-template> -->
+    <!-- //BUG ID:6048 -->
+    <ng-template #paginationdetail>
+      <div class="row" *ngIf="issummarypageindet" style="width: 85%">
+        <div
+          class="col-sm-3"
+          style="
+            margin-bottom: 5%;
+            font-size: small;
+            text-align: left;
+            right: -225px;
+          "
+        >
+          <p
+            style="
+              color: black;
+              font-size: 18px;
+              font-weight: 500;
+              margin-left: -190px;
+            "
+          >
+            Total Count:{{ totalcountindet }}
+          </p>
+        </div>
+        <div
+          class="col-sm-9"
+          style="
+            margin-bottom: 5%;
+            font-size: small;
+            text-align: right;
+            left: 15%;
+          "
+        >
+          <mat-paginator
+            (page)="handlePageEvent1($event)"
+            [length]="length_indet"
+            [pageSize]="pageSize_indet"
+            [showFirstLastButtons]="showFirstLastButtonsindet"
+            [pageSizeOptions]="pageSizeOptionsindet"
+            [pageIndex]="pageIndexindet"
+            [hidePageSize]="true"
+            aria-label="Select page"
+          >
+          </mat-paginator>
+        </div>
+      </div>
+      <!-- ////// -->
+    </ng-template>
+  </div>
+</div>
+
+<div *ngIf="isinwardDocumentAssign">
+  <form [formGroup]="InwardDocAssignSummarySearchForm">
+    <h2 style="margin-left: 5%" class="headertitle">Inward Document Assign</h2>
+    <table>
+      <tr>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              formControlName="inward_no"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Inward No</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              maxlength="20"
+              formControlName="docnumber"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Doc Number</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field
+            class="example-full-width"
+            style="margin-left: 50px; width: 200px"
+          >
+            <mat-label>From Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker1"
+              placeholder="From Date"
+              formControlName="fromdate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field
+            class="example-full-width"
+            style="margin-left: 50px; width: 200px"
+          >
+            <mat-label>To Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker2"
+              placeholder="To Date"
+              formControlName="todate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker2"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field style="margin-left: 50px">
+            <mat-label>Channel</mat-label>
+            <mat-select formControlName="channel_id">
+              <mat-option
+                *ngFor="let channel of ChannelList"
+                title=" {{ channel.name }}"
+                [value]="channel.id"
+              >
+                {{ channel.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+
+        <td>
+          <mat-form-field
+            style="width: 200px; margin-left: 50px"
+            (click)="getCourierDOcAssign()"
+          >
+            <mat-label>Courier</mat-label>
+            <input
+              #CourierInput
+              placeholder="Select Courier"
+              type="text"
+              matInput
+              formControlName="courier_id"
+              [matAutocomplete]="Courier"
+              required
+            />
+            <mat-autocomplete
+              #Courier="matAutocomplete"
+              [displayWith]="displayFnCourier"
+              (opened)="autocompleteCourierScroll2()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let Courier of CourierList"
+                  [value]="Courier"
+                >
+                  {{ Courier.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <!-- <td>
+                    <mat-form-field style="margin-left: 50px; width: 200px;">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="docstatus">
+                            <mat-option *ngFor="let type of SearchstatusList" title=" {{ type.text }}"
+                                [value]="type.id">
+                                {{ type.text }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="spacebtwfield" style="margin-left: 50px;">
+                        <input class="toolbar-search" type="text" formControlName="awb_no" matInput autocomplete="off">
+                        <mat-placeholder>AWB NO</mat-placeholder>
+                    </mat-form-field>
+                </td> -->
+        <td>
+          <mat-form-field
+            style="width: 150px; margin-left: 20px"
+            (click)="DocumenttypeDD()"
+          >
+            <input
+              #doctypeInput
+              placeholder="Select Document Type"
+              type="text"
+              matInput
+              (keypress)="Documenttype($event)"
+              (keyup.backspace)="Documenttype($event)"
+              formControlName="doctype_id"
+              [matAutocomplete]="DocType"
+            />
+            <mat-autocomplete
+              #DocType="matAutocomplete"
+              [displayWith]="displayFnDocType.bind(this)"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let DocType of documenttypeList"
+                  title="{{ DocType.name }}"
+                  [value]="DocType.id"
+                >
+                  {{ DocType.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <!-- //BUG ID:5023 -->
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 40px">
+            <input
+              class="toolbar-search"
+              type="text"
+              maxlength="64"
+              formControlName="docsubject"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Doc Subject</mat-placeholder>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td *ngIf="branchmulti">
+          <mat-form-field
+            style="width: 280px; margin-left: 50px"
+            (click)="getbranchFK()"
+          >
+            <mat-label>Select Branch(CO/DO/BRANCH VIEW)</mat-label>
+            <input
+              #branchInput
+              placeholder="Select Branch(CO/DO/BRANCH VIEW)"
+              matInput
+              formControlName="branch_id"
+              [matAutocomplete]="branch"
+            />
+            <mat-autocomplete
+              #branch="matAutocomplete"
+              [displayWith]="displayFnbranch.bind(this)"
+              (opened)="autocompletebranchScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let branch of branchList"
+                  (click)="getbranch()"
+                  title="{{ branch.code }}-{{ branch.name }}"
+                  [value]="branch"
+                >
+                  {{ branch.code }}-{{ branch.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <td *ngIf="branchsingle">
+          <mat-form-field style="width: 280px; margin-left: 40px">
+            <mat-label>Select Branch(CO/DO/BRANCH VIEW)</mat-label>
+            <input class="toolbar-search" readonly [value]="single" matInput />
+          </mat-form-field>
+        </td>
+        <!-- <div>
+                       <mat-radio-group [(ngModel)]="selectedOption">
+                          <mat-radio-button value="type">Type</mat-radio-button>
+                          <mat-radio-button value="status">Status</mat-radio-button>
+                       </mat-radio-group>
+                </div> -->
+
+        <td>
+          <mat-radio-group [(ngModel)]="selectedOption" formControlName="radio">
+            <mat-radio-button
+              *ngFor="let type of headerfilter"
+              [value]="type.value"
+              style="margin-left: 110px"
+              (click)="radioclick(type.value)"
+            >
+              {{ type.display }}<br />
+            </mat-radio-button>
+          </mat-radio-group>
+        </td>
+
+        <div *ngIf="selectedOption === 1">
+          <td>
+            <mat-form-field style="margin-left: 15px; width: 150px">
+              <mat-label>Type</mat-label>
+              <mat-select
+                [(value)]="statusselected"
+                formControlName="assignedto"
+              >
+                <mat-option
+                  *ngFor="let type of HeaderDocstatusList"
+                  title=" {{ type.text }}"
+                  [value]="type.id"
+                >
+                  {{ type.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </div>
+
+        <div *ngIf="selectedOption === 2">
+          <td>
+            <mat-form-field style="margin-left: 15px; width: 200px">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="docstatus">
+                <mat-option
+                  *ngFor="let type of SearchstatusList"
+                  title=" {{ type.text }}"
+                  [value]="type.id"
+                >
+                  {{ type.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </div>
+        <!-- <td>
+                                <mat-radio-group  formControlName="assignedto">
+                                    <label>Type</label>
+                                    <mat-radio-button *ngFor="let type of typefilter" [value]="type.value"
+                                        style="margin-left: 4px;" (click)="typeclick(type.value)">
+                                        {{type.display}}<br>
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                            </td>
+
+                            <td>
+                                <mat-radio-group  formControlName="docstatus">
+                                    <label>Status</label>
+                                    <mat-radio-button *ngFor="let status of docstatus" [value]="status.value"
+                                        style="margin-left: 4px;" (click)="statusclick(status.value)">
+                                        {{status.display}}
+                                    </mat-radio-button>
+                                    <br class="radio-button-spacing">
+                                </mat-radio-group>
+                            </td> -->
+
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              maxlength="20"
+              formControlName="awb_no"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>AWB NO</mat-placeholder>
+          </mat-form-field>
+        </td>
+      </tr>
+      <!-- //BUG ID:9132 -->
+      <tr>
+        <td>
+          <div>
+            <mat-form-field style="width: 200px" (click)="docRefDeptDD()">
+              <mat-label>Select Ref Dept</mat-label>
+              <input
+                #refdeptInput
+                placeholder="Select Ref Dept"
+                formControlName="assigndept_id"
+                matInput
+                [matAutocomplete]="refdept"
+                (keypress)="docRefDept($event)"
+                (keyup.backspace)="docRefDept($event)"
+              />
+              <mat-autocomplete
+                #refdept="matAutocomplete"
+                [displayWith]="displayFnrefdept"
+                (opened)="autocompleteassignrefdeptScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let ref of refdeptList"
+                    (click)="
+                      resetEmp(InwardDocAssignSummaryList, 'summary', ref)
+                    "
+                    title="{{ ref.fullname }}"
+                    [value]="ref"
+                  >
+                    {{ ref.fullname }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </td>
+        <!-- ////// -->
+
+        <!-- ///////8935 -->
+        <td style="margin-left: 50px">
+          <button
+            class="buttonsize btn btn-outline-primary"
+            style="margin-left: -16px"
+            (click)="getInwardDocAssignsummary('')"
+            color="primary"
+          >
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+        </td>
+
+        <td style="margin-left: 30px">
+          <button
+            style="border-radius: 40px; margin-left: -308px"
+            class="btn btn-outline-primary"
+            (click)="resetInwardDocAssign(); getInwardDocAssignsummary('')"
+            color="primary"
+          >
+            Reset
+          </button>
+        </td>
+        <td style="margin-left: 30px">
+          <button
+            type="button"
+            class="buttonsize btn btn-outline-success"
+            (click)="downloadFileXLSX('assign')"
+            style="border-radius: 40px; margin-left: -563px"
+          >
+            <span class="fa fa-download"></span> Report
+          </button>
+        </td>
+      </tr>
+      <!-- <tr>
+                <td>
+                    <button class="buttonsize btn btn-outline-primary" (click)="getInwardDocAssignsummary('')"
+                        color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </td>
+                <td> <button style="border-radius: 40px;" class="btn btn-outline-primary"
+                        (click)="resetInwardDocAssign(); getInwardDocAssignsummary('')" color="primary">Reset</button>
+                </td>
+                <td>
+
+                    <button type="button" class="buttonsize btn btn-outline-success"
+                        (click)="downloadFileXLSX('assign')" style="border-radius:40px;">
+                        <span class="fa fa-download"></span> Report</button>
+                </td>
+
+
+            </tr> -->
+    </table>
+  </form>
+  <fieldset [disabled]="ischanged">
+    <div
+      class="table-responsive"
+      style="margin-top: 1%; width: 94%; margin-left: 50px"
+    >
+      <table class="table scrolltable table-bordered" fixed-header>
+        <thead>
+          <tr class="table_header" fixed-header style="text-align: center">
+            <th>S.No</th>
+            <th>Inward No</th>
+            <th>Date</th>
+            <th>Doc Number</th>
+            <th>Branch</th>
+            <th>Doc Type</th>
+            <!-- //5023 -->
+            <th>Doc Subject</th>
+            <th>File View</th>
+            <th>Ref Dept <span style="color: red">*</span></th>
+            <th>Action Type <span style="color: red">*</span></th>
+            <!-- <th>Tenor</th> -->
+            <!-- <th>TAT</th> -->
+             <th>Due Date<span style="color: red">*</span></th>
+            <th>Assign To <span style="color: red">*</span></th>
+            <th *ngIf="this.InwardDocAssignSummarySearchForm.value.docstatus == 2 || showReassignHeader">Reassign</th>
+            <th>Status</th>
+            <th>Physical Doc Action</th>
+            <!-- <th>RMU Code</th> -->
+            <th>Assignor Remarks</th>
+            <th>Attachment</th>
+            <th>AWB No</th>
+            <th>Channel</th>
+            <th>Courier</th>
+            <th>Select for Bulk</th>
+            <th>Save</th>
+            <th>Tran History</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inward of InwardDocAssignSummaryList; index as i">
+            <!-- <td>{{i+1}}</td> -->
+            <td>
+              {{
+                (inwarddocassignpresentpage - 1) * pageSize_docassign + i + 1
+              }}
+            </td>
+            <td>{{ inward?.inward_no }}</td>
+            <td>{{ inward?.date | date : "dd-MMM-yyyy" }}</td>
+            <td>{{ inward?.docnumber }}</td>
+            <td>{{ inward?.branch_id?.fullname }}</td>
+            <td>{{ inward?.doctype_id?.name }}</td>
+            <td>
+              {{
+                inward?.docsubject?.length > 25
+                  ? (inward?.docsubject | slice : 0 : 25) + ".."
+                  : inward?.docsubject
+              }}
+            </td>
+            <td>
+              <span
+                class="material-icons"
+                aria-hidden="true"
+                (click)="HeaderFiles(inward)"
+                data-toggle="modal"
+                data-target=".bd-examplethreeComment-modal-lg"
+              >
+                visibility
+              </span>
+            </td>
+            <td>
+              <!-- <div *ngIf="inward?.docstatus == 'Open'; else refdoccode "> -->
+              <div
+                *ngIf="
+                  inward?.docstatus == 'Open' || inward?.docstatus == 'Return';
+                  else refdoccode
+                "
+              >
+                <mat-form-field style="width: 200px" (click)="docRefDeptDD()">
+                  <mat-label
+                    >Select Ref Dept<span class="mandatory">*</span></mat-label
+                  >
+                  <!-- <input #refdeptInput placeholder="Select Ref Dept" matInput [matAutocomplete]="refdept"
+                                    [ngModel]="inward.assigndept_id" (ngModelChange)="inward.assigndept_id = $event"
+                                    (keypress)="docRefDept( $event)" (keyup.backspace)="docRefDept( $event)" > -->
+                  <input
+                    #refdeptInput
+                    placeholder="Select Ref Dept"
+                    matInput
+                    [matAutocomplete]="refdept"
+                    [ngModel]="inward.assigndept_id"
+                    (ngModelChange)="inward.assigndept_id = $event"
+                    (keyup)="docRefDept($event)"
+                  />
+                  <mat-autocomplete
+                    #refdept="matAutocomplete"
+                    [displayWith]="displayFnrefdept"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let ref of refdeptList"
+                        [disabled]="ischanged"
+                        (click)="resetEmpData(inward, 'summary')"
+                        title="{{ ref.fullname }}"
+                        [value]="ref"
+                      >
+                        {{ ref.fullname }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <ng-template #refdoccode>
+                {{ inward?.assigndept_id?.fullname }}
+              </ng-template>
+            </td>
+            <td>
+              <!-- <div *ngIf="inward?.docstatus == 'Open' || inward?.docstatus == 'Return'; else refactiontypecode "> -->
+              <mat-form-field style="width: 100px">
+                <mat-label
+                  >Action Type<span class="mandatory">*</span></mat-label
+                >
+                <mat-select
+                  [ngModel]="inward.actiontype"
+                  (ngModelChange)="inward.actiontype = $event"
+                  [disabled]="
+                    inward?.docstatus == 'Closed' ||
+                    inward.docstatus == 'Reopen' ||
+                    inward?.docstatus == 'Pending' ||
+                    this.isbranch == true
+                  "
+                >
+                  <mat-option
+                    *ngFor="let type of actionTypeList"
+                    [disabled]="ischanged && inward.docstatus != 'Return'"
+                    title="{{ type.text }}--Tenor {{ type.tenure }}"
+                    (click)="tenureAutoFill(type, inward)"
+                    [value]="type.id"
+                  >
+                    {{ type.text }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <!-- </div> -->
+
+              <!-- <ng-template #refdoccode>
+                        {{inward?.assigndept_id?.fullname}}
+                    </ng-template> -->
+            </td>
+            <!-- <td>
+              <mat-form-field class="tenor" style="width: 50px">
+                <input
+                  matInput
+                  [ngModel]="inward.tenor"
+                  placeholder="TAT"
+                  [disabled]="
+                    inward?.docstatus != 'Open' || this.isbranch == true
+                  "
+                  (ngModelChange)="inward.tenor = $event"
+                />
+              </mat-form-field>
+            </td> -->
+            <td *ngIf="inward?.docstatus == 'Closed' || inward.docstatus == 'Reopen'||inward?.docstatus== 'Pending' || this.isbranch==true" >{{inward?.response_due_date | date:'dd-MMM-yyyy' }}</td>
+            <td *ngIf="!(inward?.docstatus == 'Closed' || inward.docstatus == 'Reopen'||inward?.docstatus== 'Pending' || this.isbranch==true)">
+                <mat-form-field class="example-full-width" style="margin-left: 50px;">
+                    <mat-label>Due Date</mat-label>
+                    <input matInput [(ngModel)]="inward.responseDueDate" readonly [matDatepicker]="picker12" [min]="minDate"
+                     placeholder="From Date" >
+                    <mat-datepicker-toggle matSuffix [for]="picker12"></mat-datepicker-toggle>
+                    <mat-datepicker #picker12></mat-datepicker>
+                </mat-form-field>
+            </td>
+            <!-- // Assign  to starts here -->
+            <td>   
+              <!-- <div *ngIf="inward?.docstatus == 'Open'; else empDoccode "> -->
+              <div
+                *ngIf="
+                  inward?.docstatus == 'Open' || inward?.docstatus == 'Return';
+                  else empDoccode
+                "
+              >
+                <!-- <div *ngIf="inward.actiontype == 1 && this.pendingreassign != true && i != pendingreassignindexx
+                ; else empshow">All</div> -->
+                <div *ngIf="inward.actiontype == 1; else empshow">All</div>
+
+                <ng-template #empshow>
+                  <mat-form-field style="width: 200px">
+                    <mat-label
+                      >Employee Name <span class="mandatory">*</span></mat-label
+                    >
+                    <input
+                      [disabled]="ischanged"
+                      #empInput
+                      placeholder="Select Employee"
+                      matInput
+                      [matAutocomplete]="emp"
+                      (click)="
+                        getemployeeFK($event, inward.assigndept_id, 'summary')
+                      "
+                      (keydown.Tab)="
+                        getemployeeFK($event, inward.assigndept_id, 'summary')
+                      "
+                      (keyup.backspace)="
+                        getemployeeFK($event, inward.assigndept_id, 'summary')
+                      "
+                      (keypress)="
+                        getemployeeFK($event, inward.assigndept_id, 'summary')
+                      "
+                      [ngModel]="inward.assignemployee_id"
+                      (ngModelChange)="inward.assignemployee_id = $event"
+                    />
+                    <mat-autocomplete
+                      #emp="matAutocomplete"
+                      [displayWith]="displayFnemp"
+                    >
+                      <mat-option *ngIf="isLoading" class="is-loading"
+                        >Loading...</mat-option
+                      >
+                      <ng-container *ngIf="!isLoading">
+                        <mat-option
+                          *ngFor="let emp of employeeList"
+                          [value]="emp"
+                          title="{{ emp.full_name }}"
+                          >{{ emp.full_name }}
+                        </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <button
+                    class="btn btn-primary"
+                    style="border-radius: 40px"
+                    (click)="emppushToIndividual(i, inward)"
+                  >
+                    Add
+                  </button>
+                  <!-- <p *ngIf="inward.emp_ass_key?.length > 0 else olddatashow"> -->
+                  <p *ngIf="inward.emp_ass_key?.length > 0">
+                    Selected Assignee:
+                  </p>
+                  <div
+                    *ngFor="let emp of inward.emp_ass_key; index as empindex"
+                  >
+                    {{ empindex + 1 }}. {{ emp.full_name }}
+                    <div *ngIf="empindex == 0">
+                      <small> (Primary Assigner)</small>
+                    </div>
+                    <div *ngIf="empindex == 1">
+                      <small> (Secondary Assigner)</small>
+                    </div>
+                    <div *ngIf="empindex == 2">
+                      <small> (Third Assigner)</small>
+                    </div>
+
+                    <span
+                      class="material-icons"
+                      (click)="deleteEmpremove(empindex, emp, inward)"
+                      >delete</span
+                    >
+                  </div>
+
+                </ng-template>
+              </div>
+
+              <ng-template #empDoccode>
+                <!-- {{inward?.assignemployee_id?.full_name}} -->
+                <div *ngIf="inward.actiontype == 1; else empshowSubmit">
+                  All
+                </div>
+                <ng-template #empshowSubmit>
+                  <p *ngIf="inward.emp_ass_key?.length > 0 else olddatashow">
+                    Selected Assignee:
+                  </p>
+                  <div
+                    *ngFor="let emp of inward.emp_ass_key; index as empindex"
+                  >
+                    {{ empindex + 1 }}. {{ emp.full_name }}
+                  </div>
+                 
+
+
+                  <!-- during reassign If all already selected employees deleted ,in summary old assigned data should retain -->
+                  <ng-template #olddatashow>
+
+                    <p *ngIf="oldassigndata?.length > 0 && inward.emp_ass_key?.length == 0 "></p>
+                    <div
+                      *ngFor="let emp of oldassigndata; index as empindex">
+                      {{ empindex + 1 }}. {{ emp.full_name }}
+                    </div>
+                  </ng-template>
+                   <!-- /// -->
+                </ng-template>
+                
+                
+              </ng-template>
+            </td>
+            <td *ngIf="inward?.docstatus === 'Pending' ">
+              <ng-container *ngIf="inward?.docstatus === 'Pending' && inward?.actiontype != 1; else toshow">
+                <span 
+                  class="material-icons"
+                  role="button"
+                  (click)="pendingreassignclk(i, inward)"
+                  data-toggle="modal" data-target="#viewtran"
+                >
+                  person_add
+                </span>
+              </ng-container>
+            
+              <ng-template #toshow>
+                <p *ngIf="inward?.docstatus === 'Pending' && inward?.actiontype == 1 ">ReAssign not Applicable</p>
+                 <!-- <p>REassign NOt Applicable</p> -->
+              </ng-template>
+            </td>
+            
+            <td>
+              {{ inward?.docstatus }}
+            </td>
+            <td>
+              <mat-form-field style="width: 100px">
+                <mat-label>Doc Action</mat-label>
+                <mat-select
+                  [ngModel]="inward.docaction"
+                  (ngModelChange)="inward.docaction = $event"
+                  [disabled]="
+                    inward?.docstatus == 'Closed' ||
+                    inward?.docstatus == 'Reopen' ||
+                    inward?.docstatus == 'Pending' ||
+                    this.isbranch == true
+                  "
+                >
+                  <mat-option
+                    *ngFor="let type of PhysicalstatusList"
+                    [disabled]="ischanged"
+                    title="{{ type.text }}"
+                    [value]="type.id"
+                  >
+                    {{ type.text }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  [ngModel]="inward.assignremarks"
+                  maxlength="200"
+                  [matTooltip]="inward?.assignremarks"
+                  placeholder="Assignor remarks"
+                  autocomplete="off"
+                  [disabled]="
+                    inward?.docstatus == 'Closed' ||
+                    inward?.docstatus == 'Reopen' ||
+                    inward?.docstatus == 'Pending' ||
+                    this.isbranch == true
+                  "
+                  (ngModelChange)="inward.assignremarks = $event"
+                />
+              </mat-form-field>
+            </td>
+            <td>
+              <!-- <div *ngIf="inward?.docstatus == 'Open'; else fileDOCcode "> -->
+              <div
+                *ngIf="
+                  inward?.docstatus == 'Open' || inward?.docstatus == 'Return';
+                  else fileDOCcode
+                "
+              >
+                <!-- <label for="fileInput">Add File</label> -->
+                <input
+                  type="file"
+                  id="uploadFile"
+                  [disabled]="ischanged"
+                  class="choose-file"
+                  multiple
+                  (change)="onFileSelected($event, i, inward)"
+                  style="width: 100px"
+                  name="uploadFile"
+                />
+                <span
+                  class="material-icons"
+                  (click)="deleteFileOnParticular(i, inward)"
+                  >delete</span
+                >
+
+                <div *ngIf="inward?.filearray?.length > 0">
+                  <div *ngFor="let files of inward?.filearray; let index = index">
+                    <p
+                      (click)="filepreview(files)"
+                      data-toggle="modal"
+                      data-target="#my-modalpreview"
+                      style="color: #0000ee; cursor: pointer"
+                    >
+                      {{ index + 1 }}.{{ files?.name }}
+                    </p>
+                    <span (click)="deleteInlineFile(inward, i, index)">X</span>
+                  </div>
+                </div>
+              </div>
+              <ng-template #fileDOCcode> -- </ng-template>
+            </td>
+            <td>{{ inward?.awbno }}</td>
+            <td>{{ inward?.channel_id?.name }}</td>
+            <td>{{ inward?.courier_id?.name }}</td>
+            <!-- <td>VIEW</td> -->
+
+            <!-- <td>{{inward?.rmucode}}</td> -->
+            <td>
+              <!-- <div *ngIf="inward?.docstatus == 'Open'; else checkboxvalidation "> -->
+              <div
+                *ngIf="
+                  inward?.docstatus == 'Open' || inward?.docstatus == 'Return';
+                  else checkboxvalidation
+                "
+              >
+                <input
+                  type="checkbox"
+                  [checked]="inward.assigncheck_key == true"
+                  (click)="bulkIDCollection(inward, i, $event)"
+                />
+              </div>
+              <ng-template #checkboxvalidation> -- </ng-template>
+            </td>
+            <td>
+              <!-- <div *ngIf="inward?.docstatus == 'Open'; else savevalidation "> -->
+              <div
+                *ngIf="
+                  inward?.docstatus == 'Open' || inward?.docstatus == 'Return';
+                  else savevalidation
+                "
+              >
+                <button
+                  type="button"
+                  style="border-radius: 40px; margin-left: 15px"
+                  [disabled]="inward.check_key"
+                  [disabled]="issave"
+                  class="btn btn-outline-success"
+                  (click)="submitAssign(inward, i,2)"
+                >
+                  Submit
+                </button>
+              </div>
+              <ng-template #savevalidation> -- </ng-template>
+            </td>
+            <!-- //BUG ID:4985 -->
+            <td>
+              <span
+                class="material-icons history"
+                (click)="gettranhistory(inward, '')"
+                data-toggle="modal"
+                data-target=".bd-examplethree-modal-lg">
+                history
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </fieldset>
+  <div
+    *ngIf="InwardDocAssignSummaryList?.length == 0; else paginationassign"
+    class="NodataAlign"
+  >
+    No Records Found...
+  </div>
+  <!-- <ng-template #paginationassign>
+        <div style="font-size: small;text-align: right;cursor: pointer;">
+            <button mat-icon-button [disabled]="has_previousDocAssign == false" color="primary"
+                (click)="getInwardDocAssignsummary('previous')">
+                <mat-icon style="cursor: pointer;">arrow_back</mat-icon>
+            </button>
+            {{currentpageDocAssign}}
+            <button mat-icon-button [disabled]="has_nextDocAssign == false" color="primary"
+                (click)="getInwardDocAssignsummary('next')">
+                <mat-icon style="cursor: pointer;">arrow_forward</mat-icon>
+            </button>
+        </div>
+    </ng-template> -->
+  <!-- //BUG ID:6048 -->
+  <ng-template #paginationassign>
+    <div class="row" *ngIf="issummarypagedocassign" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+        <p
+          style="
+            color: black;
+            font-size: 18px;
+            font-weight: 500;
+            margin-left: -190px;
+          "
+        >
+          Total Count:{{ totalcountdocassign }}
+        </p>
+      </div>
+      <div
+        class="col-sm-9"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: right;
+          left: 15%;
+        "
+      >
+        <mat-paginator
+          (page)="handlePageEvent2($event)"
+          [length]="length_docassign"
+          [pageSize]="pageSize_docassign"
+          [showFirstLastButtons]="showFirstLastButtonsdocassign"
+          [pageSizeOptions]="pageSizeOptionsdocassign"
+          [pageIndex]="pageIndexdocassign"
+          [hidePageSize]="true"
+          aria-label="Select page"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+  </ng-template>
+  <!-- ////// -->
+
+  <div style="margin-left: 50px; margin-bottom: 100px" *ngIf="checkboxShow">
+    <form [formGroup]="BulkUpdate">
+      <table border="0">
+        <tr>
+          <td>
+            <mat-form-field
+              style="width: 250px; margin-left: 50px"
+              (click)="docRefDeptDD()"
+            >
+              <mat-label>Ref Dept *</mat-label>
+              <input
+                #refdeptInput
+                placeholder="Select Ref Dept"
+                matInput
+                [matAutocomplete]="refdept"
+                formControlName="assigndept_id"
+                (keypress)="docRefDept($event)"
+                (keyup.backspace)="docRefDept($event)"
+              />
+              <mat-autocomplete
+                #refdept="matAutocomplete"
+                [displayWith]="displayFnrefdept"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let ref of refdeptList"
+                    (click)="resetEmpData('', 'form')"
+                    title="{{ ref.name }}"
+                    [value]="ref"
+                    required
+                  >
+                    {{ ref.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field style="width: 200px; margin-left: 50px">
+              <mat-label>Action Type *</mat-label>
+              <mat-select formControlName="actiontype">
+                <mat-option
+                  *ngFor="let type of actionTypeList"
+                  title="{{ type.text }}"
+                  (click)="tenureAutoFillBulk(type)"
+                  [value]="type.id"
+                  required
+                >
+                  {{ type.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <!-- <mat-form-field style="width: 200px; margin-left: 50px"> -->
+              <!-- <mat-label>TAT *</mat-label> -->
+              <!-- <input
+                matInput
+                formControlName="tenor"
+                placeholder="TAT"
+                required
+              />
+            </mat-form-field> -->
+            <mat-form-field style="width: 200px;">
+              <mat-label> Due Date</mat-label>
+              <input matInput  readonly [matDatepicker]="picker1" autocomplete="off"
+              placeholder="Date Of Birth" formControlName="due_date">
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td *ngIf="isemployee">
+            <div
+              *ngIf="BulkUpdate.value.actiontype == 1; else selectofemployee"
+            >
+              Selected Assignee: ALL
+            </div>
+            <ng-template #selectofemployee>
+              <mat-form-field style="width: 200px; margin-left: 50px">
+                <mat-label>Employee Name *</mat-label>
+                <input
+                  #empInput
+                  placeholder="Select Employee"
+                  matInput
+                  [matAutocomplete]="emp"
+                  (click)="
+                    getemployeeFK(
+                      $event,
+                      this.BulkUpdate?.value.assigndept_id,
+                      'form'
+                    )
+                  "
+                  (keydown.Tab)="
+                    getemployeeFK(
+                      $event,
+                      this.BulkUpdate?.value.assigndept_id,
+                      'form'
+                    )
+                  "
+                  (keyup.backspace)="
+                    getemployeeFK(
+                      $event,
+                      this.BulkUpdate?.value.assigndept_id,
+                      'form'
+                    )
+                  "
+                  (keypress)="
+                    getemployeeFK(
+                      $event,
+                      this.BulkUpdate?.value.assigndept_id,
+                      'form'
+                    )
+                  "
+                  formControlName="assignemployee_id"
+                />
+                <mat-autocomplete
+                  #emp="matAutocomplete"
+                  [displayWith]="displayFnemp"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let emp of employeeList"
+                      title="{{ emp.full_name }}"
+                      [value]="emp"
+                      required
+                      >{{ emp.full_name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+              </mat-form-field>
+
+              <button
+                class="btn btn-primary"
+                style="border-radius: 40px"
+                (click)="employeeOnBluk()"
+              >
+                Add
+              </button>
+
+              <p>Selected Assignee:</p>
+              <div
+                *ngFor="
+                  let emp of BulkUpdate.value.selectedEmployees;
+                  index as empindex
+                "
+              >
+                {{ empindex + 1 }}. {{ emp.full_name }}
+                <div *ngIf="empindex == 0">
+                  <small> (Primary Assigner)</small>
+                </div>
+                <div *ngIf="empindex == 1">
+                  <small> (Secondary Assigner)</small>
+                </div>
+                <div *ngIf="empindex == 2">
+                  <small> (Third Assigner)</small>
+                </div>
+
+                <span
+                  class="material-icons"
+                  (click)="deleteEmpremoveBulk(empindex)"
+                  >delete</span
+                >
+              </div>
+            </ng-template>
+          </td>
+          <td>
+            <mat-form-field style="width: 100px">
+              <mat-label>Doc Action</mat-label>
+              <mat-select formControlName="docaction">
+                <mat-option
+                  *ngFor="let type of PhysicalstatusList"
+                  title="{{ type.text }}"
+                  [value]="type.id"
+                >
+                  {{ type.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field class="example-full-width">
+              <input
+                matInput
+                formControlName="assignremarks"
+                maxlength="200"
+                placeholder="Assignor remarks"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          </td>
+        </tr>
+        <!-- /for bulk submit choose File -->
+        <tr>
+          <td>
+            <!-- <div *ngIf="inward?.docstatus == 'Open'; else fileDOCcode "> -->
+            <div>
+              <!-- <label for="fileInput">Add File</label> -->
+              <input
+                type="file"
+                id="uploadFile"
+                [disabled]="ischanged"
+                class="choose-file"
+                multiple
+                (change)="onbulkFileSelected($event)"
+                style="width: 100px"
+                name="uploadFile"
+              />
+              <!-- <span class="material-icons" (click)="deleteFileOnParticular(i, inward )">delete</span> -->
+
+              <div *ngIf="BulkUpdate.value.filearray?.length > 0">
+                <div
+                  *ngFor="
+                    let files of BulkUpdate?.value.filearray;
+                    let index = index
+                  "
+                >
+                  <p
+                    (click)="filepreview(files)"
+                    data-toggle="modal"
+                    data-target="#my-modalpreview"
+                    style="color: #0000ee; cursor: pointer"
+                  >
+                    {{ index + 1 }}.{{ files?.name }}
+                  </p>
+                  <span (click)="deletebulkInlineFile(index)">X</span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <!-- //// -->
+        <tr>
+          <td>
+            <button
+              type="button"
+              style="border-radius: 40px; margin-left: 15px"
+              class="btn btn-outline-success"
+              (click)="savedataBulkDocAssign()"
+            >
+              Bulk Submit
+            </button>
+
+            <button
+              style="border-radius: 40px; margin-left: 15px"
+              class="btn btn-outline-primary"
+              (click)="bulkreset()"
+              color="primary"
+            >
+              Reset
+            </button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  <!-- <pre>
+        {{ BulkUpdate.value | json}}
+        </pre> -->
+
+  <!-- <br>
+    <pre>
+    {{InwardDocAssignSummaryList | json}}
+    </pre>
+    <br> -->
+</div>
+
+<!-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!-- //Document Response screen starts -->
+
+<div *ngIf="isinwardDocumentResponse">
+  <form [formGroup]="InwardDocResponsesummarySearchForm">
+    <h2 style="margin-left: 5%" class="headertitle">
+      Inward Document Response Summary
+    </h2>
+    <table>
+      <tr>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              formControlName="inward_no"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Inward No</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              formControlName="docnumber"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Doc Number</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" style="margin-left: 50px">
+            <mat-label>From Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker1"
+              placeholder="From Date"
+              formControlName="fromdate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" style="margin-left: 50px">
+            <mat-label>To Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker2"
+              placeholder="To Date"
+              formControlName="todate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker2"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field style="margin-left: 50px">
+            <mat-label>Channel</mat-label>
+            <mat-select formControlName="channel_id">
+              <mat-option
+                *ngFor="let channel of ChannelList"
+                title=" {{ channel.name }}"
+                [value]="channel.id"
+              >
+                {{ channel.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+
+        <td>
+          <mat-form-field
+            style="width: 200px; margin-left: 50px"
+            (click)="getCourierDocResponse()"
+          >
+            <mat-label>Courier</mat-label>
+            <input
+              #CourierInput
+              placeholder="Select Courier"
+              type="text"
+              matInput
+              formControlName="courier_id"
+              [matAutocomplete]="Courier"
+            />
+            <mat-autocomplete
+              #Courier="matAutocomplete"
+              [displayWith]="displayFnCourier.bind(this)"
+              (opened)="autocompleteCourierScroll3()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let Courier of CourierList"
+                  title=" {{ Courier.name }}"
+                  [value]="Courier.id"
+                >
+                  {{ Courier.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field style="margin-left: 50px; width: 200px">
+            <mat-label>Status</mat-label>
+            <mat-select [(value)]="statusselected1" formControlName="docstatus">
+              <mat-option
+                *ngFor="let type of SearchstatusListres"
+                title="{{ type.text }}"
+                [value]="type.id"
+              >
+                {{ type.text }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 50px">
+            <input
+              class="toolbar-search"
+              type="text"
+              maxlength="20"
+              formControlName="awb_no"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>AWB NO</mat-placeholder>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <!-- <td>
+                    <mat-form-field style="width: 200px; margin-left: 50px;" (click)="getbranchFK()">
+                        <mat-label>Select Branch Code</mat-label>
+                        <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch_id"
+                            [matAutocomplete]="branch">
+                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch.bind(this)"
+                            (opened)="autocompletebranchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branchList" (click)="getbranchdata()" title=" {{branch.code}}-{{branch.name}}"
+                                    [value]="branch.id">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td> -->
+        <!-- <td>
+                    <mat-form-field style="margin-left: 50px; width: 200px;">
+                        <mat-label>Type</mat-label>
+                        <mat-select formControlName="assignedto">
+                            <mat-option *ngFor="let type of HeaderDocstatusListResponse" title=" {{ type.text }}"
+                                [value]="type.id">
+                                {{ type.text }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td> -->
+        <td>
+          <mat-form-field
+            style="width: 200px; margin-left: 50px"
+            (click)="DocumenttypeDD()"
+          >
+            <input
+              #doctypeInput
+              placeholder="Select Document Type"
+              type="text"
+              matInput
+              (keypress)="Documenttype($event)"
+              (keyup.backspace)="Documenttype($event)"
+              formControlName="doctype_id"
+              [matAutocomplete]="DocType"
+            />
+            <mat-autocomplete
+              #DocType="matAutocomplete"
+              [displayWith]="displayFnDocType.bind(this)"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let DocType of documenttypeList"
+                  title="{{ DocType.name }}"
+                  [value]="DocType.id"
+                >
+                  {{ DocType.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="spacebtwfield" style="margin-left: 40px">
+            <input
+              class="toolbar-search"
+              type="text"
+              formControlName="docsubject"
+              matInput
+              autocomplete="off"
+            />
+            <mat-placeholder>Doc Subject</mat-placeholder>
+          </mat-form-field>
+        </td>
+        <!-- </tr> -->
+        <!-- <tr> -->
+
+        <td>
+          <button
+            class="buttonsize btn btn-outline-primary"
+            (click)="getInwardDocResponsesummary('')"
+            color="primary"
+            style="margin-left: -107px"
+          >
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+        </td>
+        <td>
+          <button
+            style="border-radius: 40px; margin-left: -458px"
+            class="btn btn-outline-primary"
+            (click)="resetInwardDocResponse(); getInwardDocResponsesummary('')"
+            color="primary"
+          >
+            Reset
+          </button>
+        </td>
+        <td>
+          <button
+            type="button"
+            class="buttonsize btn btn-outline-success"
+            (click)="downloadFileXLSX('response')"
+            style="border-radius: 40px; margin-left: -463px"
+          >
+            <span class="fa fa-download"></span> Report
+          </button>
+        </td>
+      </tr>
+    </table>
+  </form>
+  <!-- <fieldset [disabled]="ischanged"> -->
+  <div
+    class="table-responsive"
+    style="margin-top: 1%; width: 94%; margin-left: 50px"
+  >
+    <table class="table scrolltable table-bordered" fixed-header>
+      <thead>
+        <tr class="table_header" fixed-header style="text-align: center">
+          <th>S.No</th>
+          <th>Inward No</th>
+          <th>Date</th>
+          <th>Doc Number</th>
+          <th>Branch</th>
+          <th>Doc Type</th>
+          <th>Doc Subject</th>
+          <th>File View</th>
+          <th>Ref Dept <span style="color: red">*</span></th>
+          <th>Action Type <span style="color: red">*</span></th>
+          <!-- <th>TAT</th> -->
+          <th>Due Date<span style="color: red">*</span></th>
+          <!-- <th>Aging</th> -->
+          <th>AGEING</th>
+          <!-- <th>Assign To</th> bug id:5016 -->
+           <th *ngIf="InwardDocResponsesummarySearchForm.value.docstatus ==  2 || showReassignHeaderres">ReAssign</th>
+          <th>Status</th>
+          <th>AWB NO</th>
+          <th>Channel</th>
+          <th>Courier</th>
+          <th>Physical Doc Action</th>
+          <!-- <th>RMU Code</th> -->
+          <th>Assign Remarks</th>
+          <th>Tran History</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inward of InwardDocResponseSummaryList; index as i">
+          <!-- <td>{{i+1}}</td> -->
+          <td>{{ (inwarddocrespresentpage - 1) * pageSize_docres + i + 1 }}</td>
+          <td>{{ inward?.inward_no }}</td>
+          <td>{{ inward?.date | date : "dd-MMM-yyyy" }}</td>
+          <td>{{ inward?.docnumber }}</td>
+          <td>{{ inward?.branch_id?.fullname }}</td>
+          <td>{{ inward?.doctype_id?.name }}</td>
+          <td>
+            {{
+              inward?.docsubject?.length > 25
+                ? (inward?.docsubject | slice : 0 : 25) + ".."
+                : inward?.docsubject
+            }}
+          </td>
+          <td>
+            <span
+              class="material-icons"
+              aria-hidden="true"
+              (click)="HeaderFiles(inward)"
+              data-toggle="modal"
+              data-target=".bd-examplethreeComment-modal-lg"
+            >
+              visibility
+            </span>
+          </td>
+          <td>
+            <div *ngIf="inward.fieldkey == false; else assigntrue">
+              <mat-form-field style="width: 200px" (click)="docRefDeptDD()">
+                <mat-label
+                  >Select Ref Dept<span class="mandatory">*</span></mat-label
+                >
+                <input
+                  #refdeptInput
+                  placeholder="Select Ref Dept"
+                  matInput
+                  [matAutocomplete]="refdept"
+                  (keypress)="docRefDept($event)"
+                  (keyup.backspace)="docRefDept($event)"
+                  [ngModel]="inward.assigndept_id"
+                  (ngModelChange)="inward.assigndept_id = $event"
+                  [disabled]="true"
+                />
+                <mat-autocomplete
+                  #refdept="matAutocomplete"
+                  [displayWith]="displayFnrefdept"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let ref of refdeptList"
+                      [disabled]="ischanged"
+                      (click)="resetEmpData(inward, 'summary')"
+                      title="{{ ref.name }}"
+                      [value]="ref"
+                    >
+                      {{ ref.fullname }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+            <ng-template #assigntrue>
+              {{ inward?.assigndept_id?.fullname }}
+            </ng-template>
+          </td>
+          <td>
+            <mat-form-field style="width: 100px">
+              <mat-label>Action Type<span class="mandatory">*</span></mat-label>
+              <mat-select
+                [ngModel]="inward.actiontype"
+                (ngModelChange)="inward.actiontype = $event"
+                [disabled]="inward.fieldkey"
+              >
+                <mat-option
+                  *ngFor="let type of actionTypeList"
+                  [disabled]="ischanged"
+                  title="{{ type.text }}"
+                  (click)="tenureAutoFill(type, inward)"
+                  [value]="type.id"
+                  [disabled]="true"
+                >
+                  {{ type.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <!-- <td>
+            <mat-form-field class="example-full-width" style="width: 50px">
+               <input matInput [ngModel]="inward.tenor" (ngModelChange)="inward.tenor = $event"
+                                autocomplete="off" [readonly]="inward.fieldkey" /> 
+              <input
+                matInput
+                [ngModel]="inward.tenor"
+                (ngModelChange)="inward.tenor = $event"
+                autocomplete="off"
+                [readonly]="true"
+              />
+            </mat-form-field>
+          </td> -->
+          <td>{{inward?.response_due_date | date:'dd-MMM-yyyy'}}</td>
+          <td>{{ inward?.age }}</td>
+          <!-- BUG ID:5016 -->
+          <!-- <td>
+                        <div *ngIf="inward.fieldkey == false; else emptrue">
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>Employee Name<span class="mandatory">*</span></mat-label>
+                                <input #empInput placeholder="Select Employee" matInput [matAutocomplete]="emp"
+                                    (click)="getemployeeFK($event, inward.assigndept_id, 'summary')"
+                                    (keyup.backspace)="getemployeeFK($event, inward.assigndept_id, 'summary')"
+                                    (keypress)="getemployeeFK($event, inward.assigndept_id, 'summary')"
+                                    [ngModel]="inward.assignemployee_id"
+                                    (ngModelChange)="inward.assignemployee_id = $event">
+                                <mat-autocomplete #emp="matAutocomplete" [displayWith]="displayFnemp">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let emp of employeeList" title="{{emp.full_name}}"
+                                            [value]="emp">{{emp.full_name}}
+                                        </mat-option>
+
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <button class="btn btn-primary" style="border-radius:40px;"
+                                (click)="emppushToIndividual(i, inward)">
+                                Add
+                            </button>
+                            <p *ngIf="inward.emp_ass_key?.length>0"> Selected Assigners: </p>
+                            <div *ngFor="let emp of inward.emp_ass_key; index as empindex ">
+                                {{empindex + 1}}. {{emp.full_name}}
+                                <div *ngIf="empindex == 0">
+                                    <small>  (Primary Assigner)</small>
+                                  </div>
+                                  <div *ngIf="empindex  == 1">
+                                     <small>   (Secondary Assigner)</small>
+                                 </div>
+                                 <div *ngIf="empindex == 2">
+                                     <small>   (Third Assigner)</small>
+                                 </div>
+                                
+                                <span class="material-icons"
+                                    (click)="deleteEmpremove(empindex, emp, inward)">delete</span>
+                            </div>
+                        </div>
+                        <ng-template #emptrue> -->
+          <!-- {{inward.assignemployee_id.full_name}}-->
+          <!-- <p *ngIf="inward.emp_ass_key?.length>0"> Selected Assigners: </p>
+                            <div *ngFor="let emp of inward.emp_ass_key; index as empindex ">
+                                {{empindex + 1}}. {{emp.full_name}}
+                                <div *ngIf="empindex == 0">
+                                    <small>  (Primary Assigner)</small>
+                                  </div>
+                                  <div *ngIf="empindex  == 1">
+                                     <small>   (Secondary Assigner)</small>
+                                 </div>
+                                 <div *ngIf="empindex == 2">
+                                     <small>   (Third Assigner)</small>
+                                 </div>
+                            </div>
+                        </ng-template>
+                    </td> -->
+                    <td *ngIf="inward?.docstatus === 'Update'">
+                      <ng-container *ngIf="inward?.docstatus === 'Update' && inward?.actiontype != 1; else toshow">
+                        <span 
+                        role="button"
+                          class="material-icons"
+                          (click)="pendingreassignclkres(i, inward)"
+                          data-toggle="modal" data-target="#viewreasign"
+                        >
+                          person_add
+                        </span>
+                      </ng-container>
+                    
+                      <ng-template #toshow>
+                        <p *ngIf="inward?.docstatus === 'Update' && inward?.actiontype == 1 ">ReAssign not Applicable</p>
+                      </ng-template>
+                    </td>
+          <td>
+            <mat-form-field style="width: 100px">
+              <mat-select
+                [ngModel]="inward.docstatus_id"
+                (ngModelChange)="inward.docstatus_id = $event"
+                [disabled]="inward.fieldkey || inward.docstatus == 'Return'"
+                (click)="
+                  statusListDataget(
+                    inward.docstatus,
+                    'Response',
+                    inward.assignemployee_id,
+                    inward.actiontype
+                  )
+                "
+                (keypress)="
+                  statusListDataget(
+                    inward.docstatus,
+                    'Response',
+                    inward.assignemployee_id,
+                    inward.actiontype
+                  )
+                "
+                (keydown.Tab)="
+                  statusListDataget(
+                    inward.docstatus,
+                    'Response',
+                    inward.assignemployee_id,
+                    inward.actiontype
+                  )
+                "
+              >
+                <!-- <mat-option *ngFor="let type of statusList" [disabled]="ischanged"
+                                    [hidden]=" type.text == selectStatusListCondition" [hidden]=" type.text == 'Open'"
+                                    title="{{ type.text }}" [value]="type.id">
+                                    {{ type.text }}
+                                </mat-option> -->
+                <!-- <mat-option *ngFor="let type of statusList" [disabled]="ischanged"
+                                [hidden]=" type.text.includes(selectStatusListCondition)" 
+                                title="{{ type.text }}" [value]="type.id">
+                                {{ type.text }}
+                            </mat-option> -->
+                <mat-option
+                  *ngFor="let type of statusList"
+                  [disabled]="ischanged"
+                  [value]="type.id"
+                  [hidden]="
+                    shouldHideOption(
+                      type.text,
+                      inward.actiontype,
+                      inward.docstatus
+                    )
+                  "
+                >
+                  {{ type.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>{{ inward?.awbno }}</td>
+          <td>{{ inward?.channel_id?.name }}</td>
+          <td>{{ inward?.courier_id?.name }}</td>
+          <td>
+            {{ inward.docaction_name }}
+          </td>
+          <!-- <td>{{inward?.rmucode}}</td> -->
+          <!-- <td>
+                        {{inward?.assignremarks}} 
+                    </td> -->
+
+          <td title="{{ inward?.remarks }}">
+            {{
+              inward?.remarks?.length > 25
+                ? (inward?.remarks | slice : 0 : 25) + ".."
+                : inward?.remarks
+            }}
+          </td>
+          <!-- <td> -->
+          <td>
+            <span
+              class="material-icons history"
+              (click)="gettranhistory(inward, '')"
+              data-toggle="modal"
+              data-target=".bd-examplethree-modal-lg"
+            >
+              history
+            </span>
+          </td>
+
+          <td>
+            <button
+              mat-icon-button
+              [disabled]="inward.docstatus == 'Return'"
+              class="iconbutton"
+              (click)="
+                ChoosedataDocResponse(inward, i, $event); openFirstModal()
+              "
+              matTooltip="edit"
+            >
+              <mat-icon *ngIf="inward.docstatus != 'Return'" class="comment">edit</mat-icon>
+              <mat-icon *ngIf="inward.docstatus == 'Return'" class="color">edit</mat-icon>
+
+            </button>
+
+            <!-- <input type="checkbox" [disabled]="inward.check_key" [checked]="inward.assigncheck_key == true"
+                            > -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- </fieldset> -->
+  <div
+    *ngIf="InwardDocResponseSummaryList?.length == 0; else paginationresponse"
+    class="NodataAlign"
+  >
+    No Records Found...
+  </div>
+  <!-- <ng-template #paginationresponse>
+        <div style="font-size: small;text-align: right;margin-bottom: 100px;cursor: pointer;">
+            <button mat-icon-button [disabled]="has_previousDocResponse == false" color="primary"
+                (click)="getInwardDocResponsesummary('previous')">
+                <mat-icon style="cursor: pointer;">arrow_back</mat-icon>
+            </button>
+            {{currentpageDocResponse}}
+            <button mat-icon-button [disabled]="has_nextDocResponse == false" color="primary"
+                (click)="getInwardDocResponsesummary('next')">
+                <mat-icon style="cursor: pointer;">arrow_forward</mat-icon>
+            </button>
+        </div>
+    </ng-template> -->
+  <ng-template #paginationresponse>
+    <div class="row" *ngIf="issummarypagedocres" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+        <p
+          style="
+            color: black;
+            font-size: 18px;
+            font-weight: 500;
+            margin-left: -190px;
+          "
+        >
+          Total Count:{{ totalcountdocres }}
+        </p>
+      </div>
+      <div
+        class="col-sm-9"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: right;
+          left: 15%;
+        "
+      >
+        <mat-paginator
+          (page)="handlePageEvent3($event)"
+          [length]="length_docres"
+          [pageSize]="pageSize_docres"
+          [showFirstLastButtons]="showFirstLastButtonsdocres"
+          [pageSizeOptions]="pageSizeOptionsdocres"
+          [pageIndex]="pageIndexdocres"
+          [hidePageSize]="true"
+          aria-label="Select page"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="container chatbox" *ngIf="DivShow">
+    <h1 class="headerComment">Comments</h1>
+    <hr />
+    <h2 style="justify-content: center">Previous Comments</h2>
+    <p style="text-align: center" *ngIf="CommentList?.length == 0">
+      No Comments Found
+    </p>
+    <div class="row" id="gotodiv">
+      <br *ngIf="CommentList?.length > 0" />
+      <div class="col" *ngIf="CommentList?.length > 0">
+        <!-- <div > -->
+        <div class="row" *ngFor="let a of CommentList">
+          <!-- <div class="col-md-1"></div> -->
+          <div class="col-md-6 bordercommentBefore">
+            <p>&nbsp;{{ a.comment }}</p>
+
+            <small class="dateNtime">
+              &nbsp;<span class="material-icons" style="font-size: 12px">
+                person
+              </span>
+              {{ a.created_by.fullname }}-{{
+                a.created_by.employee_branch_code
+              }}-{{ a.created_by.employee_branch_name }}
+              &nbsp;&nbsp;
+              <span class="material-icons" style="font-size: 12px">
+                schedule
+              </span>
+              {{ a.created_date | date : "dd-MMM-yyyy h:mm:ss a" }}
+              <!-- <span class="material-icons">
+                                done_all
+                                </span> -->
+            </small>
+            <br *ngIf="CommentList?.length > 0" />
+          </div>
+          <div class="col-md-1 imageviewOnComments">
+            <mat-icon
+              (click)="getFileApiComments($event, a)"
+              data-toggle="modal"
+              data-target=".bd-examplethreeComment-modal-lg"
+            >
+              visibility</mat-icon
+            >
+          </div>
+          <div class="col-md-5"></div>
+        </div>
+        <!-- </div> -->
+      </div>
+    </div>
+    <hr *ngIf="CommentList?.length > 0" />
+    <div class="col">
+      <!-- *ngIf="CommentsShowOrHide"> -->
+      <form [formGroup]="Comments">
+        <div class="row">
+          <div class="col col-md-12">
+            <textarea
+              id="subject"
+              formControlName="comment"
+              maxlength="200"
+              name="subject"
+              placeholder="Write something.."
+              style="height: 200px"
+            ></textarea>
+            <br />
+            <small> {{ dateTimenow | date : "dd-MMM-yyyy h:mm:ss a" }}</small>
+
+            <!-- </div>
+                    <div class="col" style="border: 1px solid #ccc;"> -->
+            <br />
+
+            <div>
+              <div class="file-upload-container">
+                <input
+                  type="file"
+                  id="fileInput"
+                  class="file-input"
+                  #fileInputResponse
+                  (change)="onFileSelectedResponse($event)"
+                />
+                <label for="fileInput" class="file-upload-button"
+                  >Choose File</label
+                >
+                <span id="fileName">No file chosen</span>
+              </div>
+
+              <!-- <input
+                type="file"
+                #fileInputResponse
+                id="myfile"
+                name="myfile"
+                style="width: 110px"
+                (change)="onFileSelectedResponse($event)"
+                multiple
+              /> -->
+              <span
+                *ngIf="filearrayResponse?.length > 0"
+                class="material-icons"
+                (click)="deleteFilesResponse()"
+              >
+                delete</span
+              >
+            </div>
+
+            <!-- 
+                            <input type="file" #fileInputResponse id="uploadFile" class="choose-file" multiple
+                                (change)="onFileSelectedResponse($event)" style="width:100px;" name="uploadFile" /> -->
+
+            <div *ngIf="filearrayResponse?.length > 0">
+              <table>
+                <tr
+                  *ngFor="let files of filearrayResponse; let fileindex = index"
+                >
+                  <td>{{ fileindex + 1 }}</td>
+                  <td
+                    (click)="filepreview(files)"
+                    data-toggle="modal"
+                    data-target="#my-modalpreview"
+                    style="color: #0000ee; cursor: pointer"
+                  >
+                    {{ files?.name }}
+                  </td>
+                  <span
+                    class="material-icons"
+                    (click)="deleteFilesIndividualResponse(fileindex)"
+                  >
+                    X</span
+                  >
+                </tr>
+              </table>
+              <!-- <div 
+
+                            </div> -->
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <hr />
+      <!-- <span class="material-icons" (click)="DataResponseSubmit()" style="cursor: pointer;">
+                send
+            </span> -->
+      <button
+        class="btn btn-outline-primary"
+        type="button"
+        [disabled]="issave"
+        (click)="DataResponseSubmit('')"
+        style="border-radius: 40px; margin-left: 50px"
+      >
+        Comment
+      </button>
+    </div>
+    <br />
+    <!-- <div>
+            <button type="button" class="buttonsizeScrollTop btn btn-outline-success" title="Scroll To Top"
+                style="float: right; border-radius: 40px;" (click)="ScrollTopFunction()">
+                <span class="material-icons">keyboard_double_arrow_up</span></button>
+
+        </div> -->
+  </div>
+  <!-- <br>
+    <pre>
+{{InwardDocResponseSummaryList | json}}
+</pre>
+</br> -->
+</div>
+
+<!-- <div class="modal fade" id="comments" tabindex="-1" role="dialog" aria-labelledby="prpomodalLabel"
+     data-backdrop="static" data-keyboard="false">
+
+    <div class="modal-dialog modal-xl" role="document" style="width:66%">
+
+        <div class="modal-content"> -->
+<ng-template #comments let-modal class="modal-comments">
+  <div class="modal-header" style="background: #ddefdd">
+    <h2 class="modal-title w-100 font-weight-bold" id="prpomodalLabel">
+      Comments
+    </h2>
+    <button
+      type="button"
+      #closepopup
+      class="close"
+      (click)="modal.dismiss('Cross click')"
+      aria-label="Close"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-5">
+        <mat-card>
+          <mat-card-subtitle>Previous Comments</mat-card-subtitle>
+          <mat-card-content>
+            <p style="text-align: center" *ngIf="CommentList?.length == 0">
+              No Comments Found
+            </p>
+            <div class="row" id="gotodiv">
+              <br *ngIf="CommentList?.length > 0" />
+              <div class="col" *ngIf="CommentList?.length > 0">
+                <!-- <div > -->
+                <div class="row" *ngFor="let a of CommentList; index as i">
+                  <div class="col">{{i+1}}</div>
+                  <div class="col-md-8 bordercommentBefore">
+                    <p class="sub">&nbsp;{{ a.comment }}</p>
+                    <small class="dateNtime">
+                      <ul>
+                        <li>
+                          <span class="material-icons" style="font-size: 12px">
+                            person
+                          </span>
+                          &nbsp;
+                          {{ a.created_by.fullname }}
+                        </li>
+                        <li>
+                          <mat-icon
+                            style="font-size: 12px; width: 12px; height: 14px"
+                            >account_balance</mat-icon
+                          >
+                          &nbsp;
+                          {{ a.created_by.employee_branch_code }}-{{
+                            a.created_by.employee_branch_name
+                          }}
+                        </li>
+                        <li>
+                          <span class="material-icons" style="font-size: 12px">
+                            schedule
+                          </span>
+                          &nbsp;
+                          {{ a.created_date | date : "dd-MMM-yyyy h:mm:ss a" }}
+                        </li>
+                      </ul>
+
+                      <!-- <span class="material-icons">
+                                                    done_all
+                                                    </span> -->
+                    </small>
+                    <br *ngIf="CommentList?.length > 0" />
+                  </div>
+                  <div class="col-md-2 imageviewOnComments">
+                    <button
+                      mat-icon-button
+                      class="iconbutton"
+                      (click)="getFileApiComments($event, a)"
+                      matTooltip="View Files"
+                    >
+                      <mat-icon class="comment">visibility</mat-icon>
+                    </button>
+                    <!-- <mat-icon data-toggle="modal" matTooltip="Files attached" class="pointer"
+                                                data-target=".files" (click)="getFileApiComments(a)"> visibility</mat-icon> -->
+                    <div
+                      *ngIf="popoverVisible && selectedComment === a"
+                      class="popover"
+                    >
+                      <div class="popover-body">
+                        <table
+                          class="table table-bordered"
+                          fixed-header
+                          style="margin-left: 50px; width: 90%; margin-top: 2%"
+                        >
+                          <thead class="table_header">
+                            <tr>
+                              <th>S.No</th>
+                              <th>File Name</th>
+                              <th>View File</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr
+                              *ngFor="
+                                let file of fileListHeaderComment;
+                                index as i
+                              "
+                            >
+                              <td>{{ i + 1 }}</td>
+                              <td>{{ file.filedata.file_name }}</td>
+                              <td style="margin-left: -1%">
+                                <tr
+                                  class="btn btn-link"
+                                  style="margin-left: -1%"
+                                  data-target="#my-modal"
+                                  data-toggle="modal"
+                                  (click)="commentPopupHeaderFiles(file)"
+                                >
+                                  <i
+                                    class="fa fa-picture-o"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <!-- //bug id:4975 -->
+                                  <button
+                                    type="button"
+                                    class="buttonsize btn btn-outline-success"
+                                    (click)="filedownload(file, $event)"
+                                    style="
+                                      border-radius: 40px;
+                                      margin-left: 50px;
+                                    "
+                                  >
+                                    <span class="fa fa-download"></span>
+                                  </button>
+                                </tr>
+                              </td>
+                              <div *ngIf="fileListHeaderComment?.length == 0">
+                                No Files Found
+                              </div>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <button
+                          type="button"
+                          class="btn btn-danger"
+                          (click)="closePopover()"
+                        >
+                          Close
+                        </button>
+                      </div>
+                      <!-- <div class="col-md-5"></div> -->
+                    </div>
+                    <!-- </div> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-md-7 pl-5">
+        <mat-card style="width: 452px">
+          <mat-card-subtitle>Create Comment</mat-card-subtitle>
+          <mat-card-content>
+            <form [formGroup]="Comments">
+              <textarea
+                id="subject"
+                formControlName="comment"
+                maxlength="200"
+                name="subject"
+                placeholder="Enter your comment here.."
+              >
+              </textarea>
+              <small class="pl">
+                {{ dateTimenow | date : "dd-MMM-yyyy h:mm:ss a" }}</small
+              >
+              <hr />
+              <div>
+                <!-- <div class="file-upload-container">
+                    <input
+                      type="file"
+                      id="fileInput"
+                      class="file-input"
+                      #fileInputResponse
+                      (change)="onFileSelectedResponse($event)"
+                    />
+                    <label for="fileInput" class=""
+                      >Choose File <i class="fa fa-upload file-upload-button"></i>
+                      </label
+                    >
+                  </div> -->
+                <input
+                  type="file"
+                  #fileInputResponse
+                  id="myfile"
+                  name="myfile"
+                  style="width: 96px"
+                  (change)="onFileSelectedResponse($event)"
+                  multiple
+                />
+                <span
+                  *ngIf="filearrayResponse?.length > 0"
+                  class="material-icons size"
+                  matTooltip="Delete All"
+                  (click)="deleteFilesResponse()"
+                >
+                  delete</span
+                >
+              </div>
+              <div
+                *ngIf="filearrayResponse?.length > 0"
+                class="table-responsive"
+              >
+                <table class="table-hover">
+                  <tr
+                    *ngFor="
+                      let files of filearrayResponse;
+                      let fileindex = index
+                    "
+                  >
+                    <td>{{ fileindex + 1 }}</td>
+                    <td
+                      (click)="filepreview(files)"
+                      data-toggle="modal"
+                      data-target="#my-modalpreview"
+                      style="color: #0000ee; cursor: pointer"
+                    >
+                      {{ files?.name }}
+                    </td>
+                    <span
+                      class="material-icons"
+                      (click)="deleteFilesIndividualResponse(fileindex)"
+                    >
+                      <mat-icon class="cancel"                      
+                       matTooltip="clear"
+                      >cancel</mat-icon></span
+                    >
+                  </tr>
+                </table>
+                <!-- <div 
+        
+                                    </div> -->
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+        <!-- *ngIf="CommentsShowOrHide"> -->
+
+        <!-- <span class="material-icons" (click)="DataResponseSubmit()" style="cursor: pointer;">
+                        send
+                    </span> -->
+      </div>
+    </div>
+    <!-- <hr *ngIf="CommentList?.length > 0"> -->
+    <div>
+      <!-- <button type="button" class="buttonsizeScrollTop btn btn-outline-success" title="Scroll To Top"
+                style="float: right; border-radius: 40px;" (click)="ScrollTopFunction()">
+                <span class="material-icons">keyboard_double_arrow_up</span></button> -->
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn btn-outline-primary"
+      type="button"
+      [disabled]="issave"
+      (click)="DataResponseSubmit(modal)"
+      style="border-radius: 40px; margin-top: 10px"
+    >
+      Submit
+    </button>
+  </div>
+</ng-template>
+<!-- <div *ngIf="showimagepopupComment" id="files" class="modal modal-stack" aria-labelledby="my-modalLabel" aria-hidden="true"
+tabindex="-1" role="dialog">
+<div class="modal-dialog modal-lg modal-dialog-centered" style="width: 60%;height: 80%;" role="dialog">
+    <div class="modal-content"> -->
+<ng-template #files let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title w-100 font-weight-bold" id="prpomodalLabel">
+      Uploded Files
+    </h2>
+
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <table
+      class="table table-bordered"
+      fixed-header
+      style="margin-left: 50px; width: 90%; margin-top: 2%"
+    >
+      <thead class="table_header">
+        <tr>
+          <th>S.No</th>
+          <th>File Name</th>
+          <th>View File</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of fileListHeaderComment; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ file.filedata.file_name }}</td>
+          <td style="margin-left: -1%">
+            <tr
+              class="btn btn-link"
+              style="margin-left: -1%"
+              (click)="commentPopupHeaderFiles(file)"
+            >
+              <i class="fa fa-picture-o" aria-hidden="true"></i>
+              <!-- //bug id:4975 -->
+              <button
+                type="button"
+                class="buttonsize btn btn-outline-success"
+                (click)="filedownload(file, $event)"
+                style="border-radius: 40px; margin-left: 50px"
+              >
+                <span class="fa fa-download"></span>
+              </button>
+            </tr>
+          </td>
+          <div *ngIf="fileListHeaderComment?.length == 0">No Files Found</div>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<!-- <div *ngIf="showimageHeaderPreview" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div> -->
+<!-- <div *ngIf="showimageHeaderPreview" id="my-modal" class="modal" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog"> -->
+<ng-template #imageModal let-modal>
+  <!-- <div class="modal-dialog modal-xl" style="width: 60%;height: 80%;"> -->
+  <div class="modal-header">
+    <h2 class="modal-title w-100 font-weight-bold">Image View</h2>
+
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-content">
+    <div class="modal-body">
+      <img src="{{ jpgUrls }}" class="img-responsive" style="width: 100%" />
+    </div>
+  </div>
+  <!-- </div> -->
+</ng-template>
+
+<!-- </div> -->
+<!-- <div *ngIf="showimageHeaderPreviewPDF" id="my-modal" class="modal" aria-labelledby="my-modalLabel" aria-hidden="true"
+        tabindex="-1" role="dialog" > -->
+<ng-template #pdfModal let-modal>
+  <!-- <div class="modal-dialog modal-lg"> -->
+    <!-- <div class="modal-content"> -->
+      <div class="modal-header">
+        <h2 class="modal-title">PDF View</h2>
+        <button type="button" class="close" aria-label="Close" 
+        (click)="modal.dismiss('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <pdf-viewer
+        [src]="pdfurl"
+        [zoom]="1"
+        [render-text]="true"
+        [original-size]="false"
+        style="display: block;    
+        width: 675px; height: 550px"
+      >
+      </pdf-viewer>
+</ng-template>
+
+      <!-- <iframe [src]="pdfurl" style="display: block;width: 800px; height: 800px;"></iframe> -->
+    <!-- </div> -->
+  <!-- </div> -->
+  <!-- </div> -->
+  <!-- <div *ngIf="showimageHeaderPreviewPDF" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">PDF View</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <pdf-viewer [src]="pdfurl" [render-text]="true" [original-size]="false"
+                style="display: block;width: 500px; height: 800px;"></pdf-viewer>
+        </div>
+    </div>
+</div> -->
+  <!-- //4975 -->
+  <!-- <div *ngIf="showtxt" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#21cbe5;">
+                <h2 class="modal-title">TEXT View</h2>
+                            </div>
+               <iframe src="file.txt" style="display: block; width: 800px; height: 800px;"></iframe>
+        </div>
+    </div>
+</div> -->
+
+  <!-- <div *ngIf="showdoc" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#21cbe5;">
+                <h2 class="modal-title">DOC View</h2>
+                           </div> -->
+  <!-- <iframe [src]="'https://docs.google.com/gview?url=' + encodeURIComponent(docUrl) + '&embedded=true'"
+             style="display: block;width: 800px; height: 800px;"></iframe> -->
+  <!-- <iframe [src]="docUrl" style="display: block;width: 800px; height: 800px;"></iframe> -->
+  <!-- <iframe [src]="docUrl | safe" width="800" height="800" frameborder="0" scrolling="no"></iframe>
+        </div>
+    </div>
+</div>  -->
+
+  <!-- //////// -->
+
+  <div
+    class="modal fade bd-examplethree-modal-lg"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myLargeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title">Transaction History</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div
+            class="table-responsive"
+            style="margin-top: 2%; width: 95%; margin-left: 50px"
+          >
+            <table class="table scrolltable table-bordered">
+              <thead>
+                <tr class="table_header">
+                  <th>S.No</th>
+                  <th>Transaction Date</th>
+                  <th>Status</th>
+                  <th>From Employee</th>
+                  <th>To Employee</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- <tr *ngFor="let tran of ResponseTranHistoryList; index as i"> -->
+                <tr *ngFor="let tran of displayedRecords; index as i">
+                  <!-- <td> {{i + 1}}</td> -->
+                  <td>
+                    {{ (inwardtranspresentpage - 1) * pageSize_trans + i + 1 }}
+                  </td>
+                  <td>{{ tran?.created_date | date : "medium" }}</td>
+                  <td>{{ tran?.comments }}</td>
+                  <td>
+                    {{ tran?.from_user_id?.full_name }}<br />
+                    <span style="color: blue" (click)="Viweclick(tran)"
+                      >View Details</span
+                    >
+                  </td>
+                  <td>
+                    <span *ngFor="let data of tran?.to_user_id; else: noname">
+                      <span *ngIf="data?.full_name">{{ data?.full_name }}</span
+                      ><br />
+                      <span
+                        *ngIf="data?.full_name"
+                        style="color: blue"
+                        (click)="Viweclicktoemp(data)"
+                        >View Details</span
+                      ><br
+                    /></span>
+                    <ng-template #noname>
+                      <label>--</label>
+                    </ng-template>
+                  </td>
+                  <!-- <td>
+                                    <p *ngIf="tran.to_user_id?.length>0"></p> -->
+                  <!-- <div *ngFor="let emp of inward.emp_ass_key; index as empindex "> -->
+                  <!-- <span *ngFor="let toname of tran.to_user_id; index as touserindex;else noname">
+                                    {{touserindex + 1}}. {{toname.full_name}} <br>
+                                    </span><br>
+                                    <span *ngIf="tran?.to_user_id?.full_name" style="color:blue" (click)="Viweclicktoemp(tran)">View Details</span>
+                                    <ng-template #noname>
+                                         <label>--</label>
+                                    </ng-template>
+
+                                </td> -->
+
+                  <!-- <td> {{tran?.remarks}} </td> -->
+                  <td title="{{ tran?.remarks }}">
+                    {{
+                      tran?.remarks?.length > 25
+                        ? (tran?.remarks | slice : 0 : 25) + ".."
+                        : tran?.remarks
+                    }}
+                  </td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <div
+              *ngIf="ResponseTranHistoryList?.length == 0; else pagination"
+              class="NodataAlign"
+            >
+              No Records Found...
+            </div>
+            <ng-template #pagination>
+              <div class="row" *ngIf="issummarypagetrans" style="width: 85%">
+                <div
+                  class="col-sm-3"
+                  style="
+                    margin-bottom: 5%;
+                    font-size: small;
+                    text-align: left;
+                    right: -225px;
+                  "
+                >
+                  <p
+                    style="
+                      color: black;
+                      font-size: 18px;
+                      font-weight: 500;
+                      margin-left: -190px;
+                    "
+                  >
+                    Total Count:{{ ResponseTranHistoryList.length }}
+                  </p>
+                </div>
+                <div
+                  class="col-sm-9"
+                  style="
+                    margin-bottom: 5%;
+                    font-size: small;
+                    text-align: right;
+                    left: 15%;
+                  "
+                >
+                  <mat-paginator
+                    (page)="handlePageEventtrans($event)"
+                    [length]="length_trans"
+                    [pageSize]="pageSize_trans"
+                    [showFirstLastButtons]="showFirstLastButtonstrans"
+                    [pageSizeOptions]="pageSizeOptionstrans"
+                    [pageIndex]="pageIndextrans"
+                    [hidePageSize]="true"
+                    aria-label="Select page"
+                  >
+                  </mat-paginator>
+                </div>
+              </div>
+            </ng-template>
+
+            <tr>
+              <td *ngIf="viewclick" style="color: blue">
+                Employee Name:
+                <span style="color: black">{{ this.employeename }}</span>
+              </td>
+              <td *ngIf="viewclick" style="padding: left 197px; color: blue">
+                Branch Code:<span style="color: black">
+                  {{ this.branchcode }}</span
+                >
+              </td>
+              <td *ngIf="viewclick" style="padding: left 197px; color: blue">
+                Designation:
+                <span style="color: black">{{ this.designation }}</span>
+              </td>
+            </tr>
+            <br />
+            <br />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showHeaderimageview"
+    id="my-modalpreview"
+    class="modal fade"
+    aria-labelledby="my-modalLabel"
+    aria-hidden="true"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div
+      class="modal-dialog modal-xl"
+      data-dismiss="modal"
+      style="width: 60%; height: 80%"
+    >
+      <div class="modal-content">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="modal-body">
+          <img src="{{ jpgUrls }}" class="img-responsive" style="width: 100%" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showHeaderPDFview"
+    id="my-modalpreview"
+    class="modal fade"
+    aria-labelledby="my-modalLabel"
+    aria-hidden="true"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title">PDF View</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <pdf-viewer
+          [src]="pdfurl"
+          [render-text]="true"
+          [original-size]="false"
+          style="display: block; width: 500px; height: 800px"
+        ></pdf-viewer>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showimagepopupComment" class="modal fade bd-examplethreeComment-modal-lg" tabindex="-1" role="dialog"
+    aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">Files</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <table class="table table-bordered" fixed-header
+                style="margin-left: 50px;width: 90%;margin-top:2%;overflow-x:hidden;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.No</th>
+                        <th>File Name</th>
+                        <th>View File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let file of fileListHeaderComment;index as i">
+                        <td>{{ i+1 }}</td>
+                        <td>{{file.filedata.file_name}}</td>
+                        <td style="margin-left:-1%">
+                            <tr class="btn btn-link" style="margin-left:-1%" data-target="#my-modal" data-toggle="modal"
+                                (click)="commentPopupHeaderFiles(file)">
+                                <i class="fa fa-picture-o" aria-hidden="true"></i>
+                            <!-- //bug id:4975 -->
+                                <button type="button" class="buttonsize btn btn-outline-success"
+                                (click)="filedownload(file,$event)" style="border-radius:40px;margin-left: 50px;">
+                                <span class="fa fa-download"></span></button>
+                            </tr>
+                        </td>
+                        <div *ngIf="fileListHeaderComment?.length ==0">No Files Found</div>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+  <div *ngIf="isinwardsummary">
+    <div
+      class="modal fade"
+      id="claimModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="rejectModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h4
+              class="modal-title w-100 font-weight-bold"
+              id="rejectModalLabel"
+            >
+              Click add (+) for new entry
+            </h4>
+            <button
+              type="button"
+              #closebutton
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="text-align: center">
+            <button
+              type="button"
+              #closebutton
+              class="btn btn-outline-success"
+              style="border-radius: 40px"
+              (click)="clicktoyes()"
+            >
+              Ok
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isinwarddetailsummary">
+    <div
+      class="modal fade"
+      id="claimModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="rejectModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h4
+              class="modal-title w-100 font-weight-bold"
+              id="rejectModalLabel"
+            >
+              Click "Action" for enter the document detail
+            </h4>
+            <button
+              type="button"
+              #closebutton
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="text-align: center">
+            <button
+              type="button"
+              #closebutton
+              class="btn btn-outline-success"
+              style="border-radius: 40px"
+              (click)="clicktoyes()"
+            >
+              Ok
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isinwardreport">
+    <form [formGroup]="Inwardreport">
+      <tr>
+        <td>
+          <mat-form-field style="width: 10rem; margin-left: 20px">
+            <mat-label>Inward Number</mat-label>
+            <input
+              matInput
+              placeholder="Inward Number"
+              formControlName="inward_no"
+            />
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field style="width: 10rem; margin-left: 20px">
+            <mat-label>Document Number</mat-label>
+            <input
+              matInput
+              placeholder="Document Number"
+              formControlName="docnumber"
+            />
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field
+            class="example-full-width"
+            style="width: 10rem; margin-left: 20px"
+          >
+            <mat-label>From Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker10"
+              placeholder="From Date"
+              formControlName="fromdate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker10"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker10></mat-datepicker>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field
+            class="example-full-width"
+            style="width: 10rem; margin-left: 20px"
+          >
+            <mat-label>To Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker11"
+              placeholder="To Date"
+              formControlName="todate"
+              [max]="maxDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker11"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker11></mat-datepicker>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field
+            style="width: 200px; margin-left: 40px"
+            (click)="reportbranchDD()"
+          >
+            <mat-label>Assign From Branch</mat-label>
+            <input
+              #reportbranchInput
+              placeholder="Assign From Branch"
+              matInput
+              formControlName="assign_branchfrom"
+              [matAutocomplete]="reportbranch"
+            />
+            <mat-autocomplete
+              #reportbranch="matAutocomplete"
+              [displayWith]="displayFnreportbranch.bind(this)"
+              (opened)="autocompletereportbranchScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let branch of reportbranchList"
+                  title="{{ branch.code }}-{{ branch.name }}"
+                  [value]="branch.id"
+                >
+                  <!-- {{branch.code}}-{{branch.name}} -->
+                  {{ branch.fullname }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field
+            style="width: 200px; margin-left: 40px"
+            (click)="docRefDeptDD()"
+          >
+            <mat-label>Assign To Dept</mat-label>
+            <input
+              #Input
+              placeholder="Assign To Dept"
+              matInput
+              formControlName="assign_deptto"
+              [matAutocomplete]="branchauto"
+            />
+            <mat-autocomplete
+              #branchauto="matAutocomplete"
+              [displayWith]="displayFn.bind(this)"
+              (opened)="branchScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let branch of List"
+                  title="{{ branch.code }}-{{ branch.name }}"
+                  [value]="branch.id"
+                >
+                  <!-- {{branch.code}}-{{branch.name}} -->
+                  {{ branch.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field style="width: 10rem; margin-left: 20px">
+            <mat-label>Document subject</mat-label>
+            <input
+              matInput
+              placeholder="Document subject"
+              maxlength="64"
+              formControlName="docsubject"
+            />
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field
+            style="width: 10rem; margin-left: 20px"
+            (click)="DocumenttypeDD()"
+          >
+            <input
+              #doctypeInput
+              placeholder="Select Document Type"
+              type="text"
+              matInput
+              (keypress)="Documenttype($event)"
+              (keyup.backspace)="Documenttype($event)"
+              formControlName="doctype_id"
+              [matAutocomplete]="DocType"
+            />
+            <mat-autocomplete
+              #DocType="matAutocomplete"
+              [displayWith]="displayFnDocType.bind(this)"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let DocType of documenttypeList"
+                  title="{{ DocType.name }}"
+                  [value]="DocType.id"
+                >
+                  {{ DocType.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field style="width: 10rem; margin-left: 20px">
+            <mat-label>AWB Number</mat-label>
+            <input matInput placeholder="AWB Number" formControlName="awb_no" />
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field style="margin-left: 50px; width: 200px">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="docstatus">
+              <mat-option
+                *ngFor="let type of SearchstatusList"
+                title=" {{ type.text }}"
+                [value]="type.id"
+              >
+                {{ type.text }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+        <td>
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+            style="border-radius: 40px"
+            (click)="getreportsummary('', 1, 10)"
+            color="primary"
+          >
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+            (click)="clearclick()"
+            style="border-radius: 40px; margin-left: 15px"
+            color="primary"
+          >
+            Reset
+          </button>
+
+          <button
+            type="button"
+            class="buttonsize btn btn-outline-success"
+            (click)="downloadFileXLSX('report')"
+            style="border-radius: 40px; margin-left: 50px"
+          >
+            <span class="fa fa-download"></span> Report
+          </button>
+        </td>
+      </tr>
+    </form>
+
+    <div class="table-responsive">
+      <table
+        class="table table-bordered"
+        fixed-header
+        style="width: 99%; margin-top: 10px; margin-left: 20px"
+      >
+        <thead class="table_header" style="text-align: left">
+          <tr>
+            <th>S.No</th>
+            <th>AWB Number</th>
+            <th>Channel</th>
+            <th>Courier</th>
+            <th>Inward Number</th>
+            <th>Inward Date</th>
+            <th>Document Number</th>
+            <th>Document Subject</th>
+            <th>Doc Type</th>
+            <th>Assign - From Branch</th>
+            <th>Assign - To Dept</th>
+            <th>Assign To</th>
+            <th>Assign Remarks</th>
+            <th>Assigned Date&Time</th>
+            <th>Action Type</th>
+            <!-- <th>TAT</th> -->
+             <th>Due Date</th>
+            <th>Ageing</th>
+            <th>Physical Doc Action</th>
+            <th>Document Status</th>
+            <th>Respond by</th>
+            <th>Responder Remarks</th>
+            <th>Respond Date&Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of getreportList; index as i">
+            <td scope="row" style="vertical-align: middle">
+              {{ (this.reportpage - 1) * pageSize_report + i + 1 }}
+            </td>
+            <td>{{ report.awbno }}</td>
+            <td>{{ report.channel?.name }}</td>
+            <td>{{ report.courier?.name }}</td>
+            <td>{{ report.no }}</td>
+            <!-- <td>{{report.date}}</td> -->
+            <td>{{ report.date | date : "dd-MMM-yyyy" }}</td>
+            <td>{{ report.docnumber }}</td>
+            <td>{{ report.docsubject }}</td>
+            <td>{{ report.doctype?.name }}</td>
+            <!-- <td>{{report.response_branch.name}}</td> -->
+            <td>{{ report.branch?.fullname }}</td>
+            <td>{{ report.assign_deptto?.name }}</td>
+            <td>
+              <div *ngFor="let emp of report.assigned_to; index as empindex">
+                {{ empindex + 1 }}. {{ emp.full_name }}
+              </div>
+            </td>
+            <td>{{ report.assignremarks }}</td>
+            <!-- <td>{{report.assigner_date| date:'dd-MMM-yyyy'}}</td>   -->
+            <td>
+              <ng-container *ngIf="report.assigner_date; else emptyDate">
+                {{ report.assigner_date | date : "dd-MMM-yyyy" }}
+              </ng-container>
+              <ng-template #emptyDate> -- </ng-template>
+            </td>
+
+            <td>{{ report.actiontype }}</td>
+            <td>{{report.response_due_date | date:'dd-MMM-yyyy'}}</td>
+            <!-- <td>{{ report.tenor }}</td> -->
+            <td>{{ report.age }}</td>
+            <td>{{ report.docaction_name }}</td>
+            <td>{{ report.docstatus }}</td>
+            <td>
+              <div *ngFor="let emp of report.response_by; index as empindex">
+                {{ empindex + 1 }}. {{ emp.full_name }}
+              </div>
+            </td>
+            <td>{{ report.response_remarks }}</td>
+            <!-- <td>{{report.respond_date| date:'dd-MMM-yyyy'}}</td> -->
+            <!-- <td>
+            <ng-container *ngIf="report.respond_date; else emptyDate">
+              {{ report.respond_date | date:'dd-MMM-yyyy' }}
+            </ng-container>
+            <ng-template #emptyDate>
+              --
+            </ng-template>
+          </td> -->
+            <td>
+              <ng-container
+                *ngIf="
+                  report.respond_date !== null &&
+                    report.respond_date.trim() !== '';
+                  else emptyDate
+                "
+              >
+                {{ report?.respond_date | date : "dd-MMM-yyyy" }}
+              </ng-container>
+              <ng-template #emptyDate> -- </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div
+        *ngIf="getreportList?.length == 0; else paginationreport"
+        class="NodataAlign"
+      >
+        No Records Found...
+      </div>
+      <ng-template #paginationreport>
+        <div class="row" *ngIf="issummaryreportpage" style="width: 85%">
+          <div
+            class="col-sm-3"
+            style="
+              margin-bottom: 5%;
+              font-size: small;
+              text-align: left;
+              right: -225px;
+            "
+          >
+            <p
+              style="
+                color: black;
+                font-size: 18px;
+                font-weight: 500;
+                margin-left: -190px;
+              "
+            >
+              Total Count:{{ totalcountreport }}
+            </p>
+          </div>
+          <div
+            class="col-sm-9"
+            style="
+              margin-bottom: 5%;
+              font-size: small;
+              text-align: right;
+              left: 15%;
+            "
+          >
+            <mat-paginator
+              (page)="handlePageEventreport($event)"
+              [length]="length_report"
+              [pageSize]="pageSize_report"
+              [showFirstLastButtons]="showFirstLastButtonsreport"
+              [pageSizeOptions]="pageSizeOptionsreport"
+              [pageIndex]="pageIndexreport"
+              [hidePageSize]="true"
+              aria-label="Select page"
+            >
+            </mat-paginator>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+<!-- Reassign for document assign -->
+  <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+  id="viewtran">
+  <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+      <div class="modal-content">
+          <div class="modal-header" style="text-align:center;background: #a7e4ab;">
+              <h2 class="modal-title" style="text-align:center;margin-left:42%">ReAssign To</h2>
+          <button class="close" type="button" #closeassignpopup   data-dismiss="modal">x</button>      
+          </div>
+          <table *ngIf="inwardlist && inwardlist.length > 0">
+            <tr>
+              <td>Inward No: {{ inwardlist[0]?.inward_no }}</td>
+              <td>Date: {{ inwardlist[0]?.date | date : 'dd-MMM-yyyy' }}</td>
+          </tr>
+          <tr>
+              <td>Doc Number: {{ inwardlist[0]?.docnumber }}</td>
+              <td>Branch: {{ inwardlist[0]?.branch_id?.fullname }}</td>
+          </tr>
+          </table>
+          <div>
+              <table class="table table-bordered" style="width: 100%;text-align: center;">
+                  <thead class="table_header" style="background: #a7e4ab;">
+                  <tr>
+                      <th>S.No</th>
+                      <th>Ref Dept <span style="color: red">*</span></th>
+                      <th>Action Type <span style="color: red">*</span></th>
+                      <th>Assigned</th>
+                      <th>ReAssign To <span style="color: red">*</span></th>
+                      <th>Submit</th>
+
+                  </tr>
+                  </thead>
+                  <tr *ngFor="let inward of inwardlist;let i=index">
+                      <td>{{i+1}}</td>
+                      <td>
+                        <form [formGroup]="RefDeptAssign">
+                          <mat-form-field style="width: 200px" (click)="docRefDeptDD()">
+                            <mat-label>Select Ref Dept</mat-label>
+              <div class="input-wrapper">
+
+                            <input
+                              #refdeptInputAss
+                              placeholder="Select Ref Dept"
+                              formControlName="assigndept_id"
+                              matInput
+                              [matAutocomplete]="refdeptAss"
+                              (keypress)="docRefDept($event)"
+                              (keyup.backspace)="docRefDept($event)"
+                            />
+                            <i
+                  class="fa fa-times-circle cancel"
+                  role="button"
+                  (click)="cancelDept()"
+                ></i>
+
+                            <mat-autocomplete
+                              #refdeptAss="matAutocomplete"
+                              [displayWith]="displayFnrefdept"
+                              (opened)="autocompleterefdeptScroll()"
+                            >
+                              <mat-option *ngIf="isLoading" class="is-loading"
+                                >Loading...</mat-option
+                              >
+                              <ng-container *ngIf="!isLoading">
+                                <mat-option
+                                  *ngFor="let ref of refdeptList"
+                                  (click)="
+                                    chooseDept(inward, ref)
+                                  "
+                                  title="{{ ref.fullname }}"
+                                  [value]="ref"
+                                >
+                                  {{ ref.fullname }}
+                                </mat-option>
+                              </ng-container>
+                            </mat-autocomplete>
+                            </div>
+                          </mat-form-field>
+                        </form>
+                       
+                      </td>
+                      <!-- <td>{{ inward?.assigndept_id?.fullname }}</td> -->
+                      <td>{{inward?.actiontype == 2 ? 'Reply Must' : 'Action Must'}}</td>
+                      <td>
+                        <div *ngIf="inward?.actiontype == 1; else empshowSubmit">
+                          All
+                        </div>
+                        <ng-template #empshowSubmit>
+                          <p *ngIf="oldassigndata?.length > 0">
+                            Selected Assignee:
+                          </p>
+                          <div
+                            *ngFor="let emp of oldassigndata; index as empindex"
+                          >
+                            {{ empindex + 1 }}. {{ emp.full_name }}
+                          </div>
+                         
+        
+
+                          </ng-template>
+                      </td>
+
+                      <!-- //Reassign to starts here -->
+
+                      <td>
+                        <div *ngIf="inward?.actiontype == 1; else empshow">All</div>
+
+                <ng-template #empshow>
+                  <mat-form-field style="width: 200px">
+                    <mat-label
+                      >Employee Name <span class="mandatory">*</span></mat-label
+                    >
+                    <input
+                      #empInput
+                      placeholder="Select Employee"
+                      matInput
+                      [matAutocomplete]="emp"
+                      (click)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup')
+                      "
+                      (keydown.Tab)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup')
+                      "
+                      (keyup.backspace)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup')
+                      "
+                      (keypress)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup')
+                      "
+                      [ngModel]="inward.assignemployee_id"
+                      (ngModelChange)="inward.assignemployee_id = $event"
+                    />
+                    <mat-autocomplete
+                      #emp="matAutocomplete"
+                      [displayWith]="displayFnemp"
+                    >
+                      <mat-option *ngIf="isLoading" class="is-loading"
+                        >Loading...</mat-option
+                      >
+                      <ng-container *ngIf="!isLoading">
+                        <mat-option
+                          *ngFor="let emp of employeeList"
+                          [value]="emp"
+                          title="{{ emp.full_name }}"
+                          >{{ emp.full_name }}
+                        </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <button
+                    class="btn btn-primary"
+                    style="border-radius: 40px"
+                    (click)="emppushToIndividual(i, inward)"
+                  >
+                    Add
+                  </button>
+                  <p *ngIf="inward.emp_ass_key?.length > 0">
+                    Selected Assignee:
+                  </p>
+                  <div
+                    *ngFor="let emp of inward.emp_ass_key; index as empindex"
+                  >
+                    {{ empindex + 1 }}. {{ emp.full_name }}
+                    <div *ngIf="empindex == 0">
+                      <small> (Primary Assigner)</small>
+                    </div>
+                    <div *ngIf="empindex == 1">
+                      <small> (Secondary Assigner)</small>
+                    </div>
+                    <div *ngIf="empindex == 2">
+                      <small> (Third Assigner)</small>
+                    </div>
+
+                    <span
+                      class="material-icons"
+                      (click)="deleteEmpremove(empindex, emp, inward)"
+                      >delete</span
+                    >
+                  </div>
+                </ng-template>
+            </td>
+<td>
+  <button
+                  type="button"
+                  style="border-radius: 40px; margin-left: 15px"
+                  [disabled]="inward.check_key"
+                  [disabled]="issave"
+                  class="btn btn-outline-success"
+                  (click)="submitAssign(inward, i,1)"
+                >
+                  Submit
+                </button>
+</td>
+                  </tr>
+              </table>
+          </div>
+         
+           
+      </div>   
+      
+  </div>
+  </div>
+  <!-- ////////////// -->
+  
+  <!-- //Reassign in Document Response -->
+  <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+  id="viewreasign">
+  <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+      <div class="modal-content">
+          <div class="modal-header" style="text-align:center;background: #a7e4ab;">
+              <h2 class="modal-title" style="text-align:center;margin-left:42%">ReAssign To</h2>
+          <button class="close" type="button"   #closeresponsepopup    data-dismiss="modal">x</button>      
+          </div>
+          <table *ngIf="inwardlistres && inwardlistres.length > 0">
+            <tr>
+              <td>Inward No: {{ inwardlistres[0]?.inward_no }}</td>
+              <td>Date: {{ inwardlistres[0]?.date | date : 'dd-MMM-yyyy' }}</td>
+          </tr>
+          <tr>
+              <td>Doc Number: {{ inwardlistres[0]?.docnumber }}</td>
+              <td>Branch: {{ inwardlistres[0]?.branch_id?.fullname }}</td>
+          </tr>
+          </table>
+          <div>
+              <table class="table table-bordered" style="width: 100%;text-align: center;">
+                  <thead class="table_header" style="background: #a7e4ab;">
+                  <tr>
+                      <th>S.No</th>
+                      <th>Ref Dept <span style="color: red">*</span></th>
+                      <th>Action Type <span style="color: red">*</span></th>
+                      <!-- <th>Assigned</th> -->
+                      <th>ReAssign To <span style="color: red">*</span></th>
+                      <th>Submit</th>
+
+                  </tr>
+                  </thead>
+                  <tr *ngFor="let inward of inwardlistres;let i=index">
+                      <td>{{i+1}}</td>
+                      <td>
+                        <form [formGroup]="RefDeptResponse">
+                          <mat-form-field style="width: 200px" (click)="docRefDeptDD()">
+                            <mat-label>Select Ref Dept</mat-label>
+              <div class="input-wrapper">
+
+                            <input
+                              #refdeptInputRes
+                              placeholder="Select Ref Dept"
+                              formControlName="assigndept_id"
+                              matInput
+                              [matAutocomplete]="refdeptRes"
+                              (keypress)="docRefDept($event)"
+                              (keyup.backspace)="docRefDept($event)"
+                            />
+                            <i
+                  class="fa fa-times-circle cancel"
+                  role="button"
+                  (click)="cancelDeptRes()"
+                ></i>
+
+                            <mat-autocomplete
+                              #refdeptRes="matAutocomplete"
+                              [displayWith]="displayFnrefdept"
+                              (opened)="autocompleterefdeptResScroll()"
+                            >
+                              <mat-option *ngIf="isLoading" class="is-loading"
+                                >Loading...</mat-option
+                              >
+                              <ng-container *ngIf="!isLoading">
+                                <mat-option
+                                  *ngFor="let ref of refdeptList"
+                                  (click)="
+                                    chooseDept(inward, ref)
+                                  "
+                                  title="{{ ref.fullname }}"
+                                  [value]="ref"
+                                >
+                                  {{ ref.fullname }}
+                                </mat-option>
+                              </ng-container>
+                            </mat-autocomplete>
+                            </div>
+                          </mat-form-field>
+                        </form>
+                      </td>
+                      <!-- <td>{{ inward?.assigndept_id?.fullname }}</td> -->
+                      <td>{{inward?.actiontype == 2 ? 'Repy Must' : 'Action Must'}}</td>
+                      <!-- <td>
+                        <div *ngIf="inward?.actiontype == 1; else empshowSubmit">
+                          All
+                        </div>
+                        <ng-template #empshowSubmit>
+                          <p *ngIf="oldassigndata?.length > 0">
+                            Selected Assignee:
+                          </p>
+                          <div
+                            *ngFor="let emp of oldassigndata; index as empindex"
+                          >
+                            {{ empindex + 1 }}. {{ emp.full_name }}
+                          </div>
+                          
+                          </ng-template>
+                      </td> -->
+
+                      <!-- //Reassign to starts here -->
+
+                      <td>
+                        <!-- <div *ngIf="inward?.actiontype == 1; else empshow">All</div> -->
+
+                <!-- <ng-template #empshow> -->
+                  <div>
+                  <mat-form-field style="width: 200px">
+                    <mat-label
+                      >Employee Name <span class="mandatory">*</span></mat-label
+                    >
+                    <input
+                      #empInput
+                      placeholder="Select Employee"
+                      matInput
+                      [matAutocomplete]="emp"
+                      (click)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup1')
+                      "
+                      (keydown.Tab)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup1')
+                      "
+                      (keyup.backspace)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup1')
+                      "
+                      (keypress)="
+                        getemployeeFK($event, inward.assigndept_id, 'popup1')
+                      "
+                      [ngModel]="inward.assignemployee_id"
+                      (ngModelChange)="inward.assignemployee_id = $event"
+                    />
+                    <mat-autocomplete
+                      #emp="matAutocomplete"
+                      [displayWith]="displayFnemp"
+                    >
+                      <mat-option *ngIf="isLoading" class="is-loading"
+                        >Loading...</mat-option
+                      >
+                      <ng-container *ngIf="!isLoading">
+                        <mat-option
+                          *ngFor="let emp of employeeList"
+                          [value]="emp"
+                          title="{{ emp.full_name }}" (click)="selectedemp(emp)"
+                          >{{ emp.full_name }}
+                        </mat-option>
+                      </ng-container>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <!-- <button
+                    class="btn btn-primary"
+                    style="border-radius: 40px"
+                    (click)="emppushToIndividual(i, inward)"
+                  >
+                    Add
+                  </button> -->
+                  <!-- <p *ngIf="inward.emp_ass_key?.length > 0">
+                    Selected Assignee:
+                  </p> -->
+                  <!-- <div
+                    *ngFor="let emp of inward.emp_ass_key; index as empindex"
+                  >
+                    {{ empindex + 1 }}. {{ emp.full_name }}
+                    <div *ngIf="empindex == 0">
+                      <small> (Primary Assigner)</small>
+                    </div>
+                    <div *ngIf="empindex == 1">
+                      <small> (Secondary Assigner)</small>
+                    </div>
+                    <div *ngIf="empindex == 2">
+                      <small> (Third Assigner)</small>
+                    </div>
+
+                    <span
+                      class="material-icons"
+                      (click)="deleteEmpremove(empindex, emp, inward)"
+                      >delete</span
+                    >
+                  </div>
+                </ng-template> -->
+                  </div>
+            </td>
+<td>
+  <button
+                  type="button"
+                  style="border-radius: 40px; margin-left: 15px"
+                  [disabled]="inward.check_key"
+                  [disabled]="issave"
+                  class="btn btn-outline-success"
+                  (click)="Reassignsubmitdocres(inward, i,1)"
+                >
+                  Submit
+                </button>
+</td>
+                  </tr>
+              </table>
+          </div>
+         
+           
+      </div>   
+      
+  </div>
+  </div>
+
+  <!-- /////// -->
+
+
+
+  <ngx-spinner
+    bdColor="rgba(0, 0, 0, 0.8)"
+    size="default"
+    type="line-scale-party"
+  >
+    <p style="color: white">Please Wait.</p>
+  </ngx-spinner>

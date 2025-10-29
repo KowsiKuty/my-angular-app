@@ -1,0 +1,1958 @@
+<div style="margin-top: 3%;" class="body">
+
+    <div *ngIf="minimumwagsummary">
+
+        <form [formGroup]="minimumwagesSearchform">
+            <tr>
+                <td>
+                    <mat-form-field style="width: 250px;" class="input-style" (click)="stateSearch()">
+
+                        <mat-label>State</mat-label>
+                        <input placeholder="State" matInput formControlName="state_id" #StateSearchContactInput
+                            [matAutocomplete]="typeStateSearch">
+                        <mat-autocomplete #typeStateSearch="matAutocomplete" [displayWith]="displayStateSearch"
+                            (opened)="autocompleteStateSearchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let state of stateSearchList" [value]="state">
+                                    {{state.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td style="padding-left: 15%;">
+                    <!-- <button type="button" class="btn btn-outline-primary" ngbTooltip="Search" placement="top" (click)="OnserachMinimumdetails()"
+                    style="border-radius:40px;" tooltipClass="search-tooltip" ><span class="fa fa-search"></span>
+                    </button> -->
+                    <button type="button" class="btn btn-outline-primary" (click)="OnserachMinimumdetails()"
+                        style="border-radius:40px;"><span class="fa fa-search"></span>
+                    </button>
+                </td>
+                <td style="padding-left: 30%;">
+
+                    <button type="button" class="btn btn-outline-primary" (click)="resettheminimumform()"
+                        style="border-radius:40px;">
+                        Reset</button>
+
+                </td>
+
+                <td style="padding-left: 45%;">
+                    <!-- <button  style="border-radius: 40px;   " tooltipClass="Add-tooltip"   ngbTooltip="Add Minimum Wages Master" placement="top" class="btn btn-outline-success" (click)="addmimformclick()"> <span class="fa fa-plus"> </span></button> -->
+                    <button style="border-radius: 40px;" class="btn btn-outline-success" (click)="addmimformclick()">
+                        <span class="fa fa-plus"></span></button>
+
+                </td>
+            </tr>
+
+        </form>
+
+
+        <div class="table-responsive" style="    margin-top: 0.5%;width: 70%; overflow-x: hidden;    ">
+            <table class="table table-bordered" style="    width: 90%;text-align: center;" fixed-header>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>State </th>
+                        <th>Effective From</th>
+                        <th>Effective To</th>
+                        <th>Shift</th>
+                        <th style="width: 31%;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let minimum of mimwagessummlist;let i=index">
+                        <td> {{(presentpagetype - 1)*pagesize +i+1 }}</td>
+                        <td (click)="createminwages(minimum)"
+                            style="color: mediumblue; text-decoration: underline;cursor: pointer;">
+                            {{minimum?.state?.name}}</td>
+                        <td>{{minimum?.effectivefrom | date:"dd-MMM-yyyy"}}</td>
+                        <td><span *ngIf="minimum?.effectiveto != null">{{minimum?.effectiveto |
+                                date:"dd-MMM-yyyy"}}</span><span *ngIf="minimum?.effectiveto == null"> -- </span></td>
+                        <td>{{minimum?.shift_type?.name}}</td>
+                        <td>
+                            <div class="status"
+                                [ngStyle]="minimum?.approval_status?.id==1 ? getMyStyles(1) : minimum?.approval_status?.id==2 ? getMyStyles(2) : minimum?.approval_status?.id==3 ? getMyStyles(3) : minimum?.approval_status?.id==4 ? getMyStyles(4) : getMyStyles(5) ">
+                                {{minimum?.approval_status?.status}}</div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <div *ngIf="mimwagessummlist ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div class="row" *ngIf="isMinimumWagespage">
+                <div class="col-sm-11" style="font-size: small;text-align: right; margin-bottom: 50px;">
+                    <button mat-icon-button [disabled]="has_previoustype=== false" color="primary"
+                        (click)="emptypepreviousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{presentpagetype}}
+                    <button mat-icon-button [disabled]="has_nexttype === false" color="primary"
+                        (click)="emptypenextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <!-- <div *ngIf="mimwagessummlist ?.length > 0" class="col-sm-11" style="font-size: small;text-align: right; margin-bottom: 100px;">
+             <button mat-icon-button [disabled]="has_previoustype=== false" color="primary"
+    
+                 (click)="emptypepreviousClick()">
+               <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{presentpagetype}}
+            <button mat-icon-button [disabled]="has_nexttype === false" color="primary" (click)="emptypenextClick()">
+                     <mat-icon>arrow_forward</mat-icon>
+                     </button>
+            </div> -->
+
+        </div>
+
+    </div>
+
+
+    <div *ngIf="minimuwagesaddform">
+        <h1 style="    padding-left: 5%;    margin-bottom: 3%;">Wages Payable To Security Guard and Armed Guard
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h1>
+
+        <form style="margin-left: 5%;" [formGroup]="minimumwagesfrom">
+            <tr>
+                <td>
+                    <mat-form-field style="width: 250px;" class="input-style" (click)="statename()"
+                        (focusout)="condition()">
+
+                        <mat-label>State</mat-label>
+                        <input placeholder="State" matInput formControlName="state_id" [readonly]="stateselect"
+                            #StateContactInput [matAutocomplete]="producttype1">
+                        <mat-autocomplete #producttype1="matAutocomplete" [displayWith]="displaydis1"
+                            (opened)="autocompleteStatenameScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let state of dropdownstate" (focusout)="stateFocusOut(state)"
+                                    [value]="state">
+                                    {{state.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td style="padding-left: 11%;">
+                    <mat-form-field class="input-style2" style="width: 175px;">
+                        <input matInput readonly [matDatepicker]="picker2" formControlName="effectivefrom"
+                            placeholder="Effective From">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2 [disabled]="dateread===true"></mat-datepicker>
+                    </mat-form-field>
+
+                </td>
+                <td style="padding-left: 23%;">
+                    <mat-form-field style="width: 175px;">
+                        <mat-label>Shift Type</mat-label>
+                        <mat-select formControlName="shift_type" [disabled]="stateselect">
+                            <mat-option *ngFor="let shift of HourShift" [value]="shift.id">
+                                {{shift.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr *ngIf="addvalue_compoent && (this.minimumwagesfrom.value.shift_type == 1 || this.minimumwagesfrom.value.shift_type == 2) ">
+                <td>
+                    <mat-checkbox class="example-margin" formControlName="is_extra_allowance"
+                        (change)="checkedtrue($event.checked)">Is Extra Allowance
+                    </mat-checkbox>
+                </td>
+                <td>
+                    <button *ngIf="isShowExtraAllowance" [disabled]="extra_Allow" type="button"
+                        style="border-radius: 40px;" tooltipClass="Add-tooltip" ngbTooltip="Add Extra Allowance"
+                        placement="top" data-toggle="modal" data-target="#Allowance" class="btn btn-outline-success">
+                        <span class="fa fa-plus"> </span></button>
+                    <!-- <button *ngIf="isShowExtraAllowance" type="button" style="border-radius: 40px;" class="btn btn-outline-primary" 
+                        data-toggle="modal" data-target="#Allowance"><span class="fa fa-plus"></span>Extra Allowance</button> -->
+
+                </td>
+
+            </tr>
+
+
+            <!-- <tr>
+                        <mat-form-field style="width: 175px;">
+                            <mat-label>Shift Type</mat-label>
+                            <mat-select formControlName="shift_type" >
+                              <mat-option *ngFor="let shift of HourShift" [value]="shift.id" >
+                                {{shift.name}}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                    </tr> -->
+
+
+        </form>
+        <form [formGroup]="mimimumfromarr" style="margin-left: 5%;" *ngIf="addvalue_compoent">
+
+            <!-- <div formArrayName="data" *ngFor="let time of getformarraycontrol(); let i = index; ">
+                    <div [formGroupName]="i"> -->
+            <tr>
+                <td>
+                    <mat-form-field style="width: 175px;" class="input-style" (click)="ZoneClick()">
+
+                        <mat-label>Zone</mat-label>
+                        <input placeholder="Zone" matInput formControlName="zone_id" (keypress)="keyPress('Zone')"
+                            [matAutocomplete]="producttype2">
+                        <mat-autocomplete #producttype2="matAutocomplete" [displayWith]="displaydis2">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let zone of dropdownzone" [value]="zone">
+                                    {{zone.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+
+                    </mat-form-field>
+                </td>
+                <td style="padding-left: 30%;">
+
+                    <mat-form-field style="width: 175px;" (click)="employeetypename()">
+
+                        <mat-label>Type</mat-label>
+                        <input placeholder="type" matInput formControlName="type" (keypress)="keyPress('Type')"
+                            [matAutocomplete]="employetype">
+                        <mat-autocomplete #employetype="matAutocomplete" [displayWith]="displaydiss">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let type of employeetypelist" [value]="type">
+                                    {{type.emptype}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                </td>
+                <td style="padding-left: 48%;">
+                    <mat-form-field style="width: 175px;">
+                        <mat-label>Minimum Wages </mat-label>
+                        <input (keypress)="keyPressAmounts($event)" matInput placeholder="Minimum Wages "
+                            formControlName="wages">
+
+                    </mat-form-field>
+
+                </td>
+            </tr>
+
+            <tr>
+
+
+                <td>
+                    <mat-form-field style="width: 175px;">
+                        <mat-label>Variable Dearness Allowance </mat-label>
+                        <input (keypress)="keyPressAmounts($event)" matInput
+                            placeholder="Variable Dearness Allowance    " formControlName="variable_dearn_allowance">
+
+                    </mat-form-field>
+
+                </td>
+
+                <td style="padding-left: 30%;">
+                    <mat-form-field style="width: 175px;">
+                        <mat-label>Gun Allowance</mat-label>
+                        <input (keypress)="keyPressAmounts($event)" matInput placeholder="Gun Allowance"
+                            formControlName="gun_allowances">
+
+                    </mat-form-field>
+
+                </td>
+                <!-- <td style="padding-left: 30%;"> 
+                                        <mat-form-field style="width: 175px;">
+                                            <mat-label>SGST%</mat-label>
+                                            <input (keypress)="keyPressAmounts($event)"  matInput  placeholder="GST" formControlName="sgst"  > 
+                                            
+                                        </mat-form-field>     
+    
+                                    </td> -->
+                <td style="padding-left: 48%;">
+                    <mat-form-field style="width: 175px;">
+                        <mat-label>EPF%</mat-label>
+                        <input (keypress)="keyPressAmounts($event)" matInput placeholder="EPF%" formControlName="epf">
+
+                    </mat-form-field>
+
+
+            </tr>
+
+            <tr>
+
+
+                <!-- <td >
+                                        <mat-form-field style="width: 175px;">
+                                            <mat-label>CGST%</mat-label>
+                                            <input (keypress)="keyPressAmounts($event)"  matInput  placeholder="GST" formControlName="cgst"  > 
+                                            
+                                        </mat-form-field>     
+    
+                                    </td> -->
+                <!-- <td style="padding-left: 15%;">
+                                        <mat-form-field style="width: 175px;">
+                                            <mat-label>EPF%</mat-label>
+                                            <input (keypress)="keyPressAmounts($event)"  matInput  placeholder="EPF%" formControlName="epf"  > 
+                                            
+                                        </mat-form-field>     
+    
+                                    </td> -->
+                <!-- <td style="padding-left: 30%;">
+                                        <mat-form-field style="width: 175px;">
+                                            <mat-label>ESI%</mat-label>
+                                            <input (keypress)="keyPressAmounts($event)"  matInput  placeholder="ESI%" formControlName="esi"  > 
+                                            
+                                        </mat-form-field>     
+    
+                                    </td> -->
+                <td>
+                    <mat-form-field style="width: 175px;">
+                        <mat-label>ESI%</mat-label>
+                        <input (keypress)="keyPressAmounts($event)" matInput placeholder="ESI%" formControlName="esi">
+                    </mat-form-field>
+                </td>
+                <td style="padding-left: 30%;">
+                    <mat-form-field style="width: 175px;">
+                        <mat-label>Medical Insurance%</mat-label>
+                        <input type="number" matInput placeholder="Medical Insurance" formControlName="medical_insurance">
+                    </mat-form-field>
+                </td>
+            </tr>
+
+            <!-- </div> 
+                                
+                       
+                </div> -->
+            <div formArrayName="extra_allowance">
+                <span *ngFor="let datas of getallowancecontrol();index as i" [formGroupName]="i"
+                    [ngStyle]="findDataValue(i)==0 ? {'padding-left': '7%'} : findDataValue(i)==2 ?  {'padding-left': '12%'} :{'':''} ">
+                    <td *ngIf="datas.value.is_percent">
+                        <mat-form-field style="width: 175px;">
+                            <mat-label>{{datas.value.waged_name }} % </mat-label>
+                            <input matInput placeholder="{{datas.value.waged_name}} %" formControlName="charges"
+                                (keypress)="keyPressAmounts($event)">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="datas.value.is_amount">
+
+                        <mat-form-field style="width: 175px;">
+                            <mat-label>{{datas.value.waged_name}} amount</mat-label>
+                            <input matInput placeholder="{{datas.value.waged_name}}amount" formControlName="charges"
+                                (keypress)="keyPressAmounts($event)">
+                        </mat-form-field>
+                    </td>
+                    <span *ngIf="findDataValue(i)==0">
+                        <br>
+                    </span>
+                </span>
+            </div>
+            <button style="border-radius: 40px;" class="btn btn-outline-primary" (click)="addformarray()">Add</button>
+
+            <!-- <div >
+                    {{display.sgst }}
+                    
+                </div> -->
+            <div>
+                <table class="styled-table" style="width: 80%;     font-family: sans-serif;   margin-top: 2%;
+                margin-bottom: 2%;">
+                    <thead>
+                        <tr>
+
+                            <th>Zone</th>
+                            <th>Type</th>
+                            <th>Minimum Wages</th>
+                            <th>Variable Dearness Allowance</th>
+                            <th>Gun Allowance</th>
+                            <!-- <th>SGST%</th>
+                        <th>CGST%</th> -->
+                            <th>EPF%</th>
+                            <th>ESI%</th>
+                            <th>Medical Insurance%</th>
+                            <th *ngIf="isShowExtraAllowance">Extra Allowance</th>
+                            <th>Delete</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let display of addFunctionList; let i = index; ">
+
+                            <td>{{display.zone_id.name}}</td>
+                            <td>{{display.type.emptype}}</td>
+                            <td>{{display.wages}}</td>
+                            <td>{{display.variable_dearn_allowance}}</td>
+                            <td>{{display.gun_allowances}}</td>
+                            <!-- <td>{{display.sgst}}</td>
+                            <td>{{display.cgst}}</td> -->
+                            <td>{{display.epf}}</td>
+                            <td>{{display.esi}}</td>
+                            <td>{{display.medical_insurance}}</td>
+                            <td *ngIf="isShowExtraAllowance">
+                                <span matTooltip="view" class=" fa fa-eye create " style="color: green;cursor: pointer;"
+                                    data-toggle="modal" data-target="#AllowanceView" (click)="allowanceView(display)">
+                                </span>
+                            </td>
+                            <td>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton"
+                                    (click)="deletefromarr(i)" color="primary">
+                                    <mat-icon style="color: gray;" aria-label="Delete">delete</mat-icon>
+                                </button>
+                            </td>
+
+                        </tr>
+
+                        <!-- and so on... -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button style="border-radius: 40px;margin-bottom: 5%;" class="btn btn-outline-primary" data-toggle="modal"
+                data-target="#makerminiwageschecker">Submit</button>
+            <button style="border-radius: 40px;margin-bottom: 5%;    margin-left: 10px;" class="btn btn-outline-primary"
+                (click)="oncancelclick()">Cancel</button>
+        </form>
+
+
+
+
+<!-- //minimum wastage edit -->
+        <form [formGroup]="Formarry_edit_value" style="margin-left: 5%;" *ngIf="edit_component_value">
+            <div class="table-responsive" style="margin-right: 20px; padding: 10px;">
+                <table class="styled-table" style="width: 80%; font-family: sans-serif; margin-top: 2%;
+                    margin-bottom: 2%;">
+                    <thead>
+                        <tr>
+
+                            <th>Zone</th>
+                            <th>Type</th>
+                            <th>Minimum Wages</th>
+                            <th>Variable Dearness Allowance</th>
+                            <th>Gun Allowance</th>
+                            <!-- <th>SGST%</th>
+                            <th>CGST%</th> -->
+                            <th>EPF%</th>
+                            <th>ESI%</th>
+                            <th>Medical Insurance%</th>
+                            <th>Extra Allowance</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="data">
+                        <tr *ngFor="let display of getformarrayforedit_controls();let i=index;" [formGroupName]="i">
+
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input readonly matInput formControlName="zone_value">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input readonly matInput formControlName="type_value">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input type="number" matInput formControlName="wages">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input type="number" matInput formControlName="variable_dearn_allowance">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input type="number" matInput formControlName="gun_allowances">
+                                </mat-form-field>
+                            </td>
+                            <!-- <td>
+                                    <mat-form-field style="width: 100px;">
+                                    <input readonly type="number" matInput formControlName="sgst">
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field  style="width: 100px;">
+                                    <input readonly type="number" matInput formControlName="cgst">
+                                    </mat-form-field>
+                                </td> -->
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input type="number" matInput formControlName="epf">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input type="number" matInput formControlName="esi">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 100px;">
+                                    <input type="number" matInput formControlName="medical_insurance">
+                                </mat-form-field>
+                            </td>
+    
+                            <td>
+                                <div *ngIf="display.controls.extra_allowance?.length > 0; else elseextraallowance">
+                                <mat-icon (click)="openModal(mytemplate)"
+                                    (click)="getParticularlineDataForEdit(display, i)">edit</mat-icon>
+                                </div>
+                                <ng-template #elseextraallowance> -- </ng-template>
+
+                                <ng-template #mytemplate>
+                                    <button type="button" class="close" (click)="previousChanges('save', i, display )" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h1 mat-dialog-title>Extra Allowance</h1>
+                                    <div mat-dialog-content>
+                                        <div style="margin-top: 0.5%; margin-left:5%;overflow-x: hidden;">
+                                            <table class="table table-bordered table-sm" fixed-header
+                                                style="text-align: center; margin-left: 16%;   width: 50%;">
+                                                <thead class="table_header">
+                                                    <tr>
+                                                        <th>S.NO</th>
+                                                        <th>Extra Allowance Name</th>
+                                                        <th>Charges</th>
+                                                        <th> Percentage/Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody formArrayName="extra_allowance">
+                                                    <tr *ngFor="let allowance of display.controls.extra_allowance.controls; index as allowanceindex"
+                                                        [formGroupName]="allowanceindex">
+                                                        <td>{{allowanceindex + 1 }} </td>
+                                                        <td>{{Formarry_edit_value.value.data[i].extra_allowance[allowanceindex].name}}
+                                                        </td>
+                                                        <!-- <td>{{allowance.charges}}</td> -->
+                                                        <td>
+                                                            <mat-form-field class="example-full-width"
+                                                                style="width: 70px;">
+                                                                <input matInput type="number" formControlName="charges"
+                                                                    autocomplete="off" />
+                                                            </mat-form-field>
+                                                        </td>
+                                                        <td style="white-space: nowrap;">
+                                                            <!-- <mat-form-field style="width: 100px;" > -->
+                                                            <!-- <mat-label>Is Percentage</mat-label> -->
+                                                            <!-- <mat-select formControlName="is_percentage">
+                                                                    <mat-option *ngFor="let choose of yesorno" [value]="choose.id"> -->
+                                                            <!-- <mat-icon>{{choose.display}}</mat-icon> -->
+                                                            <!-- {{choose.display}}
+                                                                    </mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field> -->
+
+                                                                <mat-radio-group formControlName="is_percentage">
+                                                                    <mat-radio-button *ngFor="let n of yesorno"
+                                                                        [value]="n.id" style="margin-left: 10px;">
+                                                                        {{n.display}}
+                                                                    </mat-radio-button>
+                                                                </mat-radio-group>
+                                                        </td>
+
+                                                        
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div style="float: right;">
+                                                <button class="btn btn-outline-success"  (click)="closedialog()"
+                                                        style="border-radius: 40px; margin-left: 10px;"
+                                                         >Save</button>
+
+                                                         <!-- <button class="btn btn-outline-primary"  (click)="closedialog()"
+                                                         style="border-radius: 40px; margin-left: 10px;"
+                                                          >Back</button>          -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </ng-template>
+
+                                <!-- <span matTooltip="view" class=" fa fa-eye create " style="color: green;cursor: pointer;"
+                                    data-toggle="modal" data-target="#AllowanceViewUpdate">
+                                </span> -->
+                            </td>
+                        </tr>
+                        <!-- and so on... -->
+                    </tbody>
+                </table>
+            </div>
+            <button style="border-radius: 40px;margin-bottom: 5%;" class="btn btn-outline-primary"
+                (click)="onsubmitupdate_minimum_Wages()">Submit</button>
+            <button style="border-radius: 40px;margin-bottom: 5%; margin-left: 10px;" class="btn btn-outline-primary"
+                (click)="oncancelvalueofupdate()">Cancel</button>
+            <!-- <pre>
+                {{Formarry_edit_value.value | json}}
+            </pre> -->
+        </form>
+        <!-- 
+            <pre>{{mimimumfromarr.value | json}}</pre>
+            <pre>{{ minimumwagesfrom.value | json}}</pre>
+          -->
+    </div>
+
+
+
+    <div *ngIf="minimuwagesgetwages">
+        <h1 style="    padding-left: 0%;">{{ 'PARTICULARS OF MINIMUM WAGES PAYABLE TO SECURITY GUARDS / ARMED GUARDS' |
+            titlecase }}--- Shift:{{shiftname}}</h1>
+        <span *ngIf="!(approverstatus==3 || approverstatus==0 ) "><button
+                style="border-radius: 40px; margin-left: 60%; " *ngIf=" this.approvalflowlist[0]?.ischecker == false"
+                class="btn btn-outline-primary" (click)="editmimformclick()"> Edit</button>
+        </span><button style="border-radius: 40px;    margin-left: 3%;"
+            [ngStyle]="(approverstatus==3 || approverstatus==0 ) ||this.approvalflowlist[0]?.ischecker == true  ? {'margin-left': '63%'} :''"
+            class="btn btn-outline-primary" (click)="onbackclick()"> Back</button>
+        <div *ngIf="this.wagesdetailslist[0]?.is_extra_allowance == false">
+            <div class="table-responsive" style="margin-top: 1.5%;width: 96%;      margin-bottom: 5%;  margin-left: 0%;">
+            <table class="table table-bordered Counter" style=" text-align: center;   width: 75%;">
+                <thead class="table_header">
+                    <tr>
+                        <th rowspan="3" style="padding-bottom: 6%;">S.NO</th>
+                        <th rowspan="3" style="padding-bottom: 6%;width: 24%;">{{'Type of wage/allowance' | uppercase}}
+                        </th>
+                        <th rowspan="3" style="padding-bottom: 6%;width: 28%;">{{'Rate' | uppercase}}</th>
+                        <th [colSpan]="(zonecount*2)+1">{{statenamedis | uppercase}}</th>
+                    </tr>
+                    <tr>
+                        <th *ngIf="UnArmedListZone.length > 0" [colSpan]="UnArmedListZone.length">SECURITY GUARDS </th>
+                        <th *ngIf="demozone.length > 0" [colSpan]="demozone.length"> ARMED GUARDS </th>
+                    </tr>
+                    <tr>
+                        <th  *ngFor="let zone of UnArmedListZone;let i=index"> 
+                             
+                            {{ UnArmedListZone.length > i ? zone.name :"-" }}
+                        </th>
+                        <th  *ngFor="let zone of demozone ;let i=index">
+                            <!-- {{zone.name}} -->
+                            {{ (demozone.length > i ? zone.name :"-") }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Minimum Wages ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td   *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].wages :"") | number:'1.2-2' }}
+                        </td>
+                        <td   *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ? Armedlist[i].wages:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Variable Dearness Allowance ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td  *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].variable_dearn_allowance:"") | number:'1.2-2'
+                            }}
+                        </td>
+                        <td  *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ? Armedlist[i].variable_dearn_allowance :"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'SubTotal 1' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td  *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].sub_total1 :"") | number:'1.2-2' }}
+                        </td>
+                        <td  *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].sub_total1:"") | number:'1.2-2' }}
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Weekly Off ' }}
+                        </td>
+                        <td>
+                            Sub Total 1/ 26x4
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].weekly_off :"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].weekly_off:"") | number:'1.2-2' }}
+                        </td>
+
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Total Minimum Wages' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].minimum_wages_total:"") | number : '1.2-2'}}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(Armedlist.length > i ? Armedlist[i].minimum_wages_total:"") | number:'1.2-2'}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'EPF (Employer share) ' }}
+                        </td>
+                        <td>
+                            EPF% on MW Total (Ceiling of Rs. 15000)
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].epf:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].epf:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'ESI (Employer share) ' }}
+                        </td>
+                        <td>
+                            ESI% on MW Total (Ceiling of Rs. 21000)
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].esi:"") | number:'1.2-2' }}
+                        </td>
+                        <td  *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].esi:"")| number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr *ngIf="IsTenHrsShift == 3"> 
+                        <td>
+                            <h3></h3>
+                        </td> 
+                        <td>
+                            Two Hrs duty on prorata
+                        </td>
+                        <td> -- </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].tenhr_prorata:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].tenhr_prorata:"")| number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <!-- //ESI -->
+                     <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Medical Insurance' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].medical_insurance:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].medical_insurance:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <!-- // -->
+
+                    <!-- //ESI Percentage -->
+                     <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Medical Insurance%' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].medical_insurance_percentage:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].medical_insurance_percentage:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <!-- // -->
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Gun Allowance ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].gun_allowances:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].gun_allowances:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'SubTotal 2' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].sub_total2:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].sub_total2:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- <tr>
+                            <td>
+                              10    
+                            </td>
+                            <td>
+                                {{'Administrative charges' }}
+                            </td>
+                            <td>
+                                Administrative charges% on Sub Total-2
+    
+                            </td>
+                            <td *ngFor="let zone of demozone;let i=index">
+                                {{ (securitylist.length > i ?securitylist[i].administrative_charges:"") | number:'1.2-2' }}
+                            </td>     
+                            <td *ngFor="let zone of demozone;let i=index">
+                                {{ (Armedlist.length > i ?Armedlist[i].administrative_charges:"") | number:'1.2-2' }}
+                            </td>
+                          </tr> -->
+                    <tr style="font-weight: bold;">
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Total Bill' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td  *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].total_bill :"") | number:'1.2-2' }}
+                        </td>
+                        <td  *ngFor="let zone of demozone;let i=index">
+                            {{( Armedlist.length > i ?Armedlist[i].total_bill:"")| number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Goods & Service Tax(SGST)' }}
+                        </td>
+                        <td>
+                            SGST% on Total Bill
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].sgst:"" )| number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].sgst:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Goods & Service Tax(CGST)' }}
+                        </td>
+                        <td>
+                            CGST% on Total Bill
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].cgst :"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{( Armedlist.length > i ?Armedlist[i].cgst:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Grand Total ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{( securitylist.length > i ?securitylist[i].grand_total:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].grand_total:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Extra Additional wages ' }}
+                        </td>
+                        <td>
+                            MW Total / 30@ = per day / 8 = per hour x No. of hrs (@Total number of days in the month)
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].extra_wages:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].extra_wages:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="text-align: center;
+                      background-color: #ddefdd;">
+                        <th [colSpan]="zonecount*2 +3">Branch Head / Deputy Manager is required to ensure the following
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Amount paid to the Guard' }}
+                        </td>
+                        <td>
+                            MW Total (Sl.No.5) + Gun allce. minus Employee share of EPF&ESI (EPF-12% & ESI-0.75% on MW
+                            Total)
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].amount_paid:"" )| number : '1.0-0' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(Armedlist.length > i ? Armedlist[i].amount_paid:"") | number : '1.0-0' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Amount remitted in EPF account of the Guard' }}
+                        </td>
+                        <td>
+                            Employer: 13% + Employee:12% on MW Total (Ceiling of Rs. 15000)
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].amount_remitted_epf:"") | number : '1.0-0' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].amount_remitted_epf:"") | number : '1.0-0' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3></h3>
+                        </td>
+                        <td>
+                            {{'Amount remitted in ESI account of the Guard' }}
+                        </td>
+                        <td>
+                            Employer: 3.25% + Employee: 0.75% on MW Total (Ceiling of Rs. 21000)
+
+                        </td>
+                        <td *ngFor="let zone of UnArmedListZone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].amount_remitted_esi :"" )| number : '1.0-0' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].amount_remitted_esi:"" )| number : '1.0-0' }}
+                        </td>
+                    </tr>
+                    <!-- <tr>
+                            <td>
+                              19
+                            </td>
+                            <td>
+                                {{'Effective From ' }}
+                            </td>
+                            <td *ngFor="let zone of demozone;let i=index">
+                                {{ (securitylist.length > i ? Convertdate(securitylist[i].effectivefrom) :"") | date :'M/d/yy' }}
+                            </td>     
+                            <td *ngFor="let zone of demozone;let i=index">
+                                {{ (Armedlist.length > i ?Convertdate(Armedlist[i].effectivefrom):"") | date :'M/d/yy'}}
+                            </td>
+                          </tr> 
+                          <tr>
+                            <td>
+                              20
+                            </td>
+                            <td>
+                                {{'Effective To' }}
+                            </td>
+                            <td *ngFor="let zone of demozone;let i=index">
+                                {{ (securitylist.length > i ? Convertdate(securitylist[i].effectiveto):"") | date :'M/d/yy'}}
+                            </td>     
+                            <td *ngFor="let zone of demozone;let i=index">
+                                {{( Armedlist.length > i ? Convertdate(Armedlist[i].effectiveto) :" " )| date :'M/d/yy'}}
+                            </td>
+                          </tr>  -->
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+
+        <div *ngIf="this.wagesdetailslist[0]?.is_extra_allowance == true" class="table-responsive"
+            style="margin-top: 1.5%;width: 96%;      margin-bottom: 5%; margin-left: 0%;">
+            <table class="table table-bordered" style=" text-align: center;   width: 75%;" fixed-header>
+                <thead class="table_header">
+                    <tr>
+                        <th rowspan="3" style="padding-bottom: 6%;">S.NO</th>
+                        <th rowspan="3" style="padding-bottom: 6%;width: 24%;">{{'Type of wage/allowance' | uppercase}}
+                        </th>
+                        <th rowspan="3" style="padding-bottom: 6%;width: 28%;">{{'Rate' | uppercase}}</th>
+                        <th [colSpan]="zonecount*2">{{statenamedis | uppercase}}</th>
+                    </tr>
+                    <tr>
+                        <th [colSpan]="zonecount">SECURITY GUARDS </th>
+                        <th [colSpan]="zonecount"> ARMED GUARDS </th>
+                    </tr>
+                    <tr>
+                        <th *ngFor="let zone of demozone">
+                            {{zone.name}}
+                        </th>
+                        <th *ngFor="let zone of demozone">
+                            {{zone.name}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            1
+                        </td>
+                        <td>
+                            {{'Minimum Wages ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].wages :"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ? Armedlist[i].wages:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            2
+                        </td>
+                        <td>
+                            {{'Variable Dearness Allowance ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].variable_dearn_allowance:"") | number:'1.2-2'
+                            }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ? Armedlist[i].variable_dearn_allowance :"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            {{'Total Minimum Wages' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].minimum_wages_total:"") | number : '1.2-2'}}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(Armedlist.length > i ? Armedlist[i].minimum_wages_total:"") | number:'1.2-2'}}
+                        </td>
+
+                    </tr>
+
+                    <tr *ngFor="let view of ViewSummary;let i=index">
+                        <td>
+                            A{{i+1}}
+                        </td>
+                        <td>
+                            {{view.name}}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let amt of view['unarmedcharges'];let j=index">
+                            {{amt.amount}}
+
+                        </td>
+                        <td *ngFor="let amt1 of view['armedcharges'];let j=index">
+                            {{amt1.amount}}
+
+                        </td>
+
+                    </tr>
+
+
+
+
+                    <tr style="font-weight: bold;">
+                        <td>
+                            4
+                        </td>
+                        <td>
+                            {{'SubTotal 1' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].sub_total1:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].sub_total1:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            5
+                        </td>
+                        <td>
+                            {{'SubTotal 2' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].sub_total2:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].sub_total2:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            6
+                        </td>
+                        <td>
+                            {{'Gun Allowance ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].gun_allowances:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].gun_allowances:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            7
+                        </td>
+                        <td>
+                            {{'SubTotal 3' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].sub_total3:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].sub_total3:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+
+
+
+
+
+
+
+
+                    <tr style="font-weight: bold;">
+                        <td>
+                            8
+                        </td>
+                        <td>
+                            {{'Total Bill' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].total_bill :"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{( Armedlist.length > i ?Armedlist[i].total_bill:"")| number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            9
+                        </td>
+                        <td>
+                            {{'Goods & Service Tax(SGST)' }}
+                        </td>
+                        <td>
+                            SGST% on Total Bill
+
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].sgst:"" )| number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].sgst:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            10
+                        </td>
+                        <td>
+                            {{'Goods & Service Tax(CGST)' }}
+                        </td>
+                        <td>
+                            CGST% on Total Bill
+
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].cgst :"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{( Armedlist.length > i ?Armedlist[i].cgst:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            11
+                        </td>
+                        <td>
+                            {{'Grand Total ' }}
+                        </td>
+                        <td>
+                            --
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{( securitylist.length > i ?securitylist[i].grand_total:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].grand_total:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>
+                            12
+                        </td>
+                        <td>
+                            {{'Extra Additional wages ' }}
+                        </td>
+                        <td>
+                            MW Total / 30@ = per day / 8 = per hour x No. of hrs (@Total number of days in the month)
+
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].extra_wages:"") | number:'1.2-2' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].extra_wages:"") | number:'1.2-2' }}
+                        </td>
+                    </tr>
+                    <tr style="text-align: center;
+                      background-color: #ddefdd;">
+                        <th [colSpan]="zonecount*2 +3">Branch Head / Deputy Manager is required to ensure the following
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            13
+                        </td>
+                        <td>
+                            {{'Amount paid to the Guard' }}
+                        </td>
+                        <td>
+                            MW Total (Sl.No.5) + Gun allce. minus Employee share of EPF&ESI (EPF-12% & ESI-0.75% on MW
+                            Total)
+
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(securitylist.length > i ? securitylist[i].amount_paid:"" )| number : '1.0-0' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{(Armedlist.length > i ? Armedlist[i].amount_paid:"") | number : '1.0-0' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            14
+                        </td>
+                        <td>
+                            {{'Amount remitted in EPF account of the Guard' }}
+                        </td>
+                        <td>
+                            Employer: 13% + Employee:12% on MW Total (Ceiling of Rs. 15000)
+
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].amount_remitted_epf:"") | number : '1.0-0' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].amount_remitted_epf:"") | number : '1.0-0' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            15
+                        </td>
+                        <td>
+                            {{'Amount remitted in ESI account of the Guard' }}
+                        </td>
+                        <td>
+                            Employer: 3.25% + Employee: 0.75% on MW Total (Ceiling of Rs. 21000)
+
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (securitylist.length > i ?securitylist[i].amount_remitted_esi :"" )| number : '1.0-0' }}
+                        </td>
+                        <td *ngFor="let zone of demozone;let i=index">
+                            {{ (Armedlist.length > i ?Armedlist[i].amount_remitted_esi:"" )| number : '1.0-0' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+
+        <div style=" margin-bottom: 3%;  display: flex;    width: 75%;
+        justify-content: center; ">
+            <button style="border-radius: 40px;"
+                *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 1  ||this.approvalflowlist[0]?.approval_status?.id==4  ) && (this.approvalflowlist[0]?.ismaker == true))"
+                class="btn btn-outline-primary" data-toggle="modal" data-target="#makerchecker">Move to
+                Approver</button>
+
+            <button type="button" class="btn btn-outline-success"
+                *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 2) && (this.approvalflowlist[0]?.ischecker == true))"
+                data-toggle="modal" data-target="#rejectModalApprover" style="border-radius: 40px;margin-left: 31px;">
+                Approve
+            </button>
+            <button type="button" class="btn btn-outline-danger" data-toggle="modal"
+                *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 2 )&&( this.approvalflowlist[0]?.ischecker == true))"
+                data-target="#rejectModalReject" style="border-radius: 40px;margin-left: 30px;">Reject
+            </button>
+            <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                *ngIf="((this.approvalflowlist[0]?.approval_status?.id == 2 )&&( this.approvalflowlist[0]?.ischecker == true))"
+                data-target="#rejectModalReview" style="border-radius: 40px;margin-left: 30px;">Review
+            </button>
+
+            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#viewModalApprover"
+                (click)=approvalFlow() style="border-radius: 40px;margin-left: 31px;">
+                Transaction History
+            </button>
+        </div>
+
+    </div>
+
+
+
+
+
+    <!-- approver popup -->
+
+    <div class="modal fade" id="rejectModalApprover" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" style="width: 45%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">Approver</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" #addaprover
+                        (click)="oncancelclick1()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+                    <form [formGroup]="approverform" (ngSubmit)="ApproverPopupForm()">
+                        <table>
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>Remarks</mat-label>
+                                            <input matInput placeholder="Remarks" formControlName="remarks"
+                                                autocomplete="off">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
+                        <tr>
+                            <button type="submit" style="float: left;border-radius: 40px"
+                                class="btn btn-outline-primary">
+                                Submit</button>
+                            <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                                style="margin-left: 10px;margin-bottom: 10px;border-radius: 40px"
+                                (click)="oncancelclick1()">
+                                Cancel</button>
+                        </tr>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- reject popup -->
+    <div class="modal fade" id="rejectModalReject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" style="width: 45%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">Reject</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" #rejected
+                        (click)="oncancelclick1()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+                    <form [formGroup]="rejectedform" (ngSubmit)="rejectPopupForm()">
+                        <table>
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>Remarks</mat-label>
+                                            <input matInput placeholder="Remarks" formControlName="remarks"
+                                                autocomplete="off">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
+                        <tr>
+                            <button type="submit" style="float: left;border-radius: 40px"
+                                class="btn btn-outline-primary">
+                                Submit</button>
+                            <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                                style="margin-left: 10px;margin-bottom: 10px;border-radius: 40px"
+                                (click)="oncancelclick1()">
+                                Cancel</button>
+                        </tr>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- review popup -->
+    <div class="modal fade" id="rejectModalReview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" style="width: 45%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">Review</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" #review
+                        (click)="oncancelclick1()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+                    <form [formGroup]="reviewform" (ngSubmit)="reviewPopupForm()">
+                        <table>
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>Remarks</mat-label>
+                                            <input matInput placeholder="Remarks" formControlName="remarks"
+                                                autocomplete="off">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
+                        <tr>
+                            <button type="submit" style="float: left;border-radius: 40px"
+                                class="btn btn-outline-primary">
+                                Submit</button>
+                            <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                                style="margin-left: 10px;margin-bottom: 10px;border-radius: 40px"
+                                (click)="oncancelclick1()">
+                                Cancel</button>
+                        </tr>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- popup for makerchecker  -->
+
+    <div class="modal fade" id="makerchecker" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title"
+                        style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;">
+                        Move To Approver</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        (click)="oncancelclick1()" #makerchecker>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form [formGroup]="movetochekerform" style="margin-top: 3%;margin-bottom: 3%;margin-left: 10%;">
+                        <table class="movtochecker" style="margin-bottom: 3%;">
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 250px;" (click)="approvername()">
+                                            <mat-label>Approver</mat-label>
+                                            <input #employeeInput placeholder="Approver" matInput #ApproverContactInput
+                                                formControlName="approver" [matAutocomplete]="employee" required>
+                                            <mat-autocomplete #employee="matAutocomplete"
+                                                (opened)="autocompleteapprovernameScroll()"
+                                                [displayWith]="displayFnEmployee">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let employee of employeeList"
+                                                        [value]="employee">{{employee.full_name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <!-- <td style="padding-left: 8%;">
+                                        <mat-form-field style="width: 175px;margin-left: 50px;">
+                                            <mat-label>Approval Branch</mat-label>(focusout)="approve(employee)"
+                                            <input  matInput placeholder="Approval Branch" readonly  formControlName="patch1" autocomplete="off" >    
+                                         </mat-form-field>
+                                    </td> -->
+
+                                    <!-- <td>
+                                        <mat-form-field style="width: 250px;padding-left: 8%;" (click)="approvalBranch()">
+                                            <mat-label>Approval Branch</mat-label>
+                                            <input #branchInput placeholder="Approval Branch" matInput
+                                                formControlName="approval_branch" [matAutocomplete]="branch" required>
+                                            <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                                        {{branch.code}}-{{branch.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td> -->
+
+                                    <td style="padding-left: 8%;">
+                                        <mat-form-field style="width: 175px;margin-left: 50px;">
+                                            <mat-label>Remarks</mat-label>
+                                            <input matInput placeholder="Remarks" formControlName="remarks"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </td>
+
+
+                                </tr>
+                            </div>
+                        </table>
+                        <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary"
+                            (click)="movetoapprove()">Move To Approver </button>
+                        <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                            (click)="oncancelclick1()" data-dismiss="modal" aria-label="Close"
+                            style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewModalApprover" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title"
+                        style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;">
+                        Transaction History</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+
+                    <div class="center">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" fixed-header style="width: 87%;">
+                                <thead class="table_header" style="text-align: left;">
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Date</th>
+                                        <th>Employee</th>
+                                        <th>Comments</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let info of historyData; index as i">
+                                        <td> {{i+1}} </td>
+                                        <td class="text-style">{{ info.action_date | date:'dd-MMM-yyyy '}}</td>
+                                        <td class="text-style">{{ info.action_taken.name}}</td>
+                                        <td class="text-style">{{ info.remarks}}</td>
+                                        <td class="text-style">{{ info.action}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="historyData ?.length == 0" style="margin-left: 42%;margin-bottom: 40px;">
+                                <h3>Sorry data not found!.. </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <table class="table table-bordered" style="width: 70%;">
+                        <thead class="table_header">
+                            <tr>
+                            <th >S.No</th>
+                            <th >Approver</th>
+                            <th >Created </th>
+                            <th >Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>{{this.approvalflowlist[0]?.approval_data?.approver?.full_name}}</td>
+                                    <td>{{this.approvalflowlist[0]?.approval_data?.created_by?.full_name}}</td>
+                                    <td>{{this.approvalflowlist[0]?.approval_data?.approval_status?.status}}</td>
+                                </tr>  
+                            </tbody>
+                        </table>
+                     -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="Allowance" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" style="width: 45%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">Extra Allowance</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" #allowance>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table style="margin-bottom: 3%;" style="margin-left: 10%;">
+                        <div>
+                            <form [formGroup]="allowanceform">
+                                <table style="margin-bottom: 3%;">
+                                    <div>
+                                        <tr>
+                                            <td>
+                                                <mat-form-field style="width: 175px;">
+                                                    <mat-label>Extra Allowance</mat-label>
+                                                    <mat-select formControlName="waged_id">
+                                                        <mat-option *ngFor="let list of getAllowanceList"
+                                                            [value]="list">
+                                                            {{list.text}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-outline-primary"
+                                                    style="border-radius:40px;margin-left: 70px;"
+                                                    (click)="addAllowanceName()">Add</button>
+                                            </td>
+                                        </tr>
+                                    </div>
+                                    <div class="table-responsive" style="margin-top: 1%;overflow-x: hidden;">
+
+                                        <table class="table">
+                                            <thead class="table_header">
+                                                <tr>
+                                                    <th>Extra Allowance</th>
+                                                    <th>percentage</th>
+                                                    <th>Amount</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody formArrayName="extra_allows">
+                                                <tr *ngFor="let allowance of arrays();index as i" [formGroupName]="i">
+                                                    <td>{{ allowance.value.waged_name}}</td>
+                                                    <td>
+                                                        <mat-checkbox formControlName="is_percent"
+                                                            [disabled]="getValue(i).is_amount"></mat-checkbox>
+                                                    </td>
+                                                    <td>
+                                                        <mat-checkbox formControlName="is_amount"
+                                                            [disabled]="getValue(i).is_percent"></mat-checkbox>
+                                                    </td>
+                                                    <td>
+                                                        <mat-icon style="color: gray;cursor: pointer;"
+                                                            (click)="allowanceNameDelete(i)">delete</mat-icon>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </table>
+                                <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary"
+                                    (click)="SaveAllowance()">Save</button>
+                            </form>
+                        </div>
+                    </table>
+
+                    <!-- <button type="button"  data-dismiss="modal" class="btn btn-outline-primary" (click)="cancelprimesform()"
+            style="border-radius: 40px;margin-left: 10px;    margin-bottom: 10px;">Cancel</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- extra allowance View -->
+    <div class="modal fade" id="AllowanceView" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content" style="    width: 80%;
+        margin-left: 11%;">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title"
+                        style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;">
+                        Extra Allowance View </h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div style="margin-top: 1%;">
+                        <!-- <div style="    margin-left: 10%;">
+                               <h2 style=" margin: 0px;">Premises &nbsp;: {{ shoepremisname }} </h2>
+                               <h2 style=" margin: 0px;">Branch &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ showbranchname }}</h2>
+                               <h2 style=" margin: 0px;" >Vendor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ vendorname}}</h2>
+                               <br>
+                           </div> -->
+
+
+                        <div class="table-responsive" style="margin-top: 0.5%; margin-left:5%;overflow-x: hidden;">
+                            <table class="table table-bordered table-sm" fixed-header
+                                style="text-align: center; margin-left: 16%;   width: 55%;">
+                                <thead class="table_header">
+                                    <tr>
+                                        <th>S.NO</th>
+                                        <th>Extra Allowance Name</th>
+                                        <th>Charges</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let allowance of allowanceList; index as i">
+                                        <td>{{i+1 }} </td>
+                                        <td>{{allowance.waged_name}}</td>
+                                        <td>{{allowance.charges}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="makerminiwageschecker" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title"
+                        style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;">
+                        Move To Approver</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        (click)="oncancelclick1()" #makerminiwageschecker>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form [formGroup]="movetochekerform" style="margin-top: 3%;margin-bottom: 3%;margin-left: 10%;">
+                        <table class="movtochecker" style="margin-bottom: 3%;">
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 250px;" (click)="approvername()">
+                                            <mat-label>Approver</mat-label>
+                                            <input #employeeInput placeholder="Approver" matInput #ApproverContactInput
+                                                formControlName="approver" [matAutocomplete]="employee" required>
+                                            <mat-autocomplete #employee="matAutocomplete"
+                                                (opened)="autocompleteapprovernameScroll()"
+                                                [displayWith]="displayFnEmployee">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let employee of employeeList"
+                                                        [value]="employee">{{employee.full_name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td style="padding-left: 8%;">
+                                        <mat-form-field style="width: 175px;margin-left: 50px;">
+                                            <mat-label>Remarks</mat-label>
+                                            <input matInput placeholder="Remarks" formControlName="remarks"
+                                                autocomplete="off">
+                                        </mat-form-field>
+                                    </td>
+
+
+                                </tr>
+                            </div>
+                        </table>
+                        <button type="submit" style="border-radius: 40px;" data-dismiss="modal"
+                            class="btn btn-outline-primary" (click)="onsubmitmimwages()">Move To Approver </button>
+                        <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+                            (click)="oncancelclick1()" data-dismiss="modal" aria-label="Close"
+                            style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="modal fade" id="AllowanceViewUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content" style="    width: 80%;
+    margin-left: 11%;">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title"
+                        style="color:black ;font-family:'Times New Roman', Times, serif;font-size:20px;">
+                        Extra Allowance View </h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div style="margin-top: 1%;">
+                        <!-- <div style="    margin-left: 10%;">
+                           <h2 style=" margin: 0px;">Premises &nbsp;: {{ shoepremisname }} </h2>
+                           <h2 style=" margin: 0px;">Branch &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ showbranchname }}</h2>
+                           <h2 style=" margin: 0px;" >Vendor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ vendorname}}</h2>
+                           <br>
+                       </div> -->
+
+
+                        <div class="table-responsive" style="margin-top: 0.5%; margin-left:5%;overflow-x: hidden;">
+                            <table class="table table-bordered table-sm" fixed-header
+                                style="text-align: center; margin-left: 16%;   width: 55%;">
+                                <thead class="table_header">
+                                    <tr>
+                                        <th>S.NO</th>
+                                        <th>Extra Allowance Name</th>
+                                        <th>Charges</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let allowance of allowanceList; index as i">
+                                        <td>{{i+1 }} </td>
+                                        <td>{{allowance.waged_name}}</td>
+                                        <td>{{allowance.charges}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <!-- <pre>{{minimumwagesfrom.value|json}}</pre> -->
+
+    <!-- <pre>{{mimimumfromarr.value|json}}</pre>
+
+    <pre>{{ allowanceform.value |json }}</pre> -->

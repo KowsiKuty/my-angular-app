@@ -1,0 +1,78 @@
+<div class="container" style="margin-left: 25px;">
+    <h1 style="font-size: 24px;font-family: 'Times New Roman', Times, serif;color: blue;">Employee Bank Details</h1>
+</div>
+<hr>
+<br>
+<div class="container"  style="margin-left: 25px;">
+    <form [formGroup]="empform">
+        <div class="row">
+            <div class="col-md-2">
+                <mat-form-field style="width:200px;">
+                    <mat-label>Employee Name</mat-label>
+                    <input matInput type="text"  formControlName="name" [matAutocomplete]="empnames"  required (keypress)="keypressnodigit($event)">
+                    <mat-autocomplete #empnames="matAutocomplete">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of empnamelist" [value]="d">{{d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2">
+                <mat-form-field style="width: 200px;margin-left: 50px;">
+                    <mat-label>Employee Code</mat-label>
+                    <input matInput type="text"   formControlName="code" [matAutocomplete]="empcodes"  required (keypress)="keypressnodigit($event)">
+                    <mat-autocomplete #empcodes="matAutocomplete">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of empcodelist" [value]="d">{{d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+            </div>
+            <div class="col-md-6">
+                <button type="button" (click)="getsummarysearch()" class="btn btn-success" matTooltip="search " style="border-radius: 30px;margin-left: 100px;">Search</button>
+                <button type="button" class="btn btn-success" matTooltip="add " routerLink="/master/empbankadd" style="border-radius: 40px;margin-left: 15px;"><span class="fa fa-plus"></span> Employee Bank</button>
+                <button type="button" class="btn btn-danger"routerLink="/master/master"  style="border-radius: 30px;margin-left: 15px;">Cancel</button>
+
+            </div>
+
+        </div>
+    </form>
+</div>
+<div class="container" style="margin-left:25px;">
+    <table class="table table-bordered">
+        <thead class="table_header">
+            <tr>
+                <th>S.No</th>
+                <th>Employee Name</th>
+                <th>Employee code</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of empdatalist;let i=index">
+                <td style="text-align:right">{{(presentPage-1)*pageSize+i+1}}</td>
+                <td>{{data.employee_full_name}}</td>
+                <td>{{data.employee_code}}</td>
+            </tr>
+            <tr *ngIf="empdatalist.length==0; else pagination" class="NodataAlign" style="text-align: center;"><td colspan="3"> No Records Found...</td></tr>
+            <ng-template #pagination>
+                <tr>
+                    <td colspan="3">
+                        <div style="text-align: right;">
+                            <button mat-icon-button (click)="has_previous()" [disabled]="!has_pre"><mat-icon>arrow_back</mat-icon></button>{{presentPage}}
+                            <button mat-icon-button (click)="hasnext()" [disabled]="!has_next"><mat-icon>arrow_forward</mat-icon></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </table>
+    <br>
+    <!-- <div class="text-right">
+        <button mat-icon-button (click)="has_previous()" [disabled]="!has_next"><mat-icon>arrow_back</mat-icon></button>{{presentPage}}
+        <button mat-icon-button (click)="hasnext()" [disabled]="!has_pre"><mat-icon>arrow_forward</mat-icon></button>
+    </div> -->
+</div>
+

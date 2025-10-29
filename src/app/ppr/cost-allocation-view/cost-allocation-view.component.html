@@ -1,0 +1,640 @@
+<div class="container">
+    <div *ngIf="dispaly_child==false;else viewchild">
+        <div>
+            <form [formGroup]="cost_view">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field (click)="finyear_dropdown('Search')">
+                                <mat-label>Fin Year*</mat-label>
+                                <input placeholder="Fin year" matInput formControlName="finyear" #finyearInput
+                                    [matAutocomplete]="finyear_auto" (keyup)="finyear_dropdown('Search')">
+                                <mat-autocomplete #finyear_auto="matAutocomplete" [displayWith]="display_finyear">
+                                    <mat-option *ngFor="let finyearname of finyear_details" [value]="finyearname">
+                                        {{finyearname.finyer}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>From Month</mat-label>
+                                <mat-select formControlName="frommonth"
+                                    (selectionChange)="frommonthsearch(cost_view.value.frommonth)">
+                                    <mat-option *ngFor="let month of from_month" [value]="month">
+                                        {{month.month}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>To Month {{cost_view.value.frommonth ? '*' : '' }} </mat-label>
+                                <mat-select formControlName="tomonth"
+                                    (selectionChange)="tomonthsearch(cost_view.value.tomonth)">
+                                    <mat-option *ngFor="let month of from_month"
+                                        [disabled]="(frommonthid<month.id || frommonthid==12)? false:true"
+                                        [value]="month">
+                                        {{month.month}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Sequence No</mat-label>
+                                <input placeholder="Sequence No" type="number" matInput formControlName="level">
+                            </mat-form-field>
+                        </div> -->
+                        <div class="col-md-3">
+                            <mat-form-field (click)="branch_dropdown()">
+                                <mat-label>Branch</mat-label>
+                                <input #branchInput placeholder="Branch" matInput formControlName="branch"
+                                    (keyup)="branch_dropdown()" [matAutocomplete]="branch_auto">
+                                <mat-autocomplete #branch_auto="matAutocomplete" [displayWith]="display_branch"
+                                    (opened)="autocompletebranchnameScroll()">
+                                    <mat-option *ngFor="let branch of branch_details" [value]="branch">
+                                        {{branch.code}}-{{branch.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="Sector_dropdown()">
+                                <mat-label>Sector</mat-label>
+                                <input placeholder="Sector" matInput formControlName="sector" #sectorInput
+                                    [matAutocomplete]="sector_auto" (keyup)="Sector_dropdown()">
+                                <mat-autocomplete #sector_auto="matAutocomplete" [displayWith]="display_sector"
+                                    (opened)="autocompletesectorScroll()"
+                                    (optionSelected)="search_details_clear('sector','')">
+                                    <mat-option *ngFor="let sector of sector_details" [value]="sector">
+                                        {{sector.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="Business_dropdown()">
+                                <mat-label>Business</mat-label>
+                                <input placeholder="Business" matInput formControlName="business" #businessInput
+                                    [matAutocomplete]="business_auto" (keyup)="Business_dropdown()">
+                                <mat-autocomplete #business_auto="matAutocomplete" [displayWith]="display_business"
+                                    (opened)="autocompletebusinessnameScroll()"
+                                    (optionSelected)="search_details_clear('business','')">
+                                    <mat-option *ngFor="let business of business_details" [value]="business">
+                                        {{business.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="bs_dropdown()">
+                                <mat-label>BS</mat-label>
+                                <input placeholder="BS" matInput formControlName="business_segment" #bsInput
+                                    [matAutocomplete]="bs_auto" (keyup)="bs_dropdown()">
+                                <mat-autocomplete #bs_auto="matAutocomplete" [displayWith]="display_bs"
+                                    (optionSelected)="search_details_clear('business_segment','')"
+                                    (opened)="autocompletebsnameScroll()">
+                                    <mat-option *ngFor="let bs of bs_details" [value]="bs">
+                                        {{bs.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="cc_dropdown()">
+                                <mat-label>CC</mat-label>
+                                <input placeholder="CC" matInput formControlName="cc" #ccInput
+                                    [matAutocomplete]="cc_auto" (keyup)="cc_dropdown()">
+                                <mat-autocomplete #cc_auto="matAutocomplete" [displayWith]="display_cc"
+                                    (optionSelected)="search_details_clear('cc','')"
+                                    (opened)="autocompletccnameScroll()">
+                                    <mat-option *ngFor="let cc of cc_details" [value]="cc">
+                                        {{cc.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>From</mat-label>
+                                <input matInput [matDatepicker]="from_date_ref" formControlName="from_date" readonly                                    >
+                                <mat-datepicker-toggle matSuffix [for]="from_date_ref">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #from_date_ref startView="multi-year"></mat-datepicker>
+                            </mat-form-field>          -->
+                        <!-- </div> -->
+                        <!-- <mat-form-field class="example-full-width">
+                                <mat-label>Month and Year</mat-label>
+                                <input matInput [matDatepicker]="dp" [formControl]="from_date">
+                                <mat-hint>MM/YYYY</mat-hint>
+                                (dateChange)="search_details_clear('date','')"
+                                <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+                                <mat-datepicker #dp
+                                                startView="multi-year"
+                                                (monthSelected)="setMonthAndYear($event, dp)"
+                                                panelClass="example-month-picker">
+                                </mat-datepicker>
+                              </mat-form-field> -->
+
+                        <!-- </div> -->
+                        <!-- <div class="col-md-3">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>To</mat-label>
+                                <input matInput [matDatepicker]="to_date_ref" [min]="cost_view?.value?.from_date"
+                                    formControlName="to_date" readonly>
+                                <mat-datepicker-toggle matSuffix [for]="to_date_ref">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #to_date_ref startView="multi-year"></mat-datepicker>
+                            </mat-form-field> -->
+
+                        <!-- <mat-form-field appearance="fill">
+                                <mat-label>Month and Year</mat-label>
+                                <input matInput [matDatepicker]="dp" [formControl]="to_date">
+                                <mat-hint>MM/YYYY</mat-hint>
+                                <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+                                <mat-datepicker #dp
+                                                startView="multi-year"
+                                                (monthSelected)="setMonthAndYear($event, dp)"
+                                                panelClass="example-month-picker">
+                                </mat-datepicker>
+                              </mat-form-field> -->
+                        <!-- </div> -->
+                        <div class="col-md-3">
+                            <mat-label>Select Amount*</mat-label>
+                            <br>
+                            <mat-radio-group aria-label="Select Quarterly or Monthly" formControlName="divAmount"
+                                #group="matRadioGroup">
+                                <mat-radio-button value="L" (change)="lakhs()">In
+                                    Lakhs</mat-radio-button>&nbsp;&nbsp;&nbsp;
+                                <mat-radio-button value="K" (change)="thousands()"> In Thousands</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div class="col-md-3">
+                            <button style="border-radius: 40px;" class="btn btn-outline-primary"
+                                (click)="cost_allocation_search(this.cost_view.value)">
+                                Search
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <button style="border-radius: 40px;" class="btn btn-outline-primary"
+                                (click)="search_details_clear('All','')">
+                                Clear
+                            </button>
+                        </div>
+
+                          <div class="col-md-2" (document:click)="onDocumentClick($event)" (mouseleave)="onMouseLeave($event)">
+                            <a 
+                              class="btn-lg" 
+                              type="submit" 
+                              style="border-radius: 40px; position: relative;" 
+                              (mouseover)="showTooltip = true" >
+                              <i class="fa fa-download" aria-hidden="true"></i>
+                            </a>
+                            <div 
+                              *ngIf="showTooltip" 
+                              class="tooltip-container"    (mouseover)="onMouseEnter()"
+                              (mouseleave)="onMouseLeave($event)"
+                              style="position: absolute; top: 50px; left: 0; background-color: white; border: 1px solid #ccc; padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 100;">
+                              <div *ngFor="let name of Download_names" 
+                                   (click)="allocation_view_download(cost_view?.value,name)" 
+                                   style="cursor: pointer; padding: 5px 10px; white-space: nowrap;">
+                                {{name}}
+                              </div>
+                            </div>
+                          </div>                       
+                          
+                        <div class="col-md-2">
+                            <button style="border-radius: 40px;" data-toggle="modal" data-target="#allocation_run"
+                                class="btn btn-outline-primary">Move To Fas</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button style="border-radius: 40px;" data-toggle="modal" data-target="#allocation_run1"
+                                class="btn btn-outline-primary">ForeCast</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button style="border-radius: 40px;" (click)="search_details_clear('','back')"
+                                class="btn btn-outline-primary">Back</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div>
+            <div class="table-responsive" class="tablescroll"
+                style="margin-top: 2%;width: 95%;overflow: auto;margin-left: 10px;">
+                <table class="table table scrolltable table-bordered">
+                    <thead class="table_header" style="text-align: center;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Sector</th>
+                            <th>Branch</th>
+                            <th>BS</th>
+                            <th>CC</th>
+                            <th>Category</th>
+                            <th>Sub Category</th>
+                            <th>D/C</th>
+                            <th>Amount</th>
+                            <th>Sequence No</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let allocation of cost_allocation_info;let ind=index">
+                        <tr>
+                            <td>{{(presentpage-1)*10+ind+1}}</td>
+                            <td>{{allocation.sectorname}}</td>
+                            <td>{{allocation.branch_id.name}}-{{allocation.branch_id.code}}</td>
+                            <td><a style="color: #007bff;cursor: pointer;" #data_inchild matTooltip="View"
+                                    class="ng-binding" (click)="Allocation_child(allocation)">{{allocation.bs_name}}
+                                </a></td>
+                            <td>{{allocation.cc_name}}</td>
+                            <td>{{allocation.subcat_id[0]?.microcatcode}}</td>
+                            <td>{{allocation.subcat_id[0]?.microsubcatcode}}</td>
+                            <td>{{allocation.DRCR_IN=="1" ? 'Debit' : 'Credit'}}</td>
+                            <td style="text-align: end;">{{ allocation.amount | number:'1.2-2' }}</td>
+                            <td>{{allocation.level}}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div *ngIf="cost_allocation_info.length==0">
+                    <p style="text-align: center;">No Data Found</p>
+                </div>
+            </div>
+            <div style="margin-bottom: 2%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="haspreviouss === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="hasnexts === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <ng-template #viewchild>
+
+        <div class="container" style="padding: 2%;position: relative;
+        width: 50%;
+        height: 50%;">
+            <div style="padding: 1%;">
+                <p style="position: absolute;">Allocation To</p>
+                <button style="border-radius: 40px;     position: absolute; right: 0;" class="btn btn-outline-primary"
+                    (click)="dispaly_child=false">
+                    Back
+                </button>
+            </div>
+        </div>
+        <div class="container" style="padding: 2%;">
+            <div class="card" style="  display: inline-block;">
+                <div class="card-body">
+                    <ng-container>
+                        <table>
+                            <div *ngFor="let view of Viewdata_child " style="margin-top: 1px;">
+                                <tr>
+                                    <td>
+                                        <div style="color: rgb(0, 3, 0);"><label
+                                                style="color: rgb(53, 64, 214);">Sector:</label>{{view.sectorname}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="color: rgb(1, 10, 1); padding-left: 20px;"><label
+                                                style="color: rgb(53, 64, 214);">Branch:</label>{{view.branch_id?.name}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="color: rgb(3, 15, 3);padding-left: 20px;"><label
+                                                style="color: rgb(53, 64, 214);">BS:</label>{{view.bs_name}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="color: rgb(1, 7, 1);padding-left: 20px;"><label
+                                                style="color: rgb(53, 64, 214);">CC:</label>{{view.cc_name}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="color: rgb(2, 12, 2);padding-left: 20px;"><label
+                                                style="color: rgb(53, 64, 214);">D/C:</label>{{view.DRCR_IN=="1" ?
+                                            'Debit' : 'Credit'}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="color: rgb(2, 17, 2);padding-left: 20px;"><label
+                                                style="color: rgb(53, 64, 214);">Amount:</label>{{view.amount |
+                                            number:'1.2-2'}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
+                    </ng-container>
+                    <table class="table table scrolltable table-bordered" style="width: 101%; font-size:small;">
+                        <thead class="table_header ">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Sector</th>
+                                <th>Branch</th>
+                                <th>Business</th>
+                                <th>BS</th>
+                                <th>CC</th>
+                                <th>D/C</th>
+                                <th>Category</th>
+                                <th>Sub Category</th>
+                                <th>Amount</th>
+                                <th>Sequence No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let allocation of allocation_child_info;let i = index" style="font-size:small;">
+                                <td>{{(present_page - 1)*10 + i+1}}</td>
+                                <td>{{allocation.sectorname}}</td>
+                                <td>{{allocation.branch_id.name}}--{{allocation.branch_id.code}}</td>
+                                <td>{{allocation.bizname}}</td>
+                                <td>{{allocation.bs_name}}</td>
+                                <td>{{allocation.cc_name}}</td>
+                                <td>{{allocation.DRCR_IN=="1" ? 'Debit' : 'Credit'}}</td>
+                                <td>{{allocation.cat_id.microcatcode}}</td>
+                                <td>{{allocation.subcat_id[0].microsubcatcode}}</td>
+                                <td style="text-align: end;">{{allocation.amount | number:'1.2-2'}}</td>
+                                <td>{{allocation.level}}</td>
+                            </tr>
+                            <div *ngIf="allocation_child_info?.length==0">
+                                <p style="text-align: center;">No Data Found</p>
+                            </div>
+                        </tbody>
+                    </table>
+                    <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                        <button mat-icon-button [disabled]="to_has_previous === false" color="primary"
+                            (click)="previous_Click()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{present_page}}
+                        <button mat-icon-button [disabled]="to_has_next === false" color="primary"
+                            (click)="next_Click()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <div>
+        <div class="modal fade" id="allocation_run" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            aria-labelledby="allocationLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="allocationLabel">Allocation</h1>
+                        <button type="button" class="close" #close_allocation (click)="arial_close()"
+                            data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="display: contents;">
+                        <div>
+                            <form [formGroup]="allocation_runing">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <mat-form-field (click)="finyear_dropdown('')">
+                                                <mat-label>Fin Year*</mat-label>
+                                                <input placeholder="Fin year" matInput formControlName="finyear"
+                                                    #allocation_finyear_input
+                                                    [matAutocomplete]="allocation_finyear_auto"
+                                                    (keyup)="finyear_dropdown('')">
+                                                <mat-autocomplete #allocation_finyear_auto="matAutocomplete"
+                                                    [displayWith]="display_finyear">
+                                                    <mat-option *ngFor="let finyearname of allocation_finyear"
+                                                        [value]="finyearname">
+                                                        {{finyearname.finyer}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- <div class="col-md-4"> -->
+                                        <!-- <mat-form-field>
+                                                <mat-label>Level</mat-label>
+                                                <input placeholder="Level" type="number" matInput
+                                                    formControlName="level">
+                                            </mat-form-field> -->
+                                        <!-- <mat-form-field (click)="leve_dropdown()">
+                                                <mat-label>Level</mat-label>
+                                                <input placeholder="Level" matInput formControlName="level" 
+                                                    [matAutocomplete]="level_auto" >
+                                                <mat-autocomplete #level_auto="matAutocomplete" [displayWith]="display_level">
+                                                    <mat-option *ngFor="let level of level_list" [value]="level">
+                                                        {{level.level}}
+                                                     </mat-option> 
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div> -->
+                                        <!-- <div class="col-md-4">
+                                            <mat-form-field class="example-full-width">
+                                                <mat-label>From*</mat-label>
+                                                <input matInput [matDatepicker]="allocation_from"
+                                                    formControlName="from_date" readonly
+                                                    (dateChange)="search_details_clear('date','allocation')">
+                                                <mat-datepicker-toggle matSuffix [for]="allocation_from">
+                                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #allocation_from
+                                                    startView="multi-year"></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <mat-form-field class="example-full-width">
+                                                <mat-label>To*</mat-label>
+                                                <input matInput [matDatepicker]="allocation_to"
+                                                    [min]="allocation_runing?.value?.from_date"
+                                                    formControlName="to_date" readonly>
+                                                <mat-datepicker-toggle matSuffix [for]="allocation_to">
+                                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #allocation_to startView="multi-year"></mat-datepicker>
+                                            </mat-form-field>
+                                        </div> -->
+                                        <div class="col-md-3">
+                                            <!-- <mat-form-field>
+                                                <mat-label>From Month*</mat-label>
+                                                <mat-select formControlName="frommonth" 
+                                                    (selectionChange)="frommonthsearch(allocation_runing.value.frommonth)">
+                                                    <mat-option *ngFor="let month of from_month" [value]="month">
+                                                        {{month.month}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field> -->
+                                            <mat-form-field>
+                                                <mat-label>From Month*</mat-label>
+                                                <!-- <mat-select formControlName="frommonth"
+                                                    (selectionChange)="frommonthsearch(allocation_runing.value.frommonth)">
+                                                    <mat-option *ngFor="let month of from_month" [value]="month">
+                                                        {{month.month}}
+                                                    </mat-option>
+                                                </mat-select> -->
+                                                <input matInput formControlName="frommonth" readonly>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <mat-form-field>
+                                                <mat-label>To Month</mat-label>
+                                                <mat-select formControlName="tomonth">
+                                                    <mat-option *ngFor="let month of from_months"
+                                                        [value]="month">
+                                                        {{month.month}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- <div (click)="alert_fun()"
+                                            {{allocation_runing.value.frommonth ? '*' : '' }}>
+                                    <mat-button-toggle-group name="fontStyle"  aria-label="Font Style">
+                                        <mat-button-toggle value="YES">Yes</mat-button-toggle>
+                                        <mat-button-toggle value="NO">No</mat-button-toggle>
+                                    </mat-button-toggle-group>
+                                </div> -->
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" (click)="arial_close()">Close</button>
+                        <button type="button" class="btn btn-primary"
+                            (click)="allocation_move(allocation_runing.value)">MoveToFas</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="modal fade" id="allocation_run1" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            aria-labelledby="allocationLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="allocationLabel">ForeCast Allocation</h1>
+                        <button type="button" class="close" #closecost_allocation (click)="arial_close_fore()"
+                            data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="display: contents;">
+                        <div>
+                            <form [formGroup]="allocation_runing">
+                                <div class="col-md-12">
+                                    <div class="row" style="margin-top: 5%;">
+                                        <div class="col-md-3">
+                                            <mat-form-field (click)="finyear_dropdown('')">
+                                                <mat-label>Fin Year*</mat-label>
+                                                <input placeholder="Fin year" matInput formControlName="finyear"
+                                                    #allocation_finyear_input
+                                                    [matAutocomplete]="allocation_finyear_auto"
+                                                    (keyup)="finyear_dropdown('')">
+                                                <mat-autocomplete #allocation_finyear_auto="matAutocomplete"
+                                                    [displayWith]="display_finyear">
+                                                    <mat-option *ngFor="let finyearname of allocation_finyear"
+                                                        [value]="finyearname">
+                                                        {{finyearname.finyer}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- <div class="col-md-4"> -->
+                                        <!-- <mat-form-field>
+                                                <mat-label>Level</mat-label>
+                                                <input placeholder="Level" type="number" matInput
+                                                    formControlName="level">
+                                            </mat-form-field> -->
+                                        <!-- <mat-form-field (click)="leve_dropdown()">
+                                                <mat-label>Level*</mat-label>
+                                                <input placeholder="Level" matInput formControlName="level" 
+                                                    [matAutocomplete]="level_auto" >
+                                                <mat-autocomplete #level_auto="matAutocomplete" [displayWith]="display_level">
+                                                    <mat-option *ngFor="let level of level_list" [value]="level">
+                                                        {{level.level}}
+                                                     </mat-option> 
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div> -->
+                                        <!-- <div class="col-md-4">
+                                            <mat-form-field class="example-full-width">
+                                                <mat-label>From*</mat-label>
+                                                <input matInput [matDatepicker]="allocation_from"
+                                                    formControlName="from_date" readonly
+                                                    (dateChange)="search_details_clear('date','allocation')">
+                                                <mat-datepicker-toggle matSuffix [for]="allocation_from">
+                                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #allocation_from
+                                                    startView="multi-year"></mat-datepicker>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <mat-form-field class="example-full-width">
+                                                <mat-label>To*</mat-label>
+                                                <input matInput [matDatepicker]="allocation_to"
+                                                    [min]="allocation_runing?.value?.from_date"
+                                                    formControlName="to_date" readonly>
+                                                <mat-datepicker-toggle matSuffix [for]="allocation_to">
+                                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #allocation_to startView="multi-year"></mat-datepicker>
+                                            </mat-form-field>
+                                        </div> -->
+                                        <div class="col-md-3">
+                                            <!-- <mat-form-field>
+                                                <mat-label>From Month*</mat-label>
+                                                <mat-select formControlName="frommonth" 
+                                                    (selectionChange)="frommonthsearch(allocation_runing.value.frommonth)">
+                                                    <mat-option *ngFor="let month of from_month" [value]="month">
+                                                        {{month.month}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field> -->
+                                            <mat-form-field>
+                                                <mat-label>From Month*</mat-label>
+                                                <!-- <mat-select formControlName="frommonth"
+                                                    (selectionChange)="frommonthsearch(allocation_runing.value.frommonth)">
+                                                    <mat-option *ngFor="let month of from_month" [value]="month">
+                                                        {{month.month}}
+                                                    </mat-option>
+                                                </mat-select> -->
+                                                <input matInput formControlName="frommonth" readonly>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <mat-form-field>
+                                                <mat-label>To Month</mat-label>
+                                                <mat-select formControlName="tomonth">
+                                                    <mat-option *ngFor="let month of from_months" [value]="month">
+                                                        {{month.month}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                        <!-- <div (click)="alert_fun()"
+                                            {{allocation_runing.value.frommonth ? '*' : '' }}>
+                                    <mat-button-toggle-group name="fontStyle"  aria-label="Font Style">
+                                        <mat-button-toggle value="YES">Yes</mat-button-toggle>
+                                        <mat-button-toggle value="NO">No</mat-button-toggle>
+                                    </mat-button-toggle-group>
+                                </div> -->
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" (click)="arial_close_fore()">Close</button>
+                        <button type="button" class="btn btn-primary"
+                            (click)="allocation_running(allocation_runing.value)">ForeCast</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

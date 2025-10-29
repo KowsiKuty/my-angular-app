@@ -1,0 +1,381 @@
+<div style="padding: 15px">
+  <form [formGroup]="grnAssetform">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Serial No</mat-label>
+          <div class="input-wrapper">
+            <input
+              placeholder="Enter Serial No"
+              matInput
+              formControlName="serial_no"
+            />
+          </div>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field appearance="outline" (click)="getgrnAssetlists()">
+          <mat-label>Asset Id</mat-label>
+          <input
+            matInput
+            #assetInput
+            placeholder="Select Asset Id"
+            formControlName="asset_id"
+            [matAutocomplete]="assetd"
+            (input)="input_getgrnAssetlists()"
+          />
+          <mat-autocomplete
+            [panelWidth]="400"
+            #assetd="matAutocomplete"
+            [displayWith]="displayFngrnasset"
+            (opened)="autocompleteassetScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let asset of grnAssetsList" [value]="asset">
+                {{ asset.asset_id }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field (click)="getbranchFK()" appearance="outline">
+          <mat-label>CCBS Branch</mat-label>
+          <input
+            #branchInput
+            placeholder="Select Branch Code"
+            matInput
+            formControlName="branchname"
+            [matAutocomplete]="branch"
+            (input)="input_getbranchFK()"
+          />
+          <mat-autocomplete
+            #branch="matAutocomplete"
+            [displayWith]="displayFnbranch"
+            (opened)="autocompletebranchScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let branch of branchList" [value]="branch">
+                {{ branch.code }}-{{ branch.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field (click)="getProductTypes()" appearance="outline">
+          <mat-label>Product Type</mat-label>
+          <input
+            #productInput
+            placeholder="Select Product type"
+            matInput
+            formControlName="product_type"
+            [matAutocomplete]="productauto"
+            (input)="input_getProductTypes()"
+          />
+          <mat-autocomplete
+            #productauto="matAutocomplete"
+            [displayWith]="displayFnitem"
+            (opened)="protype_autocompleteassetScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let types of prdTypes" [value]="types">
+                {{ types.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field (click)="getproductName()" appearance="outline">
+          <mat-label>Product Name</mat-label>
+          <input
+            #productInput_type
+            placeholder="select product name"
+            matInput
+            formControlName="product_id"
+            [matAutocomplete]="productauto_type"
+            (input)="input_getproductName()"
+          />
+          <mat-autocomplete
+            #productauto_type="matAutocomplete"
+            [displayWith]="displayFnitem"
+            (opened)="proname_autocompleteassetScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let types of prdNames" [value]="types">
+                {{ types.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field (click)="getprappsupplier()" appearance="outline">
+          <mat-label>Vendor</mat-label>
+          <input
+            matInput
+            #supplierInput
+            placeholder="Select vendor"
+            formControlName="supplier_id"
+            [matAutocomplete]="supplier"
+          />
+          <mat-autocomplete
+            [panelWidth]="400"
+            #supplier="matAutocomplete"
+            [displayWith]="displayFnsupplier"
+            (opened)="autocompletesupplierScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let supplier of supplierList"
+                [value]="supplier"
+              >
+                {{ supplier.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>PO No</mat-label>
+          <div class="input-wrapper">
+            <input placeholder="Enter PO No" matInput formControlName="po_no" />
+          </div>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Invoice No</mat-label>
+          <div class="input-wrapper">
+            <input
+              placeholder="Enter Invoice No"
+              matInput
+              formControlName="invoice_no"
+            />
+          </div>
+        </mat-form-field>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+      <div >
+        <mat-button-toggle-group
+          [value]="selectedTypeQ"
+          (change)="price_Quot($event)"
+        >
+          <mat-button-toggle [value]="'DateOfCreation'"
+            >Date Of Creation</mat-button-toggle
+          >
+          <mat-button-toggle [value]="'ReceivedDate'"
+            >Received Date</mat-button-toggle
+          >
+        </mat-button-toggle-group>
+      </div>
+      <div *ngIf="selectedTypeQ !== ''">
+        <mat-form-field appearance="outline">
+          <mat-label>From Date</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker1"
+            formControlName="fromdate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker1"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div *ngIf="selectedTypeQ !== ''">
+        <mat-form-field appearance="outline">
+          <mat-label>To Date</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker2"
+            formControlName="todate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker2"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div style="margin-top: -15px">
+        <button
+          (click)="refreshPage()"
+          class="btn btn-outline-primary"
+          type="button"
+          style="border-radius: 40px; margin-left: 15px"
+          color="primary"
+        >
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div style="margin-top: -15px">
+        <button
+          style="margin-left: 10px; border-radius: 40px"
+          type="button"
+          class="btn btn-outline-success"
+          matTooltip="Download"
+          matTooltipPosition="right"
+          (click)="downloadReport()"
+        >
+          <i class="fa fa-download" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </form>
+  <div style="margin-top: 10px; margin-bottom: 10px">
+    <form
+      [formGroup]="fileform"
+      style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center"
+    >
+      <div>
+        <label class="fileclass">
+          <input
+            type="file"
+            #takeInput
+            accept="
+                        .xlsx,.xls"
+            formControlName="images"
+            name="images"
+            (change)="fileChange($event)"
+          />
+        </label>
+      </div>
+      <div>
+        <button
+          class="btn btn-outline-primary"
+          style="border-radius: 40px"
+          (click)="fileupload()"
+        >
+          Upload
+        </button>
+      </div>
+       <div>
+        <button
+          class="btn btn-outline-secondary"
+          style="border-radius: 40px"
+          (click)="resetfilesumamry()"
+        >
+          Clear
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="comp-table t-resposive t-bdr-line" *ngIf="showsumamry">
+    <table>
+      <thead>
+        <tr class="th-nowrap">
+          <th>
+            <div style="display: flex; gap: 5px">
+              <p>Update</p>
+              <p>
+                <mat-checkbox
+                  matTooltip="Select All"
+                  class="example-margin"
+                  (change)="selectall($event)"
+                  [formControl]="selectallfg"
+                ></mat-checkbox>
+              </p>
+            </div>
+          </th>
+          <th>Asset ID</th>
+          <th>Product Name</th>
+          <th>Make</th>
+          <th>Model</th>
+          <th>Specification</th>
+          <th>Other Attributes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let x of grnupdatesummary; index as i">
+          <td>
+            <div style="display: flex; justify-content: center">
+              <mat-checkbox
+                class="example-margin"
+                [checked]="x.ischecked"
+                (change)="individualclick($event, x)"
+              ></mat-checkbox>
+            </div>
+          </td>
+          <td>{{ x.asset_id }}</td>
+          <td>{{ x.ProductName }}</td>
+          <td>{{ x.Make }}</td>
+          <td>{{ x.Model }}</td>
+          <td>{{ x.Specification }}</td>
+          <td>
+            <p class="f_w r">Old Attributes</p>
+            <div class="comp-table t-resposive t-bdr-line old-table">
+              <table>
+                <thead>
+                  <tr class="th-nowrap">
+                    <th *ngFor="let old of x.old">
+                      {{ getKeys(old)[0] }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td *ngFor="let old of x.old">
+                      {{ old[getKeys(old)[0]] || "-" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="f_w g">New Attributes</p>
+            <div class="comp-table t-resposive t-bdr-line new-table">
+              <table>
+                <thead>
+                  <tr class="th-nowrap">
+                    <th *ngFor="let new of x.new">{{ getKeys(new)[0] }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td *ngFor="let new of x.new">
+                      {{ new[getKeys(new)[0]] || "-" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="showsumamry">
+    <button
+      style="border-radius: 40px; margin-top: 15px"
+      class="btn btn-outline-success"
+      (click)="finalsubmit()"
+    >
+      Submit
+    </button>
+  </div>
+</div>

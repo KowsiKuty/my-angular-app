@@ -1,0 +1,179 @@
+<div style="margin-left: 50px;">
+    <div style="margin-top:1%;">
+        <span
+            style="margin-left: 1px; font-family:'Times New Roman', Times, serif;font-size:25px;font-weight:lighter;"><b>
+                {{premisename}}({{premisecode}})</b></span>
+    </div>
+    <hr />
+    <span>Occupancy Details</span>
+    <div class="table-responsive" class="center">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Occupancy Code</th>
+                    <th>Area Occupied Usagewise(sq ft)</th>
+                    <th>Occupancy Usage Code</th>
+                    <th>Rent Paying Branch</th>
+                </tr>
+            </thead>
+            <ng-container *ngFor="let occupancy of occupacnyList; index as i">
+                <tr>
+                    <td>{{ i+1 }} </td>
+                    <td>{{ occupancy.code}}</td>
+                    <td>{{ occupancy.area_occupied}}</td>
+                    <td>{{ occupancy.usage_code.code}} - {{ occupancy.usage_code.name}}</td>
+                    <td>{{ occupancy.primary_ofz.code}} - {{ occupancy.primary_ofz.name}}</td>
+                </tr>
+            </ng-container>
+        </table>
+        <div *ngIf="occupacnyList ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+    </div>
+    <span>LandLord Details</span>
+    <div class="table-responsive" class="center">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Name</th>
+                    <th>Share%</th>
+                    <th>BS</th>
+                    <th>CC</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let landlord of landLordDetails; index as i">
+                    <td>{{i+1}}</td>
+                    <td>
+                        {{landlord.landlord_id.name}}
+                    </td>
+                    <td>{{ landlord.share}}</td>
+                    <td>
+                        <span *ngFor="let bs of landlord.ccbs; index as i">
+                            <span *ngIf="bs.ccbs_details"> {{bs.ccbs_details.bs_name}}</span>
+                            <span *ngIf="bs.bsname"> {{bs.bsname}}</span>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngFor="let cc of landlord.ccbs; index as i">
+                            <span *ngIf="cc.ccbs_details"> {{cc.ccbs_details.cc_name}}</span>
+                            <span *ngIf="cc.ccname"> {{cc.ccname}}</span>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="landLordDetails ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+    </div>
+
+
+    <span>Rent Schedule</span>
+    <div class="table-responsive" class="center">
+        <table class="table table-bordered" fixed-header style="width: 99%">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Term Number</th>
+                    <th>Period</th>
+                    <th>Pay By date</th>
+                    <th>Current Term Rent Payable Amount</th>
+                    <th>Rent to be Paid Amount</th>
+                    <th>Rent Paid Amount</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let schedule of upComingRentSchedules; index as i">
+                    <td>{{ i+1 }}</td>
+                    <td>{{ schedule.term_number}}</td>
+                    <td>{{ schedule.from_date | date:'dd-MMM-yyyy' }} - {{ schedule.to_date | date:'dd-MMM-yyyy'}} </td>
+                    <td>{{ schedule.payby_date | date:'dd-MMM-yyyy'}}</td>
+                    <td>{{ schedule.rent_amount}}</td>
+                    <td>{{ schedule.rentpaid_amount}}</td>
+                    <td>{{ schedule.paid_amount}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="upComingRentSchedules ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 50px;">
+        <span>Schedule Approve</span>
+        <form [formGroup]="scheduleApproval">
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <input matInput [matDatepicker]="picker" (dateChange)="setDate($event.value)"
+                                [formControl]="defaultDate" formControlName="painting_date" placeholder="Choose a date" id="schedule-approval-view-0001">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Rent Amount </mat-label>
+                            <input matInput placeholder="Rent Amount" autocomplete="off" formControlName="rentamount"
+                                (keyup)="amtclick($event)" required id="schedule-approval-view-0002">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style3">
+                            <mat-label>Remarks</mat-label>
+                            <textarea matInput placeholder="Remarks " autocomplete="off"
+                                formControlName="content" id="schedule-approval-view-0003"></textarea>
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+            <div class="table-responsive" style="width: 50%;" class="center">
+                <table class="table table-bordered" fixed-header>
+                    <thead class="table_header">
+                        <tr>
+                            <th>Sl.No</th>
+                            <th>Landlord Name</th>
+                            <th>Share Amount</th>
+                        </tr>
+                    </thead>
+                    <ng-container formArrayName="landlord_allocation"
+                        *ngFor="let details of scheduleApproval.get('landlord_allocation')['controls']; let i = index;">
+                        <tr [formGroupName]="i">
+                            <td>{{i+1}}</td>
+                            <td>
+                                <mat-form-field style="width: 300px;">
+                                    <input matInput [readonly]="true" formControlName="landlord" id="schedule-approval-view-0004">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style">
+                                    <mat-label>Rent Amount </mat-label>
+                                    <input matInput placeholder="Rent Amount" autocomplete="off" type="number"
+                                        formControlName="rent_amount" (keypress)="omit_special_char($event)" required id="schedule-approval-view-0005">
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </table>
+            </div>
+            <tr>
+                <button type="button" [routerLink]='"/rems/rems/scheduleApproval"' skipLocationChange (click)="backtosum()"
+                    class="btn btn-outline-primary" id="schedule-approval-view-0006" matTooltip="Cancela">
+                    Cancel</button>
+                <button type="button" (click)="scheduleApprove('2')" class="btn btn-outline-primary" id="schedule-approval-view-0007" matTooltip="Approve">
+                    Approve</button>
+
+                <button type="button" (click)="scheduleApprove('0')" class="btn btn-outline-danger" id="schedule-approval-view-0008" matTooltip="Reject">
+                    Reject</button>
+            </tr>
+        </form>
+    </div>
+
+
+</div>
+<!-- <pre>{{scheduleApproval.value|json}}</pre> -->

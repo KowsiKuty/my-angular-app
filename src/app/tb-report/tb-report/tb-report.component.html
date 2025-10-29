@@ -1,0 +1,423 @@
+<div class="pl-5 pr-5 pt-2" style="font-size: small;">
+    <form [formGroup]="tb_report">
+        <div class="row">
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Date 1</mat-label>
+                    <input matInput [matDatepicker]="create_date" (dateChange)="todate_fun()" formControlName="from_date" [max]="maxDate">
+                    <mat-datepicker-toggle matSuffix [for]="create_date"></mat-datepicker-toggle>
+                    <mat-datepicker #create_date startView="multi-year"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Date 2</mat-label>
+                    <input matInput [matDatepicker]="too_date"  [min]="tb_report?.value?.from_date" (dateChange)="toda_reset_fun()" formControlName="to_date" [max]="maxDate">
+                    <mat-datepicker-toggle matSuffix [for]="too_date"></mat-datepicker-toggle>
+                    <mat-datepicker #too_date startView="multi-year"></mat-datepicker>
+                </mat-form-field>
+            </div> 
+            <div class="col-md-3" *ngIf="view_branch" >
+                <mat-form-field appearance="outline">
+                    <mat-label>View Type</mat-label>
+                    <mat-select formControlName="view">
+                        <mat-option *ngFor="let view of view_List" (click)="branch_hide(view)" [value]="view">
+                            {{view.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                </div>
+                <div class="col-md-3" *ngIf="do_view">
+                    <mat-form-field (click)="branch_do_name()" appearance="outline">
+                        <mat-label>DO List</mat-label>
+                        <input #branch_do_Input placeholder="DO List" matInput  formControlName="branch_do"
+                            #branchContactInput [matAutocomplete]="branch_dos">
+                        <mat-autocomplete #branch_dos="matAutocomplete" [displayWith]="displayfnbranch_do"
+                            (opened)="autocompletebranch_do_nameScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branch_do_List" (click)="do_view_dd(branch)" [value]="branch">
+                                    {{branch.code}}-{{branch.name}} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3" *ngIf="brach_dd_hide">
+                <mat-form-field (click)="branchname()" appearance="outline">
+                    <mat-label>Branch</mat-label>
+                    <input #branchInput placeholder="Branch" matInput formControlName="branch" #branchContactInput
+                        [matAutocomplete]="branch" >
+                    <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+                        (opened)="autocompletebranchnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                {{branch.code}}-{{branch.name}} </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field (click)="Business_dropdown()" appearance="outline">
+                    <mat-label>Business</mat-label>
+                    <input placeholder="Business" matInput  formControlName="business" #businessInput
+                        [matAutocomplete]="business_name">
+                    <mat-autocomplete #business_name="matAutocomplete" [displayWith]="displayfnbusiness"
+                        (opened)="autocompletebusinessnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let business of businessList" (click)="bs_clear()"
+                                [value]="business">
+                                {{business.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field (click)="bsname_dropdown()" appearance="outline">
+                    <mat-label>BS</mat-label>
+                    <input placeholder="BS" matInput formControlName="bs_id" #bsInput [matAutocomplete]="bs">
+                    <mat-autocomplete #bs="matAutocomplete" [displayWith]="displayfnbs"
+                        (opened)="autocompletebsnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let bs of bsList" [value]="bs" (click)="bs_cc_clear()"
+                                (focusout)="selectbsSection(bs)" > {{bs.name}} </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field (click)="ccname_dropdown()" appearance="outline">
+                    <mat-label>CC</mat-label>
+                    <input #bsclear_nameInput placeholder="CC" matInput formControlName="cc_id" #ccInput
+                        [matAutocomplete]="cc_name">
+                    <mat-autocomplete #cc_name="matAutocomplete" [displayWith]="displayfncc"
+                        (opened)="autocompletccnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let cc of ccList"  [value]="cc"> {{cc.name}} </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Amount Denomination</mat-label>
+                    <mat-select formControlName="amount">
+                        <mat-option *ngFor="let amt of Amount_List" [value]="amt">
+                            {{amt.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3" style="margin-top: 1%;">                      
+                <button class="btn btn-outline-primary" type="submit" (click)="tb_summary('TB_Report')"
+                    style="border-radius:40px;" color="primary"><i
+                        class="fa fa-search" aria-hidden="true"></i></button>        
+                <button type="button" style="border-radius: 40px;margin-left: 10%;"
+                    class="btn btn-outline-primary" (click)="tb_reset()">Reset</button>
+                    <button [disabled]="(summary_list?.length !=0 && end_of_report == true)" matTooltip="Screen Download" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 10%;" 
+                    (click)="hide_icon()"><i class="fa fa-download" aria-hidden="true"></i></button>  
+                    <!-- <button  matTooltip="Branch Wise GL Download" class="btn btn-outline-success" style="border-radius: 40px;margin-left: 10%;" 
+                    (click)="backend_download()"><i class="fa fa-download" aria-hidden="true"></i></button>   -->
+            </div>
+        </div>
+    </form>
+    <div>
+        <h3 *ngIf="this.summary_list?.length != 0" class="overallh3 total_amount ml-2 mb-0">Total Count: <span class="span_color">{{ this.total_pages}}</span></h3>
+    </div>
+    <mat-card style="margin-top: 1%;">    
+        <div style="display: flex;">
+            <h2  style="margin: 0;">
+                Branch Name: <span style="color: rgb(27 196 30);">{{branch_name_show}}</span>
+            </h2>
+            <h2 style="color: blue; margin: 0;margin-left: auto;">{{div_Amt_show}}</h2>
+        </div>  
+       
+        <div class="tableFixHead" style="overflow-x: auto; max-height: 400px;" infiniteScroll
+            [infiniteScrollDistance]="2" (scrolled)="onScroll()" [scrollWindow]="false" *ngIf="Branch_data_show_hide">
+            <table class="table table-bordered mat-elevation-z8 " fixed-header id="datatable">
+                <thead class="table_header">
+                    <tr>
+                        <th>
+                            <div class="header-container">
+                                <span class="column-name">S.No</span>
+                                <span class="sort-icons">
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Original Value" (click)="original_dsummary()">close</mat-icon>
+                                </span>
+                            </div>
+                        </th>
+                        <th *ngIf="branch_name_headers">
+                            <div class="header-container">
+                                <span class="column-name">Branch Name</span>
+                                <span class="sort-icons">
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sortData('branch_name','asc')">arrow_upward</mat-icon>
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sortData('branch_name','desc')">arrow_downward</mat-icon>
+                                </span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="header-container">
+                                <span class="column-name">Business Segment</span>
+                                <span class="sort-icons">
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sortData('business_name','asc')">arrow_upward</mat-icon>
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sortData('business_name','desc')">arrow_downward</mat-icon>
+                                </span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="header-container">
+                                <span class="column-name">Cost Center</span>
+                                <span class="sort-icons">
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sortData('cc_name','asc')">arrow_upward</mat-icon>
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sortData('cc_name','desc')">arrow_downward</mat-icon>
+                                </span>
+                            </div>
+                        </th>
+                        <th class="th_wigth">
+                            <div class="header-container">
+                                <span *ngIf="arrow_icon_up == false" style="display: none;">Date 1 : </span> 
+                                <span class="column-name">{{from_head_date}}</span>
+                                <span class="sort-icons">
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sortamount('asc','frombalance')">arrow_upward</mat-icon>
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sortamount('desc','frombalance')">arrow_downward</mat-icon>
+                                </span>
+                            </div>
+                        </th>
+                        <th class="th_wigth">
+                            <div class="header-container">
+                                <span *ngIf="arrow_icon_up == false"  style="display: none;">Date 2 : </span>
+                                <span class="column-name">{{to_head_date}}</span>
+                                <span class="sort-icons">
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sortamount('asc','tobalance')">arrow_upward</mat-icon>
+                                    <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sortamount('desc','tobalance')">arrow_downward</mat-icon>
+                                </span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="header-container">
+                                <span class="column-name">Difference Amount</span>
+                            </div>
+                        </th>
+                        <th *ngIf="!brach_dd_hide && !table_headers">Branch View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let summary of summary_list; let i=index">
+                        <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">
+                            {{i+1}}</td>
+                        <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}"
+                        *ngIf="branch_name_headers">
+                            {{summary.branch_name}}</td>
+                        <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}"
+                            >{{summary.business_name}}</td>
+                            <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}"
+                            >{{summary?.cc_name}}</td>
+                        <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white','color': (summary?.from_amount === '0.00' || summary?.from_amount === '-0.00')  ? 'black' : 'blue', 'cursor': (summary?.from_amount === '0.00' || summary?.from_amount === '-0.00') ? 'default' : 'pointer'} : {'background-color': '#d5c4ff57', 'color': (summary?.from_amount === '0.00' || summary?.from_amount === '-0.00') ? 'black' : 'blue', 'cursor': (summary?.from_amount === '0.00' || summary?.from_amount === '-0.00') ? 'default' : 'pointer'}"  (click)="(summary?.from_amount === '0.00' || summary?.from_amount === '-0.00') ?'': tb_child_data(summary,'GL_View',from_date_balance) " class="amount"
+                            >{{summary?.from_amount/amount_division * -1   |number:'1.2-2': 'en-IN'}}</td>
+                        <td [ngStyle]="i % 2 == 0 ?{'background-color': 'white','color':(summary?.to_amount === '0.00' || summary?.to_amount === '-0.00')  ? 'black' : 'blue', 'cursor': (summary?.to_amount === '0.00' || summary?.to_amount === '-0.00') ? 'default' : 'pointer'} : {'background-color': '#d5c4ff57', 'color':(summary?.to_amount === '0.00' || summary?.to_amount === '-0.00') ? 'black' : 'blue', 'cursor': (summary?.to_amount === '0.00' || summary?.to_amount === '-0.00') ? 'default' : 'pointer'}"  (click)="(summary?.to_amount === '0.00' || summary?.to_amount === '-0.00') ? '': tb_child_data(summary,'GL_View',to_date_balance) " class="amount"
+                            >{{summary.to_amount/amount_division * -1   |number:'1.2-2': 'en-IN'}}</td>
+                        <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}" class="amount">
+                            {{(summary.to_amount-summary.from_amount)/amount_division * -1   |number:'1.2-2': 'en-IN'}}</td>
+                            <td  *ngIf="!brach_dd_hide && !table_headers" [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">
+                                <button mat-icon-button class="iconbutton" 
+                                color="primary" (click)="tb_child_data(summary,'BR_View','')">
+                                <mat-icon class="enabled_icon">visibility</mat-icon>
+                            </button>
+                            </td>
+                    </tr>
+                    <tr *ngIf="summary_list?.length !=0 && end_of_report==false">
+                        <td>
+                            <span class="hidden">-</span>
+                        </td>
+                        <td *ngIf="branch_name_headers">
+                            <span class="hidden">-</span>
+                        </td>
+                        <td>
+                            <span class="hidden">-</span>
+                        </td>
+                        <td class="font_weight right">Total Amount :</td>
+                        <td class="right">{{totalFromBalance /amount_division * -1 |number:'1.2-2': 'en-IN'}}</td>
+                        <td class="right">{{totalToBalance /amount_division * -1 |number:'1.2-2': 'en-IN'}}</td>
+                        <td class="right" >{{(totalToBalance - totalFromBalance) / amount_division * -1 |number:'1.2-2': 'en-IN'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="table_end" *ngIf="summary_list?.length !=0 && end_of_report==false"> End of the Report </div>
+            <div *ngIf="summary_list?.length==0" style="margin-left: 42%;">
+                <h3>Sorry no data found!.. </h3>
+            </div>
+        </div>
+    </mat-card>
+
+</div>
+
+    <div class="modal fade em-expensemapping-modal-lg" data-toggle="modal" data-backdrop="static" id="transaction"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabels">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Business
+                        Transaction</b></h5>  
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" #schrdule_mas_close
+                    aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="total_amount_child mb-2">
+                    <h3 *ngIf="tb_child_report_list?.length != 0" class="overallh3 ml-2 mb-1">Total Count: <span class="span_color">{{ this.child_total_pages}}</span></h3>
+                    <button [disabled]="(tb_child_report_list?.length !=0 && childend_of_report == true)" matTooltip="Download" class="btn btn-outline-primary" style="border-radius: 40px;" 
+                    (click)="hide_child_icon()" ><i class="fa fa-download" aria-hidden="true"></i>
+                </button>
+                </div>
+                <div class="tableFixHead" style="overflow-x: auto; max-height: 500px;" infiniteScroll
+                [infiniteScrollDistance]="2" (scrolled)="onScrollchild()" [scrollWindow]="false">
+                <table class="table table-bordered mat-elevation-z8 font_style" fixed-header id="datastable">
+                    <thead class="table_header" style=" top:0;position: sticky;">
+                        <tr *ngIf="branch_wise_data==true">
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">S.No</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Original Value" (click)="original_child_dsummary()">close</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">GL Name</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sort_child_Data('subcat_name','asc')">arrow_upward</mat-icon>
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sort_child_Data('subcat_name','desc')">arrow_downward</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">Txt Date</span>
+                                </div>
+                            </th>
+                            <th class="th_wigth">
+                                <div class="header-container">
+                                    <span class="column-name">Amount</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sort_bscc_amount('asc')">arrow_upward</mat-icon>
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sort_bscc_amount('desc')">arrow_downward</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                        </tr>
+                        <tr *ngIf="branch_wise_data==false">
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">S.No</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Original Value" (click)="original_child_dsummary()">close</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">Branch Name</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sort_child_Data('branch_name','asc')">arrow_upward</mat-icon>
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sort_child_Data('branch_name','desc')">arrow_downward</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">Business Segment</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sort_child_Data('business_name','asc')">arrow_upward</mat-icon>
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sort_child_Data('business_name','desc')">arrow_downward</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">Cost Center</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sort_child_Data('cc_name','asc')">arrow_upward</mat-icon>
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sort_child_Data('cc_name','desc')">arrow_downward</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th class="th_wigth">
+                                <div class="header-container">
+                                    <span *ngIf="arrow_icon_up == false" style="display: none;">Date 1 : </span> 
+                                    <span class="column-name">{{from_head_date}}</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sort_child_amount('asc','frombalance')">arrow_upward</mat-icon>
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sort_child_amount('desc','frombalance')">arrow_downward</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th class="th_wigth">
+                                <div class="header-container">
+                                    <span *ngIf="arrow_icon_up == false"  style="display: none;">Date 2 : </span>
+                                    <span class="column-name">{{to_head_date}}</span>
+                                    <span class="sort-icons">
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Ascending" (click)="sort_child_amount('asc','tobalance')">arrow_upward</mat-icon>
+                                        <mat-icon *ngIf="arrow_icon_up" class="sort-icon" matTooltip="Descending" (click)="sort_child_amount('desc','tobalance')">arrow_downward</mat-icon>
+                                    </span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="header-container">
+                                    <span class="column-name">Difference Amount</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                        <tbody *ngIf="branch_wise_data==true">
+                            <tr *ngFor="let summary of tb_child_report_list;let i=index">
+                                <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">{{i+1 }}</td>
+                                <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">{{summary?.subcat_name}}</td>
+                                <td class="styl_widtn" [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">{{summary?.transactiondate | date: 'dd-MM-yyyy'}}</td>
+                                <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}" class="amount">{{summary?.amount/amount_division * -1   |number:'1.2-2': 'en-IN'}}</td>                           
+                                
+                            </tr>
+                            <tr *ngIf="childend_of_report === false">
+                                <td></td>
+                                <td></td>
+                                <td class="font_weight right">Total Amount :</td>
+                                <td class="right">{{total_child_amount /amount_division * -1 |number:'1.2-2': 'en-IN'}}</td>
+                            </tr>
+                        </tbody>
+                            <tbody *ngIf="branch_wise_data==false">
+                                <tr *ngFor="let summary of tb_child_report_list;let i=index">
+                                    <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">{{i+1 }}</td>
+                                    <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}" >{{summary?.branch_name}}</td>
+                                    <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">{{summary.business_name}}</td>
+                                    <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}">{{summary?.cc_name}}</td>
+                                    <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}" class="amount"
+                                        >{{summary?.from_amount/amount_division * -1   |number:'1.2-2': 'en-IN'}}</td>
+                                    <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}" class="amount"
+                                        >{{summary.to_amount/amount_division * -1   |number:'1.2-2': 'en-IN'}}</td>
+                                    <td [ngStyle]="i % 2 == 0 ? {'background-color': 'white'} : {'background-color': '#d5c4ff57'}" class="amount">
+                                        {{(summary.to_amount-summary.from_amount)/amount_division * -1   |number:'1.2-2': 'en-IN'}}</td>
+                                </tr>
+                                <tr *ngIf="childend_of_report === false">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="font_weight right">Total Amount :</td>
+                                    <td class="right">{{total_child_FromBalance /amount_division * -1 |number:'1.2-2': 'en-IN'}}</td>
+                                    <td class="right">{{total_child_ToBalance /amount_division * -1 |number:'1.2-2': 'en-IN'}}</td>
+                                    <td class="right" >{{(total_child_ToBalance - total_child_FromBalance) / amount_division * -1 |number:'1.2-2': 'en-IN'}}</td>
+                                </tr>
+                            </tbody>
+                    </table>
+                    <div class="table_end" *ngIf="childend_of_report === false"> End of the Report </div>
+                    <div *ngIf="tb_child_report_list?.length==0" style="margin-left: 42%;">
+                        <h3>Sorry no data found!.. </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

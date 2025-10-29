@@ -1,0 +1,654 @@
+<div style="margin-top: 2%;">
+    <div class="container" *ngIf="summaryshow" id="show">
+        <form [formGroup]="Audict_entry_summary">
+            <h2 style="margin-left: 39%;">Audit Entry</h2>
+            <div class="row">
+                <div class="col-md-2">
+                    <mat-form-field class="fields" (click)="finyear_dropdown()">
+                        <mat-label>Fin Year*</mat-label>
+                        <input placeholder="" matInput formControlName="Audit_finyear" #finyearInput
+                            [matAutocomplete]="fin_year">
+                        <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let finyearname of finyearList" (click)="finyear_clear()" [value]="finyearname">
+                                    {{finyearname.finyer}} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-2">
+                   <mat-form-field>
+						<mat-label>Month*</mat-label>
+						<mat-select formControlName="frommonth">
+							<mat-option *ngFor="let month of from_month" [value]="month">
+								{{month.month}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+                </div>
+                <div class="col-md-2">
+                    <mat-form-field class="fields" (click)="Branch_fun_sum()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchsumInput matInput placeholder="Branch Code" formControlName="audict_branch"
+                            autocomplete="off" #branchSumContactInput [matAutocomplete]="branchsum">
+                        <mat-autocomplete #branchsum="matAutocomplete" [displayWith]="displayfnbranchsum"
+                            (opened)="autocompletebranchsumScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branchsums of brasum_list_sum" (click)="branch_clear()"
+                                    [value]="branchsums">{{branchsums.code}}-{{branchsums.name}} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-2">
+                    <mat-form-field class="fields" (click)="GL_fun_sum()">
+                        <mat-label>GL Number</mat-label>
+                        <input #GlsumInput matInput placeholder="GL Number" formControlName="audict_Gl"
+                            autocomplete="off" #GLsumContactInput [matAutocomplete]="GLNumbersum">
+                        <mat-autocomplete #GLNumbersum="matAutocomplete" [displayWith]="displayGLsum"
+                            (opened)="autocompleteGLsumScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let GLsum of glsum_list1"
+                                    [value]="GLsum">{{GLsum.glno}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <!-- <div class="col-md-2">
+                    <mat-form-field >
+                        <mat-label>Transaction Date</mat-label>
+                        <input matInput [matDatepicker]="pickersum" [max]="endDate"
+                            placeholder="Choose Transaction Date" formControlName="audict_Trans_date_sum"
+                            autocomplete="off">
+                        <mat-datepicker-toggle matSuffix [for]="pickersum"></mat-datepicker-toggle>
+                        <mat-datepicker #pickersum></mat-datepicker>
+                    </mat-form-field>
+                </div> -->
+                <!-- <div class="col-md-2"> -->
+                <mat-form-field style="margin-left: 2%;">
+                    <mat-label>Transaction Date</mat-label>
+                    <input matInput [matDatepicker]="pickersu" [max]="endDate" placeholder="Choose Transaction Date"
+                        formControlName="audict_Trans_date_sum" autocomplete="off">
+                    <mat-datepicker-toggle matSuffix [for]="pickersu"></mat-datepicker-toggle>
+                    <mat-datepicker #pickersu></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field *ngIf="app_permission" style="margin-left: 2%;">
+                    <mat-label>Approved Date</mat-label>
+                    <input matInput [matDatepicker]="pickersum5" [max]="endDate" placeholder="Choose Transaction Date"
+                        formControlName="audict_Approve_date_sum" autocomplete="off">
+                    <mat-datepicker-toggle matSuffix [for]="pickersum5"></mat-datepicker-toggle>
+                    <mat-datepicker #pickersum5></mat-datepicker>
+                </mat-form-field>
+                <!-- </div> -->
+                <div *ngIf="Approver_status" class="col-md-2 fields"  style="margin-left: 0.5%;">
+                    <mat-form-field (click)="status()">
+                        <mat-label>Status</mat-label>
+                        <input matInput placeholder="Status" formControlName="audict_status"
+                            [matAutocomplete]="Status_Type" autocomplete="off">
+                        <mat-autocomplete #Status_Type="matAutocomplete" [displayWith]="Status_display">
+                            <mat-option *ngFor="let Status_List of Status" [value]="Status_List"> {{ Status_List.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="stage_permission" class="col-md-2 fields">
+                    <mat-form-field (click)="Stagedrop()">
+                        <mat-label>Stage</mat-label>
+                        <input #stageinput matInput formControlName="stage" #StageContactInput
+                            [matAutocomplete]="stagesum">
+                        <mat-autocomplete #stagesum="matAutocomplete" [displayWith]="displaystage"
+                            (opened)="autocompleteStageScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let stage_datas of Stage_list_"
+                                    [value]="stage_datas">{{stage_datas.name}} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="employee_permission" class="col-md-1">
+                    <button type="button" style="border-radius: 25px; margin-top: 14px; margin-left: 75%;"
+                        class="btn btn-outline-primary" (click)="Add('ADD')"><span class="fa fa-plus"></span></button>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" style="border-radius: 30px; margin-top: 21%;  margin-left: 40%;"
+                        class="btn btn-outline-primary" (click)="Audit_search(Audict_entry_summary.value)"><span
+                            class="fa fa-search"></span></button>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" style="border-radius: 30px; margin-top: 15px;" class="btn btn-outline-primary"
+                        (click)="Audit_clear()">Clear</button>
+                </div>
+                <div *ngIf="upload_maker"  class="col-md-1">
+                    <button type="button" style="border-radius: 30px; margin-top: 15px; margin-bottom: 30%;"
+                        class="btn btn-outline-primary" (click)="upload_clear()" data-toggle="modal"
+                        data-target="#exampleModalAudit1">Upload</button>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-outline-primary" type="submit"
+                        style="border-radius: 40px;margin-top: 20%;margin-left: 20%;"
+                        (click)="exceldownlode(Audict_entry_summary.value.file_type)" color="primary">
+                        <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div *ngIf="employee_permission_checkers" class="mt-3">
+                    <button type="button" style="border-radius: 30px;" class="btn btn-outline-primary"
+                        (click)="Checker_Submit(Audict_entry_summary.value)">{{
+                        this.permission === "Checker" ? "Move to Approver" : "Approve" }}</button>
+                </div>
+                <div  *ngIf="permission === 'Approver' && (!Audict_entry_summary?.value?.audict_status)"  class="mt-3">
+                    <button type="button" style="border-radius: 30px;margin-left: 20%;" class="btn btn-outline-primary"
+                      data-toggle="modal"
+                        data-target="#exampleModalreturn" >Return</button>
+                </div>
+                <div *ngIf="Approved_status">
+                    <button type="button"
+                        style="border-radius: 30px; margin-bottom: 3%; margin-left: 3%; margin-top: 20%;"
+                        class="btn btn-outline-primary"
+                        (click)="Checker_Submit(Audict_entry_summary.value)">Freeze</button>
+                </div>
+                <div *ngIf="Stage_lasts" [ngStyle]="{
+                    'margin-left': (style ? '88%' : '88%'),
+                    'margin-bottom': (style ? '-6%' : 'inherit'),
+                    'margin-top': (style ? '2%' : 'inherit')
+                }">
+                    <h3>Last Stage:{{Stage_List?.id}}</h3>
+                </div>
+
+            </div>
+
+
+            <div *ngIf="employee_permission_checker" class="row">
+                <mat-card class="mb-2" style="margin-left: 28%; width: 19%;">
+                    <mat-card-content>
+                        <p>Debit: {{debitChecker === 0 ? '0.00' : debitChecker |number:'1.2-2': 'en-IN'}}</p>
+                    </mat-card-content>
+                </mat-card>
+                <mat-card class="ml-4 mb-2" style="width: 19%;">
+                    <mat-card-content>
+                        <p>Credit: {{creditChecker === 0 ? '0.00' : creditChecker |number:'1.2-2': 'en-IN'}}</p>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+
+
+
+            <!-- <div *ngIf="employee_permission_checker">
+                
+            </div> -->
+
+            <!-- <div class="table-row" > -->
+            <div class="table-row" style="width: 120%;">
+                <div style="margin-left: -13%;"  #targetElement>
+                    <div style="overflow-x: auto; max-height: 500px;" infiniteScroll [infiniteScrollDistance]="2"
+                        (scrolled)="onscroll()" [scrollWindow]="false">
+                        <table class="table table-bordered mat-elevation-z8" id="boxlevel">
+                            <thead class="table_header" style="position: sticky;top: 0;z-index: 1;text-align: center;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Branch Code</th>
+                                    <th>GL Number</th>
+                                    <th>ALEI</th>
+                                    <th>Fin Year</th>
+                                    <th>Transaction Date</th>
+                                    <th>Value Date</th>
+                                    <th>Transaction Description</th>
+                                    <th>DR / CR</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                    <th *ngIf="Stage_freeze">Stage</th>
+                                    <th *ngIf="Edit_permission">Action</th>
+                                    <th *ngIf="employee_permission_checker">
+                                        <section class="example-section">
+                                            <mat-checkbox class="example-margin"
+                                                [formControl]="selectAllCheckbox_for_Checker_Approver"
+                                                (change)="AllSelectvalue_Checker_approver($event)"
+                                                [checked]="Selected">Select All</mat-checkbox>
+                                        </section>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let Audit of audit_summary_data ; let i = index" [id]="'itemRow_'+i">
+                                    <td>{{(presentpage-1)*10+i+1}}</td>
+                                    <td>{{Audit.branch_code.name}}</td>
+                                    <td>{{Audit.glno.gl_no}}</td>
+                                    <td>{{Audit.alei?.name}}</td>
+                                    <td>{{Audit.finyear}}</td>
+                                    <td>{{Audit.transactiondate}}</td>
+                                    <td>{{Audit.valuedate}}</td>
+                                    <td>{{Audit.transactiondesc}}</td>
+                                    <td>{{Audit.drcr?.name}}</td>
+                                    <Td>{{Audit?.status===5?'Returned':(Audit?.status==2 ? 'Verified': (Audit?.status==3 ? 'Approved' : (Audit?.status==4 ?'Freezed':(Audit?.status==1 ?'Initiated' :'-'))))}}</Td>
+                                    <td>{{Audit.audit_amount |number:'1.2-2': 'en-IN'}}</td>
+                                    <td *ngIf="Stage_freeze">{{Audit.stage}}</td>
+                                    <td *ngIf="Edit_permission">
+                                        <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                            data-target="#exampleModalAudit" class="iconbutton" color="primary"
+                                            style="color: green;" (click)="Audit_edit(Audit, 'Edit')">
+                                            <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                        </button>
+                                         <button *ngIf="Audit?.status===5" mat-icon-button matTooltip="View"  data-toggle="modal"
+                                            data-target="#exampleModalreturn" class="iconbutton" color="primary"
+                                            style="color: green;" (click)="Audit_view(Audit)">
+                                            <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                        </button>
+                                    </td>
+
+                                    <td *ngIf="employee_permission_checker">
+                                        <div>
+                                            <section class="example-section" style="margin-top: 30%;">
+                                                <mat-checkbox class="example-margin"
+                                                    [formControl]="singleCheckbox_for_checker_approver"
+                                                    (change)="Selectvalue_Checker_approver($event, Audit,i)">Select</mat-checkbox>
+                                            </section>
+                                        </div>
+                                    </td>                                  
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <p *ngIf="!data_Audit_found" style="text-align: center;">Data Not Found</p>
+                    </div>
+                    <!-- <div class="arrow"> -->
+                        <!-- <button (click)="up_arrow()">&#8593;</button> -->
+                        <!-- <button type="button" style=" border-radius: 50px;" class="btn btn-outline-primary" [hidden]="isButtonDisableds" 
+                            (click)="up_arrow()">{{ Arrow === "1" ? "&#8593;" : "&#8595;" }}</button>
+                    </div> -->
+
+                </div>
+            </div>
+
+            <!-- </div> -->
+
+        </form>
+
+    </div>
+</div>
+<div class="schedule-container">
+    <div *ngIf="!summaryshow">
+        <form [formGroup]="newrowadd">
+            <div class="col-md-2">
+                <button type="button" style="border-radius: 25px; margin-top: 15px; margin-left: 30%;"
+                    class="btn btn-outline-primary" (click)="Add_audict_form('Audict_add', newrowadd.value)"><span
+                        class="fa fa-plus"></span></button>&nbsp;&nbsp;&nbsp;
+                <button type="button" style="border-radius: 30px; margin-top: 15px;" class="btn btn-outline-primary"
+                    (click)="back()">
+                    Back
+                </button>
+            </div>
+            <div>
+                <mat-card style="margin-left: 28%; width: 17%;">
+                    <mat-card-content>
+                        <p>Debit: {{debitsum === 0 ? '0.00' : debitsum |number:'1.2-2': 'en-IN'}}</p>
+                    </mat-card-content>
+                </mat-card>
+                <mat-card style="margin-left: 49%; width: 17%; margin-top: -4.5%;">
+                    <mat-card-content>
+                        <p>Credit: {{creditsum === 0 ? '0.00' : creditsum |number:'1.2-2': 'en-IN'}}</p>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+
+            <!-- <div> -->
+            <!-- <mat-drawer-container placeholder="Debit" class="example-container"> -->
+            <!-- <mat-drawer  >Open</mat-drawer> -->
+            <!-- <mat-drawer placeholder="Debit"></mat-drawer> -->
+            <!-- </mat-drawer-container> -->
+            <!-- </div> -->
+            <div class="btns">
+                <button type="button" style="border-radius: 30px; margin-top: 15px;" class="btn btn-outline-primary"
+                    (click)="Submit(newrowadd.value)">Submit</button>
+            </div>
+
+            <div class="table-responsive" class="tablescroll"
+                style="margin-top: 2%;width: 95%;margin-left: 30px;overflow: auto;">
+                <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 20px;">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Branch Code</th>
+                            <th>GL Number</th>
+                            <th>ALEI</th>
+                            <th>Transaction Date</th>
+                            <th>Value Date</th>
+                            <th>Description</th>
+                            <th>DR / CR</th>
+                            <th>Amount</th>
+                            <!-- <th>Approved Date</th> -->
+                            <!-- <th>Stage</th> -->
+                            <th>
+                                <section class="example-section">
+                                    <mat-checkbox class="example-margin" [formControl]="selectAllCheckboxControl"
+                                        (change)="AllSelectvalue_Maker_approver($event,newrowadd.value)"
+                                        [checked]="Selected">Select All</mat-checkbox>
+                                </section>
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="rows_value"
+                        *ngFor="let item of newrowadd.controls.rows_value['controls']; let i=index">
+                        <tr [formGroupName]="i">
+                            <td>{{i+1}}</td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="Branch_fun(i)">
+                                        <mat-label>Branch Code</mat-label>
+                                        <input #branchInput matInput placeholder="Branch Code"
+                                            formControlName="audict_Bra_code" autocomplete="off" #branchContactInput
+                                            [matAutocomplete]="branch">
+                                        <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+                                            (opened)="autocompletebranchnameScroll()">
+                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                            <ng-container *ngIf="!isLoading">
+                                                <mat-option *ngFor="let branch of branchList"
+                                                    [value]="branch">{{branch.code}}-{{branch.name}} </mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="GL_fun(i)">
+                                        <mat-label>GL Number</mat-label>
+                                        <input #GlInput matInput placeholder="GL Number" formControlName="audict_Gl_no"
+                                            autocomplete="off" #GLContactInput [matAutocomplete]="GLNumber">
+                                        <mat-autocomplete #GLNumber="matAutocomplete" [displayWith]="displayGL"
+                                            (opened)="autocompleteGLnameScroll()">
+                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                            <ng-container *ngIf="!isLoading">
+                                                <mat-option *ngFor="let GL of GL_List"
+                                                    [value]="GL">{{GL.glno}}</mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="Alei_fun(i)">
+                                        <mat-label>ALEI</mat-label>
+                                        <input matInput placeholder="ALEI" formControlName="audict_Alei"
+                                            [matAutocomplete]="ALEI" autocomplete="off">
+                                        <mat-autocomplete #ALEI="matAutocomplete" [displayWith]="ALEI_display">
+                                            <mat-option *ngFor="let ALEI of ALEI_type" [value]="ALEI"> {{ ALEI.name }}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="Transaction_fun(i)">
+                                        <mat-label>Transaction Date</mat-label>
+                                        <input matInput [matDatepicker]="picker" [max]="endDate"
+                                            placeholder="Choose Transaction Date" [readonly]="Transaction_date_edit"
+                                            formControlName="audict_Trans_date" autocomplete="off">
+                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="value_fun(i)">
+                                        <mat-label>Value Date</mat-label>
+                                        <input matInput [matDatepicker]="pickers" [max]="endDate"
+                                            placeholder="Choose Value Date" formControlName="audict_value_date"
+                                            autocomplete="off">
+                                        <mat-datepicker-toggle matSuffix [for]="pickers"></mat-datepicker-toggle>
+                                        <mat-datepicker #pickers></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="Description_fun(i)">
+                                        <mat-label>Description</mat-label>
+                                        <input matInput placeholder="Description" formControlName="audict_trans_desc"
+                                            autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="Dr_Cr_fun(i)">
+                                        <mat-label>DR / CR</mat-label>
+                                        <input matInput placeholder="DR / CR" formControlName="audict_Dr_Cr"
+                                            [matAutocomplete]="DR_CR_Type" autocomplete="off">
+                                        <mat-autocomplete #DR_CR_Type="matAutocomplete" [displayWith]="DR_CR_display">
+                                            <mat-option *ngFor="let DRCR of DR_CR" [value]="DRCR"> {{ DRCR.name }}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <mat-form-field class="fields" (click)="Amount_fun(i)">
+                                        <mat-label>Amount</mat-label>
+                                        <input matInput type="number" placeholder="Amount"
+                                            formControlName="audict_Amount" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+                            </td>
+
+                            <!-- <td>
+                                <div>
+                                    <mat-form-field (click)="Approved_fun(i)">
+                                        <mat-label>Approved Date</mat-label>
+                                        <input matInput [matDatepicker]="pickere" [min]="endDate" placeholder="Approved Date" formControlName="audict_App_date" autocomplete="off">
+                                        <mat-datepicker-toggle matSuffix [for]="pickere"></mat-datepicker-toggle>
+                                        <mat-datepicker #pickere></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                            </td> -->
+                            <!-- <td>
+                                <div>
+                                    <mat-form-field (click)="Stage_fun(i)">
+                                        <mat-label>Stage</mat-label>
+                                        <input matInput type="number" placeholder="Stage" formControlName="audict_stage"
+                                            autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+                            </td> -->
+                            <td>
+                                <div>
+                                    <section class="example-section" style="margin-top: 30%;">
+                                        <mat-checkbox class="example-margin" [formControl]="singleCheckboxControl"
+                                            (change)="Selectvalue($event, item, i)" >Select</mat-checkbox>
+                                    </section>
+                                </div>
+                            </td>
+                            <td>
+                                <i [hidden]="isButtonDisabled" (click)="deleteRow(i, item)" formControlName="delete"
+                                    matTooltip="Delete"
+                                    style="font-size:24px;color: black;cursor: pointer; margin-top: 50%; margin-left: 30%;"
+                                    class="fa">&#xf014;</i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="exampleModalAudit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 200%; margin-left: -30%;">
+            <div class="modal-header" style="width: 100%;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Audit
+                        Entry</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="Auditclose()"
+                    #Audit_sum_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="AuditModal">
+                    <div class="Create">
+                        <mat-form-field style="width: 20%;margin-left: 5%; " (click)="Branch_fun_modal()">
+                            <mat-label>Branch Code</mat-label>
+                            <input #branchmodalInput matInput placeholder="Branch Code"
+                                formControlName="Audit_modal_branch" autocomplete="off" #branchmodalContactInput
+                                [matAutocomplete]="branchmodal">
+                            <mat-autocomplete #branchmodal="matAutocomplete" [displayWith]="displayfnbranchmodal"
+                                (opened)="autocompletebranchmodalScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let branchmodals of brasum_list_modal"
+                                        [value]="branchmodals">{{branchmodals.code}} </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field style="width: 20%;margin-left: 5%; " (click)="GL_fun_modal()">
+                            <mat-label>GL Number</mat-label>
+                            <input #GlmodalInput matInput placeholder="GL Number" formControlName="Audit_modal_gl"
+                                autocomplete="off" #GLmodalContactInput [matAutocomplete]="GLNumbermodal">
+                            <mat-autocomplete #GLNumbermodal="matAutocomplete" [displayWith]="displayGLmodal"
+                                (opened)="autocompleteGLmodalScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let GLmodal of glmodal_list1"
+                                        [value]="GLmodal">{{GLmodal.glno}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field style="width: 20%;margin-left: 5%; " (click)="Alei_modal()">
+                            <mat-label>ALEI</mat-label>
+                            <input matInput placeholder="ALEI" formControlName="Audit_modal_alei"
+                                [matAutocomplete]="ALEIModal" autocomplete="off">
+                            <mat-autocomplete #ALEIModal="matAutocomplete" [displayWith]="ALEI_modal_display">
+                                <mat-option *ngFor="let ALEI_modals of ALEI_type" [value]="ALEI_modals"> {{
+                                    ALEI_modals.name }} </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field style="width: 20%;margin-left: 5%; " (click)="Transaction_modal()">
+                            <mat-label>Transaction Date</mat-label>
+                            <input matInput [matDatepicker]="pickermodal" [max]="endDate"
+                                placeholder="Choose Transaction Date" formControlName="Audit_modal_tdate"
+                                autocomplete="off">
+                            <mat-datepicker-toggle matSuffix [for]="pickermodal"></mat-datepicker-toggle>
+                            <mat-datepicker #pickermodal></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field style="width: 20%;margin-left: 5%; " (click)="Value_modal()">
+                            <mat-label>Value Date</mat-label>
+                            <input matInput [matDatepicker]="pickersModal" [max]="endDate"
+                                placeholder="Choose Value Date" formControlName="Audit_modal_vdate" autocomplete="off">
+                            <mat-datepicker-toggle matSuffix [for]="pickersModal"></mat-datepicker-toggle>
+                            <mat-datepicker #pickersModal></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field style="width: 20%;margin-left: 5%; ">
+                            <mat-label>Transaction Description</mat-label>
+                            <input matInput formControlName="Audit_modal_Td" autocomplete="off">
+                        </mat-form-field>
+
+                        <mat-form-field style="width: 20%;margin-left: 5%;" (click)="Dr_CR_edit()">
+                            <mat-label>Dr / Cr</mat-label>
+                            <input matInput placeholder="DR / CR" formControlName="Audit_modal_drcr"
+                                [matAutocomplete]="DR_CR_Modal" autocomplete="off">
+                            <mat-autocomplete #DR_CR_Modal="matAutocomplete" [displayWith]="DR_CR_Modal_display">
+                                <mat-option *ngFor="let DRCR_modal of DR_CR" [value]="DRCR_modal"> {{ DRCR_modal.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+
+
+                        <mat-form-field style="width: 20%;margin-left: 5%; ">
+                            <mat-label>Amount</mat-label>
+                            <input matInput type="number"
+                                formControlName="Audit_modal_amount" autocomplete="off">
+                        </mat-form-field>
+
+                        <!-- <mat-form-field style="width: 20%;margin-left: 5%; ">
+                            <mat-label>Stage</mat-label>
+                            <input matInput type="number" formControlName="Audit_modal_stage" autocomplete="off">
+                        </mat-form-field> -->
+
+                    </div>
+                    <button type="submit" style="border-radius: 40px; margin-left: 4%;" *ngIf="Audit_Edit_submit_btn"
+                        class="btn btn-outline-primary" (click)="audit_update_data()">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModalAudit1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 150%">
+            <div class="modal-header" style="width: 100%;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Audit
+                        Upload</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="Auditclose1()"
+                    #Audit_upload_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="AuditModaldownload">
+                    <div class="rows">
+                        <div class="col-md-4">
+                            <input type="file" (change)="fileupload($event)" formControlName="documentfile">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" (click)="fil_upload()" style="border-radius: 40px;"
+                                class="btn btn-outline-primary">Submit</button>
+                        </div>
+                         <div class="col-md-4">
+                            <button type="button" (click)="audit_file_down()" style="border-radius: 40px;"
+                                class="btn btn-outline-primary">Template Download</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalreturn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 150%">
+            <div class="modal-header" style="width: 100%;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Audit
+                        Remarks</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" 
+                    #Audit_return_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="Audit_return">
+                    <div class="rows">
+                        <div class="col-md-4">
+                             <mat-label>Remarks</mat-label>
+                            <mat-form-field class="max-widths">
+                         <textarea  style="max-height:100px; " rows="1" matInput formControlName="remarks" required></textarea>
+                      </mat-form-field>
+                        </div>
+                        <div class="col-md-4" *ngIf="permission == 'Approver'">
+                            <button type="button"  (click)="Checker_Submit('Return')" style="border-radius: 40px;"
+                                class="btn btn-outline-primary">Return</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

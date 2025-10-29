@@ -1,0 +1,368 @@
+<div>
+    <mat-form-field style="width: 175px;margin-left: 50px;">
+        <mat-label>Select</mat-label>
+        <mat-select #attendanceSG_admin>
+            <mat-option *ngFor="let filter of SG_Admin_DD_List" [value]="filter.id"
+                (click)="getFilter_SG_Admin(filter)">
+                {{filter.Display}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+
+
+<div *ngIf="Attendance_Admin" style="margin-left: 50px;">
+    <h2>Attendance</h2>
+
+
+    <form [formGroup]="isAttendanceAdmin">
+
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="width: 200px;" class="input-style" (keyup.backspace)="getbranch()">
+
+                        <mat-label style="    font-size: 17px;">Branch </mat-label>
+                        <input placeholder="Branch " matInput formControlName="branch_id" #branchContactInput
+                            [matAutocomplete]="branchtype" (click)="clearPremisesAndAgency()" (keyup)="brachname()"
+                            required>
+                        <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaybranch"
+                            (opened)="autocompletebranchnameScroll()">
+                            <mat-option *ngIf="isLoadingbranch" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoadingbranch">
+                                <mat-option *ngFor="let brach of branchlist" (focusout)="branchFocusOut(brach)"
+                                    [value]="brach">
+                                    ({{brach.code}}) {{brach.name+ " " }}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+
+
+                    <mat-form-field style="width: 200px;margin-left: 50px;" class="input-style"
+                        (keyup.backspace)="getprimes()">
+
+                        <mat-label style="    font-size: 17px;">Premises </mat-label>
+                        <input placeholder="Premises " matInput formControlName="premise_id" #PremiseContactInput
+                            [matAutocomplete]="primestype" (keyup)="primiesname()" required>
+                        <mat-autocomplete #primestype="matAutocomplete" [displayWith]="displayprimes"
+                            (opened)="autocompletePremisenameScroll()">
+                            <mat-option *ngIf="isLoadingprimes" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoadingprimes">
+                                <mat-option *ngFor="let primes of primeslist" (focusout)="premiseFocusOut(primes)"
+                                    [value]="primes">
+                                    ({{primes.code}}) {{primes.name+ " " }}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                </td>
+                <td>
+
+                    <mat-form-field style="width: 345px;margin-left: 50px;" class="input-style"
+                        (keyup.backspace)="getcatven()">
+
+                        <mat-label style="    font-size: 17px;"> Agency</mat-label>
+                        <input placeholder="Agency" matInput formControlName="agency_id" #VendorContactInput
+                            [matAutocomplete]="producttype" (keyup)="productname()" required>
+                        <mat-autocomplete #producttype="matAutocomplete" [displayWith]="displaydis">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let vendor of empvendorlist" [value]="vendor">
+                                    ({{vendor.code}}) {{vendor.name+ " " }}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+
+                    <mat-form-field style="width: 200px;" class="input-style">
+                        <input matInput [matDatepicker]="dp" placeholder="Month and Year" formControlName="monthdate"
+                            readonly [formControl]="monthdate">
+                        <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                        <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandler($event)"
+                            (monthSelected)="chosenMonthHandler($event, dp)" panelClass="example-month-picker">
+                        </mat-datepicker>
+                    </mat-form-field>
+                </td>
+                <td>
+
+
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px; margin-left: 5%;"
+                        (click)="getAttendanceAdmin()" color="primary">Select</button>
+
+
+                </td>
+            </tr>
+
+        </table>
+    </form>
+
+    <div *ngFor="let data of AttendanceShowData; let i = index ">
+        <div class="row">
+            <div class="col">
+                <div *ngIf="data?.approval_data?.id; else elsepartAttendance">
+                    <table class="table scrolltable table-bordered" style="width: 80%;">
+                        <thead>
+                            <tr class="table_header">
+                                <th> Branch </th>
+                                <th> Premise </th>
+                                <th> Agency</th>
+                                <th> Month & year </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{AttendanceSummary?.branch_id}}</td>
+                                <td>{{AttendanceSummary?.premise_id}}</td>
+                                <td>{{AttendanceSummary?.vendor_id}}</td>
+                                <td>{{AttendanceSummary?.month +'/'+AttendanceSummary?.year}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-left: 50px;">
+
+                        Status:<strong> {{data?.approval_data?.approval_status?.status}}</strong>
+
+                        <mat-form-field style="width: 150px;margin-left: 50px;">
+                            <input matInput placeholder="Reason" #reasonAttendance>
+                        </mat-form-field>
+
+
+                        <button type="submit" class="btn btn-outline-danger"
+                            style="border-radius: 40px;margin-left: 50px;"
+                            (click)="UpdateDeavtivateStatus(7, data, reasonAttendance.value )"
+                            [disabled]="submitclickAttendance">
+                            Deactivate</button>
+                    </div>
+                </div>
+                <ng-template #elsepartAttendance>
+                    <p style="text-align: center;"><strong>No data Found...</strong></p>
+
+                </ng-template>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div *ngIf="Branch_Certification_Admin">
+    <form [formGroup]="isBranchcertificationAdmin">
+        <div style="margin-top: 2%;margin-left: 50px;">
+            <h2>Branch Certification</h2>
+            <table>
+
+                <tr>
+                    <td>
+                        <mat-form-field style="width: 200px;" (keyup.backspace)="getbranchid()">
+                            <mat-label>Branch</mat-label>
+                            <input placeholder="branch" matInput formControlName="branch_id" #branchContactInput
+                                [matAutocomplete]="branchtype" (click)="clearPremises()" (keyup)="branchname()"
+                                required>
+                            <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaydiss2"
+                                (opened)="autocompletebranchnameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let branch of branchlist" [value]="branch"
+                                        (focusout)="branchFocusOut_bc(branch)">
+                                        ({{branch.code}}){{branch.name+ " " }}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 200px;margin-left: 50px;" (keyup.backspace)="getpremiseid()">
+                            <mat-label>Site</mat-label>
+                            <input placeholder="Site" matInput formControlName="premise_id" #PremiseContactInput
+                                [matAutocomplete]="producttype" (keyup)="premisename()" required>
+                            <mat-autocomplete #producttype="matAutocomplete" [displayWith]="displaydiss1"
+                                (opened)="autocompletePremisenameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let premise of premiselistt" [value]="premise"
+                                        (focusout)="premiseFocusOut_bc(premise)">
+                                        ({{premise.code}}){{premise.name+ " " }}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 150px;margin-left: 50px;">
+                            <input matInput readonly [matDatepicker]="dp" placeholder="Month and Year"
+                                formControlName="monthdate_bc" [formControl]="monthdate_bc">
+                            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                            <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandler_bc($event)"
+                                (monthSelected)="chosenMonthHandler_bc($event, dp)" panelClass="example-month-picker">
+                            </mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+
+
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px; margin-left: 50px;" (click)="getbranchCert()"
+                            color="primary">Select</button>
+
+
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </form>
+
+
+
+    <div *ngFor="let data of BranchDataList; let i = index">
+        <div *ngIf="data?.id; else elsepartBranch">
+            <table class="table scrolltable table-bordered" style="width: 60%;margin-left: 50px;">
+                <thead>
+                    <tr class="table_header">
+                        <th> Branch </th>
+                        <th> Premise </th>
+                        <th> Month & year </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{BranchCertificationShow?.branch_id}}</td>
+                        <td>{{BranchCertificationShow?.premise_id}}</td>
+                        <td>{{BranchCertificationShow?.month +'/'+BranchCertificationShow?.year}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-left: 50px;">Status: <strong>{{data?.approval_status?.status}}</strong>
+                <mat-form-field style="width: 150px;margin-left: 50px;">
+                    <input matInput placeholder="Reason" #reasonBranch>
+                </mat-form-field>
+                <button type="submit" class="btn btn-outline-danger" style="border-radius: 40px;margin-left: 50px;"
+                    (click)="UpdateDeavtivateStatus(8, data, reasonBranch.value )" [disabled]="submitclickbranch">
+                    Deactivate</button>
+            </div>
+        </div>
+        <ng-template #elsepartBranch>
+            <p style="text-align: center;"><strong>No data Found...</strong></p>
+        </ng-template>
+
+    </div>
+
+</div>
+
+<div *ngIf="Invoice_Data_Entry_Admin">
+    <form [formGroup]="isInvoiceAdmin">
+        <div style="margin-top: 2%;margin-left: 50px;">
+            <h2>Invoice Data Entry</h2>
+            <table>
+
+                <tr>
+                    <td>
+                        <mat-form-field style="width: 250px;" (keyup.backspace)="getbranchid()">
+                            <mat-label>Branch</mat-label>
+                            <input placeholder="branch" matInput formControlName="branch_id" #branchContactInput
+                                [matAutocomplete]="branchtype" (click)="clearPremises()" (keyup)="branchname()"
+                                required>
+                            <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaydiss2"
+                                (opened)="autocompletebranchnameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let branch of branchlist" [value]="branch"
+                                        (focusout)="branchFocusOut_bc(branch)">
+                                        ({{branch.code}}){{branch.name+ " " }}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 250px;margin-left: 50px;" (keyup.backspace)="getpremiseid()">
+                            <mat-label>Site</mat-label>
+                            <input placeholder="Site" matInput formControlName="premise_id" #PremiseContactInput
+                                [matAutocomplete]="producttype" (keyup)="premisename()" required>
+                            <mat-autocomplete #producttype="matAutocomplete" [displayWith]="displaydiss1"
+                                (opened)="autocompletePremisenameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let premise of premiselistt" [value]="premise"
+                                        (focusout)="premiseFocusOut_bc(premise)">
+                                        ({{premise.code}}){{premise.name+ " " }}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 250px;margin-left: 50px;">
+                            <input matInput readonly [matDatepicker]="dp" placeholder="Month and Year"
+                                formControlName="monthdate_In" [formControl]="monthdate_In">
+                            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                            <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandler_In($event)"
+                                (monthSelected)="chosenMonthHandler_In($event, dp)" panelClass="example-month-picker">
+                            </mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+
+
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px; margin-left: 5%;" (click)="getInvoiceData()"
+                            color="primary">Select</button>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </form>
+
+
+
+
+    <div *ngFor="let data of InvoiceDataList; let i = index">
+        <div *ngIf="data?.id; else elsepartInvoiceData ">
+        <table class="table scrolltable table-bordered" style="width: 60%; margin-left: 50px">
+            <thead>
+                <tr class="table_header">
+                    <th> Branch </th>
+                    <th> Premise </th>
+                    <th> Month & year </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{InvoiceDataShow?.branch_id}}</td>
+                    <td>{{InvoiceDataShow?.premise_id}}</td>
+                    <td>{{InvoiceDataShow?.month +'/'+InvoiceDataShow?.year}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="margin-left: 50px">Status: <strong>{{data?.approval_status?.status}}</strong>
+            <mat-form-field style="width: 150px;margin-left: 50px;">
+                <input matInput placeholder="Reason" #reasonInvoice>
+            </mat-form-field>
+            <button type="submit" class="btn btn-outline-danger" style="border-radius: 40px;margin-left: 50px;"
+                (click)="UpdateDeavtivateStatus(9, data, reasonInvoice.value )" [disabled]="submitclickinvoice">
+                Deactivate</button>
+        </div>
+        </div>
+        <ng-template #elsepartInvoiceData>
+            <p style="text-align: center;"><strong>No data found...</strong></p>
+        </ng-template>
+
+
+
+    </div>
+
+</div>

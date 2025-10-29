@@ -1,0 +1,410 @@
+<div style="overflow:hidden">
+
+    <mat-grid-list style="position:sticky;top:0;z-index:9;background:ghostwhite;" [cols]="3" rowHeight="5rem">
+        <mat-grid-tile>
+            <img style="height:40%;" src="/assets/todo-giphy.webp" />
+            <mat-label>
+                <span class="subheading">Product</span>
+                <!-- <label class="heading">
+                    {{lead.lead_first_name}} {{lead.lead_last_name}}
+                </label> -->
+
+            </mat-label>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-label class="subheading">
+                <!-- Product<br> -->
+                <mat-label>
+                    ({{product.product_code}}) {{product.product_name}}
+                    <button (click)="getLeadWithTasks()" mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                </mat-label>
+                <!-- <mat-form-field>
+                <input class="heading" [(ngModel)]="dueDate" readonly matInput [matDatepicker]="picker1">
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field> -->
+            </mat-label>
+        </mat-grid-tile>
+        <mat-menu #menu="matMenu">
+            <button (click)="navToTask(item)" mat-menu-item *ngFor="let item of allTasks">
+                <mat-icon style="color:blue">event_available</mat-icon>
+                <span
+                    [ngStyle]='item.product.product_code == product.product_code ?{"color":"blue"} :{}'>({{item.product.product_code}})
+                    {{item.product.product_name}}</span>
+            </button>
+        </mat-menu>
+
+        <mat-grid-tile>
+            <div>
+                <button mat-raised-button (click)="closeMessage()" data-toggle="modal" data-target="#taskClose"
+                    class="btn btn-outline-danger">
+                    Not Interested :(
+                </button>
+                <br>
+                <button [matTooltip]="'Lead To Customer :)'" mat-raised-button style="margin-top:4%;width:100%"
+                    (click)="customerMessage()" data-toggle="modal" data-target="#taskClose"
+                    class="btn btn-outline-success">
+                    LTC :)
+                </button>
+            </div>
+
+            <!-- <button style="margin-left:3%" (click)="processFinished.emit()" class="btn btn-outline-secondary"> back
+        </button> -->
+        </mat-grid-tile>
+    </mat-grid-list>
+
+    <button *ngIf="product?.product_name" style="position: fixed;
+    top: 89%;z-index:1;
+    left: 92%;" (click)="getNotes()" data-toggle="modal" data-target="#note" mat-raised-button>
+        <mat-icon>note_add</mat-icon>
+        NOTE
+    </button>
+    <button *ngIf="product?.product_name" style="position: fixed;
+    top: 82%;
+    left: 92%;z-index:1" [matTooltip]="'Create Activity'" mat-raised-button data-toggle="modal"
+        data-target="#activityModal" color="success">
+        <mat-icon>assignment_turned_in</mat-icon>
+    </button>
+
+    <!-- <mat-grid-list style="overflow:unset" [cols]="2" rowHeight="6rem">
+        <ng-container *ngFor="let taskValue of taskList;let ind =index">
+            <ng-template #popOverTitle style="width:max-content;z-index:1;background-color: #044063 !important;">
+                *
+                <span style="float:right">Due On: <span>{{taskValue?.due_date | date:"dd-MMM-yyyy"}}</span>
+                </span>
+            </ng-template>
+            <ng-template #popOverContent style="width:max-content">
+                <div>
+                    <section style="padding:1%">
+                        {{taskValue.detail}}
+                    </section>
+
+                    <div style="display:grid;justify-content:space-between;padding:1%">
+                        <label>
+                            <span>
+                                Assigned To -
+                            </span>
+                            <span class="subheading">
+                                ({{taskValue.assignee?.code}}) {{taskValue.assignee?.full_name}}
+                            </span>
+                        </label>
+                        <label *ngIf="taskValue?.start_time">
+                            <span>
+                                Opened On -
+                            </span>
+                            <span class="subheading"> {{taskValue?.start_time | date:'MMM d, y, h:mm:ss a'}}</span>
+                        </label>
+                        <label *ngIf="taskValue?.end_time"> <span>
+                                Closed On -
+                            </span>
+                            <span class="subheading"> {{taskValue?.end_time | date:'MMM d, y, h:mm:ss a'}} </span>
+                        </label>
+                    </div>
+
+                </div>
+            </ng-template>
+
+            <mat-grid-tile style="overflow:unset">
+                <mat-card placement="left-bottom" [ngbPopover]="popOverContent" [popoverTitle]="popOverTitle"
+                    triggers="mouseenter:mouseleave"
+                    style="margin:1%;padding-right:5%;padding-left: 4%;width:70%;overflow:auto"
+                    [ngClass]="taskValue.class">
+                    <mat-card-header>
+                        <mat-label>
+                            <span class="subheading">
+                                Activity
+                            </span>
+
+                            <span>
+                                {{taskValue?.task}}
+                            </span>
+
+                            
+                        </mat-label>
+                    </mat-card-header>
+                    <mat-card-header (mouseenter)="hover(taskValue)" name="footer">
+                        <span style="vertical-align:top">
+                            Status :
+                            <mat-label *ngIf="disableTask || taskValue.id != taskId"
+                                [style.color]="iconList[taskValue?.status.id]?.color">
+                                {{iconList[taskValue?.status.id]?.text}}
+                            </mat-label>
+                            <label *ngIf="taskValue.id == taskId && !disableTask">
+                                {{equalIconList[taskValue?.status.id]?.prev_status}}
+                            </label>
+                            <button [style.backgroundColor]="equalIconList[taskValue?.status.id]?.color"
+                                style="margin-left:3%" *ngIf="taskValue.id == taskId"
+                                (click)="statusUpdate(ind,equalIconList[taskValue.status.id])" mat-raised-button>
+                                <mat-label style="color:white">
+                                    {{equalIconList[taskValue.status.id]?.text}}
+                                </mat-label>
+                            </button>
+                            <br>
+
+                        </span>
+                    </mat-card-header>
+
+                </mat-card>
+            </mat-grid-tile>
+        </ng-container>
+    </mat-grid-list> -->
+    <div style="max-height:60vh" class="overflow-y">
+        <mat-accordion *ngFor="let taskValue of taskList;let ind =index">
+            <div class="row">
+
+                <div class="col-md-2" style="align-items:center;display:grid;text-align: end;">
+                    <!-- <h4 *ngIf="ind == 0">Due On</h4> -->
+                    <label class="subheading">{{taskValue?.due_date | date:"dd-MMM-yyyy"}}
+                        <mat-icon [style.color]="iconList[taskValue.status?.id]?.color" style="vertical-align: middle;">
+                            {{iconList[taskValue.status.id].icon}}
+                        </mat-icon>
+                    </label>
+
+                </div>
+                <div class="col-md-10">
+                    <mat-expansion-panel style="margin:1%" [expanded]="taskValue.id == taskId"
+                        [ngClass]="taskValue.class">
+
+                        <mat-expansion-panel-header>
+                            <section class="row" style="width: 100%;">
+                                <div class="col-md-9">
+                                    <label style="font-weight: bold;">
+                                        Task: &nbsp; &nbsp;
+                                    </label>
+                                    <label>
+                                        {{taskValue?.task}}
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <mat-label [style.color]="iconList[taskValue?.status.id]?.color">
+                                        <label [style.color]="'black'" style="font-weight: bold;"
+                                            class="subheading">Status: &nbsp; &nbsp;</label>
+                                        {{iconList[taskValue?.status.id]?.text}}
+                                    </mat-label>
+                                </div>
+                                
+                            </section>
+                            
+                        </mat-expansion-panel-header>
+                        <hr>
+                        <section class="row">
+                            
+                            <div class="col-md-8">
+                                <label class="subheading">
+                                    Task Details
+                                </label>
+                                <br>
+                                {{taskValue?.detail | titlecase}}
+                            </div>
+                            <div class="col-md-4" style="border:solid;border-color:lightgrey">
+                                <mat-label>
+
+                                    <span>
+                                        Assigned To -
+                                    </span>
+                                    <span class="subheading">
+                                        ({{taskValue.assignee?.code}}) {{taskValue.assignee?.full_name}}
+                                    </span>
+                                    <br>
+                                    <label *ngIf="taskValue?.start_time">
+                                        <span>
+                                            Opened On -
+                                        </span>
+                                        <span class="subheading">
+                                            {{taskValue?.start_time | date:'MMM d, y, h:mm:ss a'}}</span>
+                                    </label>
+                                    <br>
+                                    <span *ngIf="taskValue?.end_time">
+                                        Closed On -
+                                    </span>
+                                    <span class="subheading"> {{taskValue?.end_time | date:'MMM d, y, h:mm:ss a'}}
+                                    </span>
+                                </mat-label>
+                            </div>
+                        </section>
+
+                        <div style="display:contents;margin-top:3%" *ngIf="taskValue.id == taskId && !disableTask">
+                            <span style="vertical-align:top">
+                                Status :
+                                <!-- <mat-icon [style.color]="iconList[taskValue.status.id]?.color">
+                                            {{iconList[taskValue.status.id].icon}}
+                                        </mat-icon> -->
+
+                                <label>
+                                    {{equalIconList[taskValue?.status.id]?.prev_status}}
+                                </label>
+                                <button [style.backgroundColor]="equalIconList[taskValue?.status.id]?.color"
+                                    style="margin-left:3%" *ngIf="taskValue.id == taskId"
+                                    (click)="statusUpdate(ind,equalIconList[taskValue.status.id])" mat-raised-button>
+                                    <mat-label style="color:white">
+                                        {{equalIconList[taskValue.status.id]?.text}}
+                                    </mat-label>
+                                </button>
+                                <br>
+
+                            </span>
+
+                        </div>
+                        <div *ngIf="taskValue.id == taskId" id="test">
+
+                        </div>
+
+                    </mat-expansion-panel>
+                </div>
+            </div>
+        </mat-accordion>
+    </div>
+
+
+</div>
+<div data-backdrop="false" class="modal fade" id="activityModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-headers">
+                <h5 class="modal-title heading">Insert New Activity</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="col-md-9">
+                    <mat-label class="subheading">Activity Name
+                    </mat-label>
+                    <br>
+                    <mat-form-field style="width: 27em">
+                        <input matInput [(ngModel)]="ActivityName" matInput [placeholder]="'Eg: Date Postponed'">
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-9">
+                    <mat-label class="subheading">Activity Details
+                    </mat-label>
+                    <br>
+                    <mat-form-field style="width: 27em">
+                        <textarea [(ngModel)]="ActivityDetails" matInput
+                            [placeholder]="'Eg: Follow the same procedures'">
+                                </textarea>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-3">
+                    <mat-label class="subheading">Date</mat-label>
+                    <br>
+                    <mat-form-field>
+                        <input matInput [matDatepicker]="picker2" [(ngModel)]="dueDate">
+
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <!-- <div class="col-md-12">
+                            <mat-label class="subheading">Assigned To
+                            </mat-label>
+                            <br>
+                            <mat-radio-group [(ngModel)]="assignedTo" color="primary">
+                                <mat-radio-button [value]="true">Self</mat-radio-button>
+                                <mat-radio-button style="margin-left:10%" [value]="false">Other</mat-radio-button>
+                            </mat-radio-group>
+                        </div> -->
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" #activityModal class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" (click)="createActivity()" class="btn btn-primary">Add Activity</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Task close Modal -->
+<div data-backdrop="false" #taskModal class="modal fade" id="taskClose" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLongTitle">Modifying Task Status</h2>
+                <button type="button" #closBtn class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                {{taskCloseMessage}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" #taskCloseBtn class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" (click)="leadTaskUpdate()" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Note Modal -->
+<div data-backdrop="false" style="top:10%;left:8%" class="modal fade" id="note" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content" style="left:40%;width:90%;max-height: 80%;">
+            <div class="modal-headers">
+                <h2 class="modal-title" id="exampleModalLongTitle">
+                    <mat-icon style="vertical-align:middle;">note_add</mat-icon> Add Some Notes...
+                </h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-9">
+                    <mat-label class="subheading">Enter Notes
+                    </mat-label>
+                    <br>
+                    <mat-form-field style="width: 30em">
+                        <textarea matInput [(ngModel)]="Note" [placeholder]="'Eg: Rescheduling this task to next week'">
+                            </textarea>
+                    </mat-form-field>
+                    <button type="button" (click)="createNote()" class="btn btn-outline-success"
+                        style="position:absolute;bottom:33%;left:98%" mat-raised-button>
+
+                        Add
+                    </button>
+                </div>
+
+                <!-- {
+                    "created_by": {
+                        "code": "EMP112",
+                        "full_name": "kavika",
+                        "id": 6
+                    },
+                    "created_date": 1670844185550,
+                    "id": 1,
+                    "note": "xx"
+                }, -->
+                <table class="table table_bordered">
+                    <thead class="table_header">
+                        <!-- <th>S.No</th> -->
+                        <th>Date</th>
+                        <th>Note</th>
+                        <th>Created By</th>
+                    </thead>
+
+                    <tbody *ngFor="let note of notesList;index as ind">
+                        <!-- <td>{{ind+1}}</td> -->
+                        <td>{{note.created_date | date }}</td>
+                        <td>{{note.note | titlecase}}</td>
+                        <td>{{ note.created_by.full_name | titlecase}}</td>
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" mat-raised-button #noteClose class="btn btn-secondary"
+                    data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

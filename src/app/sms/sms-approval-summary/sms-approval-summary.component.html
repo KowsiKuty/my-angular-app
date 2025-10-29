@@ -1,0 +1,255 @@
+<div class="container">
+    <h1 style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;">SMS Approval Summary</h1>
+</div><hr />
+<div class="container">
+    <form [formGroup]="approveform">
+        <div class="row" class="col-md-12">
+            <!-- <div class="col-md-12"> -->
+                <mat-form-field class="example-full-width" style="margin-left: 35px;width: 200px;">
+                    <mat-label>Branch</mat-label>
+                    <input class="toolbar-search" type="text" matInput autocomplete="off" #branchidInput [matAutocomplete]="branchref" formControlName="branch" style="width: 250px;" (keypress)="kyenbdata($event)" />
+                    <mat-autocomplete #branchref="matAutocomplete" [displayWith]="branchintreface" (opened)="autocompletebranchname()">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option  title="{{d.code+' - '+d.name}}" *ngFor="let d of branchList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field style="width: 200px;margin-left: 10px;">
+                    <mat-label>AMC/WAR Code</mat-label>
+                    <input type="text" matInput formControlName="code"  (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            
+                <mat-form-field style="width: 200px;margin-left: 35px;">
+                    <mat-label>Header Name</mat-label>
+                    <input type="text" matInput formControlName="name"  (keypress)="kyenbdata($event)">
+                </mat-form-field>
+                <mat-form-field style="width: 200px;margin-left: 35px; ">
+                    <mat-label>Status </mat-label>
+                   <!-- <input matInput placeholder="status" formControlName="status"  />-->
+                    <mat-select formControlName="status">
+                        <mat-option value="PENDING">PENDING</mat-option>
+                        <mat-option value="APPROVED">APPROVED</mat-option>
+                        <mat-option value="REJECTED">REJECTED</mat-option>
+                        <mat-option value="PENDING_FOR_RENEWAL">PENDING FOR RENEWAL</mat-option>
+                        <mat-option value="RENEWAL_APPROVED">RENEWAL APPROVED</mat-option>
+                        <mat-option value="EXPIRED">EXPIRED</mat-option>
+                        <mat-option value="RENEWAL_REJECTED">RENEWAL_REJECTED</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                </div>
+                <div class="row" class="col-md-12">
+                <mat-form-field class="example-full-width" style="width: 200px; margin-left: 35px;">
+                    <mat-label>Asset Barcode </mat-label>
+                    <input matInput placeholder="Asset" formControlName="asset_id"  [matAutocomplete]="autoasset" #assetidInput autocomplete="off"   />
+                    <mat-autocomplete #autoasset="matAutocomplete" >
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of assetidList" [value]="d.barcode">{{d.barcode}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field  style="margin-left: 35px;width: 200px;">
+                    <mat-label>Product Name</mat-label>
+                 <input class="toolbar-search" type="text" matInput autocomplete="off" matInput  [matAutocomplete]="checkerproduct"  formControlName="asset_name" >
+                    <mat-placeholder>Product Name</mat-placeholder>
+                    <mat-autocomplete #checkerproduct="matAutocomplete" #product [displayWith]="assetnameinterface" (opened)="autocompleteproductname()">
+                       <mat-option *ngIf="isLoading">Loading..</mat-option>
+                       <ng-container *ngIf="!isLoading">
+                          <mat-option  title="{{d.name}}"*ngFor="let d of productlist" [value]="d" >
+                          {{d.name}}
+                          </mat-option>
+                       </ng-container> 
+                    </mat-autocomplete> 
+                 </mat-form-field>
+           
+                <button type="submit" (click)="getapprovalsummary()" class="btn btn-outline-success" style="border-radius: 40px;height: 40px;margin-left: 10px;">Search</button>
+            
+                <button type="button" (click)="resetdata()" class="btn btn-outline-danger" style="margin-left: 10px;border-radius: 40px;height: 40px;">Reset</button>
+          
+                <button type="reset" class="btn btn-outline-primary" routerLink="/sms/smstransaction" style="margin-left: 10px;border-radius: 40px;height: 40px;">Back</button>
+           
+            <button mat-raised-button type="button" class="btn btn-primary"  (click)="amc_war_approval_summary_Download()"  style="border-radius: 40px;height: 40px;margin-left: 40px;">
+                Download
+                    <mat-icon *ngIf="first"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!first" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>
+            <!-- <button mat-raised-button type="button" class="btn btn-primary"  style="border-radius: 40px;margin-left: 4%;" data-target="#tranpopups" data-toggle="modal">
+                SMS Approval Upload
+                    <mat-icon *ngIf="first"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!first" inline=true style="color:rgb(245, 245, 245)">upload</mat-icon>
+            </button> -->
+        <!-- </div> -->
+        </div>
+    </form>
+    <br />
+    <br />
+    <table class="table table-bordered">
+        <thead class="table_header">
+            <tr>
+                <th>S.No <button mat-icon-button [ngClass]="sapclr==false?'able':'disable'" matTooltip="asce" style="text-align: right;" 
+                    (click)="getsapascdec('asce',1)"><mat-icon>arrow_upward</mat-icon></button>
+                <button mat-icon-button [ngClass]="sapclr1==false?'able':'disable'" matTooltip="dece" style="text-align: right;" color="primary"
+                    (click)="getsapascdec('desc',2)"><mat-icon>arrow_downward</mat-icon></button></th>
+                <th>AMC/WAR Code</th>
+                <!-- <th>AMC Maker Name</th> -->
+                <th>Header Name</th>
+                <!-- <th>Barcode</th> -->
+                <!-- <th>Product Name</th> -->
+                <th>Header Type</th>
+                <th>Branch</th>
+                <th>Asset Category</th>
+                <th>Service Period From Date</th>
+                <th>Service Period To Date</th>
+                <!--<th>Service Period</th>-->
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Bulk SMS Approval 
+                    <!-- <input type="checkbox" (change)="selectall($event)" [checked]="overallCheck"> -->
+                    <br>
+                    <mat-checkbox  #myCheckbox  [(ngModel)]="overallCheck"  (change)="selectall($event)" style="text-align: center;"
+                    [indeterminate]="intermediateCheck" color="primary"></mat-checkbox>
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let d of approvalList;let i=index">
+                <td>{{(presentpage-1)*pagesize+i+1}}</td>
+                <td>{{d.amcheader_code}}</td>
+                <!-- <td></td> -->
+                <td>{{d.amcheader_name}}</td>
+                <!-- <td>{{d.barcode}}</td> -->
+                <!-- <td>{{d.product.name?d.product.name:'-'}}</td> -->
+                <td>{{d.amcheader_type}}</td>
+                <td>{{d.branch_id.code+' - '+d.branch_id.name}}
+                    <!-- <td>{{d.barcode}}</td> -->
+                <td>{{d.apcategory?d.apcategory.name:'-'}}</td>
+                <td>{{d.amcheader_period_from | date:'yyyy-MMM-dd'}}</td>
+                <td>{{d.amcheader_period_to |  date:'yyyy-MMM-dd'}}</td>
+                <!--<td>{{d.serviceperiod}}</td>-->
+                <td>{{d.amcheader_amctotalamt|  number:'1.2-2'}}</td>
+                <td>{{d.status}}</td>
+                <td><button style="color: blue;" (click)="uploaddata(d)"mat-icon-button matTooltip="View on Approval Screen" [disabled]="disables(d)" ><mat-icon>check</mat-icon></button></td>
+                <td><input type="checkbox" #chkEnable [checked]="d.con==true" [(ngModel)]="d.con" [disabled]="d.id===undefined || d.id===null" [value]="d.id"
+                    (change)="onCheckboxChange($event,d,i)"></td>
+            </tr>
+            <tr *ngIf="approvalList.length==0">
+                <td colspan="10">No Records Found</td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <span><b>Total Count:</b></span>{{totalcount}}
+                </td>
+                <td colspan="4">
+                    <div colspan="2">
+                        <mat-form-field style="float: left;">
+                            <mat-select [(ngModel)]="selectPage" (selectionChange)="paginationChange($event)" [(value)]="selectPage">
+                                <mat-option value="10" ngDefaultControl >10</mat-option>
+                                <mat-option value="20">20</mat-option>
+                                <mat-option value="30">30</mat-option>
+                                <mat-option value="40">40</mat-option>
+                                <mat-option value="50">50</mat-option>
+                               
+                            </mat-select>
+                            <mat-placeholder>Select Pagination Count</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div colspan="2" style="float: right;">
+                        <button mat-icon-button color="primary" (click)="has_previouspage()"  [disabled]="!has_previous" ><mat-icon>arrow_back</mat-icon></button>
+                        {{presentpage}}
+                        <button mat-icon-button color="primary" (click)="has_nextpage()"  [disabled]="!has_next" ><mat-icon>arrow_forward</mat-icon></button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <form [formGroup]="bulkapproveform">
+    <div class="row" class="col-md-12" >
+        
+        <mat-form-field  style="width: 250px;">
+            <mat-label>Approval Remarks</mat-label>
+            <input  type="text" matInput autocomplete="off"  formControlName="ApprovalRemarks"  required/>
+        </mat-form-field>
+        
+
+        <button type="button" (click)="approvedata()" class="btn btn-outline-success" style="border-radius: 40px;height: 40px;margin-bottom: 50px;margin-left:3%;margin-bottom: auto;">Submit</button>
+</div>
+</form>
+</div>
+
+<!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+id="tranpopups">
+<div class="modal-dialog modal-xl " style="width: 93%;">
+<from [formGroup]="smsbulkuploadform" autocomplete="off">
+    <div class="modal-content">
+        <div class="modal-header"  style="background:rgba(23, 204, 23, 0.288);">
+            <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;"> SMS Maker Bulk Upload</h2>
+            <button type="button" class="close" data-dismiss="modal" #closebutton aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 90%;">
+            <div>
+                <div class="row">
+                    <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                            <thead class="table_header" style="text-align: left;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th *ngIf="issmsmakerdownload">Template Upload</th>
+                                    <th>Templated Download</th>
+                                    <th>File Upload</th>
+                                    <th>Action</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody >
+                                <tr>
+                                    <td>1</td>
+                                    <td *ngIf="issmsmakerdownload"><input type="file"  #fileInput2 (change)="smsmasterUpload($event,'sms_approver_upload')" class="app-master-class-dfs2yr">
+                                    </td>
+                                    <td>
+                                       <button mat-raised-button type="button"   class="custom-button app-master-class-kyttl4"  (click)="SMSMakerTemplateDownload('sms_approval_template_download')">
+                                           SMS Approver Template Download
+                                               <mat-icon *ngIf="first"><mat-spinner color="accent" diameter="20">
+                                               </mat-spinner></mat-icon>
+                                               <mat-icon *ngIf="!first" inline=true class="app-master-class-0ksb0s">download</mat-icon>
+                                           </button>
+                                   </td>
+                                    <td>
+                                        <input type="file" #fileInput id="uploadFile" formcontrolname="images" accept=".xlsx, .csv"
+                                          style="width:250px;margin-top: 10px;" (change)="getFileDetails_upload($event,fileInput.value)"/>
+                        
+                                    </td>
+                                    <td>
+                                        <button type="button"  class="btn btn-outline-success" #submitbutton style="border-radius:40px;margin-left: 15px;" (click)="submitfileupload()">Submit</button>
+                                    </td>
+                                   
+                                   
+                                </tr>
+                                
+                            </tbody>
+        
+                          
+                        </table> 
+                       
+                    </div>
+                    <tr>
+                        <td>
+                            <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:450px;
+                            border-color: black; margin-bottom: 20px;
+                            background-color: white;" (click)="tranback()">Back</button>
+                        </td>
+                    </tr>
+                </div>
+            </div>
+        </div>
+    </div>
+</from>
+</div>
+</div> -->

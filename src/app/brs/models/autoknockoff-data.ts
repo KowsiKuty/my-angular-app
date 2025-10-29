@@ -1,0 +1,15 @@
+export interface AutoknockoffData {
+    gl_date:Date,
+    branch_code: string,
+    line_description: string,
+    gl_doc_no: string,
+    // category: string,
+    debit_amount_ledger: number,
+    credit_amount_ledger: number,
+    description: string,
+    transaction_date: Date,
+    credit_amount_statement: number,
+    debit_amount_statement: number,
+    ref_1: string,
+    select: '',
+}

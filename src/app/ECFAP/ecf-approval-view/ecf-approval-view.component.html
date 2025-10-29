@@ -1,0 +1,1859 @@
+<header class="header-adjust">
+    <div class="headingalign">
+        <h3>
+            <i class="fa fa-arrow-left" aria-hidden="true" (click)="back()"></i>&nbsp; ECF Header
+            <button mat-icon-button matTooltip=" Edit" matTooltipClass="custom-tooltipnew" class="iconbutton"
+                style="margin-left:10px;margin-top: 10px;border-radius: 50%;" (click)="showecfHdredit()"
+                id="create-ecf-0008">
+                <mat-icon [ngClass]="disableecfsave ? 'edit_disabled' : 'edit_enabled'"
+                    aria-label="Edit">edit</mat-icon>
+            </button>
+        </h3>
+
+    </div>
+    <div>
+        <!-- <button  type="submit"
+        style="border-radius:40px;"
+        class="btn btn-outline-primary" (click)="SubmitForm()"
+        [disabled]="disableecfsave" id="create-ecf-0036">
+        Save</button> -->
+
+        <div class="button-div" *ngIf="showApprove">
+            <!-- <button type="button" class="btn btn-outline-success" style="border-radius:40px;" [disabled]="ecfheaderresult.can_approve =='NO'"
+                (click)="ecfApprovePopup('mono')" >
+                Approve</button> -->
+
+            <button type="button" [disabled]="ecfheaderresult.can_approve =='NO' ||
+            !(ecfheaderresult.environment =='DO' || ecfheaderresult.environment =='SIT' || ecfheaderresult.environment =='UAT')"
+                class="btn btn-outline-success" style="border-radius:40px;" (click)="ecfApprovePopup('micro')">Approve</button>
+
+            <button style="border-radius:40px;" class="btn btn-outline-success"
+                (click)="ecfApprovePopup('approver_forward')">
+                Approve and Forward</button>
+
+            <button type="button" class="btn btn-outline-danger" style="border-radius:40px;
+             " (click)="ecfApprovePopup('reject')">Reject</button>
+            <button type="submit" style="border-radius:40px;" class="btn btn-outline-danger"
+                (click)="ecfApprovePopup('return')">
+                Return</button>
+
+            <!-- <button type="button"
+            style="border-radius:40px;"
+            class="btn btn-outline-primary" (click)="back()" id="create-ecf-0039">
+            Back</button> -->
+        </div>
+
+        <div class="button-div" *ngIf="!showApprove">
+            <!-- <button type="button" class="btn btn-outline-primary" style="border-radius:40px;" (click)="back()" id="ecf-approval-view-0068">Back</button> -->
+        </div>
+    </div>
+</header>
+
+
+
+<div class="content-adjust">
+
+    <div>
+
+        <h3 class="mb-3">ECF Header</h3>
+
+        <form [formGroup]="ecfheaderviewForm">
+
+            <div>
+                <div class="search-auto-fit">
+                    <div id="matInput-size">
+
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>ECF Type</mat-label>
+                            <input matInput formControlName="ecftype" autocomplete="off" readonly
+                                id="ecf-approval-view-0012">
+                        </mat-form-field>
+                    </div>
+
+                    <div id="matInput-size" *ngIf="this.ecftypeid == 3 || this.ecftypeid == 13">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Payment For</mat-label>
+                            <input matInput formControlName="payto" autocomplete="off" readonly
+                                id="ecf-approval-view-0013">
+                        </mat-form-field>
+                    </div>
+                    <div id="matInput-size" *ngIf="this.ecftypeid == 4">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Payment For</mat-label>
+                            <input matInput formControlName="ppx" autocomplete="off" readonly
+                                id="ecf-approval-view-0014">
+                        </mat-form-field>
+                    </div>
+                    <div id="matInput-size">
+
+
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Supplier Type</mat-label>
+                            <input matInput formControlName="supplier_type" autocomplete="off" readonly
+                                id="ecf-approval-view-0015">
+                        </mat-form-field>
+
+
+                    </div>
+                    <div id="matInput-size" [ngStyle]="{
+                            'pointer-events': disableecfsave? 'none' : 'auto',
+                            'opacity': disableecfsave ? '0.6' : '1'
+                          }">
+                        <lib-vs-dynamicform-cmp [InputFields]="ecf_approval_Commodity_field"
+                            [formGroup]="ecfheaderviewForm" (dataEvent)="getcommoditydd($event)">
+                        </lib-vs-dynamicform-cmp>
+                        <!-- <mat-form-field 
+                                    (click)="getcommoditydd()" appearance="outline">
+
+                                    <mat-label>Commodity Name</mat-label>
+                                    <input #commodityInput  matInput
+                                        formControlName="commodity_id" [matAutocomplete]="commoditytype"
+                                        [matTooltip]="ecfheaderviewForm.value.commodity_id.name" matTooltipClass="custom-tooltipnew"
+                                        [readonly]="disableecfsave" required id="ecf-approval-view-0016"> -->
+                        <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                        <!-- <mat-autocomplete [panelWidth]="300" #commoditytype="matAutocomplete"
+                                        [displayWith]="displayFncommodity" (opened)="commodityScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let commodity of commodityList"
+                                                [value]="commodity"
+                                                matTooltip="{{commodity.name}}" matTooltipClass="custom-tooltipnew">
+                                                {{commodity.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field> -->
+                    </div>
+                    <div id="matInput-size" *ngIf="this.ecftypeid != 3 && this.ecftypeid != 4 &&  this.ecftypeid != 13">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Raiser Branch</mat-label>
+                            <input matInput formControlName="branch" autocomplete="off" readonly
+                                id="ecf-approval-view-0017">
+                        </mat-form-field>
+                    </div>
+
+                    <div id="matInput-size">
+                        <mat-form-field appearance="outline">
+                            <mat-label>ECF Date</mat-label>
+                            <input matInput readonly formControlName="ecfdate" id="ecf-approval-view-0020">
+
+                        </mat-form-field>
+                    </div>
+                    <div id="matInput-size" *ngIf="this.ecftypeid != 7">
+                        <mat-form-field appearance="outline">
+                            <mat-label>ECF Amount</mat-label>
+                            <input matInput formControlName="ecfamount" style="text-align: right;" autocomplete="off"
+                                readonly id="ecf-approval-view-0021">
+                        </mat-form-field>
+                    </div>
+                    <div id="matInput-size" *ngIf="this.ecftypeid == 7">
+                        <mat-form-field appearance="outline">
+                            <mat-label>CRN Amount</mat-label>
+                            <input matInput formControlName="ecfamount" style="text-align: right;" autocomplete="off"
+                                readonly id="ecf-approval-view-0022">
+                        </mat-form-field>
+                    </div>
+
+                    <div id="matInput-size">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput formControlName="remark" [matTooltip]="ecfheaderviewForm.value.remark"
+                                matTooltipClass="custom-tooltipnew" autocomplete="off" readonly
+                                id="ecf-approval-view-0024">
+                        </mat-form-field>
+                    </div>
+                    <div id="matInput-size" *ngIf="ecftypeid ==4">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Advance Type</mat-label>
+                            <input matInput formControlName="advancetype" readonly id="ecf-approval-view-0025">
+                        </mat-form-field>
+                    </div>
+
+                    <div id="matInput-size" *ngIf="this.ecftypeid == 3 || this.ecftypeid == 4 || this.ecftypeid == 13">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Raiser Branch</mat-label>
+                            <input matInput formControlName="branch" autocomplete="off" readonly
+                                id="ecf-approval-view-0026">
+                        </mat-form-field>
+                    </div>
+
+
+                    <div style="white-space:nowrap;margin-top:10px" *ngIf="this.ecftypeid == 3 && this.checkhr == true">
+
+                        <mat-radio-group formControlName="is_raisedby_self" readonly class="inputformatradiobutton">
+                            <mat-label>Behalf of Self</mat-label>
+                            <mat-radio-button *ngFor="let n of behalfyesorno" [value]="n.value" style="margin-left:10px"
+                                [disabled]="showgst">
+                                {{n.display}}
+                            </mat-radio-button>
+                        </mat-radio-group>
+
+
+                    </div>
+
+                    <div id="matInput-size"
+                        *ngIf="this.ecftypeid == 3 && ecfheaderviewForm.value.is_raisedby_self == false">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Raised For</mat-label>
+                            <input matInput formControlName="raised_for" autocomplete="off" readonly
+                                id="ecf-approval-view-0027">
+                        </mat-form-field>
+                    </div>
+                    <div id="matInput-size"
+                        *ngIf="this.ecftypeid == 3 && ecfheaderviewForm.value.is_raisedby_self == false">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Raised By</mat-label>
+                            <input matInput formControlName="raised_by" autocomplete="off" readonly
+                                id="ecf-approval-view-0028">
+                        </mat-form-field>
+                    </div>
+
+                    <div *ngIf="this.ecfheaderviewForm?.value?.location != '' && this.ecfheaderviewForm?.value?.location != null"
+                        id="matInput-size">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Location</mat-label>
+                            <input matInput formControlName="location" autocomplete="off" readonly
+                                id="ecf-approval-view-0029">
+                        </mat-form-field>
+                    </div>
+
+                    <div class="btn-align">
+                        <h3 style="  cursor: pointer; color: blue;font-family: 'Montserrat';" class="btn btn-link"
+                            matTooltip="View Notes" matTooltipClass="custom-tooltipnew" (click)="ecfap_view()">
+                            <!-- data-toggle="modal"
+                                  data-target=".bd-example-modal-xl" -->
+                            View Notes
+                        </h3>
+                        <button type="submit" style="border-radius:40px;margin-left:40px;"
+                            class="btn btn-outline-success" (click)="SubmitForm()" [disabled]="disableecfsave"
+                            id="ecf-approval-view-0030">
+                            Save</button>
+                    </div>
+
+                </div>
+
+                <!-- <div> -->
+
+                <!-- <td>
+                                    <mat-form-field
+                                        style="width:200px;font-family: 'Times New Roman', Times, serif;">
+                                        <input matInput placeholder="Client Name" formControlName="client_code"
+                                            autocomplete="off" readonly id="ecf-approval-view-0018"> 
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field
+                                        style="width:200px;margin-left: 50px;font-family: 'Times New Roman', Times, serif;">
+                                        <input matInput placeholder="RM Name" formControlName="rmcode"
+                                            autocomplete="off" readonly id="ecf-approval-view-0019">
+                                    </mat-form-field>
+                                </td> -->
+                <!-- <div id="matInput-size">
+                                    <mat-form-field
+                                         appearance="outline">
+                                        <mat-label>ECF Date</mat-label>
+                                        <input matInput readonly 
+                                            formControlName="ecfdate"   id="ecf-approval-view-0020">
+                                       
+                                    </mat-form-field>
+                                </div>
+                                <div id="matInput-size" *ngIf="this.ecftypeid != 7">
+                                    <mat-form-field
+                                         appearance="outline">
+                                        <mat-label>ECF Amount</mat-label>
+                                        <input matInput  formControlName="ecfamount" style="text-align: right;"
+                                            autocomplete="off" readonly id="ecf-approval-view-0021">
+                                    </mat-form-field>
+                                </div>
+                                <div id="matInput-size" *ngIf="this.ecftypeid == 7">
+                                    <mat-form-field
+                                        appearance="outline">
+                                        <mat-label>CRN Amount</mat-label>
+                                        <input matInput  formControlName="ecfamount" style="text-align: right;"
+                                            autocomplete="off" readonly id="ecf-approval-view-0022">
+                                    </mat-form-field>
+                                </div> -->
+                <!-- <td>
+                                    <mat-form-field
+                                    style="width: 200px;margin-left:50px;font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="Is Original Document" formControlName="is_originalinvoice"
+                                        autocomplete="off" readonly id="ecf-approval-view-0023">
+                                </mat-form-field>
+                                </td> -->
+                <!-- <div id="matInput-size">
+                                    <mat-form-field
+                                         appearance="outline">
+                                        <mat-label>Remarks</mat-label>
+                                        <input matInput formControlName="remark" [matTooltip]="ecfheaderviewForm.value.remark"
+                                        matTooltipClass="custom-tooltipnew" autocomplete="off" readonly id="ecf-approval-view-0024">
+                                    </mat-form-field>
+                                </div>
+                                <div id="matInput-size" *ngIf="ecftypeid ==4">
+                                    <mat-form-field
+                                        appearance="outline">
+                                        <mat-label>Advance Type</mat-label>
+                                        <input matInput  formControlName="advancetype" readonly id="ecf-approval-view-0025">
+                                    </mat-form-field>
+                                </div> -->
+
+            </div>
+
+            <!-- <div>
+                                <div id="matInput-size" *ngIf="this.ecftypeid == 3 || this.ecftypeid == 4 || this.ecftypeid == 13">
+                                    <mat-form-field
+                                    appearance="outline">
+                                    <mat-label>Raiser Branch</mat-label>
+                                    <input matInput formControlName="branch"
+                                        autocomplete="off" readonly id="ecf-approval-view-0026">
+                                </mat-form-field>
+                                </div>
+                               
+                               
+                                <div  style="white-space:nowrap;" *ngIf="this.ecftypeid == 3 && this.checkhr == true">
+
+                                    <mat-radio-group formControlName="is_raisedby_self" readonly class="inputformatradiobutton">
+                                        <mat-label style="margin-left:50px" >Behalf of Self</mat-label>
+                                        <mat-radio-button *ngFor="let n of behalfyesorno" [value]="n.value"
+                                          style="margin-left:10px"  [disabled]="showgst">
+                                            {{n.display}}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+    
+    
+                                </div>
+                                
+                                <div id="matInput-size" *ngIf="this.ecftypeid == 3 && ecfheaderviewForm.value.is_raisedby_self == false">
+                                    <mat-form-field
+                                        appearance="outline">
+                                        <mat-label>Raised For</mat-label>
+                                        <input matInput  formControlName="raised_for"
+                                            autocomplete="off" readonly id="ecf-approval-view-0027">
+                                    </mat-form-field>
+                                </div>
+                                <div id="matInput-size" *ngIf="this.ecftypeid == 3 && ecfheaderviewForm.value.is_raisedby_self == false">
+                                    <mat-form-field
+                                         appearance="outline">
+                                        <mat-label>Raised By</mat-label>
+                                        <input matInput  formControlName="raised_by"
+                                            autocomplete="off" readonly id="ecf-approval-view-0028">
+                                    </mat-form-field>
+                                </div>
+    
+                            </div>
+                                <div *ngIf="this.ecfheaderviewForm?.value?.location != '' && this.ecfheaderviewForm?.value?.location != null">
+                                  <div id="matInput-size">
+                                      <mat-form-field
+                                        appearance="outline">
+                                        <mat-label>Location</mat-label>
+                                        <input matInput  formControlName="location"
+                                            autocomplete="off" readonly id="ecf-approval-view-0029">
+                                       </mat-form-field> 
+                                </div>
+                                </div> -->
+            <div>
+                <!-- <div >
+                                    
+                                    
+                                    <h3
+                                    style="  cursor: pointer; color: blue;font-family: 'Montserrat';"
+                                    class="btn btn-link" matTooltip="View Notes" matTooltipClass="custom-tooltipnew" (click)="ecfap_view()"
+                                  > -->
+                <!-- data-toggle="modal"
+                                  data-target=".bd-example-modal-xl" -->
+                <!-- View Notes
+                                  </h3>
+                                        <button  type="submit"
+                                            style="border-radius:40px;margin-left:40px;"
+                                            class="btn btn-outline-primary" (click)="SubmitForm()"
+                                            [disabled]="disableecfsave" id="ecf-approval-view-0030">
+                                            Save</button>
+                                    
+                                </div> -->
+                <!-- <td>
+                                    <h3  (click)="gettrandata()" data-toggle="modal"
+                                     data-target="#showtrandetails" style="cursor: pointer;color:blue;font-family: 'Montserrat';" class="btn btn-link" matTooltip="Transaction View">View Transaction Details</h3>
+                                </td> -->
+
+                <!-- -------notepad------ -->
+
+                <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+                data-keyboard="false" data-backdrop="static"  aria-hidden="true" id="bd-example-modal-xl">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="ecf-approval-view-0001">
+                                    Note Pad
+                                </h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    id="ecf-approval-view-0032">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <br>
+                            <div style="margin-left: 50px;width:90%;height: 70%;">
+                                <div>
+
+                                    <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled"
+                                        (blur)="onBlur()" (mediaDelete)="onDelete($event)"
+                                        (summernoteInit)="summernoteInit($event)" formControlName="notename">
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <!-- <button type="button" style="border-radius: 40px;margin-left: 10px;"
+                                                     class="btn btn-outline-primary"
+                                                     data-dismiss="modal" id="ecf-approval-view-0031">Close</button> -->
+
+                                <!-- <button type="button" style="border-radius:10px;margin-left: 10px; border-color: black; 
+                                                     background-color: white;" class="btn btn-light" 
+                                                     data-dismiss="modal" id="ecf-approval-view-0032">
+                                                     Close</button> -->
+
+                                <button type="button" style="border-radius: 40px" class="btn btn-outline-primary"
+                                    data-dismiss="modal" id="ecf-approval-view-0032"> Back </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <td>
+                            <span class="material-icons" type="button" data-toggle="modal"
+                                style="margin-left: 50px;" data-target=".bd-example-modal-xl"
+                                formControlName="notename">description</span>Add Note
+                        </td> -->
+            </div>
+
+
+
+        </form>
+
+
+
+        <div>
+            <h3 *ngIf="this.ecftypeid != 7" class="mb-3">Invoice Header</h3>
+            <h3 *ngIf="this.ecftypeid == 7">Credit Note Header</h3>
+            <!-- <button *ngIf="this.ecftypeid != 7" type="button" class="btn btn-outline-success" 
+                matTooltip="Add Invoice Header" matTooltipClass="custom-tooltipnew" style="border-radius:40px;margin-left:170px;margin-top: -80px;" data-toggle="modal" data-target="#ecfpaydetails"
+                 (click)="addSection()" id="ecf-approval-view-0033"><span class="fa fa-plus"></span>&nbsp;&nbsp;Invoice Header</button>
+                 <button *ngIf="this.ecftypeid == 7" type="button" class="btn btn-outline-success" 
+                matTooltip="Add Invoice Header" matTooltipClass="custom-tooltipnew" style="border-radius:40px;margin-left:190px;margin-top: -80px;" data-toggle="modal" data-target="#ecfpaydetails"
+                 (click)="addSection()" id="ecf-approval-view-0034"><span class="fa fa-plus"></span>&nbsp;&nbsp;Invoice Header</button> -->
+
+            <div>
+                <form [formGroup]="InvoiceHeaderForm" autocomplete="off">
+                    <div class="table-responsive">
+                        <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>GST Applicable</th>
+                                    <th *ngIf="show_suppdetails">Supplier Name</th>
+                                    <th *ngIf="show_suppdetails">Supplier GST</th>
+                                    <th *ngIf="show_suppdetails">MSME</th>
+                                    <th *ngIf="show_suppdetails&& showregno">MSME Reg No</th>
+                                    <th *ngIf="show_suppdetails ">State</th>
+                                    <!-- <th>Place Of Supply</th> -->
+                                    <th>Branch</th>
+                                    <th *ngIf="this.PMDbranchdata.length >0">Is PMD</th>
+                                    <th *ngIf="PMDyesno =='Y'">PMD Location</th>
+                                    <th
+                                        *ngIf="this.ecfheaderviewForm?.value?.aptype != 3 && this.ecfheaderviewForm?.value?.aptype != 13 && this.ecfheaderviewForm?.value?.aptype != 14">
+                                        Invoice No<label style="color:red">*</label>
+                                    </th>
+                                    <th *ngIf="this.ecfheaderviewForm?.value?.aptype == 14">Acc No</th>
+                                    <th *ngIf="this.ecftypeid == 7">Credit Ref No
+                                    <th *ngIf="this.ecftypeid == 7">Invoice CR No
+                                    </th>
+                                    <th
+                                        *ngIf="this.ecfheaderviewForm?.value?.aptype != 3 && this.ecfheaderviewForm?.value?.aptype != 13 && this.ecfheaderviewForm?.value?.aptype != 14">
+                                        Invoice Date
+                                    </th>
+                                    <th *ngIf="this.ecfheaderviewForm?.value?.aptype == 14">Date of Transaction</th>
+                                    <th *ngIf="ecftypeid == 2 || ecftypeid ==1">Is PCA</th>
+                                    <th *ngIf="is_pca">PCA No.</th>
+                                    <th *ngIf="this.ecftypeid != 14">Taxable Amount</th>
+                                    <th *ngIf="this.ecftypeid == 7">CRN Total Amount</th>
+                                    <th *ngIf="this.ecftypeid != 7">Invoice Amount</th>
+                                    <!-- <th *ngIf="this.ecftypeid == 14"></th> -->
+                                    <!-- <th *ngIf="this.ecftypeid != 14">Taxable Amount</th> -->
+                                    <!-- <th
+                                            *ngIf="((this.ecftypeid == 2 || this.ecftypeid == 7 ||   this.ecftypeid == 14 || this.ecftypeid == 3 ) && (showtaxforgst == true))">
+                                            Tax Amount</th>
+                                        <th
+                                            *ngIf="((this.ecftypeid == 2 || this.ecftypeid == 7 ||  this.ecftypeid == 14 || this.ecftypeid == 3 ) && (showtaxforgst == false))">
+                                            Tax Amount
+                                        </th> -->
+                                    <!-- <th>Round Off</th>
+                                        <th>Other Adjustment</th> -->
+
+                                    <th>Purpose</th>
+                                    <th>Is Recurring</th>
+                                    <th  *ngIf="InvoiceHeaderForm.value.invoiceheader[0].is_recur ==1">Recurring Type</th>
+                                    <th *ngIf="showRecurDates && showRecurMonth == true">Recurring Month</th>
+                                    <th *ngIf="showRecurDates && showRecurMonth == false">Recurring From</th>
+                                    <th *ngIf="showRecurDates && showRecurMonth == false">Recurring To</th>
+                                    <th>Invoice Status</th>
+                                    <th>Attachments</th>
+                                    <!-- <th *ngIf="ecftypeid == 2">Is Capitalized</th> -->
+                                    <th *ngIf="this.ecftypeid !=4 && this.ecftypeid !=7">Action</th>
+                                    <th *ngIf="this.ecftypeid ==4 ">View Debit Detail</th>
+                                    <th *ngIf="this.ecftypeid ==7 ">View CRN Detail</th>
+                                </tr>
+                            </thead>
+
+                            <ng-container formArrayName="invoiceheader"
+                                *ngFor="let section of getSections(InvoiceHeaderForm); let i = index">
+                                <tr [formGroupName]="i">
+                                    <td
+                                        style="text-align: center; vertical-align: middle;">
+                                        {{i+1}}</td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <mat-select placeholder="GST Applicable" formControlName="invoicegst"
+                                                disabled required id="ecf-approval-view-0035">
+                                                <mat-option *ngFor="let gst of yesorno" [value]="gst.value">
+                                                    {{gst.display}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                    </td>
+                                    <td id="matInput-size" *ngIf="show_suppdetails">
+
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="Supplier Name" formControlName="suppname"
+                                                readonly class="nowrap" autocomplete="off" id="ecf-approval-view-0036">
+                                        </mat-form-field>
+
+                                    </td>
+                                    <td id="matInput-size" *ngIf="show_suppdetails">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="Supplier GST" formControlName="suppliergst"
+                                                readonly autocomplete="off" id="ecf-approval-view-0037">
+                                        </mat-form-field>
+                                    </td>
+                                        <td id="matInput-size" *ngIf="show_suppdetails">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="MSME" formControlName="msme"
+                                                readonly autocomplete="off" id="ecf-approval-view-msme">
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size" *ngIf="show_suppdetails&& showregno">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="MSME Reg No" formControlName="msme_reg_no"
+                                                readonly autocomplete="off" id="ecf-approval-view-regno">
+                                        </mat-form-field>
+                                    </td>
+                                   
+                                    <td id="matInput-size" *ngIf="show_suppdetails">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="State" formControlName="suppstate"
+                                                placeholder="Supplier State" readonly autocomplete="off"
+                                                id="ecf-approval-view-0038">
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <input #invbranchInput matInput formControlName="branchdetails_id"
+                                                [matAutocomplete]="branchAutocomplete" readonly placeholder="Branch"
+                                                id="ecf-approval-view-0039">
+                                            <mat-autocomplete [panelWidth]="400" #branchAutocomplete="matAutocomplete"
+                                                [displayWith]="displayFninvbranch">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let branch of Branchlist" [value]="branch"
+                                                        matTooltip="{{branch.code}}-{{branch.name}}"
+                                                        matTooltipClass="custom-tooltipnew">
+                                                        {{branch.code}} - {{branch.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size" *ngIf="PMDbranchdata.length >0">
+                                        <mat-form-field appearance="outline">
+                                            <mat-select placeholder="Is PMD" formControlName="is_pmd" required
+                                                id="ecf-approval-view-0040">
+                                                <mat-option *ngFor="let opt of yesorno" [value]="opt.value" disabled>
+                                                    {{opt.display}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size" *ngIf="PMDyesno =='Y'">
+                                        <mat-form-field appearance="outline">
+                                            <input #pmdlocationInput matInput formControlName="pmdlocation_id"
+                                                [matAutocomplete]="pmdlocationAutocomplete" readonly
+                                                placeholder="PMD Location" id="ecf-approval-view-0041">
+                                            <mat-autocomplete [panelWidth]="150"
+                                                #pmdlocationAutocomplete="matAutocomplete"
+                                                [displayWith]="displayFnPmdLoc">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let loc of PMDLocationlist" [value]="loc"
+                                                        matTooltip="{{loc.location}}"
+                                                        matTooltipClass="custom-tooltipnew">
+                                                        {{loc.location}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size"
+                                        *ngIf="this.ecfheaderviewForm?.value?.aptype != 3 && this.ecfheaderviewForm?.value?.aptype != 13 && this.ecfheaderviewForm?.value?.aptype != 14">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="Invoice No" formControlName="invoiceno"
+                                                matTooltip="{{this.InvoiceHeaderForm.value.invoiceheader[i].invoiceno}}"
+                                                matTooltipClass="custom-tooltipnew" #invoiceno readonly
+                                                id="ecf-approval-view-0042">
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size" *ngIf="this.ecfheaderviewForm?.value?.aptype == 14">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="Acc No" formControlName="invoiceno"
+                                                matTooltip="{{this.InvoiceHeaderForm.value.invoiceheader[i].invoiceno}}"
+                                                matTooltipClass="custom-tooltipnew" #invoiceno readonly
+                                                id="ecf-approval-view-0043">
+                                        </mat-form-field>
+                                    </td>
+
+                                    <td id="matInput-size" *ngIf="this.ecftypeid == 7">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="Credit Ref No" formControlName="creditrefno"
+                                                #creditrefno readonly id="ecf-approval-view-0044">
+                                        </mat-form-field>
+                                    </td>
+
+                                    <td id="matInput-size" *ngIf="this.ecftypeid == 7">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="Invoice CR No" formControlName="refinv_crno"
+                                                #refinv_crno readonly id="ecf-approval-view-0045">
+                                        </mat-form-field>
+                                    </td>
+                                    <!-- <td *ngIf="this.ecftypeid != 2 ">
+                                            <mat-form-field style="width:110px;">
+                                                <input matInput placeholder="Invoice No" formControlName="invoiceno"
+                                                    (keypress)="characterandnumberonly($event)" autocomplete="off" id="ecf-approval-view-0046">
+                                            </mat-form-field>
+                                        </td> -->
+                                    <td id="matInput-size"
+                                        *ngIf="this.ecfheaderviewForm?.value?.aptype != 3 && this.ecfheaderviewForm?.value?.aptype != 13">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Date</mat-label>
+                                            <input matInput [matDatepicker]="picker1" placeholder="Date"
+                                                formControlName="invoicedate" readonly id="ecf-approval-view-0047">
+                                            <!-- [readonly]="readinvhdrdata == true" -->
+                                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                            </mat-datepicker-toggle>
+                                            <mat-datepicker #picker1 disabled></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td style="vertical-align: middle;text-align: center;" *ngIf="(ecftypeid == 2 || ecftypeid ==1) && is_pca">Yes</td>
+                                    <td style="vertical-align: middle;text-align: center;" *ngIf="(ecftypeid == 2 || ecftypeid ==1) && !is_pca">No</td>
+                                    <td style="vertical-align: middle;text-align: center;" *ngIf="is_pca">{{pca_no}}</td>
+                                    <td id="matInput-size" *ngIf="this.ecftypeid != 14">
+                                        <mat-form-field appearance="outline">
+                                            <!-- <mat-label>Taxable Amount</mat-label> -->
+                                            <input matInput style="text-align:right" formControlName="invoiceamount"
+                                                #invoiceamount readonly id="ecf-approval-view-0049">
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label *ngIf="this.ecftypeid == 7">CRN Total Amount</mat-label>
+                                            <mat-label *ngIf="this.ecftypeid != 7">Invoice Amount</mat-label>
+                                            <input matInput style="text-align: right;" formControlName="totalamount"
+                                                readonly #totalamount id="ecf-approval-view-0048">
+                                        </mat-form-field>
+                                    </td>
+                                    <!-- <td *ngIf="this.ecftypeid == 14"></td> -->
+                                    <!-- <td id="matInput-size" *ngIf="this.ecftypeid != 14">
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Amount</mat-label>
+                                                <input matInput style="text-align:right"
+                                                    formControlName="invoiceamount" #invoiceamount readonly id="ecf-approval-view-0049">
+                                            </mat-form-field>
+                                        </td> -->
+
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Purpose</mat-label>
+                                            <input matInput type="text" maxlength="65"
+                                                [readonly]="readinvhdrdata == true || this.InvoiceHeaderForm.value.invoiceheader[i].invoicegst == ''"
+                                                formControlName="remarks" autocomplete="off"
+                                                (keypress)="only_numalpha($event)"
+                                                [matTooltip]="InvoiceHeaderForm.value.invoiceheader[i].remarks"
+                                                matTooltipClass="custom-tooltipnew" maxlength="60"
+                                                id="ecf-approval-view-0050">
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <mat-select placeholder="Is Recurring" formControlName="is_recur" disabled
+                                                id="ecf-approval-view-0051">
+                                                <mat-option *ngFor="let rrr of RecurYesorno" [value]="rrr.value">
+                                                    {{rrr.display}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                    </td>
+                                    <td id="matInput-size"
+                                        *ngIf="InvoiceHeaderForm.value.invoiceheader[i].is_recur ==1">
+                                        <mat-form-field appearance="outline">
+                                            <mat-select placeholder="Recurring Type" formControlName="service_type"
+                                                disabled id="ecf-approval-view-0052">
+                                                <mat-option *ngFor="let rr of RecurringTypes" [value]="rr.id">
+                                                    {{rr.text}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </td>
+                                    <!-- <td id="matInput-size"
+                                        *ngIf="InvoiceHeaderForm.value.invoiceheader[i].is_recur ==0">
+                                        <mat-form-field appearance="outline">
+                                            <mat-select placeholder="Recurring Type" formControlName="service_type"
+                                                disabled id="ecf-approval-view-0053">
+                                                <mat-option *ngFor="let rr of RecurringTypes1" [value]="rr.id">
+                                                    {{rr.text}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </td> -->
+                                    <td id="matInput-size"
+                                        *ngIf="this.InvoiceHeaderForm.value.invoiceheader[i].service_type == 2 && showRecurDates">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Recurring Month</mat-label>
+                                            <input matInput [matDatepicker]="picker1" required autocomplete="off"
+                                                formControlName="recur_fromdate" disabled id="ecf-approval-view-0054">
+
+                                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker1 panelClass="example-month-picker"></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size"
+                                        *ngIf="this.InvoiceHeaderForm.value.invoiceheader[i].service_type == 3 && showRecurDates">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Recurring From</mat-label>
+                                            <input matInput [matDatepicker]="picker1" required autocomplete="off"
+                                                formControlName="recur_fromdate" disabled id="ecf-approval-view-0055">
+
+                                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker1></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size"
+                                        *ngIf="this.InvoiceHeaderForm.value.invoiceheader[i].service_type == 3 && showRecurDates">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Recurring To</mat-label>
+                                            <input matInput [matDatepicker]="picker2" required autocomplete="off"
+                                                formControlName="recur_todate" disabled id="ecf-approval-view-0056">
+
+                                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker2></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        {{section?.value?.invoicestatus}}
+                                    </td>
+
+
+                                    <!-- <td style="border:0px">
+                                        <input #fileInput id="ecf-approval-view-0002" type="file" multiple style="width: 108px;" hidden disabled>
+                                        
+                                    </td> -->
+
+                                    <td style="vertical-align: middle;text-align: center;">
+
+                                        <div
+                                            *ngIf="InvoiceHeaderForm?.value?.invoiceheader[i]?.file_key?.length > 0 || InvoiceHeaderForm?.value?.invoiceheader[i]?.filekey?.length > 0 ">
+                                            <i matTooltip="view" matTooltipClass="custom-tooltipnew"
+                                                class=" fa fa-eye create " (click)="getfiledetails(section,i)"
+                                                style="cursor: pointer;color:blue;"
+                                                [class.disabled]="this.InvoiceHeaderForm.value.invoiceheader[i].invoicegst == ''">
+                                                <!-- data-target="#ecf-approval-view-0011" data-toggle="modal" -->
+                                            </i>
+                                        </div>
+                                        <!-- <div
+                                            *ngIf="InvoiceHeaderForm?.value?.invoiceheader[i]?.filekey?.length > 0"> -->
+                                        <!-- <h3 (click)="getfiledetails(section,i)"
+                                                data-target="#showattachmentpopup"
+                                                style="cursor: pointer;color:blue;margin-left: 5px;"
+                                                class="btn btn-link" data-toggle="modal">Previously Attached
+                                                Files</h3> -->
+
+
+                                        <!-- </div> -->
+                                    </td>
+
+
+
+                                    <!-- <td style="vertical-align: middle;text-align: center;" *ngIf="ecftypeid == 2 ">
+                                        {{section?.value?.captalisedflag}}</td> -->
+
+
+
+                                    <!-- (click)=deleteinvheader(InvoiceHeaderForm.value,section,i) -->
+
+                                    <td style="vertical-align: middle;text-align: center;">
+
+                                        <button [disabled]="invhdrsaved" type="button" class="btn btn-outline-primary"
+                                            matTooltip="View" matTooltipClass="custom-tooltipnew"
+                                            style="border-radius:40px;margin-left:5px;" (click)="gotodetail(section,i)"
+                                            id="ecf-approval-view-0057">
+                                            <i class="fa fa-arrow-right"></i>
+                                        </button>
+                                        <!-- (click)="Addinvoice(section,InvoiceHeaderForm.value,i)" -->
+
+                                        <!-- <button *ngIf="showaddbtns" type="button"
+                                                class="btn btn-outline-primary" matTooltip="Save & Continue"
+                                                style="border-radius:40px;margin-left:5px;color: mediumblue;" (click)="gotodetail(section,i)"
+                                                 id="ecf-approval-view-0058">
+                                                <span
+                                                    class="fa fa-arrow-right"></span>
+                                            </button> -->
+                                        <!-- <mat-icon>chevron_right</mat-icon> -->
+
+                                    </td>
+
+
+                                </tr>
+
+
+
+                            </ng-container>
+                            <tr>
+                                <td class="totaldisplay" [attr.colspan]="InvHdrColCount" style="text-align: end;">Net
+                                    Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+                            </tr>
+                            <!-- <tr *ngIf="this.ecftypeid == 7">
+                                    <th class="totaldisplay" colspan="10" style="text-align: end;">Net Amount:</th>
+                                    <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+            
+            
+                                </tr> -->
+                            <!-- <tr *ngIf="!show_suppdetails">
+                                    <th class="totaldisplay" colspan="3" style="text-align: end;">
+                                        Net Amount:</th>
+                                    <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+            
+            
+                                </tr> -->
+
+                        </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- <div *ngIf="showApprove">
+                    <form [formGroup]="SubmitECFApproverForm">
+
+                        <tr>                       
+                            <lib-vs-depdropdown-cmp class="package-grid-width"
+                            [ParentObj]="ParentObj"
+                            [formGroup]="SubmitECFApproverForm"
+                            [ChildObj]="ChildObj"></lib-vs-depdropdown-cmp> -->
+            <!-- <td style="margin-left: 10px;"> -->
+
+            <!-- <mat-form-field style="width: 200px;">
+                                    <mat-label> Branch</mat-label>
+                                    <input #brInput placeholder="Branch" matInput formControlName="branch_id"
+                                        [matAutocomplete]="branchmatAuto" id="ecf-approval-view-0059">
+                                    <mat-autocomplete [panelWidth]="200" #branchmatAuto="matAutocomplete" (opened)="branchScroll()"
+                                        [displayWith]="displayFnBranch">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let br of branchList" matTooltip="{{br.code}}-{{br.name}}"  matTooltipClass="custom-tooltipnew" [value]="br">
+                                                {{br.code}}-{{br.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 200px;margin-left:5px;font-family: 'Times New Roman', Times, serif;" (click)="approvername()">
+                                    <mat-label>Approver Name</mat-label>
+                                    <input #appInput  placeholder="Choose Approver" matInput 
+                                    formControlName="approvedby" [matAutocomplete]="approver"  id="ecf-approval-view-0060">
+                                    <mat-autocomplete [panelWidth]="200" #approver="matAutocomplete" (opened)="autocompleteapproverScroll()"
+                                    [displayWith]="displayFnApprover">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let app of approverList" matTooltip="{{app.name}} -{{app.code}}-{{app.limit}}-{{app.designation}}" matTooltipClass="custom-tooltipnew" [value]="app">
+                                            {{app.name}}-{{app.code}} - {{app.limit}} - {{app.designation}}
+                                </mat-option>
+                             </ng-container>
+                                 </mat-autocomplete>
+                                </mat-form-field>
+                            </td> -->
+            <!-- <td>
+      
+                        <mat-form-field style="width: 150px;font-family: 'Times New Roman', Times, serif;margin-left: 50px;" appearance="outline">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput  formControlName="remark" autocomplete="off" required id="ecf-approval-view-0061">
+                        </mat-form-field>
+                    </td>
+                
+                    <button type="button"  class="btn btn-outline-success" style="border-radius:40px;margin-left:5px;margin-bottom: 0px;" 
+                    (click)="ecfApprove('mono')" [disabled]="SubmitECFApproverForm?.value?.remark == '' || ecfheaderresult.can_approve =='NO'" id="ecf-approval-view-0062">
+                    Approve</button> 
+                
+                   <button type="button"  *ngIf="ecfheaderresult.environment =='DO' || ecfheaderresult.environment =='SIT' || ecfheaderresult.environment =='UAT'"
+                   class="btn btn-outline-success" style="border-radius:40px;margin-left:5px;margin-bottom: 0px;" 
+                   (click)="ecfApprove('')" [disabled]="SubmitECFApproverForm?.value?.remark == '' || ecfheaderresult.can_approve =='NO' ||
+                   !(ecfheaderresult.environment =='DO' || ecfheaderresult.environment =='SIT' || ecfheaderresult.environment =='UAT')
+                   " id="ecf-approval-view-0063">Micro Approve</button> 
+                     <button style="border-radius:40px;margin-left: 5px;margin-bottom: 0px;"
+                     class="btn btn-outline-success" [disabled]="SubmitECFApproverForm?.value?.approvedby == ''" (click)="forward()" id="ecf-approval-view-0064">
+                     Approve and Forward</button>
+                    <button type="button" class="btn btn-outline-danger" style="border-radius:40px;margin-left:5px;
+                     margin-bottom: 0px; " (click)="ecfReject()" [disabled]="SubmitECFApproverForm?.value?.remark == ''" id="ecf-approval-view-0065">Reject</button> 
+                      <button type="submit" style="border-radius:40px;margin-left: 10px;margin-bottom: 0px;"
+                      class="btn btn-outline-success" (click)="ecfReturn()" [disabled]="SubmitECFApproverForm?.value?.remark == ''" id="ecf-approval-view-0066">
+                      Return</button>
+                     <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left:5px;
+                     margin-bottom: 0px;" (click)="back()" id="ecf-approval-view-0067">Back</button>
+                </tr>
+                </form>
+                </div>
+
+                <div *ngIf="!showApprove">
+
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left:555px;
+                margin-bottom: 50px;" (click)="back()" id="ecf-approval-view-0068">Back</button>
+                </div> -->
+
+                <div style="display: flex;align-items: center;justify-content: center;margin-top: 10px;">
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;" (click)="back()" id="ecf-approval-view-0067">Back</button>
+                </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<div *ngIf="showimageHeaderAPI" id="ecf-approval-view-0003" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="ecf-approval-view-0069">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrlsAPI}}" class="img-responsive" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showimagepdf" id="ecf-approval-view-0004" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                <h3 class="modal-title">Attachments</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="ecf-approval-view-0070">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <pdf-viewer [src]="pdfurl" [original-size]="false" [render-text]='false' [show-borders]="true"
+                [fit-to-page]="true" [show-all]="true" style="display: block; height: 600px;" [fit-to-page]="true">
+            </pdf-viewer>
+        </div>
+    </div>
+
+</div>
+<!-- Auditchecklist -->
+<!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true" 
+id="ecf-approval-view-0005">
+<div class="modal-dialog modal-xl " style="width: 85%;">
+    <div class="modal-content">
+        <div class="modal-header" style="text-align:center">
+            <h2 class="modal-title" style="text-align:center;margin-left:36%">Audit Checklist</h2>
+            <button type="button" class="close" #auditclose data-dismiss="modal" aria-label="Close" id="ecf-approval-view-0071">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div>
+            <table class="table table-bordered" style="width: 100%;text-align: center;">
+                <thead class="table_header">
+                <tr>
+                    <th>S.NO</th>
+                    <th>Question</th>
+                    <th>Ok/Not.Ok</th>
+                </tr>
+                </thead>
+                <tr *ngFor="let dt of checklist;let i=index">
+                <td>{{i+1}}</td>
+                <td>{{dt.question}}</td>
+                <td>  <div class="btn-group btn-group-toggle" data-toggle="buttons"  >
+                    <label class="btn btn-outline-success" [ngClass]="(dt.value==1)? 'active': ''">
+                      <input type="radio" name="options" id="ecf-approval-view-0006" autocomplete="off"   (click)="ok(i,dt)" > Ok
+                      </label>
+                    <label class="btn btn-outline-danger ">
+                      <input type="radio" name="options" id="ecf-approval-view-0007" autocomplete="off" checked   (click)="notok(i,dt)"> Not-OK
+                    </label>
+                    <label class="btn btn-outline-secondary">
+                      <input type="radio" name="options" id="ecf-approval-view-0008"  autocomplete="off"  (click)="nap(i,dt)"> N/A
+                    </label>
+                  </div> </td>
+            </tr>
+            </table>
+        </div>
+        <div>
+       <div>
+        <mat-form-field style="width: 20rem;margin-left: 30px; ">
+            <mat-label>Remarks</mat-label>
+            <input matInput [formControl]="rem" autocomplete="off" required id="ecf-approval-view-0072">
+        </mat-form-field>
+        <button type="submit" data-dismiss="modal" [disabled]="((rem.invalid==true) || (cli==true))" class="btn btn-outline-danger"  style="border-radius:35px;height: 40px;margin-left: 10px;" (click)="bounce()" id="ecf-approval-view-0073">Bounce</button> 
+       
+        <button  class="btn btn-outline-primary" style="border-radius:35px;height: 40px;margin-left: 100px;" [disabled] = "disables()" (click)="submitted()" id="ecf-approval-view-0074">Submit</button>
+        <button  data-dismiss="modal" class="btn btn-outline-primary" style="border-radius:35px;height: 40px;margin-left: 10px;" id="ecf-approval-view-0075">Back</button> 
+       </div>
+</div>
+</div>
+</div>
+</div> -->
+
+<!-- Dedupe Check -->
+<!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true" id="ecf-approval-view-0009">
+    <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h2 class="modal-title" style="text-align:center;margin-left:45%">Dedupe</h2>
+            <button class="close" type="button" data-dismiss="modal" id="ecf-approval-view-0076">x</button>                
+            </div>
+            <div class="modal-body">
+                <pre>EXACT_MATCH</pre>
+                <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                    <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                        <thead class="table_header " fixed-header>
+                            <tr>
+                                <th>S.No</th> 
+                                <th>Invoice Number</th>                             
+                                <th>Invoice Header Amount</th>
+                                <th>Status</th>          
+                                <th>CR Number</th>                
+                                <th>Supplier Name</th>
+                                <th>Branch Name</th>             
+                                <th>Employee Name</th>                                      
+                            </tr>
+                        </thead>
+                        <tbody>                    
+                            <tr *ngFor="let value of exactList; index as i;">
+                                <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                <td>{{value.invoiceno}}</td>
+                                <td style="text-align: right;">{{value.invoiceamount}}</td>     
+                                <td>{{value['status'].text}}</td>
+                                <td>{{value.crno}}</td>                         
+                                <td>{{value['supplier'].name}}</td>
+                                <td>{{value['branch'].name}}</td>
+                                <td>{{value.raised_empname}}</td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="exactList ?.length == 0" style="margin-left: 42%;">
+                        <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                    </div>
+                </div>
+                <br>
+
+                <pre>WITHOUT_SUPPLIER</pre>
+                <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                    <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                        <thead class="table_header " fixed-header>
+                            <tr>
+                                <th>S.No</th> 
+                                <th>Invoice Number</th>                             
+                                <th>Invoice Header Amount</th>
+                                <th>Status</th>          
+                                <th>CR Number</th>                
+                                <th>Supplier Name</th>
+                                <th>Branch Name</th>             
+                                <th>Employee Name</th>                                      
+                            </tr>
+                        </thead>
+                        <tbody>                    
+                            <tr *ngFor="let value of withoutSuppList; index as i;">
+                                <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                <td>{{value.invoiceno}}</td>
+                                <td style="text-align: right;">{{value.invoiceamount}}</td>     
+                                <td>{{value['status'].text}}</td>
+                                <td>{{value.crno}}</td>                         
+                                <td>{{value['supplier'].name}}</td>
+                                <td>{{value['branch'].name}}</td>
+                                <td>{{value.raised_empname}}</td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="withoutSuppList ?.length == 0" style="margin-left: 42%;">
+                        <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                    </div>
+                </div>
+                <br>
+
+                <pre>WITHOUT_INVOICE_AMOUNT</pre>
+                <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                    <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                        <thead class="table_header " fixed-header>
+                            <tr>
+                                <th>S.No</th> 
+                                <th>Invoice Number</th>                             
+                                <th>Invoice Header Amount</th>
+                                <th>Status</th>          
+                                <th>CR Number</th>                
+                                <th>Supplier Name</th>
+                                <th>Branch Name</th>             
+                                <th>Employee Name</th>                                      
+                            </tr>
+                        </thead>
+                        <tbody>                    
+                            <tr *ngFor="let value of withoutInvAmtList; index as i;">
+                                <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                <td>{{value.invoiceno}}</td>
+                                <td style="text-align: right;">{{value.invoiceamount}}</td>     
+                                <td>{{value['status'].text}}</td>
+                                <td>{{value.crno}}</td>                         
+                                <td>{{value['supplier'].name}}</td>
+                                <td>{{value['branch'].name}}</td>
+                                <td>{{value.raised_empname}}</td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="withoutInvAmtList ?.length == 0" style="margin-left: 42%;">
+                        <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                    </div>
+                </div>
+                <br>
+
+                <pre>WITHOUT_INVOICE_NUMBER</pre>
+                <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                    <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                        <thead class="table_header " fixed-header>
+                            <tr>
+                                <th>S.No</th> 
+                                <th>Invoice Number</th>                             
+                                <th>Invoice Header Amount</th>
+                                <th>Status</th>          
+                                <th>CR Number</th>                
+                                <th>Supplier Name</th>
+                                <th>Branch Name</th>             
+                                <th>Employee Name</th>                                      
+                            </tr>
+                        </thead>
+                        <tbody>                    
+                            <tr *ngFor="let value of withoutInvNoList; index as i;">
+                                <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                <td>{{value.invoiceno}}</td>
+                                <td style="text-align: right;">{{value.invoiceamount}}</td>     
+                                <td>{{value['status'].text}}</td>
+                                <td>{{value.crno}}</td>                         
+                                <td>{{value['supplier'].name}}</td>
+                                <td>{{value['branch'].name}}</td>
+                                <td>{{value.raised_empname}}</td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="withoutInvNoList ?.length == 0" style="margin-left: 42%;">
+                        <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                    </div>
+                </div>
+                <br>
+
+                <pre>WITHOUT_INVOICE_DATE</pre>
+                <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;">
+                    <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                        <thead class="table_header " fixed-header>
+                            <tr>
+                                <th>S.No</th> 
+                                <th>Invoice Number</th>                             
+                                <th>Invoice Header Amount</th>
+                                <th>Status</th>          
+                                <th>CR Number</th>                
+                                <th>Supplier Name</th>
+                                <th>Branch Name</th>             
+                                <th>Employee Name</th>                                      
+                            </tr>
+                        </thead>
+                        <tbody>                    
+                            <tr *ngFor="let value of withoutInvDtList; index as i;">
+                                <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                <td>{{value.invoiceno}}</td>
+                                <td style="text-align: right;">{{value.invoiceamount}}</td>     
+                                <td>{{value['status'].text}}</td>
+                                <td>{{value.crno}}</td>                         
+                                <td>{{value['supplier'].name}}</td>
+                                <td>{{value['branch'].name}}</td>
+                                <td>{{value.raised_empname}}</td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="withoutInvDtList ?.length == 0" style="margin-left: 42%;">
+                        <h3 style="font-family: 'Times New Roman', Times, serif;">No Records found!..</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer"  class="col-md-12 text-center" style="margin-bottom: 2%;">
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;text-align:center ;" data-dismiss="modal"  id="ecf-approval-view-0077">Back</button>
+            </div>
+
+        </div>
+    </div>
+
+</div> -->
+
+<!-- View Trancation -->
+<!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+  id="ecf-approval-view-0010">
+  <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+      <div class="modal-content">
+          <div class="modal-header" style="text-align:center">
+              <h2 class="modal-title" style="text-align:center;margin-left:42%">View Transaction</h2>
+          <button class="close" type="button" data-dismiss="modal" id="ecf-approval-view-0078">x</button>      
+          </div>
+          <div>
+              <table class="table table-bordered" style="width: 100%;text-align: center;">
+                  <thead class="table_header">
+                  <tr>
+                      <th>S.NO</th>
+                      <th>Type</th>
+                      <th>Status</th>
+                      <th>From Date</th>
+                      <th>Remarks</th>
+                      <th>Employee Name</th>
+                  </tr>
+                  </thead>
+                  <tr *ngFor="let dt of viewtrnlist;let i=index">
+                      <td>{{i+1}}</td>
+                      <td>{{dt.Type}}</td>
+                      <td>{{dt.status.text}}</td>
+                      <td>{{dt.created_date}}</td>
+                      <td>{{dt.remarks}}</td>
+                      <td>{{dt.from_user.name}}
+                      <br>
+                      <div *ngIf="dt.from_user_id==-1; else deta"></div>
+                          <ng-template #deta>
+                              <a style="color: green;cursor: pointer;"  (click)="view(dt)">View Details</a>
+                          </ng-template>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+          <div class="modal-footer" >
+              <table  style="width: 100%;text-align: center;">
+                  <tr>
+                      <td>Employee Name: &nbsp;{{this.name}}</td>
+                      <td>Branch Name : &nbsp;{{this.branch}}</td>
+                   </tr>
+                   <tr><td colspan="3"><button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;" data-dismiss="modal"  id="ecf-approval-view-0079">Back</button></td></tr>
+              </table>
+          </div>
+           
+      </div>   
+      
+  </div>
+</div> -->
+
+
+
+<div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+        id="ecf-approval-view-0011">
+        <div class="modal-dialog modal-lg" style="width: 70%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Attachments</h3>
+                    <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close"
+                        id="ecf-approval-view-0080">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding:2rem">
+                    <div class="row">
+                        <div class="table-responsive">
+                            <!-- <lib-vs-cbox-summary
+                  [SummaryDetails]="SummaryattachData"
+                  [SummaryApiObj]="SummaryApiattachObjNew"
+                ></lib-vs-cbox-summary> -->
+                        <!-- <table
+                class="table table-bordered"
+                fixed-header
+                style="width: 99%; margin-top: 10px"
+              >
+                <thead class="table_header" style="text-align: left">
+                  <tr>
+                    <th style="text-align: center">S.No</th>
+                    <th style="text-align: center">File Name</th>
+                    <th style="text-align: center">View</th>
+                    <th style="text-align: center">Download</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let dtl of invheaderdata; index as i">
+                  <tr *ngFor="let attach of dtl.file_data; index as i">
+                    <td style="text-align: center">{{ i + 1 }}</td>
+                    <td>{{ attach.file_name }}</td>
+                    <td style="text-align: center">
+                      <i
+                        class="fa fa-external-link"
+                        aria-hidden="true"
+                        style="color: blue; font-size: 24px; margin-left: 20px"
+                        (click)="data1(attach)"
+                      ></i>
+                    </td>
+                    <td style="text-align: center">
+                      <i class="material-icons" (click)="getfiles(attach)">
+                        get_app
+                      </i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>  -->
+              <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+                    <table>
+                            <thead>
+
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>File Name</th>
+                                    <th>Document Type</th>
+                                    <th>View</th>
+                                    <th>Download</th>
+
+
+                                </tr>
+                            </thead>
+                            <!-- <tbody *ngFor="let dtl of invheaderdata; index as i">
+                                <tr *ngFor="let attach of dtl.file_data; index as i">
+                                    <td>{{i+1}}</td>
+                                    <td style="width: 303px;">
+                                        <div  style="width: 300px;overflow: hidden" matTooltip="{{attach.file_name}}" matTooltipClass="custom-tooltipnew">
+                                            {{attach.file_name}}
+                                        </div>
+                                    </td>
+                                    <td>{{attach?.document_type}}</td>
+                                    <td style="text-align: center">
+                                        <i class="fa fa-external-link" aria-hidden="true"
+                                            style="color:blue;font-size: 18px;" (click)="data1(attach)"></i>
+                                    </td>
+
+
+                                    <td style="text-align: center">
+                                        <i class="fa fa-download" style="color: green;" (click)="getfiles(attach)">
+                                        </i>
+                                    </td>
+
+                                </tr>
+                            </tbody> -->
+                        <tbody>
+                            <tr *ngFor="let attach of pagedFileData; let i = index">
+                                <td>{{ (pageIndex * pageSize) + (i + 1) }}</td>
+                                <td style="width: 303px;">
+                                <div style="width: 300px;overflow: hidden"
+                                    matTooltip="{{attach.file_name}}"
+                                    matTooltipClass="custom-tooltipnew">
+                                    {{attach.file_name}}
+                                </div>
+                                </td>
+                                <td>{{attach?.document_type}}</td>
+                                <td style="text-align: center">
+                                <i class="fa fa-external-link" 
+                                    style="color:blue;font-size: 18px;"
+                                    (click)="data1(attach)">
+                                </i>
+                                </td>
+                                <td style="text-align: center">
+                                <i class="fa fa-download" 
+                                    style="color: green;" 
+                                    (click)="getfiles(attach)">
+                                </i>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        
+                    </table>
+                </div>
+                <div *ngIf="enable_view_file_pagination">
+                    <mat-paginator 
+                                [length]="length"
+                                [pageSize]="pageSize" [hidePageSize]="true"
+                                [pageIndex]="pageIndex" 
+                                [pageSizeOptions]="[10, 25, 50]"
+                                (page)="handlePageEvent($event, view_file_pagination)">
+                    </mat-paginator>
+                </div>
+                    </div>
+                </div>
+            </div>
+
+                <!-- <tr> -->
+                    <div class="modal-footer">
+                        <!-- <td> -->
+                    <!-- <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:300px;
+                          border-color: black; margin-bottom: 20px;" (click)="fileback()" id="ecf-approval-view-0081">Back</button> -->
+                    <button type="button" class="btn btn-outline-primary"
+                        style="border-radius: 40px" data-dismiss="modal" aria-label="Close"
+                        (click)="fileback()" id="ecf-approval-view-0081">
+                        Back
+                    </button>
+                    <!-- </td> -->
+                    <!-- </tr> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+        id="approver_popup">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content" style="width:550px">
+                <div class="modal-header">
+                    <h3 class="modal-title mb-0">{{popup_heading}} Submit</h3>
+                    <button type="button" class="close" data-dismiss="modal" #closedbutton aria-label="Close"
+                        id="ecf-approval-view-0080" (click)="popupback()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="SubmitECFApproverForm">
+
+                        <div class="searchs-expand" *ngIf="submit_btn === 3">
+                            <lib-vs-dynamicform-cmp id="matInput-size" [formGroup]="SubmitECFApproverForm"
+                                [InputFields]="approverbranch" (dataEvent)="approverbranchclick($event)"></lib-vs-dynamicform-cmp>
+
+                            <lib-vs-dynamicform-cmp id="matInput-size" [formGroup]="SubmitECFApproverForm"
+                                [InputFields]="approvernames"></lib-vs-dynamicform-cmp>
+
+                            <!-- <lib-vs-depdropdown-cmp id="matInput-size"
+                    [ParentObj]="ParentObj"
+                    [formGroup]="SubmitECFApproverForm"
+                    [ChildObj]="ChildObj"
+                    [ResetForm]="restforbranch"></lib-vs-depdropdown-cmp> -->
+                            <!-- <td style="margin-left: 10px;"> -->
+
+                            <!-- <mat-form-field style="width: 200px;"  (click)="branchdropdown('')">
+                            <mat-label> Branch</mat-label>
+                            <input #brInput placeholder="Branch" matInput formControlName="branch_id"
+                                [matAutocomplete]="branchmatAuto" id="ecf-approval-view-0059">
+                            <mat-autocomplete [panelWidth]="200" #branchmatAuto="matAutocomplete" (opened)="branchScroll()"
+                                [displayWith]="displayFnBranch">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let br of branchList" matTooltip="{{br.code}}-{{br.name}}"  matTooltipClass="custom-tooltipnew" [value]="br">
+                                        {{br.code}}-{{br.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 200px;margin-left:5px;font-family: 'Times New Roman', Times, serif;" (click)="approvername()">
+                            <mat-label>Approver Name</mat-label>
+                            <input #appInput  placeholder="Choose Approver" matInput 
+                            formControlName="approvedby" [matAutocomplete]="approver"  id="ecf-approval-view-0060">
+                            <mat-autocomplete [panelWidth]="200" #approver="matAutocomplete" (opened)="autocompleteapproverScroll()"
+                            [displayWith]="displayFnApprover">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let app of approverList" matTooltip="{{app.name}} -{{app.code}}-{{app.limit}}-{{app.designation}}" matTooltipClass="custom-tooltipnew" [value]="app">
+                                    {{app.name}}-{{app.code}} - {{app.limit}} - {{app.designation}}
+                        </mat-option>
+                     </ng-container>
+                         </mat-autocomplete>
+                        </mat-form-field>
+                    </td> -->
+                        </div>
+                        <div id="matInput-size">
+
+                            <mat-form-field appearance="outline" style="width:510px">
+                                <mat-label>Remarks</mat-label>
+                                <input matInput formControlName="remark" autocomplete="off" required
+                                    id="ecf-approval-view-0061">
+                            </mat-form-field>
+                        </div>
+
+                        <i (click)="UploadPopupOpen()" class="fa fa-cloud-upload" matTooltip="Upload file"
+                            matTooltipClass="custom-tooltipnew" aria-hidden="true"
+                            style="font-size: 25px;color: blue;"></i>
+                        <!-- data-target="uploadpop" data-toggle="modal" -->
+                        <i (click)="FilePopupOpen()" matTooltip="view" matTooltipClass="custom-tooltipnew"
+                            class=" fa fa-eye create "
+                            *ngIf="InvoiceHeaderForm?.value?.invoiceheader[0]?.file_key?.length > 0 " style="
+               cursor: pointer;color:blue;margin-left: 5px;"></i>
+                        <!-- data-target="viewpop" data-toggle="modal" -->
+
+                        <!-- <td style="border:0px">
+                <div style="margin-left: 20px;">
+                <input #fileInput id="ecf-approval-view-0084" type="file" multiple style="width: 108px;" hidden (change)="uploaddata($event);">
+
+                <i (click)="fileInput.click()"  class="fa fa-cloud-upload" matTooltip="Upload file" matTooltipClass="custom-tooltipnew" aria-hidden="true" style="font-size: 28px;color: blue;" ></i>  
+                
+                <i matTooltip="view" matTooltipClass="custom-tooltipnew" class=" fa fa-eye create " *ngIf="filearr?.length > 0 "
+                    (click)="upload_view_click()"
+                    style="cursor: pointer;color: blue;margin-left: 20px;margin-right: 15px;"> -->
+                        <!-- data-target="#attachpopup" data-toggle="modal" -->
+                        <!-- </i>
+
+                </div>
+               </td> -->
+                    </form>
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button *ngIf="submit_btn == 1" type="button" class="btn btn-outline-success"
+                        style="border-radius:40px;" (click)="hdrsaveAndApprove('mono')"
+                        [disabled]="SubmitECFApproverForm?.value?.remark == '' || ecfheaderresult.can_approve =='NO'"
+                        id="ecf-approval-view-0062">
+                        Submit</button>
+
+                    <button type="button" *ngIf="submit_btn == 2"
+                        class="btn btn-outline-success" style="border-radius:40px;" (click)="hdrsaveAndApprove('')"
+                        [disabled]="SubmitECFApproverForm?.value?.remark == '' || ecfheaderresult.can_approve =='NO' ||
+            !(ecfheaderresult.environment =='DO' || ecfheaderresult.environment =='SIT' || ecfheaderresult.environment =='UAT')
+            ">Submit</button>
+
+                    <button *ngIf="submit_btn == 3" style="border-radius:40px;" class="btn btn-outline-success"
+                        [disabled]="SubmitECFApproverForm?.value?.approvedby == ''" (click)="forward()">
+                        Submit</button>
+
+                    <button *ngIf="submit_btn == 4" type="button" class="btn btn-outline-success"
+                        style="border-radius:40px;" (click)="ecfReject()"
+                        [disabled]="SubmitECFApproverForm?.value?.remark == ''">Submit</button>
+
+                    <button *ngIf="submit_btn == 5" type="submit" style="border-radius:40px;"
+                        class="btn btn-outline-success" (click)="ecfReturn()"
+                        [disabled]="SubmitECFApproverForm?.value?.remark == ''">
+                        Submit</button>
+
+                    <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;"
+                        (click)="popupback()">
+                        Back
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+    id="attachpopup">
+    <div class="modal-dialog modal-lg" style="width: 70%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Attachments
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" #closeviewfiles aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="table-responsive">
+                    <h3>Attached Files</h3>
+                    <lib-vs-cbox-summary [SummaryDetails]="SummaryAttechedFiles"
+                        [SummaryApiObj]="SummaryApiAttechedFilesObjNew"></lib-vs-cbox-summary>
+
+                    <!-- <table class="table table-bordered" fixed-header >
+                            <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th style="text-align: center;">S.No</th>
+                                <th style="text-align: center;">File Name</th>
+                                <th style="text-align: center;">View</th>
+                                <th style="text-align: center;">Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                    <tr  *ngFor="let files of filearr; let index = index">
+                                    <td>{{index+1}}</td>
+                                    <td>
+                                        {{files?.name}} 
+                                    </td>
+                                    <td style="text-align: center;" >
+                                    <i class="fa fa-external-link" aria-hidden="true" style="color:blue;font-size: 24px;margin-left: 20px;" (click)="filepreview(files)" 
+                                    (click)="summaryclick()"
+                                    > -->
+                    <!-- data-toggle="modal"
+                                 data-target="#ecf-approval-view-0086" -->
+                    <!-- </i>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        
+                                        <span (click)="deletefileUpload(files)">
+                                            <mat-icon matTooltip="Delete" matTooltipClass="custom-tooltipnew">delete
+                                            </mat-icon>
+                                        </span>
+                                    </td>
+                                    </tr>
+                                
+                            </tbody>
+                        </table> -->
+                </div>
+
+            </div>
+
+
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;"
+                    (click)="CloseFilesView()">Back</button>
+
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="showimageHeaderPreview" id="ecf-approval-view-0086" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="branch-exp-create-0067">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showimageHeaderPreviewPDF" id="ecf-approval-view-0086" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                <h2 class="modal-title"> ECF Attachments</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="branch-exp-create-0068">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <pdf-viewer [src]="pdfurl" [original-size]="false" [render-text]='false' [show-borders]="true"
+                [fit-to-page]="true" [show-all]="true" style="display: block; height: 600px;" [fit-to-page]="true">
+            </pdf-viewer>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+    id="viewpop">
+    <div class="modal-dialog modal-lg " style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title mb-0">Attachments
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close"
+                    id="create-ecf-0130">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" >
+                <div >
+                <!-- <div class="table-responsive">
+                <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Document Type</th>
+                                <th>File Name</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let type of uploadFileTypes; let ind = index">
+                                <tr *ngFor="let files of file_process_data[type]; let index = index">
+                                    <td>
+                                        {{ind+1}}.{{index+1}}
+                                    </td>
+                                    <td>
+                                        {{type}}
+                                    </td>
+                                    <td style="width: 303px;">
+                                        <div  style="width: 300px;overflow: hidden" matTooltip="{{files?.name}}" matTooltipClass="custom-tooltipnew">
+                                            {{files?.name}}
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+
+                                        <span (click)="deletefileUpload(index, type)"
+                                            [class.disabled]="readinvhdrdata != false">
+                                            <mat-icon matTooltip="Delete" matTooltipClass="custom-tooltipnew">delete
+                                            </mat-icon>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </ng-container>
+
+                        </tbody>
+                        <div class="pagination" style="margin-top: 10px; text-align:center;">
+                            <button mat-button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+                            Prev
+                            </button>
+                            <span>Page {{currentPage}} of {{totalPages}}</span>
+                            <button mat-button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+                            Next
+                            </button>
+                        </div>
+
+                    </table>
+                </div>
+
+                </div> -->
+
+                        <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Document Type</th>
+                    <th>File Name</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let row of pagedFiles; let i = index">
+                    <td>{{ (pageIndexPymtAdv * pagesize_PymtAdv) + (i + 1) }}</td>
+                    <td>{{ row.type }}</td>
+                    <td style="width: 303px;">
+                    <div style="width: 300px; overflow: hidden"
+                        matTooltip="{{ row.file?.name }}"
+                        matTooltipClass="custom-tooltipnew">
+                        {{ row.file?.name }}
+                    </div>
+                    </td>
+                    <td style="text-align: left;color:red">
+                    <!-- <span *ngIf="this.invhdrForm != 'frmInvHdrDet'"
+                            (click)="deletefileUpload(InvoiceHeaderForm?.value?.invoiceheader[this.fileindex], i, row.type)"
+                            [class.disabled]="readinvhdrdata != false">
+                        <mat-icon matTooltip="Delete" matTooltipClass="custom-tooltipnew" style="font-size: 18px;">delete</mat-icon>
+                    </span>
+                    <span *ngIf="this.invhdrForm == 'frmInvHdrDet'"
+                            (click)="deletefileUpload('frmInvHdrDet', i, row.type)">
+                        <mat-icon matTooltip="Delete" matTooltipClass="custom-tooltipnew">delete</mat-icon>
+                    </span> -->
+                   <span (click)="deletefileUpload(row)"
+                        [class.disabled]="readinvhdrdata != false">
+                        <mat-icon matTooltip="Delete" matTooltipClass="custom-tooltipnew">delete</mat-icon>
+                    </span>
+
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- paginator -->
+        <div *ngIf="isPymtAdvpage">
+            <!-- <div class="col-sm-9"> -->
+                <mat-paginator (page)="handlePymtAdvPageEvent($event)"
+                            [length]="length_PymtAdv"
+                            [pageSize]="pagesize_PymtAdv"
+                            [pageSizeOptions]="pageSizeOptions"
+                            [pageIndex]="pageIndexPymtAdv"
+                            aria-label="Select page" [hidePageSize]="true" >
+                            <!-- [showFirstLastButtons]="showFirstLastButtons" -->
+                </mat-paginator>
+            <!-- </div> -->
+            <!-- <div class="col-sm-3">
+                Page: {{ pymtAdvpresentpage }}
+            </div> -->
+        </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;
+                margin-bottom: 20px; " data-dismiss="modal" (click)="fileback()" id="create-ecf-0132">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div *ngIf="uploadPopShow"> -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+    id="uploadpop">
+    <div class="modal-dialog modal-lg " style="width: 90%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title mb-0">Upload File
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" #uploadclose aria-label="Close"
+                    id="create-ecf-0140">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+                    <table>
+                        <thead >
+                            <tr>
+                                <th>S.No</th>
+                                <th>Document Type</th>
+                                <th>Upload</th>
+                                <th>Selected Files</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let type of uploadFileTypes; let index = index">
+                                <td >{{index+1}}</td>
+                                <td>
+                                    {{type}}
+                                </td>
+                                <td >
+                                    <input #fileInput id="create-ecf-0002" type="file" multiple style="width: 108px;"
+                                        hidden (change)="getFileDetails( $event, type)">
+                                    <i (click)="fileInput.click()" class="fa fa-cloud-upload" matTooltip="Upload file"
+                                        matTooltipClass="custom-tooltipnew" aria-hidden="true"
+                                        style="font-size: 25px;color: blue;"></i>
+                                </td>
+                                <td>
+                                    <div *ngFor="let file of file_process_data2[type]; let j = index"
+                                        style="border: 0cm;">
+                                        <div>{{j+1}}.{{file.name}}</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- <tr> -->
+
+                <!-- (click)="uploadfileback()"  -->
+                <!-- </tr> -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-success" style="border-radius:40px;margin-left:40%;
+                        margin-bottom: 20px; " (click)="uploadSubmit()"
+                    data-toggle="modal" id="create-ecf-0153">Submit</button>
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left:10px;
+                        margin-bottom: 20px; " (click)="uploadback()">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- </div> -->
+<!-- <pre>{{SubmitECFApproverForm.value|json}}</pre> -->

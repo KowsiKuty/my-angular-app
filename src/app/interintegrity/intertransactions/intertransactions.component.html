@@ -1,0 +1,2277 @@
+<!-- -->
+<!-- <mat-card style="height: 89px;"> -->
+<!-- <div style="margin-left: 10px;"> <mat-icon style="cursor: pointer;"
+    (click)="getbacktomain()">keyboard_backspace</mat-icon></div> -->
+<section class="rmu-screen-padding rmu_screen-lm">
+  <div class="comp-header">
+    <p class="comp-header-p">
+      <i class="fa fa-arrow-left back-button" (click)="getbacktomain()"></i>
+      <span style="font-weight: 600">Run Integrity</span>
+      <span style="font-weight: 600;">
+        ({{integrity_name}})
+      </span>
+    </p>
+  </div>
+  <!-- <div style="display: flex; align-items: center; margin-left: 10px;margin-bottom: 20px;">
+      <mat-icon style="cursor: pointer; margin-right: 5px;" (click)="getbacktomain()">keyboard_backspace</mat-icon>
+      <span style="font-size: 15px; font-weight: 800;">Run Integrity</span>
+  </div> -->
+  <form [formGroup]="integrityCheck">
+    <div class="interTrans-row-1">
+      <!-- <div class="col-md-1"></div> -->
+      <!-- <div class="col">
+          <div *ngIf="makerUser">
+              <h4 style="margin-top: 4%;
+              margin-left: 1%"><span class="label label-success"> {{this.branchFetch}}/{{this.branchFetchs}}</span></h4>
+          </div>
+          <div *ngIf="adminUsers">
+            <mat-form-field style="margin-left: 5%;" appearance="outline"  floatLabel="always"  >
+              <mat-label>Branch</mat-label>
+              <input #inputassetid placeholder="Select Branch" matInput [matAutocomplete]="conoffice"
+                formControlName="branch">
+              <mat-autocomplete  #conoffice="matAutocomplete" (opened)="autocompleteid()">
+                <mat-option *ngFor="let branch of branchlist"   [value]="(branch.code)+' - '+(branch.name)" (click)="selectBranch(branch)">
+                  {{branch.code}}-{{branch.name}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </div> -->
+        <!-- (ngModelChange)="selectrunbal($event, 1)" -->
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Integrity Run date</mat-label>
+          <input
+            matInput
+            formControlName="InterSelectDate"
+            required
+            [matDatepicker]="picker"
+            [(ngModel)]="initialDate"
+            [max]="endDate"
+            (dateChange)="selectrunbal($event, 1)"
+            
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker [dateClass]="dateClass"></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div id="matInput-size">
+        <lib-vs-dynamicform-cmp
+        class="package-width"
+        [InputFields]="intergritytransactionfield"
+        (dataEvent)="integritytransdata($event)"
+        [ResetForm]="restformintertrans"
+      ></lib-vs-dynamicform-cmp> 
+        <!-- <mat-form-field appearance="outline">
+          <mat-label>Template</mat-label>
+          <input
+            type="text"
+            matInput
+            #templateinput
+            required
+            [matAutocomplete]="temp"
+            (keyup)="searchtemp()"
+          />
+          <mat-autocomplete
+            #temp="matAutocomplete"
+            (opened)="autocompletetemplateScroll()"
+          >
+            <mat-option *ngIf="isLoading">Loading..</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let d of templatearray"
+                [value]="d?.template_name"
+                (click)="tempselect(d?.template_name)"
+              >
+                {{ d?.template_name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field> -->
+      </div>
+      <!-- <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Threshold</mat-label>
+          <input matInput type="number" formControlName="threshold_field">
+        </mat-form-field>
+      </div> -->
+
+      <!-- <div class="col">
+          <mat-form-field appearance="outline">
+            <mat-label>Type</mat-label>
+            <mat-select placeholder="" appearance="outline" formControlName="ctrl_uploadtype" >
+            <mat-option *ngFor="let obj of typeValues" [value]="obj.id">
+              {{ obj.viewoption }}
+            </mat-option>
+          </mat-select>
+          </mat-form-field>
+        </div> -->
+      <div>
+        <button
+          class="btn btn-outline-success button-alignment"
+          (click)="runint()"
+        >
+          Run InterIntegrity
+        </button>
+      </div>
+      <!-- <div class="col">
+          <button class="btn btn-outline-success" style="border-radius:25px;font-size: small;margin-top: 10%;" (click)="showdataAdmindiff()">Run InterIntegrity</button>
+        </div> -->
+      <!-- <div class="col">
+          <button class="btn btn-outline-info" style="border-radius:25px;font-size: small;margin-top: 10%;" (click)="knockOffHistory()">InterIntegrity History</button>
+        </div>-->
+      <div>
+        <button
+          class="btn btn-outline-info button-alignment"
+          (click)="popupopenviewdata()"
+        >
+          View Data
+        </button>
+      </div>
+    </div>
+  </form>
+  <!-- </mat-card> -->
+
+  <!-- <mat-accordion> -->
+  <!-- <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          WiseFin File Upload/Fetch
+        </mat-panel-title>
+        <mat-panel-title>
+          CBS File Upload
+        </mat-panel-title>
+      </mat-expansion-panel-header> -->
+  <form>
+    <div class="interTrans-cards" style="width: 100%">
+      <mat-card style="width: 100%">
+        <span style="font-weight: 600">File 1 Upload</span>
+        <mat-card-actions *ngIf="fas_uploadxl">
+          <form
+            [formGroup]="wisefinUpload"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: flex-start;
+              gap: 10px;
+            "
+          >
+            <!-- <div class="col-sm-4" style="margin-top: 2%;">
+                      <mat-label style="margin-top: 5%;">Wisefin Upload</mat-label>
+                    </div> -->
+            <!-- <div class="col-sm-3">
+                      <mat-form-field style="color:black;width: 130px;
+                      margin-left: 1%;">
+                        <mat-label style="color:black;font-size:small;">Template Name</mat-label>
+                        <mat-select matInput formControlName="template_id">
+                          <mat-option *ngFor="let item of ntemplates" [value]="item.id">
+                            {{item.template_name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div> -->
+
+            <!-- <div>
+              <mat-label style="white-space: nowrap">FAS Template </mat-label>
+            </div> -->
+
+            <!-- <button
+              type="button"
+              style="white-space: nowrap"
+              class="btn btn-outline-success"
+              ngbTooltip="Download FAS template"
+              (click)="getexceldownloadfas(1)"
+            >
+              <span class="fa fa-download"> </span>
+            </button> -->
+
+            <div
+              style="
+                border: 2px solid #d9d9d9;
+                padding: 10px;
+                border-radius: 4px;
+              "
+            >
+              <input
+                style="border: none !important"
+                id="sect"
+                type="file"
+                (change)="uploadchooses($event)"
+                name="filedatas"
+                formControlName="wisefinuploadfile"
+              />
+            </div>
+
+            <button
+              type="button"
+              style="white-space: nowrap"
+              class="btn btn-outline-primary"
+              (click)="gluploads()"
+            >
+              Upload File
+            </button>
+
+            <button class="btn btn-outline-success" (click)="tbsummary()">
+              Create Wisfin TB
+            </button>
+
+            <!-- <div class="row">
+                    <div class="col-md-6">
+                      <button type="button" class="btn btn-outline-primary" (click)="viewglData()"
+                        style="margin-left:32%; font-size:smaller;border-radius: 25px;">View Uploaded Data</button>
+                    </div>
+                    <div class="col-md-4">
+                      <button type="button" class="btn btn-outline-warning" (click)="glfetchfile()"
+                        style="margin-left:32%; font-size:smaller;border-radius: 25px;">Fetch
+                        Data</button>
+                    </div>
+                  </div> -->
+          </form>
+        </mat-card-actions>
+        <div *ngIf="fas_apicall" style="text-align: center">
+          <button class="btn btn-outline-success" (click)="api_search(1)">
+            API Call
+          </button>
+        </div>
+        <div *ngIf="fas_dblink" style="text-align: center">
+          <button class="btn btn-outline-success" (click)="db_search(1)">
+            DB Link
+          </button>
+        </div>
+      </mat-card>
+
+      <mat-card style="width: 100%">
+        <span style="font-weight: 600">File 2 Upload</span>
+        <mat-card-actions *ngIf="cbs_uploadxl">
+          <form
+            [formGroup]="bankstmtupload"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: flex-start;
+              gap: 10px;
+            "
+          >
+            <!-- <div class="col-sm-3" style="margin-top: 2%;">
+                      <mat-label>CBS Upload</mat-label>
+                    </div> -->
+            <!-- <div class="col-sm-3">
+                      <mat-form-field style="color:black;width: 130px;
+                      margin-left: 1%;">
+                        <mat-label style="color:black;font-size: small;">Template Name</mat-label>
+  
+                        <mat-select matInput formControlName="template_id">
+                          <mat-option *ngFor="let item of templates" [value]="item.id">
+                            {{item.template_name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div> -->
+
+            <!-- <div>
+              <mat-label style="white-space: nowrap">CBS Template </mat-label>
+            </div>
+   -->
+            <!-- <button
+              type="button"
+              class="btn btn-outline-success"
+              ngbTooltip="Download CBS template"
+              (click)="getexceldownloadfas(2)"
+            >
+              <span class="fa fa-download"> </span>
+            </button> -->
+
+            <div
+              style="
+                border: 2px solid #d9d9d9;
+                padding: 10px;
+                border-radius: 4px;
+              "
+            >
+              <input
+                style="border: none !important"
+                id="sect"
+                type="file"
+                (change)="uploadchoose($event)"
+                name="filedata"
+                formControlName="cbsuploadfile"
+              />
+            </div>
+
+            <button
+              style="white-space: nowrap"
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="bankstmt_upload()"
+            >
+              Upload File
+            </button>
+
+            <!-- <div class="row">
+                    <div class="col-md-6">
+                      <button type="button" class="btn btn-outline-primary" (click)="viewbsData()"
+                        style="margin-left:32%; font-size:smaller;border-radius: 25px;">View Uploaded Data</button>
+                    </div>
+                  </div> -->
+          </form>
+        </mat-card-actions>
+        <div *ngIf="cbs_apicall" style="text-align: center">
+          <button class="btn btn-outline-success" (click)="api_search(2)">
+            API Call
+          </button>
+        </div>
+        <div *ngIf="cbs_dblink" style="text-align: center">
+          <button class="btn btn-outline-success" (click)="db_search(2)">
+            DB Link
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </form>
+  <!-- </mat-expansion-panel>
+  </mat-accordion> -->
+  <mat-card style="width: 100%; margin-top: 16px;" *ngIf="isExpandedscardinter">
+    <mat-card-actions>
+      <div class="labelpatch">
+        <div class="card" style="text-align: center;">
+          <p class="fontbold">Overall : {{ overall }}</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <p class="fontbold">Matched : {{ match }}</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <p class="fontbold">Un Matched : {{ unmatch }}</p>
+        </div>
+        <div>
+          <i
+            matTooltip="Download"
+            style="cursor: pointer; font-size: 35px"
+            [ngStyle]="{ color: 'green' }"
+            (click)="intigritydownload()"
+            class="fa fa-download"
+          ></i>
+        </div>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+  <div *ngIf="showknockofftable" style="margin-top: 1%">
+    <mat-accordion class="autoknockss">
+      <mat-expansion-panel [expanded]="isExpandedscardinter">
+        <mat-expansion-panel-header>
+          <!-- Total Count: {{dataArrays?.length }} -->
+          <mat-panel-title style="font-weight: 600"
+            >Integrity-Output Summary</mat-panel-title
+          >
+        </mat-expansion-panel-header>
+        <div class="row" style="margin-top: 1%">
+          <!-- <div class="col-sm-2" style="margin-left: 2%;">
+            <mat-form-field appearance="standard" class="full-width">
+              <mat-label>Filter</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Amount" #input>
+            </mat-form-field>
+          </div> -->
+          <div class="col-sm-3" style="margin-left: 2%">
+            <form [formGroup]="myForm">
+              <div id="matInput-size">
+                <mat-form-field class="search__form_field" appearance="outline">
+                  <mat-label>Running Balance Filter</mat-label>
+                  <mat-select
+                    name="fileSource"
+                    placeholder=""
+                    appearance="outline"
+                    formControlName="filterProduct"
+                    (selectionChange)="onChangeRBF()"
+                  >
+                    <mat-option *ngFor="let obj of listOfObjs" [value]="obj">
+                      {{ obj.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+    
+            </form>
+          </div>
+          <div class="col-md-3"  style="margin-top: 10px;margin-left:-60px;">
+            
+              <span style="font-size: 15px;font-weight: 700;">
+                Count :
+              </span>
+              <div class="loading-ball" *ngIf="commoncount==='Loading'" style="display: flex;justify-content: left;margin-left:55px;margin-top: -15px;">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="badge-btn" *ngIf="commoncount!=='Loading'" >
+                {{commoncount}}
+              </span> 
+          </div>
+        </div>
+        <div class="mat-elevation-z5" class="table-row">
+          <div style="margin-left: 4%">
+            <table
+              class="table table-bordered"
+              id="boxlevel"
+              style="margin-left: -2%"
+            >
+              <thead class="table_header">
+                <th>S.No</th>
+                <th>Branch</th>
+                <th>GL ACCNO</th>
+                <th>
+                  FAS Balance<i
+                    class="fa fa-arrow-up"
+                    id="icon"
+                    (click)="led_acc(1)"
+                  ></i
+                  ><i
+                    class="fa fa-arrow-down"
+                    id="icon"
+                    (click)="led_dcc(2)"
+                  ></i>
+                </th>
+                <th>
+                  CBS Balance<i
+                    class="fa fa-arrow-up"
+                    id="icon"
+                    (click)="led_acc(3)"
+                  ></i
+                  ><i
+                    class="fa fa-arrow-down"
+                    id="icon"
+                    (click)="led_dcc(4)"
+                  ></i>
+                </th>
+                <th>
+                  Difference<i
+                    class="fa fa-arrow-up"
+                    id="icon"
+                    (click)="led_acc(5)"
+                  ></i
+                  ><i
+                    class="fa fa-arrow-down"
+                    id="icon"
+                    (click)="led_dcc(6)"
+                  ></i>
+                </th>
+                <!-- <th>Tag No</th> -->
+              </thead>
+              <tbody *ngFor="let sum of Knocksummary; let i = index">
+                <td>{{ (pagination.index - 1) * 10 + i + 1 }}</td>
+                <td>{{ sum?.kd_branchcode }}</td>
+                <td>{{ sum?.kd_accountno }}</td>
+                <!-- class="right" -->
+                <td >
+                  {{ formatIndianRupeeWithCommas(sum?.kd_runningbalancegl) }}
+                </td>
+                <td >
+                  {{ formatIndianRupeeWithCommas(sum?.kd_running_balance_bs) }}
+                </td>
+                <td >
+                  {{ formatIndianRupeeWithCommas(sum?.kd_differenceamount) }}
+                </td>
+                <!-- <td>{{ sum?.tag_no }}</td> -->
+              </tbody>
+            </table>
+          </div>
+          <!-- <table mat-table #sortCol3="matSort" [dataSource]="dataSourceA" matSort>
+            
+  
+            <ng-container matColumnDef="gl_accountno">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                style="font-size: medium;font-weight: bold; text-align: left;">GL ACCNo</th>
+              <td mat-cell *matCellDef="let element" style="text-align: left"> {{element.kd_accountno}} </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="gl_runningbalance">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='before' style="font-size: medium;font-weight: bold;text-align: right;"> Ledger
+                Balance </th>
+              <td mat-cell *matCellDef="let element" class="right-text1"> {{element.kd_runningbalancegl |
+                currency:"INR":'symbol':'0.2-6'}} </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="bs_accountno">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                style="font-size: medium;font-weight: bold; text-align: left;">Branch</th>
+              <td mat-cell *matCellDef="let element" style="text-align: left"> {{element.branch_data.name}}- {{element.branch_data.code}} </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="bs_runningbalance">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='before' style="font-size: medium;font-weight: bold;text-align: right;">
+                Statement Balance</th>
+              <td mat-cell *matCellDef="let element" class="right-text1"> {{element.kd_running_balance_bs|
+                currency:"INR":'symbol':'0.2-6'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="difference">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition='before' style="font-size: medium;font-weight: bold; text-align: right;">
+                Difference</th>
+              <td mat-cell *matCellDef="let element" class="right-text1"> {{element.kd_differenceamount |
+                currency:"INR":'symbol':'0.2-6'}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedCoulmnsA"></tr>
+            <tr mat-row
+              [ngClass]="{'make-highlight': (row.gl_runningbalance == 0 && row.bs_runningbalance == 0 )}"
+              matRipple class="element-row" *matRowDef="let row; columns: displayedCoulmnsA;" ></tr>
+          </table> -->
+          <!-- <mat-paginator #pageCol3="matPaginator" [length]="10" [pageSize]="10" [pageSizeOptions]="[10,25,50,100]" (page)="onPageChange($event)" style="    position: relative;left: 8em;"></mat-paginator> -->
+
+          <div style="font-size: small; text-align: right; margin-right: 1%">
+            <button
+              mat-icon-button
+              [disabled]="has_previoustab === false"
+              color="primary"
+              (click)="previousClick()"
+            >
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{ presentpagetab }}
+            <button
+              mat-icon-button
+              [disabled]="has_nexttab === false"
+              color="primary"
+              (click)="nextClick()"
+            >
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <div *ngIf="showViewData" style="margin-top: 1%">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="mat-elevation-z7">
+          <table
+            mat-table
+            #sortCol1="matSort"
+            [dataSource]="dataSource"
+            matSort
+          >
+            <ng-container matColumnDef="account_no">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="
+                  width: 140px;
+                  font-size: small;
+                  font-weight: bold;
+                  padding-left: 6%;
+                "
+              >
+                Account No
+              </th>
+              <td mat-cell *matCellDef="let element" class="left-text">
+                {{ element.gl_accountno }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="date">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="font-size: small; font-weight: bold; padding-left: 8%"
+              >
+                Date
+              </th>
+              <td mat-cell *matCellDef="let element" class="left-text">
+                {{ element.gl_date | date : "dd-MM-yyyy" }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="branch_code">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="font-size: small; font-weight: bold; padding-left: 8%"
+              >
+                Branch Code
+              </th>
+              <td mat-cell *matCellDef="let element" class="left-text">
+                {{ element.gl_branchcode }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="running_balance">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="font-size: small; font-weight: bold; padding-left: 13%"
+              >
+                Running Balance
+              </th>
+              <td mat-cell *matCellDef="let element" class="right-text1">
+                {{
+                  element.gl_runningbalance
+                    | currency : "INR" : "symbol" : "0.2-6"
+                }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              [ngClass]="{ 'make-highlight': row.gl_runningbalance == 0 }"
+              *matRowDef="let row; columns: displayedColumns"
+            ></tr>
+          </table>
+          <mat-paginator
+            #pageCol1="matPaginator"
+            [length]="10"
+            [pageSize]="10"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            showFirstLastButtons
+          ></mat-paginator>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="mat-elevation-z7">
+          <table
+            mat-table
+            #sortCol2="matSort"
+            [dataSource]="dataSources"
+            matSort
+          >
+            <ng-container matColumnDef="account_no">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="
+                  width: 140px;
+                  font-size: small;
+                  font-weight: bold;
+                  padding-left: 6%;
+                "
+              >
+                Account No
+              </th>
+              <td mat-cell *matCellDef="let element" class="left-text">
+                {{ element.bs_accountno }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="date">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="font-size: small; font-weight: bold; padding-left: 8%"
+              >
+                Date
+              </th>
+              <td mat-cell *matCellDef="let element" class="left-text">
+                {{ element.bs_date | date : "dd-MM-yyyy" }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="branch_code">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="font-size: small; font-weight: bold; padding-left: 8%"
+              >
+                Branch Code
+              </th>
+              <td mat-cell *matCellDef="let element" class="left-text">
+                {{ element.bs_branchcode }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="running_balance">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                style="font-size: small; font-weight: bold; padding-left: 13%"
+              >
+                Running Balance
+              </th>
+              <td mat-cell *matCellDef="let element" class="right-text1">
+                {{
+                  element.bs_runningbalance
+                    | currency : "INR" : "symbol" : "0.2-6"
+                }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              [ngClass]="{ 'make-highlight': row.bs_runningbalance == 0 }"
+              *matRowDef="let row; columns: displayedColumns"
+            ></tr>
+          </table>
+          <mat-paginator
+            #pageCol2="matPaginator"
+            [length]="10"
+            [pageSize]="10"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            showFirstLastButtons
+          ></mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal"
+    id="myModal"
+    #myModal
+    data-backdrop="static"
+    data-keyboard="false"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" style="font-size: larger">
+            Integrity Process
+          </h4>
+          <button type="button" class="close" #popupclose data-dismiss="modal">
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <mat-card>
+                <mat-card-title class="mat-card-title">FAS</mat-card-title>
+                <mat-card-actions>
+                  <table class="table table-bordered">
+                    <thead class="table_header" style="text-align: center">
+                      <th>S.No</th>
+                      <th>File Name</th>
+                      <th>Select</th>
+                      <th>Action</th>
+                    </thead>
+                    <tbody style="text-align: center">
+                      <ng-container
+                        *ngFor="let obj of type1Files; let i = index"
+                      >
+                        <tr *ngIf="obj.type === '1'">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ obj.file_name }}</td>
+                          <td>
+                            <mat-checkbox
+                              [disabled]="
+                                selectedCheckbox !== null &&
+                                selectedCheckbox !== i
+                              "
+                              [checked]="selectedCheckbox === i"
+                              (change)="toggleCheckbox(i, obj.id)"
+                            ></mat-checkbox>
+                          </td>
+                          <td>
+                            <mat-icon
+                              (click)="status_modify(obj.type)"
+                              style="margin-left: 20%; cursor: pointer"
+                              >delete</mat-icon
+                            >
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                  <p *ngIf="!data_found" style="text-align: center">
+                    Data Not Found..
+                  </p>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+
+            <div class="col-md-6">
+              <mat-card>
+                <mat-card-title class="mat-card-title">EXTERNAL</mat-card-title>
+                <mat-card-actions>
+                  <table class="table table-bordered">
+                    <thead class="table_header" style="text-align: center">
+                      <th>S.No</th>
+                      <th>File Name</th>
+                      <th>Select</th>
+                      <th>Action</th>
+                    </thead>
+                    <tbody style="text-align: center">
+                      <ng-container
+                        *ngFor="let obj of type2Files; let i = index"
+                      >
+                        <tr *ngIf="obj.type === '2'">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ obj.file_name }}</td>
+                          <td>
+                            <mat-checkbox
+                              [disabled]="
+                                selectedCheckbox2 !== null &&
+                                selectedCheckbox2 !== i
+                              "
+                              [checked]="selectedCheckbox2 === i"
+                              (change)="toggleCheckbox2(i, obj.id)"
+                            ></mat-checkbox>
+                          </td>
+                          <td>
+                            <mat-icon
+                              (click)="status_modify(obj.type)"
+                              style="margin-left: 20%; cursor: pointer"
+                              >delete</mat-icon
+                            >
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                  <p *ngIf="!data_found" style="text-align: center">
+                    Data Not Found..
+                  </p>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+          </div>
+          <div class="col-sm-1" style="left: 88%; margin-top: 2%">
+            <button
+              class="btn btn-outline-primary"
+              style="
+                border-radius: 25px;
+                font-size: 95%;
+                margin-top: 6%;
+                margin-left: 20%;
+                width: 125%;
+              "
+              type="submit"
+              (click)="intrun()"
+            >
+              Run
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div
+class="modal fade"
+id="myModal1"
+tabindex="-1"
+aria-labelledby="myModal1"
+aria-hidden="true"
+>
+<div class="modal-dialog modal-dialog-centered modal-xl">
+  <div class="modal-content" >
+    <div class="modal-header">
+      <p class="modal-title mb-0" id="myModal1" style="font-weight: 600;">Wisfine TB</p>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        #popupclose
+        aria-label="Close"
+      >
+        <i aria-hidden="true">&times;</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <mat-tab-group>
+        <mat-tab label="Upload file">
+          <div class="modal-body">
+            <form [formGroup]="wisefinTbUpload">
+              <div class="row" style="padding: 1%">
+                <div class="col-md-2">BSCC</div>
+                <div
+                  class="col-md-3"
+                  style="
+                    border: 2px solid #d9d9d9;
+                    padding: 10px;
+                    border-radius: 4px;
+                  "
+                >
+                  <input
+                    style="border: none !important"
+                    id="sect"
+                    type="file"
+                    (change)="uploadtbbscc($event)"
+                    name="filedatas"
+                    formControlName="wisefinuploadbscc"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-outline-info refresh_status" style="float: left;" (click)="clicktodowntemp(1,'BSCC')" ><mat-icon matTooltip="BSCC Template Download" matTooltipPosition="right" >download</mat-icon></button>
+                </div>
+              </div>
+
+              <div class="row" style="padding: 1%">
+                <div class="col-md-2">JV</div>
+                <div
+                  class="col-md-3"
+                  style="
+                    border: 2px solid #d9d9d9;
+                    padding: 10px;
+                    border-radius: 4px;
+                  "
+                >
+                  <input
+                    style="border: none !important"
+                    id="sect"
+                    type="file"
+                    (change)="uploadchoosesjv($event)"
+                    name="filedatas"
+                    formControlName="wisefinuploadjv"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-outline-info refresh_status" style="float: left;" (click)="clicktodowntemp(4,'JV')" ><mat-icon matTooltip="JV Template Download" matTooltipPosition="right" >download</mat-icon></button>
+                </div>
+              </div>
+
+              <div class="row" style="padding: 1%">
+                <div class="col-md-2">JW</div>
+                <div
+                  class="col-md-3"
+                  style="
+                    border: 2px solid #d9d9d9;
+                    padding: 10px;
+                    border-radius: 4px;
+                  "
+                >
+                  <input
+                    style="border: none !important"
+                    id="sect"
+                    type="file"
+                    (change)="uploadchoosesjw($event)"
+                    name="filedatas"
+                    formControlName="wisefinuploadjw"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-outline-info refresh_status" style="float: left;" (click)="clicktodowntemp(5,'JW')" ><mat-icon matTooltip="JW Template Download" matTooltipPosition="right" >download</mat-icon></button>
+                </div>
+              </div>
+
+              <div class="row" style="padding: 1%">
+                <div class="col-md-2">FA Expense</div>
+                <div
+                  class="col-md-3"
+                  style="
+                    border: 2px solid #d9d9d9;
+                    padding: 10px;
+                    border-radius: 4px;
+                  "
+                >
+                  <input
+                    style="border: none !important"
+                    id="sect"
+                    type="file"
+                    (change)="uploadchoosesfa($event)"
+                    name="filedatas"
+                    formControlName="wisefinuploadfa"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-outline-info refresh_status" style="float: left;" (click)="clicktodowntemp(2,'FA_Expense')" ><mat-icon matTooltip="FA Expense Template Download" matTooltipPosition="right" >download</mat-icon></button>
+                </div>
+              </div>
+
+              <div class="row" style="padding: 1%">
+                <div class="col-md-2">Minor Expense</div>
+                <div
+                  class="col-md-3"
+                  style="
+                    border: 2px solid #d9d9d9;
+                    padding: 10px;
+                    border-radius: 4px;
+                  "
+                >
+                  <input
+                    style="border: none !important"
+                    id="sect"
+                    type="file"
+                    (change)="uploadchoosesexpense($event)"
+                    name="filedatas"
+                    formControlName="wisefinuploadcbcc"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-outline-info refresh_status" style="float: left;" (click)="clicktodowntemp(3,'Minor_Expense')" ><mat-icon matTooltip="Minor Expense Template Download" matTooltipPosition="right" >download</mat-icon></button>
+                </div>
+              </div>
+            </form>
+            <button
+              type="button"
+              class="btn btn-outline-primary upload-button"
+              (click)="craetewisefintb()"
+            >
+              Upload File
+            </button>
+          </div>
+        </mat-tab>
+        <mat-tab label="Summary">
+          <!-- <button
+            type="button"
+            (click)="reset()"
+            class="btn btn-outline-success"
+            style="margin-top: 11px; border-radius: 40px; margin-left: 90%"
+          >
+          <mat-icon>refresh</mat-icon>
+          </button> -->
+          <div class="refresh_summary">
+            <button class="btn btn-outline-success refresh_status" (click)="reset()"><mat-icon>refresh</mat-icon></button>
+          </div>
+          <div style="width: 100%">
+            <lib-vs-cbox-summary
+              [SummaryDetails]="integrity_transaction_summary"
+              [SummaryApiObj]="interintegrity_trans_summaryapi"
+            ></lib-vs-cbox-summary>
+          </div>
+
+          <!-- <table class="table table-bordered">
+          <thead class="table_header" style="text-align: center">
+            <th>S.No</th>
+            <th>Date</th>
+            <th>Status
+              <mat-icon matTooltip="Reload" class="sync text-center flex-column" (click)="tbsummary()">sync</mat-icon>
+            </th> -->
+          <!-- <th>Error</th> -->
+          <!-- <th>Download</th>
+            <th>Delete</th>
+          </thead>
+          <tbody style="text-align: center">
+            <ng-container *ngFor="let obj of document_summery; let i = index">
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ obj.date }}</td>
+                <td>{{(obj.integrity_status == 1? "Active": (obj.integrity_status == 0? "Start": (obj.integrity_status== 4? "Success": (obj.integrity_status == 3? "Processing": (obj.integrity_status == 2?"Started":(obj.integrity_status == 5? "Failed BSCC FILE":(obj.integrity_status == 6? "Failed JVFILE":(obj.integrity_status == 7? "Failed JW FILE":(obj.integrity_status == 8? "Failed FAFILE":(obj.integrity_status == 9? "Failed Minor FILE":(obj.integrity_status == 10? "Failed":obj.integrity_status)))))))))))}}</td> -->
+          <!-- <td *ngIf="obj.integrity_status == 5">{{obj.error}}</td> -->
+          <!-- <td>
+                  <mat-icon matTooltip="Download" (click)="s3_download()"
+                    style="cursor: pointer;">
+                    {{ 'file_download' }}
+                  </mat-icon>
+                </td>
+                <td>
+                  <mat-icon (click)="tb_delete(obj.date)" style="margin-left: 20%; cursor: pointer">delete</mat-icon>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+        <div style="font-size: small; text-align: right; margin-right: 1%">
+          <button mat-icon-button [disabled]="has_previoustab === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          {{ presentpagetab }}
+          <button mat-icon-button [disabled]="has_nexttab === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div> -->
+        </mat-tab>
+      </mat-tab-group>
+        </div>
+ 
+  </div>
+</div>
+</div>
+  
+  <!-- <div class="modal" id="myModal1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="modal-title mb-0" style="font-weight: 600">Wisfine TB</p>
+          <button type="button" class="close" #popupclose data-dismiss="modal">
+            ×
+          </button>
+        </div>
+        <mat-tab-group>
+          <mat-tab label="Upload file">
+            <div class="modal-body">
+              <form [formGroup]="wisefinTbUpload">
+                <div class="row" style="padding: 1%">
+                  <div class="col-md-2">BSCC</div>
+                  <div
+                    class="col-md-3"
+                    style="
+                      border: 2px solid #d9d9d9;
+                      padding: 10px;
+                      border-radius: 4px;
+                    "
+                  >
+                    <input
+                      style="border: none !important"
+                      id="sect"
+                      type="file"
+                      (change)="uploadtbbscc($event)"
+                      name="filedatas"
+                      formControlName="wisefinuploadbscc"
+                    />
+                  </div>
+                </div>
+
+                <div class="row" style="padding: 1%">
+                  <div class="col-md-2">JV</div>
+                  <div
+                    class="col-md-3"
+                    style="
+                      border: 2px solid #d9d9d9;
+                      padding: 10px;
+                      border-radius: 4px;
+                    "
+                  >
+                    <input
+                      style="border: none !important"
+                      id="sect"
+                      type="file"
+                      (change)="uploadchoosesjv($event)"
+                      name="filedatas"
+                      formControlName="wisefinuploadjv"
+                    />
+                  </div>
+                </div>
+
+                <div class="row" style="padding: 1%">
+                  <div class="col-md-2">JW</div>
+                  <div
+                    class="col-md-3"
+                    style="
+                      border: 2px solid #d9d9d9;
+                      padding: 10px;
+                      border-radius: 4px;
+                    "
+                  >
+                    <input
+                      style="border: none !important"
+                      id="sect"
+                      type="file"
+                      (change)="uploadchoosesjw($event)"
+                      name="filedatas"
+                      formControlName="wisefinuploadjw"
+                    />
+                  </div>
+                </div>
+
+                <div class="row" style="padding: 1%">
+                  <div class="col-md-2">FA Expense</div>
+                  <div
+                    class="col-md-3"
+                    style="
+                      border: 2px solid #d9d9d9;
+                      padding: 10px;
+                      border-radius: 4px;
+                    "
+                  >
+                    <input
+                      style="border: none !important"
+                      id="sect"
+                      type="file"
+                      (change)="uploadchoosesfa($event)"
+                      name="filedatas"
+                      formControlName="wisefinuploadfa"
+                    />
+                  </div>
+                </div>
+
+                <div class="row" style="padding: 1%">
+                  <div class="col-md-2">Minor Expense</div>
+                  <div
+                    class="col-md-3"
+                    style="
+                      border: 2px solid #d9d9d9;
+                      padding: 10px;
+                      border-radius: 4px;
+                    "
+                  >
+                    <input
+                      style="border: none !important"
+                      id="sect"
+                      type="file"
+                      (change)="uploadchoosesexpense($event)"
+                      name="filedatas"
+                      formControlName="wisefinuploadcbcc"
+                    />
+                  </div>
+                </div>
+              </form>
+              <button
+                type="button"
+                class="btn btn-outline-primary upload-button"
+                (click)="craetewisefintb()"
+              >
+                Upload File
+              </button>
+            </div>
+          </mat-tab>
+          <mat-tab label="Summary">
+            <button
+              type="button"
+              (click)="reset()"
+              matTooltip="Reset"
+              class="btn btn-outline-success"
+              style="margin-top: 11px; border-radius: 40px; margin-left: 90%"
+            >
+              <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+            <div style="margin-left: 31px; margin-top: 10px; width: 95%">
+              <lib-vs-cbox-summary
+                [SummaryDetails]="integrity_transaction_summary"
+                [SummaryApiObj]="interintegrity_trans_summaryapi"
+              ></lib-vs-cbox-summary>
+            </div> -->
+
+            <!-- <table class="table table-bordered">
+            <thead class="table_header" style="text-align: center">
+              <th>S.No</th>
+              <th>Date</th>
+              <th>Status
+                <mat-icon matTooltip="Reload" class="sync text-center flex-column" (click)="tbsummary()">sync</mat-icon>
+              </th> -->
+            <!-- <th>Error</th> -->
+            <!-- <th>Download</th>
+              <th>Delete</th>
+            </thead>
+            <tbody style="text-align: center">
+              <ng-container *ngFor="let obj of document_summery; let i = index">
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ obj.date }}</td>
+                  <td>{{(obj.integrity_status == 1? "Active": (obj.integrity_status == 0? "Start": (obj.integrity_status== 4? "Success": (obj.integrity_status == 3? "Processing": (obj.integrity_status == 2?"Started":(obj.integrity_status == 5? "Failed BSCC FILE":(obj.integrity_status == 6? "Failed JVFILE":(obj.integrity_status == 7? "Failed JW FILE":(obj.integrity_status == 8? "Failed FAFILE":(obj.integrity_status == 9? "Failed Minor FILE":(obj.integrity_status == 10? "Failed":obj.integrity_status)))))))))))}}</td> -->
+            <!-- <td *ngIf="obj.integrity_status == 5">{{obj.error}}</td> -->
+            <!-- <td>
+                    <mat-icon matTooltip="Download" (click)="s3_download()"
+                      style="cursor: pointer;">
+                      {{ 'file_download' }}
+                    </mat-icon>
+                  </td>
+                  <td>
+                    <mat-icon (click)="tb_delete(obj.date)" style="margin-left: 20%; cursor: pointer">delete</mat-icon>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+          <div style="font-size: small; text-align: right; margin-right: 1%">
+            <button mat-icon-button [disabled]="has_previoustab === false" color="primary" (click)="previousClick()">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{ presentpagetab }}
+            <button mat-icon-button [disabled]="has_nexttab === false" color="primary" (click)="nextClick()">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div> -->
+          <!-- </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div> -->
+  <div
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="boxlevelform"
+    aria-hidden="true"
+    id="dblinkpopup"
+    #dblinkpopup
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <b class="modal-title" style="color: black">DB Link</b>
+          <button
+            type="button"
+            #closebuttonclosed
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <mat-tab-group
+            [(selectedIndex)]="activeTabIndex"
+            (selectedTabChange)="dblinktabchange($event)"
+          >
+            <mat-tab label="DB Link Creation">
+              <form [formGroup]="dblinkcreationform" style="margin-top: 20px">
+                <div class="row">
+                  <div class="col-md-4" id="matInput-size">
+                    <mat-form-field class="dbfieldsize" appearance="outline">
+                      <mat-label>Ip Address</mat-label>
+                      <input matInput formControlName="ip_address" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4" id="matInput-size">
+                    <mat-form-field class="dbfieldsize" appearance="outline">
+                      <mat-label>Port</mat-label>
+                      <input matInput formControlName="port" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4" id="matInput-size">
+                    <mat-form-field class="dbfieldsize" appearance="outline">
+                      <mat-label>Connection name</mat-label>
+                      <input matInput formControlName="db_name" />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4" id="matInput-size">
+                    <mat-form-field class="dbfieldsize" appearance="outline">
+                      <mat-label>User</mat-label>
+                      <input matInput formControlName="user" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4" id="matInput-size">
+                    <mat-form-field class="dbfieldsize" appearance="outline">
+                      <mat-label>password</mat-label>
+                      <input matInput formControlName="password" />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <button
+                      style="border-radius: 50px; float: right;margin-bottom: 5px;margin-right: 5px;"
+                      class="btn btn-outline-success"
+                      (click)="dblink_submit()"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </mat-tab>
+            <mat-tab label="DB Link Summary">
+              <div style="margin-top: 20px">
+                <div>
+                  <form [formGroup]="dblinksearch">
+                    <div class="row">
+                      <div class="col-md-3" id="matInput-size">
+                        <mat-form-field style="width: 250px" appearance="outline" >
+                          <mat-label>DB Name</mat-label>
+                          <input matInput formControlName="db_name" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3" id="matInput-size">
+                        <mat-form-field style="width: 250px" appearance="outline">
+                          <mat-label>Username</mat-label>
+                          <input matInput formControlName="username" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-4">
+                        <button
+                          (click)="db_search(dbtype)"
+                          class="btn btn-outline-success"
+                          id="rmubtn"
+                          style="border-radius: 25px; margin-left: 35px"
+                          color="primary"
+                        >
+                          <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                        <button
+                          class="btn btn-outline-primary"
+                          ngbTooltip="Clear Entries"
+                          style="
+                            margin-left: 20px;
+                            border-radius: 25px;
+                            margin-left: 35px;
+                          "
+                          id="rmubtn"
+                          (click)="db_reset()"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="table-responsive">
+                  <table
+                    class="table"
+                    id="historytable"
+                    style="text-align: center"
+                  >
+                    <thead class="table_header">
+                      <tr>
+                        <th>S.No</th>
+                        <th>Db name</th>
+                        <th>Ip address</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Edit</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody style="padding: 5px">
+                      <tr *ngFor="let sum of dbsummararray; index as ind">
+                        <td>
+                          {{ (paginationdb.index - 1) * limit + ind + 1 }}
+                        </td>
+                        <td>{{ sum.db_name }}</td>
+                        <td>{{ sum.ip_address }}</td>
+                        <td>{{ sum.user }}</td>
+                        <td>
+                          <mat-slide-toggle
+                            [(ngModel)]="sum.status"
+                            (click)="toggledbtemp(sum)"
+                          ></mat-slide-toggle>
+                        </td>
+                        <td>
+                          <mat-icon
+                            style="cursor: pointer"
+                            (click)="editdblinks(sum)"
+                            >create</mat-icon
+                          >
+                        </td>
+                        <td>
+                          <mat-icon
+                            style="cursor: pointer; font-size: 35px"
+                            (click)="dbgetquery(sum)"
+                            >arrow_right_alt</mat-icon
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div
+                    *ngIf="dbsummararray?.length == 0"
+                    style="text-align: center"
+                  >
+                    <h3>Sorry data not found...</h3>
+                  </div>
+                  <div
+                    class="col-sm-12"
+                    style="font-size: x-small; text-align: right"
+                  >
+                    <button
+                      (click)="prevpage()"
+                      mat-icon-button
+                      [disabled]="paginationdb?.has_previous === false"
+                      color="primary"
+                    >
+                      <mat-icon class="customIconSize">arrow_back</mat-icon>
+                    </button>
+                    <span style="font-size: 15px">
+                      {{ paginationdb?.index }}</span
+                    >
+                    <button
+                      (click)="nextpage()"
+                      mat-icon-button
+                      [disabled]="paginationdb?.has_next === false"
+                      color="primary"
+                    >
+                      <mat-icon class="customIconSize">arrow_forward</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Run summary">
+              <div style="margin-top: 20px">
+                <div class="table-responsive">
+                  <table
+                    class="table"
+                    id="historytable"
+                    style="text-align: center"
+                  >
+                    <thead class="table_header">
+                      <th>S.No</th>
+                      <th>Date</th>
+                      <th>DB name</th>
+                      <th>Status</th>
+                      <th>Delete</th>
+                    </thead>
+                    <tbody style="padding: 5px">
+                      <tr *ngFor="let sum of dbrunintegrityarray; index as ind">
+                        <td>
+                          {{ (paginationdbrun.index - 1) * limit + ind + 1 }}
+                        </td>
+                        <td>{{ sum.date }}</td>
+                        <td>{{ sum.db_name }}</td>
+
+                        <td>
+                          <span *ngIf="sum.status === 1">Active</span>
+                          <span *ngIf="sum.status === 2">Started</span>
+                          <span *ngIf="sum.status === 3">Processing</span>
+                          <span *ngIf="sum.status === 4">Success</span>
+                        </td>
+                        <td>
+                          <mat-icon
+                            style="cursor: pointer"
+                            (click)="deletesummaryid(sum)"
+                            >delete</mat-icon
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div
+                    *ngIf="dbrunintegrityarray?.length == 0"
+                    style="text-align: center"
+                  >
+                    <h3>Sorry data not found...</h3>
+                  </div>
+                  <div
+                    class="col-sm-12"
+                    style="font-size: x-small; text-align: right"
+                  >
+                    <button
+                      (click)="prevpageadrun()"
+                      mat-icon-button
+                      [disabled]="paginationdbrun?.has_previous === false"
+                      color="primary"
+                    >
+                      <mat-icon class="customIconSize">arrow_back</mat-icon>
+                    </button>
+                    <span style="font-size: 15px">
+                      {{ paginationdbrun?.index }}</span
+                    >
+                    <button
+                      (click)="nextpagedbrun()"
+                      mat-icon-button
+                      [disabled]="paginationdbrun?.has_next === false"
+                      color="primary"
+                    >
+                      <mat-icon class="customIconSize">arrow_forward</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+        <div class="modal-footer">
+          <div style="float: right">
+            <button
+              style="border-radius: 50px"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="boxlevelform"
+    aria-hidden="true"
+    id="apicallpopup"
+    #apicallpopup
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <b class="modal-title" style="color: black">API Call </b>
+          <button
+            type="button"
+            #closebuttonclosedapi
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <mat-tab-group [(selectedIndex)]="activeTabIndex1">
+            <mat-tab label="Api Call Creation">
+              <form [formGroup]="apicallcreationform" style="margin-top: 20px">
+                <div class="row">
+                  <div class="col-md-4" id="matInput-size">
+                    <mat-form-field style="width: 250px" appearance="outline">
+                      <mat-label>Api Name</mat-label>
+                      <input matInput formControlName="api_name" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4" id="matInput-size">
+                    <mat-form-field style="width: 250px" appearance="outline">
+                      <mat-label>Api Url</mat-label>
+                      <input matInput formControlName="api_url" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 " id="matInput-size">
+                    <mat-form-field style="width: 250px" appearance="outline">
+                      <mat-label>Methods</mat-label>
+                      <mat-select formControlName="methods">
+                        <mat-option
+                          *ngFor="let data of methodarray"
+                          [value]="data"
+                        >
+                          {{ data }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 " id="matInput-size">
+                    <mat-form-field style="width: 250px" appearance="outline">
+                      <mat-label>Params</mat-label>
+                      <input matInput formControlName="params" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 " id="matInput-size">
+                    <mat-form-field style="width: 250px" appearance="outline">
+                      <mat-label>Payload</mat-label>
+                      <input matInput formControlName="payloads" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4 " id="matInput-size">
+                    <mat-form-field style="width: 250px" appearance="outline">
+                      <mat-label>Description</mat-label>
+                      <input matInput formControlName="description" />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <button
+                      style="border-radius: 50px; float: right;margin-bottom: 5px;margin-right: 5px;"
+                      class="btn btn-outline-success"
+                      (click)="apicall_submit()"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </mat-tab>
+            <mat-tab label="Api Call Summary">
+              <div style="margin-top: 20px">
+                <div>
+                  <form [formGroup]="apicallsearch">
+                    <div class="row">
+                      <div class="col-md-3" id="matInput-size">
+                        <mat-form-field style="width: 250px" appearance="outline">
+                          <mat-label>Api name</mat-label>
+                          <input matInput formControlName="api_name" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3" id="matInput-size">
+                        <mat-form-field style="width: 250px" appearance="outline">
+                          <mat-label>Methods</mat-label>
+                          <mat-select formControlName="methods">
+                            <mat-option
+                              *ngFor="let data of methodarray"
+                              [value]="data"
+                            >
+                              {{ data }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3" id="matInput-size">
+                        <mat-form-field style="width: 250px" appearance="outline">
+                          <mat-label>Status</mat-label>
+                          <input matInput formControlName="status" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <button
+                          (click)="api_search(type)"
+                          class="btn btn-outline-success"
+                          id="rmubtn"
+                          style="border-radius: 25px; margin-left: 35px"
+                          color="primary"
+                        >
+                          <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                        <button
+                          class="btn btn-outline-primary"
+                          ngbTooltip="Clear Entries"
+                          style="
+                            margin-left: 20px;
+                            border-radius: 25px;
+                            margin-left: 35px;
+                          "
+                          id="rmubtn"
+                          (click)="api_reset()"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="table-responsive">
+                  <table
+                    class="table"
+                    id="historytable"
+                    style="text-align: center"
+                  >
+                    <thead class="table_header">
+                      <th>S.No</th>
+                      <th>Api Name</th>
+                      <th>Api Url</th>
+                      <th>Description</th>
+                      <th>Method</th>
+                      <th>status code</th>
+                      <th>Edit</th>
+                      <th>Action</th>
+                    </thead>
+                    <tbody style="padding: 5px">
+                      <tr *ngFor="let sum of apisummararray; index as ind">
+                        <td>
+                          {{ (paginationapi.index - 1) * limit + ind + 1 }}
+                        </td>
+                        <td>{{ sum.api_name }}</td>
+                        <td>{{ sum.api_url }}</td>
+                        <td>{{ sum.description }}</td>
+                        <td>{{ sum.methods }}</td>
+                        <td>{{ sum.api_status_code }}</td>
+                        <td>
+                          <mat-icon
+                            style="cursor: pointer"
+                            (click)="editapicalls(sum)"
+                            >create</mat-icon
+                          >
+                        </td>
+                        <td>
+                          <mat-icon
+                            style="cursor: pointer; font-size: 35px"
+                            (click)="apicallaction(sum)"
+                            >arrow_right_alt</mat-icon
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div
+                    *ngIf="apisummararray?.length == 0"
+                    style="text-align: center"
+                  >
+                    <h3>Sorry data not found...</h3>
+                  </div>
+                  <div
+                    class="col-sm-12"
+                    style="font-size: x-small; text-align: right"
+                  >
+                    <button
+                      (click)="prevpageapi()"
+                      mat-icon-button
+                      [disabled]="paginationapi?.has_previous === false"
+                      color="primary"
+                    >
+                      <mat-icon class="customIconSize">arrow_back</mat-icon>
+                    </button>
+                    <span style="font-size: 15px">
+                      {{ paginationapi?.index }}</span
+                    >
+                    <button
+                      (click)="nextpageapi()"
+                      mat-icon-button
+                      [disabled]="paginationapi?.has_next === false"
+                      color="primary"
+                    >
+                      <mat-icon class="customIconSize">arrow_forward</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+        <div class="modal-footer">
+          <div style="float: right">
+            <button
+              style="border-radius: 50px"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="boxlevelform"
+    aria-hidden="true"
+    id="dbquerry"
+    #dbquerry
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <b class="modal-title" style="color: black">DB Link Query Screen</b>
+          <button
+            type="button"
+            #closebuttonclosedqueery
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body" style="max-height: 70vh; overflow-y: scroll">
+          <form [formGroup]="dbqueryform" style="margin-top: 20px">
+            <div class="row">
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field style="width: 250px" appearance="outline">
+                  <mat-label>Schema</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    formControlName="schema"
+                    #schema_input
+                    required
+                    [matAutocomplete]="schemaref"
+                    (keyup)="schemavalidate()"
+                  />
+                  <mat-autocomplete
+                    #schemaref="matAutocomplete"
+                    (opened)="autocompletewisefinxlScroll()"
+                  >
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let d of schemaarray"
+                        [value]="d"
+                        (click)="schemaselect(d)"
+                      >
+                        {{ d }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field style="width: 250px" (click)="checkshecma()" appearance="outline">
+                  <mat-label>Tables</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    formControlName="table_name"
+                    required
+                    #table_input
+                    [matAutocomplete]="tableref"
+                    (keyup)="searchtable()"
+                  />
+                  <mat-autocomplete
+                    #tableref="matAutocomplete"
+                    (opened)="autocompletetableScroll()"
+                  >
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let d of tablearray"
+                        [value]="d"
+                        (click)="tableselect(d)"
+                      >
+                        {{ d }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field
+                  style="width: 250px"
+                  (click)="checktable_schema()"
+                  appearance="outline"
+                >
+                  <mat-label>Column</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    formControlName="where"
+                    [matAutocomplete]="columnsref"
+                  />
+                  <mat-autocomplete #columnsref="matAutocomplete">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option *ngFor="let d of wherearray" [value]="d">
+                        <mat-checkbox (click)="toggleSelection(d, $event)">{{
+                          d
+                        }}</mat-checkbox>
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <button
+                  style="border-radius: 50px"
+                  class="btn btn-outline-success"
+                  (click)="adddbconditions()"
+                >
+                  Conditions
+                </button>
+                <div [formGroup]="dbqueryform">
+                  <ng-container formArrayName="conditions">
+                    <ng-container
+                      *ngFor="let form of conditions.controls; let i = index"
+                    >
+                      <div class="lesson-form-row" [formGroup]="form">
+                        <mat-card
+                          style="
+                            border-style: dashed;
+                            margin-bottom: 10px;
+                            margin-top: 10px;
+                            border-color: rgb(182, 182, 182);
+                            border-radius: 0px;
+                          "
+                        >
+                          <div>
+                            <span style="font-size: 15px; font-weight: 600">
+                              conditions {{ i + 1 }}
+                            </span>
+                            <span style="float: right">
+                              <mat-icon
+                                style="cursor: pointer; color: red"
+                                (click)="deleteLesson(i)"
+                              >
+                                delete</mat-icon
+                              >
+                            </span>
+                          </div>
+                          <hr />
+                          <div>
+                            <mat-form-field style="width:100%">
+                              <mat-label>conditions</mat-label>
+                              <mat-select formControlName="con">
+                                <mat-option
+                                  *ngFor="let data of form.array"
+                                  [value]="data"
+                                  (click)="conditionadd()"
+                                >
+                                  {{ data }}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                          <div>
+                            <mat-form-field style="width: 100%">
+                              <mat-label>Column</mat-label>
+                              <mat-select formControlName="column">
+                                <mat-option
+                                  *ngFor="let data of wherearray"
+                                  [value]="data"
+                                  (click)="conditionadd()"
+                                >
+                                  {{ data }}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                          <div>
+                            <mat-form-field style="width: 100%">
+                              <mat-label>Column value</mat-label>
+                              <input
+                                matInput
+                                formControlName="value"
+                                (input)="conditionadd()"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </mat-card>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="col-md-6" style="margin-top: 40px;">
+                <mat-form-field appearance="outline" style="width: 100%">
+                  <mat-label>Leave a comment</mat-label>
+                  <textarea
+                    matInput
+                    cols="300"
+                    rows="15"
+                    formControlName="select"
+                  ></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: center">
+              <span style="margin-bottom: 10px">
+                <button mat-raised-button (click)="clearfullquery()">
+                  Clear
+                </button>
+              </span>
+              <span style="margin-bottom: 10px; margin-left: 15px">
+                <button
+                  mat-raised-button
+                  (click)="executequery()"
+                  class="executebtn"
+                >
+                  Execute
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div style="float: right">
+            <button
+              style="border-radius: 50px"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="viewdata"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p
+            class="modal-title mb-0"
+            id="exampleModalLabel"
+            style="font-weight: 600"
+          >
+            View Data
+          </p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closeintegritytransactionpopup
+            aria-label="Close"
+            (click)="close()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="filter-aling">
+            <lib-vs-search-cmp
+              id="matInput-size"
+              [SearchArr]="integritytranscationsearch"
+              [Outputtype]="integritytranscationsearchvar"
+              (dataoutput)="searchinterintegritytranscation($event)"
+              [ResetForm]="restforminter"
+            ></lib-vs-search-cmp>
+          </div>
+
+          <lib-vs-cbox-summary
+            [SummaryDetails]="integrity_transactions_summary"
+            [SummaryApiObj]="interintegrity_transaction_summaryapi"
+          ></lib-vs-cbox-summary>
+        </div>
+        <div class="modal-footer">
+          <button
+            style="border-radius: 50px"
+            class="btn btn-outline-secondary"
+            data-dismiss="modal"
+            #closeintegritytransactionpopup
+            (click)="close()"
+          >
+            Back
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="boxlevelform"
+    aria-hidden="true"
+    id="editdblink"
+    #editdblink
+  >
+    <div class="modal-dialog modal-xl" style="width: fit-content;">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <b class="modal-title" style="color: black">Edit DB Link datas</b>
+          <button
+            type="button"
+            #closedblinkedit
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form [formGroup]="dblinkupdateform" style="margin-top: 20px">
+            <div class="row">
+              <div class="col-md-4 "id="matInput-size">
+                <mat-form-field class="dbfieldsize" appearance="outline">
+                  <mat-label>Ip Address</mat-label>
+                  <input matInput formControlName="ip_address" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 " id="matInput-size">
+                <mat-form-field class="dbfieldsize" appearance="outline">
+                  <mat-label>Port</mat-label>
+                  <input matInput formControlName="port" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 " id="matInput-size">
+                <mat-form-field class="dbfieldsize" appearance="outline">
+                  <mat-label>Connection name</mat-label>
+                  <input matInput formControlName="db_name" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field class="dbfieldsize" appearance="outline">
+                  <mat-label>User</mat-label>
+                  <input matInput formControlName="user" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field class="dbfieldsize" appearance="outline">
+                  <mat-label>password</mat-label>
+                  <input matInput formControlName="password" />
+                </mat-form-field>
+              </div>
+            </div>
+            <!-- <div class="row">
+            <div class="col-md-12">
+              <button style=" border-radius: 50px;float: right;" class="btn btn-outline-success"
+                (click)="dblink_submit()" data-dismiss="modal">Submit</button>
+            </div>
+          </div> -->
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div style="float: right">
+            <button
+              style="border-radius: 50px"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Back
+            </button>
+            <button
+              style="border-radius: 50px; margin-left: 10px"
+              class="btn btn-outline-success"
+              (click)="dblink_update()"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="boxlevelform"
+    aria-hidden="true"
+    id="editapicall"
+    #editapicall
+  >
+    <div class="modal-dialog modal-xl" style="width: fit-content;">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <b class="modal-title" style="color: black">Edit Api call datas</b>
+          <button
+            type="button"
+            #closeapicalledit
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form [formGroup]="apicallupdateform" style="margin-top: 20px">
+            <div class="row">
+              <div class="col-md-4 " id="matInput-size">
+                <mat-form-field style="width: 250px" appearance="outline">
+                  <mat-label>Api Name</mat-label>
+                  <input matInput formControlName="api_name" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field style="width: 250px" appearance="outline">
+                  <mat-label>Api Url</mat-label>
+                  <input matInput formControlName="api_url" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field style="width: 250px" appearance="outline">
+                  <mat-label>Methods</mat-label>
+                  <mat-select formControlName="methods">
+                    <mat-option *ngFor="let data of methodarray" [value]="data">
+                      {{ data }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 " id="matInput-size">
+                <mat-form-field style="width: 250px" appearance="outline">
+                  <mat-label>Params</mat-label>
+                  <input matInput formControlName="params" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 " id="matInput-size">
+                <mat-form-field style="width: 250px" appearance="outline">
+                  <mat-label>Payload</mat-label>
+                  <input matInput formControlName="payloads" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-4" id="matInput-size">
+                <mat-form-field style="width: 250px" appearance="outline">
+                  <mat-label>Description</mat-label>
+                  <input matInput formControlName="description" />
+                </mat-form-field>
+              </div>
+            </div>
+            <!-- <div class="row">
+            <div class="col-md-12">
+              <button style="border-radius: 50px;float: right;" class="btn btn-outline-success"
+                (click)="apicall_submit()" data-dismiss="modal">Submit</button>
+            </div>
+          </div> -->
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div style="float: right">
+            <button
+              style="border-radius: 50px"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Back
+            </button>
+            <button
+              style="border-radius: 50px; margin-left: 10px"
+              class="btn btn-outline-success"
+              (click)="apicall_update()"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

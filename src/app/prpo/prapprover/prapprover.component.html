@@ -1,0 +1,803 @@
+<div style="margin-left: 50px;margin-right: 80%;margin-top: 1%; width: 90%;">
+    <h3>Purchase Request Approval</h3>
+    <div>
+        <form [formGroup]="PRApprovalForm" >
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field style="width: 175px; margin-left: 50px;">
+                            <mat-label>PR Number</mat-label>
+                            <input matInput placeholder="Type" autocomplete="off" formControlName="no" size="50"
+                                readonly>
+                        </mat-form-field>
+
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 175px; margin-left: 50px;">
+                            <mat-label>PR Date</mat-label>
+                            <input matInput placeholder="dd-mm-yyyy" autocomplete="off" formControlName="date"
+                                type="date" readonly>
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field style="width: 175px; margin-left: 50px;">
+                            <mat-label>PR Raised By</mat-label>
+                            <input matInput placeholder="Type" autocomplete="off" formControlName="raisedby" readonly>
+                        </mat-form-field>
+                    </td>
+                    <!-- </tr><tr> -->
+
+                    <td>
+                        <mat-form-field style="width: 175px; margin-left: 50px;">
+                            <mat-label>PCA Name</mat-label>
+                            <input matInput placeholder="Type" autocomplete="off" formControlName="mepno" readonly>
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field style="width: 175px; margin-left: 50px;">
+                            <mat-label>Commodity Name</mat-label>
+                            <input matInput placeholder="Type" autocomplete="off" formControlName="name" readonly>
+                        </mat-form-field>
+                    </td>
+                    <!-- <td>
+                        <mat-form-field style="width: 175px; margin-left: 50px;">
+                            <mat-label>Choose Approver</mat-label>
+                            <input matInput placeholder="Type" autocomplete="off" formControlName="full_name" readonly>
+                        </mat-form-field>
+                    </td>  -->
+
+                    <button *ngIf="ismeppno" type="button" matTooltip="PCA Details" class="btn btn-default"
+                    mat-button data-toggle="modal" data-target="#lableMep" style="margin-top: 20px;" (click)="getmepdtl()">
+                    <!-- <span class="material-icons">
+                        feedback
+                    </span> -->
+                    <mat-icon>description</mat-icon>
+                </button>
+
+                  <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog"
+                    aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" id="lableMep">
+                    <div class="modal-dialog modal-xl" style="margin-left: 214px;">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background:#DDEFDD;">
+                                <h2 class="modal-title" id="exampleModalLongTitle">PCA Details</h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="table-responsive" style="margin-top: 2%;width: 95%;margin-left: 10px;">
+                                <table class="table scrolltable table-bordered">
+                                    <thead>
+                                        <tr class="table_header">
+                                            <th>S.No</th>
+                                            <th>PCA Number</th>
+                                            <th>PCA Amount</th>
+                                            <th>PR Approved Amount</th>
+                                            <th>PR Pending Amount</th>
+                                            <th>Balance In PCA</th>
+                                            <th>PCA Justification</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let UtilAmt of MEPUtilizationAmountList;index as i">
+                                            <td>{{ i+1 }}</td>
+                                            <td>{{ UtilAmt?.mep_no }}</td>
+                                            <td>{{ UtilAmt?.mep_amount| amountPipeCustom }}</td>
+                                            <td>{{ UtilAmt?.pr_approvedamount | amountPipeCustom }}</td>
+                                            <td>{{ UtilAmt?.pr_pendingamount| amountPipeCustom }}</td>
+                                            <td>{{ UtilAmt?.unutilized_amount| amountPipeCustom }}</td>
+                                            <td>{{ UtilAmt?.justification }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- <p>NotePad</p>  -->
+                    <td>
+                         <!-- <span class="material-icons" type="button" data-toggle="modal"
+                            data-target="#notepadModal">description</span> -->
+                            <mat-icon  type="button" data-toggle="modal"
+                            data-target="#notepadModal">description</mat-icon>
+
+                        </td>
+                    
+                           
+
+                        <!-- //BUG ID:7421 prapprover download -->
+            <div>
+                <!-- <td *ngIf="prbulkupload != '-1'"> -->
+                    <td *ngIf="this.prbulkupload != -1">
+                    <button type="button" class="buttonsize btn btn-outline-success"
+                        (click)="prbulkuploadapprover()" style="border-radius:40px;margin-left: 50px;">
+                        <!-- <span class="fa fa-download"></span> -->
+                         <mat-icon>get_app</mat-icon>
+                         Download</button>
+                </td>
+            </div>
+            <!-- //BUG ID:7421 -->
+                </tr>
+                <tr style="text-align:center" class="text-right">
+                      <td>
+                    <button
+                  class="btn btn-sm btn-outline-secondary"
+                  data-toggle="modal"
+                  style="border-radius: 40px; margin-right: 20px"
+                  data-target=".jus_note"
+                >
+                  <!-- <span               class="material-icons"
+              > -->
+                  <span class="fa fa-file-text"></span>
+
+                  Justification Note
+                </button>
+                        </td>
+                </tr>
+            </table>
+
+            <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog"
+                aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" id="notepadModal">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title" id="exampleModalLongTitle">
+                                Note Pad
+                            </h2>
+                        </div>
+                        <br>
+                        <div style="margin-left: 50px;width:90%;height: 70%;">
+                            <!-- <div>
+                <button (click)="enableEditor()" [disabled]="!editorDisabled">Enable</button>
+                <button (click)="disableEditor()" [disabled]="editorDisabled">Disable</button>
+            </div> -->
+                            <div>
+                                <!-- <div formControlName="html"  -->
+                                <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                                    (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                                    formControlName="notepad">
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="modal-footer">
+                            <button type="button" style="border-radius: 40px;margin-left: 10px;"
+                                class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!--<span class="material-icons">
+                        description
+                    </span>-->
+
+
+            <div  class="table-responsive" style="margin-top: 2%;width: 90%;margin-left: 50px;">
+                <!-- //7421 -->
+                <!-- <div *ngIf="prbulkupload == '-1'"  class="table-responsive" style="margin-top: 2%;width: 90%;margin-left: 50px;">     -->
+
+                <table class="table scrolltable table-bordered" fixed-header>
+                    <thead>
+                        <tr class="table_header" fixed-header>
+                            <th>S.No</th>
+                            <th>PR No</th>
+                            <th>Product Type</th> 
+                            <th>Product Name</th>
+                            <!-- <th *ngIf="Service">Description</th>
+                            <th *ngIf="Service">Detailed Description</th> -->
+                            <th>PR For</th>
+                            <th>Request Product For</th>
+                            <th>Request Asset Details</th>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>Configuration</th>
+                            <th>Supplier Name</th>
+                            <th>Quotation No</th>
+                            <th>UOM</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Amount</th>
+                            <th>Capitailize</th>
+                            <th>Delivery Details</th>
+                            <th>Download Attachments</th>
+                            <!-- <th>View File</th> -->
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- <ng-container *ngFor="let details of prapproverlist"> -->
+                        <!-- <tr *ngFor="let approve of details.prdetails; index as i"> -->
+                            <tr *ngFor="let approve of prapproverlist index as i">
+
+                            <!-- prdetails -->
+                            <!-- <td>{{i + 1}}</td> -->
+                            <!-- //7421 -->
+                            <td>{{(presentpage - 1)*pageSize +i+1 }}</td>  
+                            <td>{{approve?.ref_no && approve.ref_no !== '' ? approve.ref_no : approve?.prheader.no }}</td>
+                        <td>{{approve?.product_type?.name}}</td>
+                        <td>{{approve?.product_name}}</td> 
+                        <!-- ///commentd from here 7420 -->
+                            <!-- <td>{{approve?.product_name}}</td>
+                             <td>{{approve?.item_name}}</td>
+                            <td>{{approve?.supplier_id?.name}}</td>
+                            <td>{{approve?.uom}}</td>
+                            <td>{{approve?.qty}}</td>
+                            <td>{{approve?.unitprice | amountPipeCustom}}</td>
+                            <td>{{approve?.qty * approve?.unitprice | amountPipeCustom }}</td> -->
+                            <!-- //to this 7421 -->
+                            <!-- <td>{{approve?.product_name}}</td>
+
+                            <td *ngIf="Service">
+                                {{approve?.item_name}}
+                              </td>
+                              <td *ngIf="Service">
+                                <button type="button" class="none">
+                                  <span
+                                    class="fa fa-newspaper-o"
+                                    data-toggle="modal"
+                                    data-target=".service_des"                            
+                                    style="margin: 10px; font-size: 20px"
+                                  ></span>
+                                </button>
+                              </td> -->
+        
+        
+                           
+        
+
+
+                            <td>
+                                <ng-container *ngIf="approve?.pr_request == 1; else replace">
+                                    <span>New</span>
+                                </ng-container>
+                                <ng-template #replace>
+                                    <button type="button"  class="none">
+                                        <!-- <span class="fa fa-money" title="Asset Details" data-toggle="modal" data-target="#assetDetails" (click)="assetDetails(approve?.id)"
+                                        style="margin: 10px;
+                                        font-size: 20px;"></span> -->
+                                        <mat-icon title="Asset Details" data-toggle="modal" data-target="#assetDetails" (click)="assetDetails(approve?.id)"
+                                        style="margin: 10px;
+                                        font-size: 20px;">money</mat-icon>
+                                    </button>
+                                </ng-template>
+                            </td>
+                            <td>{{approve?.req_for_product_name}}</td>
+                            <td>
+                                <button type="button"  class="none">
+                                    <!-- <span class="fa fa-bookmark" title="Asset Details" data-toggle="modal" data-target="#assetDetails" (click)="assetDetailss(approve?.prrequest_for?.asset)"
+                                    style="margin: 10px;
+                                    font-size: 20px;"></span> -->
+                                    <mat-icon title="Asset Details" data-toggle="modal" data-target="#assetDetails" (click)="assetDetailss(approve?.id)"
+                                    style="margin: 10px;
+                                    font-size: 20px;">bookmark</mat-icon>
+                                </button>
+                            </td>
+                            <td>{{approve?.item_name}}</td>
+                            <td>{{approve?.model_name}}</td>
+                            <td>{{approve?.specification}}</td>
+                            <!-- <td>{{ (Service == false) ? approve?.item_name : "--" }}</td>
+                            <td>{{ (Service == false) ? approve?.model_name : "--"}}</td>
+                            <td>{{ (Service == false) ? approve?.specification : "--" }}</td> -->
+                            <td>{{approve.supplier_id?.name}}</td>
+                            <td>{{approve.quotation?.supplier_quot}}</td>
+                            <td>{{approve.uom}}</td>
+                            <td>{{approve.qty}}</td>
+                            <td>{{approve.unitprice | amountPipeCustom}}</td>
+                            <!-- <td>{{approve.qty * approve.unitprice | amountPipeCustom }}</td>  -->
+                            <td>{{approve?.amount | amountPipeCustom }}</td> 
+                            <td>
+                                <div *ngIf="approve.capitialized === 0 ; else lock">
+                                    No
+                                </div>
+                                <ng-template #lock>Yes </ng-template>
+                            </td>
+                            <td style="text-align:center" >
+                                <button type="button" class="btn btn-default" mat-button data-toggle="modal"
+                                    (click)="delivaryDetailsPatch(approve,i)" (click)="delivaryDetailsPatchbulk(1)"  data-target="#deliveryModal">
+                                    <!-- <span class="material-icons">
+                                        local_shipping
+                                    </span> -->
+                                    <mat-icon>shopping_cart</mat-icon>
+                                </button>
+                            </td>
+                            <!-- //BUG ID:7420 -->
+                            <!-- <td style="text-align:center" *ngIf="approve.ccbs_bfile_id=='-1'">
+                                <button type="button" class="btn btn-default" mat-button data-toggle="modal"
+                                    (click)="delivaryDetailsPatch(approve.prccbs)" data-target="#deliveryModal">
+                                    <span class="material-icons">
+                                        local_shipping
+                                    </span>
+                                </button>
+                            </td> -->
+                            <!-- <td style="text-align:center" *ngIf="approve.ccbs_bfile_id!='-1'">
+                                need to add in view screen
+                                    <button type="button" class="buttonsize btn btn-outline-success"
+                                        (click)="deliverydetailsexcel(approve.ccbs_bfile_id)" style="border-radius:40px;margin-left: 50px;">
+                                        <span class="fa fa-download"></span> Download</button>
+                            </td> -->
+                            <!-- //BUG ID:7420 -->
+                            <td>
+                                <div *ngIf="approve.file_data?.length==0; else filePR" class="NodataAlign">No
+                                    Records Found...</div>
+                                <ng-template #filePR>
+    
+                                    <p *ngFor="let a of approve.file_data ;index as i;" title="{{a.file_name }}"
+                                        (click)="fileDownload(a.file_id,a.file_name )" class=" btn-btn-link">
+                                        {{i+1}}. {{a.file_name }}<br>
+                                    </p><br>
+    
+                                </ng-template>
+                            </td>
+                            
+                            <!-- <td> -->
+
+                                <!-- <div *ngIf="approve.file_data?.length==0; else filePRview" class="NodataAlign">No
+                                    Records Found...</div>
+                                <ng-template #filePRview>
+    
+                                    <p *ngFor="let a of approve.file_data ;index as i;" class="material-icons"
+                                     data-target="#my-modal"
+                                    data-toggle="modal"
+                                     (click)="commentPopup(a.file_id,a.file_name)"
+                                        class=" btn-btn-link">
+                                        touch_app
+                                    </p><br>
+    
+                                </ng-template> -->
+
+
+
+
+
+                                <!-- <span class="material-icons"> -->
+                                    <!-- <p class="btn btn-link" style="margin-left:-1%" data-target="#my-modal"
+                                        data-toggle="modal" (click)="commentPopup(approve.file_id,approve.file_name)">
+
+                                        <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                 <br>
+                                <small>(Note:Only image file can be viewed)</small> -->
+
+                                <!-- </span> -->
+                            <!-- </td> -->
+                            <div *ngIf="showimagepopup" id="my-modal" class="modal fade" aria-labelledby="my-modalLabel"
+                                aria-hidden="true" tabindex="-1" role="dialog">
+                                <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+                                    <div class="modal-content">
+
+                                        <div class="modal-body">
+                                            <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </tr>
+                        <!-- </ng-container> -->
+                        <!--<tr><td colspan="10">No Records Found..</td></tr>-->
+                    </tbody>
+                </table>
+                <!-- ///////BUG ID:7420 -->
+                <div class="row align-items-center" *ngIf="prappt" style="width: 85%; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: small; text-align: left;">
+                        <p style="color: black; font-size: 18px; font-weight: 500; margin-left:74px">
+                            Total Count: {{totalcountt}}
+                        </p>
+                    </div>
+                    <div class="text-right" style="font-size: small; margin-top: -12px; margin-right: -190px;">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                        (click)="previousClick()">
+                        <mat-icon >arrow_back</mat-icon>
+                        </button>
+                        {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary"
+                        (click)="nextClick()">
+                        <mat-icon >arrow_forward</mat-icon>
+                        </button>
+                        </div>
+                </div>
+                <!-- //// -->
+            </div>
+            <div class="align" *ngIf="isApproved">
+            <!-- <div class="row" style="margin-bottom: 50px;"> -->
+            <form [formGroup]="approvalForm" >
+                <td>
+                    <mat-form-field class="fields" (click)="getemployeeForApprover()">
+                        <mat-label>Choose Approver</mat-label>
+                        <input #empInput placeholder="Select Approver" matInput required
+                            formControlName="employee_id" [matAutocomplete]="emp">
+                        <mat-autocomplete #emp="matAutocomplete" [displayWith]="displayFnemp" (opened)="autocompleteempScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let emp of employeeList" [value]="emp">{{emp.full_name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field class="fields" style="cursor: not-allowed;">
+                        <mat-label>Forward Remarks</mat-label>
+                        <input matInput formControlName="remarks" readonly
+                            autocomplete="off">
+                    </mat-form-field>
+
+                    <button 
+                        type="submit" 
+                        data-dismiss="modal" 
+                        (click)="approveClick(1)" 
+                        class="btn btn-outline-success buttons">
+                        Approve and Forward
+                    </button>
+                </td>
+
+                <mat-form-field class="fields" style="cursor: not-allowed;">
+                    <mat-label>Approval Remarks</mat-label>
+                    <input matInput formControlName="remarks" readonly
+                        autocomplete="off">
+                </mat-form-field>
+
+                <button 
+                    type="submit" 
+                    data-dismiss="modal" 
+                    (click)="approveClick(2)" 
+                    class="btn btn-outline-success buttons">
+                    Final Approve
+                </button>
+            </form>
+
+            <form [formGroup]="returnForm">
+
+                <mat-form-field class="fields">
+                    <mat-label>Returned Remarks</mat-label>
+                    <textarea matInput formControlName="remarks" autocomplete="off" required>
+                    </textarea>
+                </mat-form-field>
+                
+                <!-- <button 
+                    type="button" 
+                    data-dismiss="modal"   
+                    (click)="returnClick()" 
+                    class="btn btn-outline-info buttons"
+                    [disabled]="returnForm.invalid"> -->
+                    <button 
+                    type="button" 
+                    data-dismiss="modal"   
+                    (click)="returnClick()" 
+                    class="btn btn-outline-info buttons">
+                    Return
+                </button>
+            </form>
+
+            <form [formGroup]="rejectForm">
+                <mat-form-field class="fields">
+                    <mat-label>Rejected Remarks</mat-label>
+                    <textarea matInput formControlName="remarks"
+                        autocomplete="off" required></textarea>
+                </mat-form-field>
+            
+                <!-- <button 
+                    type="button" 
+                    data-dismiss="modal" 
+                    (click)="rejectClick()" 
+                    class="btn btn-outline-danger buttons"
+                    [disabled]="rejectForm.invalid"> -->
+                    <button 
+                    type="button" 
+                    data-dismiss="modal" 
+                    (click)="rejectClick()" 
+                    class="btn btn-outline-danger buttons">
+                    Reject
+                </button>
+
+                <br>
+                <br>
+            </form>
+            </div>
+
+            <div>
+                <button 
+                    type="button" 
+                    class="btn btn-outline-primary cancel"
+                    (click)="onCancelClick()">
+                    Back
+                </button>
+            </div>
+
+
+        </form>
+    </div>
+
+</div>
+<!-- <pre>
+    {{PRApprovalForm.value | json }}
+</pre>
+<pre>
+    {{ approvalForm.value | json }}
+</pre>
+
+<pre>
+    {{ rejectForm.value | json }}
+</pre> -->
+
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true" id="deliveryModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ddefdd;">
+                <h2 class="modal-title">  Delivery Details</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- <div style="background-color: #ddefdd;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2
+                    style="color:black ;font-family:'Times New Roman', Times, serif;font-size:25px;font-weight:lighter;text-align:center">
+                    Delivery Details</h2>
+
+            </div> -->
+            <div class="table-responsive" style="margin-top: 2%;margin-left: 50px; width: 94%;">
+                <table class="table scrolltable table-bordered" fixed-header>
+                    <thead>
+                        <tr class="table_header" fixed-header>
+                            <th>S.No</th>
+                            <th>BS Description</th>
+                            <th>CC Description</th>
+
+                            <th>Quantity</th>
+                            <th>Branch Name</th>
+
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let ccbs of deliverydetailsList; index as i"> 
+                             <!-- <td>{{i + 1}}</td> -->
+                             <!-- <tr *ngFor="let ccbs of prccbsDetailsList|paginate: { itemsPerPage: 10, currentPage: p }; index as j"> -->
+                            <!-- <td style="vertical-align:middle">{{((p-1)*pageSize)+j+1}}</td> -->
+                            <td>{{(presentpg - 1)*pgSize +i+1 }}</td>
+                            <td>{{ccbs.bs}}</td>
+                            <td>{{ccbs.cc}}</td>
+                            <td>{{ccbs.qty}}</td>
+
+                            <td>
+                                <!-- {{ccbs.branch_id.name}} -->
+                                <!-- BUG ID:7110 -->
+                                {{ccbs.branch_id.fullname}}
+                            </td>
+
+
+                        </tr>
+                        <!--<tr><td colspan="10">No Records Found..</td></tr>-->
+                    </tbody>
+                </table>
+                <div class="row" *ngIf="prappd" style="width: 85%;">
+                    <div class="col-sm-3" style="margin-top: -90px;font-size: small;text-align:left;right:-225px;">
+                        <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px; margin-top: 100px;">
+                            Total Count: {{totalcount}}
+                        </p>
+                    </div>
+                    <div class="col-sm-6 text-right" style="font-size: small; margin-left: 631px; margin-top: -53px;">
+                        <button mat-icon-button [disabled]="hasprevious === false" color="primary"
+                        (click)="salesweightpreviousClick()">
+                        <mat-icon >arrow_back</mat-icon>
+                        </button>
+                        {{presentpg}}
+                        <button mat-icon-button [disabled]="hasnext === false" color="primary"
+                        (click)="salesweightnextClick()">
+                        <mat-icon >arrow_forward</mat-icon>
+                        </button>
+                        </div>
+                </div>
+<!-- ///bug id:7420 -->
+                <!-- <tr>
+                      <div class="pagination">
+                        <pagination-controls responsive="true" (pageChange)="p = $event"></pagination-controls>
+                      </div>
+                  </tr> -->
+                  <!-- ///bug id:7420 --> 
+
+                
+<!-- //7421 pr approver deliverydetails downlad-->
+                <td  *ngIf="this.ccbs_bfile_id!='-1'">
+                                        <button type="button" class="buttonsize btn btn-outline-success"
+                                        (click)="deliverydetailsexcel()" style="border-radius:40px;margin-left: 500px;;margin-top:-100px;">
+                                        <!-- <span class="fa fa-download"></span> -->
+                                         <mat-icon>get_app</mat-icon>
+                                         Download</button>
+                            </td>
+                            <!-- //7421 -->
+
+                            <tr>
+                                <button style="margin-left: 508px;margin-top: -80px;" type="button" data-dismiss="modal"
+                                    class="btn btn-outline-primary">
+                                    Back
+                                </button>
+                            </tr>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assetDetails" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+aria-hidden="true">
+<div class="modal-dialog modal-xl" style="width:890px">
+    <div class="modal-content">
+        <div class="modal-header" style="background:#DDEFDD;">
+            <h2 class="modal-title" id="exampleModalLongTitle">
+                Asset Details
+            </h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <br>
+        <div class="table-responsive tableStyle">
+            <table class="table table-hover">
+              <thead class="table_header">
+                <tr>
+                  <td>S.No</td>
+                  <td>Asset ID</td>
+                  <td>Serial No</td>
+                  <td>Product</td>
+                  <td>Make</td>
+                  <td>Model</td>
+                  <td>Specification</td>
+                  <!-- <td>Action</td> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let a of assetArrayDetails; index as i">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ a.asset_id }}</td>
+                  <td>{{ a.serial_no }}</td>
+                  <td>{{ a.product_name }}</td>
+                  <td>{{ a.item_name }}</td>
+                  <td>{{ a.model_name }}</td>
+                  <td>
+                    <ng-container
+                    *ngIf="
+                      a.specification && a.specification !== '--';
+                      else showEmpty
+                    "
+                  >
+                    <ng-container
+                      *ngFor="
+                        let specKey of getSpecificationKeys(a.specification)
+                      "
+                    >
+                      {{ specKey }}: {{ a.specification[specKey] }}<br />
+                    </ng-container>
+                  </ng-container>
+                  <!-- Template to display "--" if specification is empty -->
+                  <ng-template #showEmpty>{{ a.specification }}</ng-template>
+                  </td>
+                  <!-- <td>
+                    <mat-icon role="button" class="gray" (click)="deleteAsset(a,i)">delete</mat-icon>
+                  </td> -->
+                </tr>
+                <tr *ngIf="assetArrayDetails?.length == 0">
+                    <td colspan="7">No Records Found!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <br>
+        <!-- <div class="modal-footer">
+            <button type="button" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary"
+                data-dismiss="modal">Save</button>
+        </div> -->
+    </div>
+</div>
+</div>
+
+
+<div *ngIf="showWarn" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="exampleModalLabel">Alert</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <h2>
+            "This PR request includes replacement asset details. Please Review and Approve!"".
+         </h2> 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+<form [formGroup]="PRApprovalForm">
+
+<div 
+        class="modal fade jus_note"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myExtraLargeModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header" style="background: #ddefdd">
+              <h2
+                class="modal-title"
+                id="exampleModalLongTitle"
+              >
+                Justification Note
+              </h2>
+             
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <br />
+            <div style="margin-left: 50px; width: 90%; height: 70%">
+              <div>
+                <div
+                  [ngxSummernote]="config"
+                  [ngxSummernoteDisabled]="editorDisabled"
+                  (blur)="onBlur()"
+                  (mediaDelete)="onDelete($event)"
+                  (summernoteInit)="summernoteInit($event)"
+                  formControlName="justification"
+                >
+                  <!-- <div
+              [ngxSummernote]="config"
+              [ngxSummernoteDisabled]="editorDisabled"
+              (blur)="onBlur()"
+              (mediaDelete)="onDelete($event)"
+              (summernoteInit)="summernoteInit($event)"
+              formControlName="notepad"
+            ></div> -->
+                  <!-- <div
+            id="summernote"
+            [ngxSummernote]="config"
+            [ngxSummernoteDisabled]="editorDisabled"
+            formControlName="notepad"
+          ></div> -->
+                </div>
+              </div>
+            </div>
+            <br />
+            <!-- <div class="modal-footer">
+              <button
+                type="button"
+                style="border-radius: 40px; margin-left: 10px"
+                class="btn btn-outline-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div> -->
+          </div>
+        </div>
+      </div>
+</form>
+
+
+
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" type="line-scale-party">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner>

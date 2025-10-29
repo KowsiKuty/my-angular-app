@@ -1,0 +1,287 @@
+<div class="pl-5 pr-5 pt-3 " style="font-size: small;" *ngIf="vertical_summary">
+        <form  [formGroup]="verSearchForm">
+        <div class="row mb-3">
+            <div class="ml-3 mr-3">
+                <mat-form-field (click)="finyear_dropdown()" appearance="outline">
+                    <mat-label>Fin Year</mat-label>
+                    <input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput
+                        [matAutocomplete]="fin_year" required>
+                    <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let finyearname of finyearList" [value]="finyearname">
+                                {{finyearname.finyer}} </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>From Month</mat-label>
+                    <mat-select formControlName="frommonth">
+                        <mat-option *ngFor="let month of from_month" (click)="to_reset()" [value]="month">
+                            {{month.month}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>To Month {{verSearchForm.value.frommonth ? '*' : '' }} </mat-label>
+                    <mat-select formControlName="tomonth">
+                        <mat-option *ngFor="let month of from_month" (click)="all_data_rest()" [value]="month">
+                            {{month.month}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3" *ngIf="view_branch" >
+                <mat-form-field appearance="outline">
+                    <mat-label>View Type</mat-label>
+                    <mat-select formControlName="view">
+                        <mat-option *ngFor="let view of view_List" (click)="branch_hide(view)" [value]="view">
+                            {{view.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                </div>  
+                <div class="ml-3 mr-3" *ngIf="do_view">
+                    <mat-form-field (click)="branch_do_name()" appearance="outline">
+                        <mat-label>DO List</mat-label>
+                        <input #branch_do_Input placeholder="DO List" matInput  formControlName="branch_do"
+                            #branchContactInput [matAutocomplete]="branch_dos">
+                        <mat-autocomplete #branch_dos="matAutocomplete" [displayWith]="displayfnbranch_do"
+                            (opened)="autocompletebranch_do_nameScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of branch_do_List" (click)="do_view_dd(branch)" [value]="branch">
+                                    {{branch.code}}-{{branch.name}} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>             
+            <div class="ml-3 mr-3" *ngIf="brach_dd_hide">
+                <mat-form-field (click)="branchname()" appearance="outline">
+                    <mat-label>Branch</mat-label>
+                    <input #branchInput placeholder="Branch" matInput formControlName="branch_id" #branchContactInput
+                        [matAutocomplete]="branch">
+                    <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+                        (opened)="autocompletebranchnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                {{branch.code}}-{{branch.name}} </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field (click)="Business_dropdown()" appearance="outline">
+                    <mat-label>Business</mat-label>
+                    <input placeholder="Business" matInput formControlName="business" #businessInput
+                        [matAutocomplete]="business_name">
+                    <mat-autocomplete #business_name="matAutocomplete" [displayWith]="displayfnbusiness"
+                        (opened)="autocompletebusinessnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let business of businessList" (click)="bs_clear()" [value]="business">
+                                {{business.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Amount Denomination</mat-label>
+                    <mat-select formControlName="amount">
+                        <mat-option *ngFor="let amt of Amount_List" [value]="amt">
+                            {{amt.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3 mt-2">
+                <button class="btn btn-outline-primary cardachart" type="submit" (click)="vert_summary_Search(verSearchForm.value,'sum')"
+                    color="primary"><i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="ml-3 mr-3 mt-2">
+                <button type="button"  class="btn btn-outline-primary cardachart"
+                    (click)="reset()">Reset
+                </button>
+            </div>
+            <div class="ml-3 mr-3 mt-2" >
+                <button matTooltip="Download" class="btn btn-outline-primary cardachart"
+                (click)="Screendownload()"><i class="fa fa-download" aria-hidden="true"></i>
+                </button>
+            </div>  
+            <div class="ml-3 mr-3 mt-2" >
+                <button class="btn btn-outline-primary cardachart" matTooltip="Dashboard" (click)="vert_summary_Search(verSearchForm.value,'dash')"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </form>
+    <div style="width: fit-content;" *ngIf="card_hide">      
+          <!-- <div  style="display: flex;justify-content: flex-end;" *ngIf="runupdatestatus">          
+            <h2 style="font-size: large;">Last Updated Date: <span style="color: blue;font-size: x-large;">{{RunDate}}</span>
+            </h2>&nbsp;&nbsp;
+            <h2 style="font-size: large;">UpTo Month: <span style="color: blue;font-size: x-large;">{{RunTo_mon}}</span>
+            </h2>
+          </div> -->
+        <mat-card >
+            <div style="display: flex; justify-content: space-between;">
+                <h2  style="margin: 0;font-size: x-large;">
+                    Branch Name: <span style="color: rgb(27 196 30);font-size: x-large;">{{branch_name_show}}</span>
+                </h2>
+                <h2 style="color: blue; margin: 0;margin-left: 25%;padding-right: 5%;font-size: x-large;">{{div_Amt_show}}</h2>
+            </div>  
+            <div class="tableFixHead" >
+                <table class="table table-bordered" fixed-header id="datatable">
+                    <thead class="table_header" style="top:0; position: sticky;">                  
+                        <tr>
+                            <ng-container *ngFor="let sec of header_name">
+                                <th [attr.colspan]="sec?.business?.length">{{ sec.sec }}</th>
+                            </ng-container>
+                        </tr>                      
+                        <tr>
+                            <ng-container *ngFor="let sec of header_name">
+                                <ng-container *ngIf="sec?.business?.length > 0">
+                                    <ng-container *ngFor="let hsec of sec?.business;let i=index">
+                                        <th>{{  hsec === value_header_lastValue ? '' : hsec }}</th>
+                                    </ng-container>
+                                </ng-container>                               
+                            </ng-container>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let datas of transformed_report_list;let i=index">
+                            <td [ngStyle]="{'padding-left': datas.padding, 'background-color': '#DDEFDD', 'font-weight': '500'}">
+                                {{datas.name}}</td>
+
+                            <ng-container *ngFor="let com of datas.business_values.Amount;let j=index">
+                                <td [ngStyle]="i%2==0?{'background-color':'white'} :{'background-color': '#d5c4ff57'}">
+                                    <div *ngIf="datas?.business_values.length != 0 " style="text-align: right;">
+                                        {{datas?.business_values?.Amount[j] *-1 |number:'1.2-2': 'en-IN' }}
+                                    </div>
+                                </td>                               
+                            </ng-container>
+                            <td [ngStyle]="i%2==0?{'background-color':'white'} :{'background-color': '#d5c4ff57'}" *ngIf="datas?.business_values.length == 0;">0.00 </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="data_not_found" style="text-align: center;">
+                    <h2>Sorry No Data Found...</h2>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>
+
+<mat-card [ngClass]="pdf_download == true ?  'div_position_pdf' : 'div_position' " id="chart-summary"  *ngIf="chart_summary">
+    <div class="modal-body preformatted" id="pdf-content" #preformattedDiv>
+        <div class="chart_back" id="cardTextContent">
+            <!-- <h2>Dashboard</h2> -->
+            <div class="row max_width ml-2">
+                <h3 *ngIf="verSearchForm.value.finyear" class="mr-2 lable_font_style">Fin Year : <span style="color: rgb(27 196 30);">{{ verSearchForm.value.finyear.finyer}}</span></h3>
+                <h3 *ngIf="verSearchForm.value.frommonth" class="mr-2 lable_font_style">From Month : <span style="color: rgb(27 196 30);">{{ verSearchForm.value.frommonth.month}}</span></h3>
+                <h3 *ngIf="verSearchForm.value.tomonth" class="mr-2 lable_font_style">To month : <span style="color: rgb(27 196 30);">{{ verSearchForm.value.tomonth.month}}</span></h3>
+                <h3 *ngIf="verSearchForm.value.view" class="mr-2 lable_font_style">View Type : <span style="color: rgb(27 196 30);">{{ verSearchForm.value.view.name}}</span></h3>
+                <h3 *ngIf="verSearchForm.value.branch_id" class="mr-2 lable_font_style">Branch : <span style="color: rgb(27 196 30);">{{ verSearchForm.value.branch_id.name}}</span></h3>
+                <h3 *ngIf="verSearchForm.value.business" class="mr-2 lable_font_style">business : <span style="color: rgb(27 196 30);">{{ verSearchForm.value.business.name}}</span></h3>
+                <h3 *ngIf="verSearchForm.value.amount" class="mr-2 lable_font_style">Amount In : <span style="color: rgb(27 196 30);">{{ verSearchForm.value.amount.name}}</span></h3>
+            </div>
+            <div>
+                <button *ngIf="!pdf_download" type="submit" class="btn  btn-success mb-3 coustom-button clear" (click)="downloadPDF()">PDF</button>
+                <button *ngIf="!pdf_download" type="submit" class="btn  btn-success mb-3 ml-2 coustom-button clear" (click)="back_to_vert()">Back</button>
+            </div>
+        </div>
+          <div *ngIf="Some_lable">
+            <div class="row">
+              <ng-container *ngFor="let item of transformed_report_list">
+                <ng-container  *ngIf="(item.name === 'L0 - Net Income' || item.name === 'Net Interest Income' || item.name === 'Cost of Funds' || item.name === 'Gross Interest Income' || item.name === 'Net Non Interest Income' ||  item.name === 'L1 - Direct Establishment Cost' || item.name === 'L2 - Direct Operating Costs' || item.name === 'Net Profit')">
+                    <div class="col-md-3 mt-3 cardhover">
+                    <mat-card [ngClass]="pdf_download == true ? 'equal-height-card pdfdownload' : 'equal-height-card linior_gradiant'">
+                      <mat-card-header class="header">
+                        <mat-card-title (click)="show_original_data(item.name)">{{ item.name }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        <div class="content-container">
+                          <span *ngIf="item.business_values.Amount.length != 0">
+                            <p *ngFor="let value of item.business_values.Amount;let j=index" class="flex">
+                              <span *ngIf="j == [item.business_values.Amount.length - 1]" class="total-text">
+                                <span class="grand-total-label mr-1">Amount :</span>
+                                <span class="grand-total">{{ item?.business_values?.Amount[item.business_values.Amount.length - 1] * -1 | number:'1.2-2': 'en-IN' }}</span>
+                              </span>
+                            </p>
+                          </span>
+                          <span *ngIf="item.business_values.Amount.length == 0" class="mt-2">
+                            <p>
+                              <span class="grand-total-label">Grand Total :</span>
+                              <span class="text_black">0.00</span>
+                            </p>
+                          </span>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+          <div *ngIf="All_lable">
+            <div class="row">
+              <ng-container *ngFor="let item of transformed_report_list">
+                <ng-container>
+                    <div class="col-md-3 mt-3 cardhover">
+                    <mat-card [ngClass]="pdf_download == true ? 'equal-height-card pdfdownload' : 'equal-height-card linior_gradiant'">
+                      <mat-card-header class="header">
+                        <mat-card-title class="pointer" (click)="show_original_data(item.name)">{{ item.name }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        <div class="content-container">
+                          <span *ngIf="item.business_values.Amount.length != 0">
+                            <p *ngFor="let value of item.business_values.Amount;let j=index" class="flex">
+                              <span *ngIf="j == [item.business_values.Amount.length - 1]" class="total-text">
+                                <span class="grand-total-label mr-1">Amount :</span>
+                                <span class="grand-total">{{ item?.business_values?.Amount[item.business_values.Amount.length - 1] * -1 | number:'1.2-2': 'en-IN' }}</span>
+                              </span>
+                            </p>
+                          </span>
+                          <span *ngIf="item.business_values.Amount.length == 0" class="mt-2">
+                            <p>
+                              <span class="grand-total-label">Grand Total :</span>
+                              <span class="text_black">0.00</span>
+                            </p>
+                          </span>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+          
+          <div class="pt-3 pb-2" [ngClass]="pdf_download == true ? 'lable_name_mb' : 'lable_name'">
+            <h4 class="lable_name_dict">{{level_dash_name?level_dash_name:''}}</h4>
+            <div class="margin_auto" *ngIf="All_lable && !pdf_download" (click)="level_show('Some_lable')" matTooltip="Show Less"><mat-icon >expand_less</mat-icon></div>
+            <div class="margin_auto" *ngIf="Some_lable && !pdf_download" (click)="level_show('All_lable')" matTooltip="Show More"><mat-icon >expand_more</mat-icon></div>
+          </div> 
+
+        <div class="graph-container">
+        <div class="box alin_center" id="divChart">
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="box alin_center" id="divChart1">
+            <canvas id="myChart1"></canvas>
+        </div>
+        <!-- <div class="box" id="divChart2">
+            <tr *ngFor="let sec of transformed_report_list">
+                <td class="p-2" [style.--dynamic-padding]="sec.padding" [ngClass]="level_dash_name == sec.name ? 'font_style_green padding-important' : 'font_style padding-important'" (click)="show_original_data(sec.name)">{{sec.name}}</td>
+            </tr>
+        </div> -->
+        </div>
+    
+    </div>
+</mat-card>
+    

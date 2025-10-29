@@ -1,0 +1,105 @@
+<div class="container" style="max-width: 100%;">
+    <h2 style="margin-left: 2%;font-family:Times New Roman;font-size:20px;color:rgb(53, 138, 163);font-weight:bold;">Payement File</h2>
+    <hr>
+    <div class="col-md-12"> 
+        <form [formGroup]="paymentfile">
+            
+           <table style="width: 100%; text-align: center;">
+                  
+               <tr>
+                <td>
+                    <mat-form-field style="width: 11rem;margin-left: 8px; ">
+                        <input type="text" placeholder="Bank" aria-label="Bank" matInput [matAutocomplete]="into"  formControlName="bank" >
+                        <mat-autocomplete #into="matAutocomplete" [class]="'blue-bg'">
+                          <mat-option *ngFor="let opt of branch" [value]="opt.bankbranch.bank.name" (click)="bank(opt)" >
+                            {{ opt.bankbranch.bank.name }}
+                          </mat-option>
+                        </mat-autocomplete>
+                      </mat-form-field>
+                </td>
+               
+                    <td>
+                        <mat-form-field style="width: 11rem;margin-left: 8px; ">
+                            <mat-label>PV No</mat-label>
+                            <input matInput formControlName="pvno" autocomplete="off">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                           <mat-form-field style="width: 11rem;margin-left: 8px; ">
+                                <mat-label>Payement Date</mat-label>
+                                <input matInput [matDatepicker]="picker" formControlName="pdte" autocomplete="off">
+                                <mat-datepicker-toggle matSuffix [for]="picker">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                      
+                    </td>
+                    <td>
+                        <button type="button"  class="btn btn-outline-primary" style="border-radius:35px;height: 40px;" (click)="search()">Search</button>
+                    </td>
+                    <td>
+                        <button type="button"  class="btn btn-outline-primary" style="border-radius:35px;height: 40px;" (click)="cancel()">Cancel</button>
+                    </td>
+                    <td>
+                        <button mat-icon-button style="background-color: darkcyan;width: 40px ;height: 40px;margin-right: 10px; "(click)="download()">
+                            <mat-icon><span class="material-icons-outlined">
+                                download
+                                </span></mat-icon>
+                        </button>
+                    <button mat-icon-button style="background-color: orangered;width: 40px ;height: 40px;margin-left: 10px;" type="file"  name="myfile"
+                    (click)="onFileSelectedBulkUpload($event)" accept=".xlsx">
+                            <mat-icon>upload</mat-icon>
+                        </button>
+                    </td>
+          
+                </tr>
+            </table>
+
+        </form>
+            <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;overflow: auto;">
+            <table class="table table scrolltable table-bordered" style="width: 100%; margin-top: 10px;text-align: center;">
+                <thead class="table_header " fixed-header>
+                <tr>
+        <th>S.No</th>
+        <th>CR.No</th>
+        <th>PV No</th>
+        <th>Payement</th>
+        <th>Debit Bank Name</th>
+        <th>Supplier Branch</th>
+        <th>Employee Name</th>
+        <th>PV Date</th>
+        <th>PV Amount</th>
+        <th>Status</th>
+        <th>Select and Download</th>
+        <th>Select ALL<input  type="checkbox" [disabled]="this.select==false" [checked]="rowselect" (click)="checkselect($event,data)" color="primary"></th>
+        </tr>
+</thead>
+        <tr *ngFor="let d of data;let i=index">
+            <td>{{i+1}}</td>
+            <td>{{d.crno}}</td>
+            <td>{{d.pvno}}</td>
+            <td>{{d.apcredit.paymode.name}}</td>
+            <td>{{d.debit_bankdetails.bankbranch.bank.name}}</td>
+            <td>{{d.supplier.name}}</td>
+            <td>{{d.raiser_employeename}}</td>
+            <td>{{d.pv_date}}</td>
+            <td>{{d.pv_amount}}</td>
+            <td>{{d.status.text}}</td>
+            <td><input  type="checkbox" (click)="checkbox(d,i,$event)" [disabled]="this.select==false" [checked]=" d.select_flag==true" color="primary" ></td>
+            <td></td>
+        </tr>
+    </table>
+    <div *ngIf="data ?.length == 0" style="margin-left: 42%;">
+        <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+    </div>
+            </div>
+    </div>
+
+    <ngx-spinner
+    bdColor="rgba(51,51,51,0.8)"
+    size="medium"
+    color="#fff"
+    type="ball-scale-multiple" >
+    <p style="font-size: 20px; color: white">Loading...</p>
+    </ngx-spinner></div>

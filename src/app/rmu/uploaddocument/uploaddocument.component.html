@@ -1,0 +1,149 @@
+<div style="padding: 1%;">
+   <div class="DisplayTemplate">
+    <button mat-icon-button (click)="BackToSummary()">
+        <mat-icon>arrow_back</mat-icon>
+       </button>
+        <h2>Upload Template Creation</h2>
+   </div>
+    <form [formGroup]="sub_product_form">
+        <div class="row MarginSize">
+            <div class="col-md-3" class="npm-mat-edit">
+                <mat-form-field  (click)="product_master_sub('')"
+                    matTooltip="{{Products_sub.value}}" appearance="outline">
+                    <mat-label>Product</mat-label>
+                    <input #Products_sub type="text" matInput formControlName="product"
+                        [matAutocomplete]="product_auto_sub" (keyup)="product_master_sub($event.target.value)">
+                    <mat-autocomplete #product_auto_sub="matAutocomplete" (opened)="product_master_sub_Scroll()"
+                        [displayWith]="product_sub_display">
+                        <mat-option *ngIf="prodct_search_subloading">Loading...</mat-option>
+                        <ng-container *ngIf="!prodct_search_subloading">
+                            <mat-option *ngFor="let Products_sub of product_master_sub_list" (click)="product_data(Products_sub)" [value]="Products_sub"
+                                matTooltip={{Products_sub.name}}>
+                                {{Products_sub.name}}
+                            </mat-option>
+                            <mat-option *ngIf="!product_master_sub_list?.length">
+                                No Records Found
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div style="padding-left: 2%;">
+                <button matTooltip="Summary Search" matTooltipClass="rmutooltip" type="button"
+                (click)="summary_data()" class="btn btn-outline-success" id="rmubtn"><i
+                class="fa fa-search" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div style="padding-left: 2%;">
+                <button matTooltip="Add Product" matTooltipClass="rmutooltip" type="button"
+                (click)="addEmployee()"  class="btn btn-outline-success" id="rmubtn"
+               ><span class="fa fa-plus"></span>
+                </button>
+            </div> 
+            
+            <div style="padding-left: 2%;" *ngIf="Submit_btn">
+                <button matTooltip="Submit Product" matTooltipClass="rmutooltip" type="button"
+                (click)="SubmitData()"  class="btn btn-outline-success" id="rmubtn"
+                style="margin-left: 20px;">
+                Submit</button>
+            </div>
+        </div>
+        <div *ngIf="tableshow">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="destroytable" style="text-align: center;">
+                    <thead class="table_header">
+                        <th>S.No</th>
+                        <th>Name </th>
+                        <th>Field Name</th>
+                        <th>Mandatory</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody *ngFor="let docs of summary_datas;index as ind">    
+                        <td>{{ind+1}}</td>
+                        <td>{{docs?.name}}</td>
+                        <td>{{docs?.field_type?.name}}</td>
+                        <td>{{docs?.mand === true?'yes':'No'}}</td>
+                        <td style="text-align: center;color: #01A85A;" *ngIf='docs.primary == true' matTooltip="Make Primary"
+                            (click)="activedata(docs)">
+                            <span class="fa fa-toggle-on" style="font-size: 24px;" aria-hidden="true"></span>
+                        </td>
+                        <td style="text-align: center;color:black;" *ngIf='docs.primary == false' matTooltip="Make Primary"
+                            (click)="activedata(docs)">
+                            <span class="fa fa-toggle-off" style="font-size: 24px;" aria-hidden="true"></span>
+                        </td>  
+                    </tbody>
+                </table>  
+                <div *ngIf="!summary_datas?.length" style="text-align: center;">  <h3>Sorry no data found!... </h3></div>  
+                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <button (click)="PreviousSearch()" mat-icon-button [disabled]="FileUploadPagination.has_prev === false" color="primary">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{FileUploadPagination.index}}
+                    <button (click)="NextSearch()" mat-icon-button [disabled]="FileUploadPagination.has_next === false" color="primary">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+        
+                </div>
+            </div>
+        </div>
+        <div formArrayName="sub_product_arry" *ngIf="form_array_data">
+            <div *ngFor="let employee of sub_product_arry().controls; let index=index">
+                <div class="row border p-3 mb-3" [formGroupName]="index" style="border-radius: 5px;">
+                    <div class="col-md-3" class="npm-mat-edit">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Name</mat-label>
+                            <input matInput type="text" formControlName="name" />
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3" class="npm-mat-edit" style="padding-left: 2%;">
+                    <mat-form-field appearance="outline" (click)="status_dd_arch()">
+                        <mat-label>Field DropDown</mat-label>
+                        <input matInput placeholder="" formControlName="field_type"
+                            [matAutocomplete]="Status_Type" autocomplete="off">
+                        <mat-autocomplete #Status_Type="matAutocomplete" [displayWith]="Status_display">
+                            <mat-option *ngFor="let status of status_lists" [value]="status"> {{ status.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    </div>
+                    <!-- <div class="col-md-1" class="npm-mat-edit" style="padding-left: 2%;">
+                        <mat-form-field appearance="outline" >
+                            <mat-label>Is Mandatory</mat-label>
+                            <input matInput placeholder="" formControlName="mand"
+                                [matAutocomplete]="mand_Type" autocomplete="off" [disabled]="employee.disabled">
+                            <mat-autocomplete #mand_Type="matAutocomplete" [displayWith]="mand_display">
+                                <mat-option *ngFor="let mand of BoolArray" [value]="mand"> {{ mand.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div> -->
+                    <div class="col-md-1" class="npm-mat-edit" style="padding-left: 2%;">
+  <mat-form-field appearance="outline">
+    <mat-label>Is Mandatory</mat-label>
+    <input matInput placeholder="" formControlName="mand"
+           [matAutocomplete]="mand_Type" autocomplete="off">
+    <mat-autocomplete #mand_Type="matAutocomplete" [displayWith]="mand_display">
+
+      <!-- Loop through BoolArray -->
+      <mat-option *ngFor="let mand of BoolArray" 
+                  [value]="mand"
+                  [disabled]="mand.name === 'Yes' && hasYesSelected && employee.get('mand')?.value?.name !== 'Yes'">
+        {{ mand.name }}
+      </mat-option>
+
+    </mat-autocomplete>
+  </mat-form-field>
+</div>
+
+                    <div class="col-md-2" style="padding-left: 2%;">
+                        <button matTooltip="Delete Field" matTooltipClass="rmutooltip" type="button"
+                        (click)="removeEmployee(index,employee)"class="btn btn-outline-danger" id="rmubtn"
+                style="margin-left: 20px;"><mat-icon>delete</mat-icon>
+                </button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>        
+    </form>
+</div>

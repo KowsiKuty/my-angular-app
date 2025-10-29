@@ -1,0 +1,210 @@
+
+<div class="container" style="padding-top: 2%;" *ngIf="activeclient_screen">
+    <h2 style="text-align: center;"> Active Client</h2>
+    <div>
+        <form [formGroup]="dssactive">
+            <div class="col-md-12">
+                <div class="row" style="margin-left: -1%;">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <mat-form-field (click)="finyear_dropdown()">
+                                    <mat-label>Fin Year</mat-label>
+                                    <input placeholder="" matInput formControlName="finyear" #finyearsInput  
+                                        [matAutocomplete]="finsyear" required>
+                                    <mat-autocomplete #finsyear="matAutocomplete" [displayWith]="displayfinyear">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let finyearname of finyearList" (click)="finyears_clear()" [value]="finyearname">
+                                                {{finyearname.finyer}} </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                          </div>
+
+                            <div class="col-md-3">
+                                <mat-form-field>
+                                    <mat-label>From Month*</mat-label>
+                                    <mat-select formControlName="client_fromdate"
+                                        (selectionChange)="frommonthsearch(dssactive.value.client_fromdate)">
+                                        <mat-option *ngFor="let month of from_month" [value]="month">
+                                            {{month.month}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div [hidden]="tomonth" class="col-md-3">
+                                <mat-form-field>
+                                    <mat-label>To Month </mat-label>
+                                    <mat-select formControlName="client_todate"
+                                        (selectionChange)="tomonthsearch(dssactive.value.client_todate)">
+                                        <mat-option *ngFor="let month of from_month"
+                                            [disabled]="(from_months<month.id || frommonthid==12)? false:true"
+                                            [value]="month">
+                                            {{month.month}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>                           
+                            <div class="col-md-1">
+                                <div style="text-align: center;cursor: pointer;margin-top: 10%;">
+                                    <button class="btn btn-outline-primary" style="border-radius: 40px;"
+                                        (click)="activesearch(assestgrp,dssactive,monthsearch)">
+                                        Search
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-1">
+                                <div style="text-align: center;cursor: pointer;margin-top: 10%;">
+                                    <button class="btn btn-outline-primary" style="border-radius: 40px;"
+                                        (click)="dsssearch_clear(assestgrp,dssactive)"
+                                        >
+                                        Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-outline-primary" matTooltip="Upload"
+                                    style="border-radius: 40px;margin-top: 10%;" data-toggle="modal"
+                                    (click)="fileuploadopen('Profitability Report',3)"
+                                    data-target=".bd-fileupload-modal-lg"><i class="fa fa-upload"
+                                        aria-hidden="true"></i>
+                                </button>
+                            </div>                    
+                            <div class="col-md-1">
+                                <mat-icon matTooltip="Dashboard" (click)="summar_param(assestgrp,dssactive,monthsearch)"
+                                    class="maticon_style" style="color:#007bff;margin-top: 15%;">
+                                    insert_chart</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="Activeclientexp" *ngIf="Active_table">
+        <div class="card-body">
+            <div *ngIf="activeclient_summary?.length!=0" class="tableFixHead">
+                <table class="table table-bordered" fixed-header>
+                    <thead class="table table-bordered">
+                        <th style="background-color: #00800021;">Name</th>
+                        <th style="background-color: #00800021;" *ngFor="let activeclient_business of businessDict;">{{
+                            activeclient_business.name}}</th>
+                        <th style="background-color: #00800021;">Total</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Bop</td>
+                            <td *ngFor="let active_client_business of businessDict;">
+                                <ng-container *ngFor="let activeclient of removeddatas;">
+                                    <span
+                                        *ngIf="active_client_business.id == activeclient.bus_id">{{activeclient.bop}}</span>
+                                </ng-container>
+                            </td>
+                            <td>{{boptotalamount}}</td>
+                        </tr>
+                        <tr>
+                            <td>New</td>
+                            <td *ngFor="let active_client_business of businessDict;">
+                                <ng-container *ngFor="let activeclient of removeddatas;">
+                                    <span
+                                        *ngIf="active_client_business.id == activeclient.bus_id">{{activeclient.new}}</span>
+                                </ng-container>
+                            </td>
+                            <td>{{new_clientamount}}</td>
+                        </tr>
+                        <tr>
+                            <td>Attrition</td>
+                            <td *ngFor="let active_client_business of businessDict;">
+                                <ng-container *ngFor="let activeclient of removeddatas;">
+                                    <span
+                                        *ngIf="active_client_business.id == activeclient.bus_id">{{activeclient.attrition}}</span>
+                                </ng-container>
+                            </td>
+                            <td>{{attritionamount}}</td>
+                        </tr>
+                        <tr>
+                            <td>Closing</td>
+                            <td *ngFor="let active_client_business of businessDict;">
+                                <ng-container *ngFor="let activeclient of removeddatas;">
+                                    <span
+                                        *ngIf="active_client_business.id == activeclient.bus_id">{{activeclient.closing}}</span>
+                                </ng-container>
+                            </td>
+                            <td>{{closingamount}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center;" id='activeclient-table' *ngIf="activeclient_summary?.length==0">No Data
+                Found</div>
+        </div>
+    </div>
+    <div class="modal fade bd-fileupload-modal-lg" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+        tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabels">
+        <div class="modal-dialog modal-lg" style="padding-top: 7%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">File Upload</h2>
+                    <button type="button" class="close" (click)="clear_filedetails()" #closepop data-dismiss="modal"
+                        aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body" style="margin-top: 2%;margin-bottom: 2%;">
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <input type="file" [formControl]='clientinput' id="uploadFile" class="choose"
+                                        (change)="upload_file($event)" accept=".xls,.xlsx,.xlsm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" type="button" style="float: right;"
+                        (click)="upload(numberoffiled)">
+                        Upload
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" data-dismiss="modal" style="float: right ;"
+                        (click)="clear_filedetails()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<mat-card class="div_position" *ngIf="activeclient_dashboard">
+    <div class="modal-body">
+        <div class="chart_back">
+            <h2>Active Client - {{finyear_dashboard}}</h2>
+            <button type="submit" (click)="dashboard_sumary_back()" class="btn mb-3 coustom-button clear">Back</button>
+        </div>
+        <div class="row">
+            <div class="col-md-3 mt-3  cardhover" *ngFor="let data of dash_summary">
+                <div class="card bg-gradient-danger card-img-holder">
+                    <div class="card-body card_body_padding">
+                        <h4>{{data.name}}</h4>
+                        <h3>{{data.amount}}</h3>
+                        <img src="assets/circle.svg" class="image" alt="circle-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="graph-container">
+            <div class="box" id="divChart">
+                <canvas id="myChart"></canvas>
+            </div>
+            <div class="box" id="divChart1">
+                <canvas id="myChart1"></canvas>
+            </div>
+        </div>
+    </div>
+</mat-card>
+

@@ -1,0 +1,133 @@
+<div class="container">
+    <br>
+    <h2>LOS Branch Summary Search</h2>
+    <form [formGroup]="losBranchSummaryForm" class="example-form">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field class="example-full-width" style="margin-left: 3%; width: 200px;">
+                        <input #name placeholder="Choose Application" matInput
+                            formControlName="application_no" [matAutocomplete]="autosupp">
+                        <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="branchdisplayFn">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                            </mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let app of bapplno" [value]="app"                                >
+                                    {{app.ApplNo}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <!-- <div class="col-md-3">
+                    <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                        <input #name placeholder="Branch" matInput
+                            formControlName="branch" [value]="branchpatch" [readonly]="true">                       
+                    </mat-form-field>
+                </div> -->
+                <div class="col-md-1">
+                    <div class="example-button-container">
+                        <button class="btn btn-outline-primary" type="submit" (click)="branchsearch_data()"
+                        style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="example-button-container">
+                        <button class="btn btn-outline-primary" (click)="branchremove()"
+                        style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+                    </div>
+                </div>
+                <!-- <div class="col-md-1">
+                    <div class="example-button-container">
+                        <button mat-mini-fab color="basic" (click)="create_los()">
+                            <mat-icon>person_add</mat-icon>
+                        </button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <h2>LOS Branch Summary</h2>
+        <div class="table-responsive">
+            <table class="table table scrolltable table-bordered">
+                <thead class="table_header" fixed-header>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Application Number</th>
+                        <th class="w-25">Branch Name</th>
+                        <th>Branch Code</th>
+                        <!-- <th>CustomerID</th>
+                        <th>BusinessUnit</th>
+                        <th class="w-25">DrAcctName</th>
+                        <th>DrAcctNo</th>
+                        <th class="w-25">TaxDate</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let los of los_branchsummary_data; index as i">
+                        <td align="center"> {{(this.Branchcurrentpage - 1)*BranchsummarypageSize +i+1 }} </td>
+                        <td align="center" (click)="view_branchlos_data(los)" style="cursor: pointer;color:blue;"> {{los.ApplNo}}</td>
+                        <td align="center">
+                            <div *ngIf="los.BranchName === null || los.BranchName === ''">
+                                -
+                            </div>
+                            <div *ngIf="los.BranchName !== null">
+                                {{los.BranchName}}
+                            </div>
+                        </td>
+                        <!-- <td align="center">{{ los.BranchName}}</td> -->
+                        <td align="center">{{ los.BranchCode}}</td>
+                        <!-- <td align="center">
+                            <div *ngIf="los.CustomerID === null || los.CustomerID === ''">
+                                -
+                            </div>
+                            <div *ngIf="los.CustomerID !== null">
+                                {{los.CustomerID}}
+                            </div>
+                        </td> -->
+                        <!-- <td align="center">{{ los.CustomerID}}</td> -->
+                        <!-- <td align="center">
+                            <div *ngIf="los.BusinessUnit === null || los.BusinessUnit === ''">
+                                -
+                            </div>
+                            <div *ngIf="los.BusinessUnit !== null">
+                                {{los.BusinessUnit}}
+                            </div>
+                        </td> -->
+                        <!-- <td align="center">{{ los.BusinessUnit}}</td> -->
+                        <!-- <td align="center">{{ los.DrAcctName}}</td>
+                        <td align="center">
+                            <div *ngIf="los.DrAcctNo === null || los.DrAcctNo === ''">
+                                -
+                            </div>
+                            <div *ngIf="los.DrAcctNo !== null">
+                                {{los.DrAcctNo}}
+                            </div>
+                        </td> -->
+                        <!-- <td align="center">{{los.DrAcctNo}}</td> -->
+                        <!-- <td align="center">{{los.TxnDate}}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="los_branchsummary_data ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button type="button" mat-mini-fab color="primary" [disabled]="Branchsummaryhas_previous === false" style="border-radius:200px;margin-left: 15px;" (click)="branchpreviousClick()"><mat-icon>arrow_back</mat-icon></button>
+                 &nbsp;&nbsp;  {{Branchpresentpage}}
+                 <button type="button"  mat-mini-fab color="primary" [disabled]="Branchsummaryhas_next === false" style="border-radius:200px;margin-left: 15px;" (click)="branchnextClick()"> <mat-icon>arrow_forward</mat-icon></button>
+             </div>
+            <!-- <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div> -->
+        </div>
+    </form>
+</div>
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+    <p style="color: white">Loading... </p>
+</ngx-spinner>

@@ -1,0 +1,372 @@
+<!-- <app-files-selection *ngIf="showfilecomponent" [getfiles]="inputfileslist" (sendfiles)="getfilesfromchild($event)">
+</app-files-selection> -->
+<main role="main" style="margin-top:1%;margin-left:30px;width:95%">
+
+    <h2>Vendor Retrieval Summary <button class="btn btn-outline-dark backbtn" style="margin-right:0px ;"
+            (click)="router.navigate(['rmu/rmu_summary'])" id="rmubtn">Back</button> </h2>
+    <form [formGroup]="summaryform">
+        <section role="search" class="row">
+
+            <div class="col-md-2">
+
+                <mat-form-field class='summaryformfield' appearance="outline" style="width: 100%;">
+                    <mat-label>Retrieval Code</mat-label>
+                    <input matInput formControlName="department">
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-2">
+
+                <mat-form-field class='summaryformfield' appearance="outline" style="width: 100%;">
+                    <mat-label>Branch</mat-label>
+                    <input matInput formControlName="department">
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-2">
+                <mat-form-field class="summaryformfield" appearance="outline" style="width: 101%;">
+                    <mat-label>Delivery Date</mat-label>
+                    <input matInput readonly [matDatepicker]="picker3" placeholder="Date" autocomplete="off"
+                        formControlName="delivery_date" required>
+                    <mat-datepicker-toggle matSuffix [for]="picker3">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker3></mat-datepicker>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-2">
+
+                <mat-form-field class='summaryformfield' appearance="outline" style="width: 100%;">
+                    <mat-label>Retrieval Type</mat-label>
+                    <mat-select matInput formControlName="retrieval_type">
+                        <mat-option *ngFor="let item of retrievaltype" [value]="item.value">
+                            {{item.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- <div class="col-md-2">
+
+                <mat-form-field class='summaryformfield'>
+                    <mat-label>Retrieval Method</mat-label>
+                    <mat-select matInput formControlName="retrieval_method">
+                        <mat-option *ngFor="let item of retrievalmethod" [value]="item.value">
+                            {{item.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-2">
+
+                <mat-form-field class='summaryformfield' appearance="outline" style="width: 100%;">
+                    <mat-label>Status</mat-label>
+                    <mat-select matInput formControlName="status">
+                        <mat-option *ngFor="let item of statuslist" [value]="item.value">
+                            {{item.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2" style="margin-top: 1.2%;">
+                <!-- <div id="rmubtngrp"> -->
+                    <button matTooltip="Search Records" [matTooltipPosition]="'above'" matTooltipClass="rmutooltip"
+                        (click)="getvrsummary()" class="btn btn-outline-success" style="margin-left:5%" id="rmubtn"
+                        color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    <button class="btn btn-warning" [matTooltip]="'Clear Entries'" [matTooltipPosition]="'above'"
+                        matTooltipClass="rmutooltip" style="margin-left:20px" id="rmubtn">Clear</button>
+
+                    <!-- <button matTooltip="Create Retrieval Request" [matTooltipPosition]="'above'"
+                    matTooltipClass="rmutooltip" (click)="navtoform()" type="button" class="btn btn-outline-success"
+                    id="rmubtn" style="margin-left: 20px;"><span class="fa fa-plus"></span>
+                    Add
+                </button> -->
+
+
+                <!-- </div> -->
+            </div>
+
+
+        </section>
+    </form>
+    <div id="rmucontent" class="table-responsive">
+        <!-- Makersummary -->
+        <table class="table table-bordered" id="rmutable">
+            <thead class="table_header">
+                <th>S.No</th>
+                <th>Retrieval Code</th>
+                <th>Address</th>
+                <th>Delivery Date</th>
+                <th>Retrieval Type</th>
+                <th>Status</th>
+                <th>Download</th>
+                <th>View</th>
+            </thead>
+            <tbody *ngFor="let sum of summarylist;index as ind">
+                <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                <td>{{sum.id}}</td>
+                <td style="max-width:18rem"><label>{{sum.address | titlecase}}</label></td>
+                <td>{{sum.retrieval_date | date:'dd-MMM-yyyy'}}</td>
+                <td>{{sum.retrieval_type?.name}}</td>
+
+                <td style="padding:0px">
+                    <mat-form-field (click)="getoldvalues(sum,ind)">
+                        <mat-select matInput [(value)]="sum.vendor_status.value"
+                            [disabled]="sum.vendor_status.value == 4 || sum.vendor_status.value == 8"
+                            (selectionChange)="applydata(sum,$event)">
+                            <mat-option data-toggle="modal" 
+                                (click)="despatchedit(sum.vendor_status)"
+                                *ngFor="let item of statuschange(sum.vendor_status.value)" [value]="item.value">
+                                {{item.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <!-- <mat-icon matTooltipClass="rmutooltip" data-target="#dispatchpopup" data-toggle="modal">edit
+                    </mat-icon> -->
+                </td>
+                <td>
+                    <button id="rmubtn" matTooltipClass="rmutooltip" matTooltip="Download Retrieval Files"
+                        mat-icon-button (click)="getretrievalcovernote(sum.id)" mat-button>
+                        <mat-icon>download</mat-icon>
+                    </button>
+                </td>
+                <td><button mat-icon-button (click)="gotoview(sum)">
+                        <mat-icon>visibility</mat-icon>
+                    </button></td>
+            </tbody>
+        </table>
+
+        <!-- CheckerSummary -->
+        <div *ngIf="!summarylist.length" style="margin-left: 42%;">
+            <h3>Sorry no data found!... </h3>
+        </div>
+
+        <div class="col-sm-12" *ngIf="summarylist.length > 0"
+            style="font-size: small;text-align:right;margin-bottom: 5%;">
+            <button mat-icon-button (click)="prevpage()" [disabled]="pagination.has_previous === false" color="primary">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{pagination.index}}
+            <button mat-icon-button (click)="nextpage()" [disabled]="pagination.has_next === false" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+        </div>
+    </div>
+
+</main>
+
+<div
+*ngIf="showdespatchmodal"
+class="modal fade"
+id="dispatchpopup"
+tabindex="-1"
+aria-labelledby="dispatchpopup"
+aria-hidden="true"
+>
+<div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-content" >
+    <div class="modal-header">
+      <p class="modal-title mb-0" id="dispatchpopup" style="font-weight: 600;">{{modaltitle | titlecase}}</p>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        #closeretrivalpopup
+        aria-label="Close"
+        (click)="close()"
+      >
+        <i aria-hidden="true">&times;</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+          <!-- <mat-grid-list [cols]="1" rowHeight="450px">
+                    <mat-grid-tile>
+                        <div>
+                            <section>
+                                <h2>Delivery Person</h2>
+                            </section>
+                            <section style="border:1px solid black">
+                                <mat-icon *ngIf="!imageSrc" style="font-size:300px">person_outline</mat-icon>
+                                <img *ngIf="imageSrc" height="333" width="333" [src]="imageSrc">
+                            </section>
+                           
+                        </div>
+
+
+
+                    </mat-grid-tile>
+
+                    <mat-grid-tile>
+                        
+                    </mat-grid-tile>
+                </mat-grid-list> -->
+                <div class="row">
+
+                    <mat-form-field class="dispatchform col-md-4">
+                        <mat-label>Person name</mat-label>
+                        <input matInput [(ngModel)]="delivery_person">
+                    </mat-form-field>
+
+                    <mat-form-field class="dispatchform col-md-4">
+                        <mat-label>Contact</mat-label>
+                        <input type="number" matInput [(ngModel)]="contact_no">
+                    </mat-form-field>
+
+                    <mat-form-field class="dispatchform col-md-4">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput [(ngModel)]="comments">
+                    </mat-form-field>
+
+
+
+
+                </div>
+                <app-files-selection></app-files-selection>
+        </div>
+        <div class="modal-footer">
+            <button type="button"  (click)="submitdelivery()"
+            class="btn btn-outline-success">Submit</button>
+        <button type="button" (click)="getvrsummary()" #modalclose  class="btn btn-outline-secondary"
+            data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+
+<!-- <div *ngIf="showdespatchmodal" class="modal fade" id="dispatchpopup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header hdrclr">
+                <h2 class="modal-title" id="exampleModalLongTitle">{{modaltitle | titlecase}}</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"> -->
+                <!-- <mat-grid-list [cols]="1" rowHeight="450px">
+                    <mat-grid-tile>
+                        <div>
+                            <section>
+                                <h2>Delivery Person</h2>
+                            </section>
+                            <section style="border:1px solid black">
+                                <mat-icon *ngIf="!imageSrc" style="font-size:300px">person_outline</mat-icon>
+                                <img *ngIf="imageSrc" height="333" width="333" [src]="imageSrc">
+                            </section>
+                           
+                        </div>
+
+
+
+                    </mat-grid-tile>
+
+                    <mat-grid-tile>
+                        
+                    </mat-grid-tile>
+                </mat-grid-list> -->
+                <!-- <div class="row">
+
+                    <mat-form-field class="dispatchform col-md-4">
+                        <mat-label>Person name</mat-label>
+                        <input matInput [(ngModel)]="delivery_person">
+                    </mat-form-field>
+
+                    <mat-form-field class="dispatchform col-md-4">
+                        <mat-label>Contact</mat-label>
+                        <input type="number" matInput [(ngModel)]="contact_no">
+                    </mat-form-field>
+
+                    <mat-form-field class="dispatchform col-md-4">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput [(ngModel)]="comments">
+                    </mat-form-field>
+
+
+
+
+                </div>
+                <app-files-selection></app-files-selection>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="rmubtn" (click)="submitdelivery()"
+                    class="btn btn-outline-success">Submit</button>
+                <button type="button" (click)="getvrsummary()" #modalclose id="rmubtn" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+<div
+*ngIf="showconfirmmodal"
+class="modal fade"
+id="dispatchpopup"
+tabindex="-1"
+aria-labelledby="dispatchpopup"
+aria-hidden="true"
+>
+<div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-content" >
+    <div class="modal-header">
+      <p class="modal-title mb-0" id="dispatchpopup" style="font-weight: 600;">{{confirmtitle}} Status Confirmation !</p>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        #closeretrivalpopup
+        aria-label="Close"
+        (click)="close()"
+      >
+        <i aria-hidden="true">&times;</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+        <mat-icon style="vertical-align:sub">info</mat-icon>
+                <mat-label>
+                    Are you okay to proceed for {{retid}}, as it can't be modified.
+                </mat-label>
+        </div>
+        <div class="modal-footer">
+            <button type="button" data-dismiss="modal"  (click)="vendorstatusupdate(payload)"
+                    class="btn btn-outline-primary">Ok</button>
+                <button type="button" #closeretrivalpopup  class="btn btn-outline-secondary"
+                    (click)="getvrsummary()" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- <div *ngIf="showconfirmmodal" class="modal fade" id="dispatchpopup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header hdrclr">
+                <h2 class="modal-title" id="exampleModalLongTitle"> {{confirmtitle}} Status Confirmation !</h2> -->
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button> -->
+            <!-- </div>
+            <div class="modal-body">
+                <mat-icon style="vertical-align:sub">info</mat-icon>
+                <mat-label>
+                    Are you okay to proceed for {{retid}}, as it can't be modified.
+                </mat-label>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" id="rmubtn" (click)="vendorstatusupdate(payload)"
+                    class="btn btn-outline-primary">Ok</button>
+                <button type="button" #actionclose id="rmubtn" class="btn btn-outline-secondary"
+                    (click)="getvrsummary()" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div> -->

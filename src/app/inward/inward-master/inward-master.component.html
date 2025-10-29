@@ -1,0 +1,282 @@
+<div class="Container" style="margin-left: 20px;">
+    <nav>
+        <div class="nav nav-tabs" style="margin-top: 1%;">
+            <span class="nav-item nav-link" data-toggle="tab" (click)="subModuleData(sub)" role="tab"
+                *ngFor="let sub of iMasterList">
+                {{sub.name}}
+            </span>
+            <!-- <button type="button" class="btn btn-outline-success" *ngIf="ismakerCheckerButton" (click)="addForm()"
+                style="border-radius: 20px;margin-left: 300px;margin-top: 10px;" color="primary"><span
+                    class="fa fa-plus"></span>
+                {{addFormBtn}} </button> -->
+        </div>
+    </nav>
+
+
+    <div *ngIf="isChannelForm">
+            <app-channel (onCancel)="channelCancel()" (onSubmit)="channelSubmit()"></app-channel>
+        
+    </div>
+    <!-- <div *ngIf="isChannelEditForm">
+            <app-channel-edit (onCancel)="channelEditCancel()" (onSubmit)="channelEditSubmit()"></app-channel-edit>
+        
+    </div> -->
+
+    <div *ngIf="isCourierForm">
+            <app-courier (onCancel)="courierCancel()" (onSubmit)="courierSubmit()"></app-courier>
+        
+    </div>
+    <!-- <div *ngIf="isCourierEditForm">
+            <app-courier-edit (onCancel)="courierEditCancel()" (onSubmit)="courierEditSubmit()"></app-courier-edit>
+       
+    </div> -->
+    <div *ngIf="isDocumentForm">
+            <app-document (onCancel)="documentCancel()" (onSubmit)="documentSubmit()"></app-document>
+        
+    </div>
+    <!-- <div *ngIf="isDocumentEditForm">
+            <app-document-edit (onCancel)="documentEditCancel()" (onSubmit)="documentEditSubmit()"></app-document-edit>
+    
+    </div> -->
+    <div *ngIf="isChannel">
+        <form>
+            <h2 style="margin-left: 3%;">Inward Channel</h2>
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field style="margin-left: 50px;">
+                            <input type="text" #channelcode matInput autocomplete="off">
+                            <mat-placeholder>Channel Code</mat-placeholder>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="margin-left: 50px;">
+                            <input type="text" #channelname matInput autocomplete="off">
+                            <mat-placeholder>Channel Name</mat-placeholder>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary"
+                            (click)="searchChannel(channelcode.value, channelname.value)"
+                            style="border-radius:40px;margin-left: 50px;" color="primary"><i class="fa fa-search"
+                                aria-hidden="true"></i></button>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary"
+                            (click)="channelcode.value = ''; channelname.value = ''; getChannel(); "
+                            style="border-radius:40px;margin-left:50px;" color="primary">Reset</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <div class="table-responsive" style="margin-top: 1%;width: 50%;margin-left: 50px;">
+            <table class="table scrolltable table-bordered" fixed-header>
+                <thead>
+                    <tr class="table_header" fixed-header style="text-align:center;">
+                        <th>Sl.No</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <!-- <th *ngIf="ismakerCheckerButton">Action</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let channel of channelList; index as i">
+                        <th scope="row">{{ i+1 }}</th>
+                        <td>{{ channel?.code }}</td>
+                        <td>{{ channel?.name}}</td>
+                        <!-- <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton" (click)="EditForm('Inward Channel', Channel)"
+                                color="primary">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td> -->
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="channelList?.length==0; else paginationchannelList" class="NodataAlign">No Records Found...</div>
+            <ng-template #paginationchannelList>
+            <div  style="font-size: small;text-align: right;margin-bottom: 100px;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                    (click)="channel_previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{currentpageChannel}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="channel_nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+            </ng-template>
+        </div>
+    </div>
+
+
+    <div *ngIf="isDocument">
+        <form [formGroup]="DocSearchForm">
+            <h2 style="margin-left: 3%;">Inward Document</h2>
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field style="margin-left: 50px;">
+                            <input type="text" #documentcode formControlName="code" matInput autocomplete="off">
+                            <mat-placeholder>Document Code</mat-placeholder>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="margin-left: 50px;">
+                            <input type="text" #documentname formControlName="name" matInput autocomplete="off">
+                            <mat-placeholder>Document Name</mat-placeholder>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary"
+                            (click)="getDocsummary('')"
+                            style="border-radius:40px;margin-left: 50px;" color="primary"><i class="fa fa-search"
+                                aria-hidden="true"></i></button>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary"
+                            (click)="resetDoc() "
+                            style="border-radius:40px;margin-left:50px;" color="primary">Reset</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-success" (click)="addForm('Inward Document')"
+                            style="border-radius:40px;margin-left: 50px"><span class="fa fa-plus"></span></button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <div class="table-responsive" style="margin-top: 1%;width: 90%;margin-left: 50px;">
+            <table class="table scrolltable table-bordered" fixed-header>
+                <thead>
+                    <tr class="table_header" fixed-header style="text-align:center;">
+                        <th>Sl.No</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th *ngIf="ismakerCheckerButton">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let document of documentList; index as i">
+                        <td scope="row">{{(currentpageDocument - 1)*pageSize +i+1 }}</td>
+                        <td>{{ document?.code }}</td>
+                        <td>{{ document?.name}}</td>
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                            (click)="EditForm('Inward Document', document)" color="primary">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="documentList?.length==0; else paginationDocument" class="NodataAlign">No Records Found...</div>
+            <ng-template #paginationDocument>
+            <div  style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="has_previousdoc == false" color="primary"
+                        (click)="getDocsummary('previous')">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{currentpageDocument}}
+                    <button mat-icon-button [disabled]="has_nextdoc == false" color="primary"
+                        (click)="getDocsummary('next')">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+            </div>
+            </ng-template>
+        </div>
+    </div>
+
+
+
+
+    <div *ngIf="isCourier">
+
+        <form [formGroup]="CourierSearchForm" >
+            <h2 style="margin-left: 3%;">Inward Courier</h2>
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field style="margin-left: 50px;">
+                            <input type="text" #Couriercode formControlName="code" matInput autocomplete="off">
+                            <mat-placeholder>Courier Code</mat-placeholder>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="margin-left: 50px;">
+                            <input type="text" #Couriername formControlName="name"  matInput autocomplete="off">
+                            <mat-placeholder>Courier Name</mat-placeholder>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="margin-left: 50px;">
+                            <input type="text" #Couriercontactperson formControlName="contactperson"    matInput autocomplete="off">
+                            <mat-placeholder>Courier Contact Person</mat-placeholder>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary"
+                            (click)="getCouriersummary('')"
+                            style="border-radius:40px;margin-left: 50px;" color="primary"><i class="fa fa-search"
+                                aria-hidden="true"></i></button>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary"
+                            (click)="resetCourier()"
+                            style="border-radius:40px;margin-left:50px;" color="primary">Reset</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-success" (click)="addForm('Inward Courier')"
+                            style="border-radius:40px;margin-left: 50px"><span class="fa fa-plus"></span></button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <div class="table-responsive" style="margin-top: 1%;width: 90%;margin-left: 50px;">
+            <table class="table scrolltable table-bordered" fixed-header>
+                <thead>
+                    <tr class="table_header" fixed-header style="text-align:center;">
+                        <th>Sl.No</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Contact Person</th>
+                        <!-- <th>Type</th> -->
+                        <th *ngIf="ismakerCheckerButton">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let courier of courierList; index as i">
+                        <td scope="row">{{(currentpageCourier - 1)*pageSize +i+1 }}</td>
+                        <td>{{ courier?.code }}</td>
+                        <td>{{ courier?.name}}</td>
+                        <td>{{ courier?.contactperson}}</td>
+                        <!-- <td>{{ courier.type}}</td> -->
+                        <td *ngIf="ismakerCheckerButton">
+                            <button mat-icon-button matTooltip=" Edit" class="iconbutton" (click)="EditForm('Inward Courier', courier)"
+                                color="primary">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="courierList?.length==0; else paginationcourier" class="NodataAlign">No Records Found...</div>
+            <ng-template #paginationcourier>
+                <div style="font-size: small;text-align: right;margin-bottom: 100px;">
+                    <button mat-icon-button [disabled]="has_previousCourier === false" color="primary"
+                        (click)="getCouriersummary('previous')">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{currentpageCourier}}
+                    <button mat-icon-button [disabled]="has_nextCourier === false" color="primary"
+                        (click)="getCouriersummary('next')">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+</div>

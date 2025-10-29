@@ -1,0 +1,117 @@
+<div class="container">
+    <h2>PPR Exception</h2>
+    <div>
+        <form [formGroup]="exception">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>From Date</mat-label>
+                            <input matInput [matDatepicker]="fromdate" (dateChange)="todate_fun()" formControlName="from_date">
+                            <mat-datepicker-toggle matSuffix [for]="fromdate"></mat-datepicker-toggle>
+                            <mat-datepicker #fromdate startView="multi-year"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>To Date</mat-label>
+                            <input matInput [matDatepicker]="todate" [min]="exception?.value?.from_date" formControlName="to_date">
+                            <mat-datepicker-toggle matSuffix [for]="todate"></mat-datepicker-toggle>
+                            <mat-datepicker #todate startView="multi-year"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>File Type</mat-label>
+                            <mat-select formControlName="type">
+                                <mat-option *ngFor="let types of file_types" [value]="types.id">
+                                    {{types.type}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" (click)="exception_search(exception.value,empty)" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Search</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" (click)="clear_exception()" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Clear</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-primary" matTooltip="Download" style="border-radius: 40px;" (click)="exception_download()">
+                            <i class="fa fa-download" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="    padding-top: 2%;">
+        <div class="tableFixHead" style="     overflow: auto;">
+
+            <table class="table table-bordered" fixed-header>
+                <thead style="white-space: nowrap;background-color: #00800021;">
+                    <tr>
+                        <th>S.No</th>
+                        <th>Fin Year</th>
+                        <th>Transaction Month</th>
+                        <th>Branch Code</th>
+                        <th>Sector</th>
+                        <th>Business Segment</th>
+                        <th>Cost Center</th>
+                        <th>Category</th>
+                        <th>Sub-category</th>
+                        <th>Account Number</th>
+                        <th>D/C</th>
+                        <th>Status</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let exp of exception_data;index as ind">
+                        <td>{{(presentpage-1)*10+ind +1}}</td>
+                        <td>{{exp.fin_year}}</td>
+                        <td>{{month_ary[ exp.month - 1 ] }}</td>
+                        <td>{{exp.branch_code}}</td>
+                        <td>{{exp.sector}}</td>
+                        <td>{{exp.bsgenrate_no}}</td>
+                        <td>{{exp.ccgenrate_no}}</td>
+                        <td>{{exp.catgenrate_no}}</td>
+                        <td>{{exp.subcatgenrate_no}}</td>
+                        <td>{{exp.account_number}}</td>
+                        <td>{{exp.DC_flag=='D' ? 'Debit' : 'credit'}}</td>
+                        <td>{{exp.status==1 ? 'Active' : (exp.status == 2 ? 'Processing' : (exp.status== 3 ? 'Closed':'--'))}}</td>
+                        <td>
+                            <mat-checkbox style="text-align: center;" class="example-margin" [disabled]="exp.status == 3 ?  true : null"  [checked]="exp.select" (change)="exception_select(exp,$event)"></mat-checkbox>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="summary_show==true" style="text-align: center;">Data Not Found</p>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+    <div class="center_align" *ngIf="!summary_show">
+        <mat-form-field >
+            <mat-label>Select</mat-label>
+            <mat-select [(value)]="excep_data">
+                <mat-option *ngFor="let types of exp_data" [value]="types.id">
+                    {{types.type}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        
+        <button  type="submit" style="border-radius: 40px; margin-left: 5%;" (click)="exception_handling()" class="btn btn-outline-primary">Submit</button> &nbsp;&nbsp;                          
+    </div>
+</div>

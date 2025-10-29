@@ -1,0 +1,130 @@
+<div class="container">
+    <div class="mt-2 mb-2">
+        <h2>Unassigned Leads</h2>
+
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <form [formGroup]="LeadAllocationSearchForm">
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-label>Code / Name </mat-label><br>
+                                <mat-form-field>
+                                    <input type="text" matInput autocomplete="off" placeholder="Code"
+                                        formControlName="codename">
+                                </mat-form-field>
+                            </td>
+
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsSubmit"
+                                    aria-label="Search" (click)="LeadAllocationSearch('')">
+                                    <mat-icon>search</mat-icon>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsWhite"
+                                    (click)="resetLeadAllocation()">Clear</button>
+
+                            </td>
+                    </table>
+                </form>
+            </div>
+
+
+
+            <div class="col-sm-8 col-md-8 col-lg-8">
+                <mat-card>
+
+                <table class="table table-bordered" id="tableGlobal">
+                    <thead class="table_header">
+                        <tr>
+                            <th rowspan="2">S.No</th>
+                            <th rowspan="2">Lead</th>
+                            <th colspan="2">Select All <small>(Total Counts: {{LeadAllocationObjects?.counts}})</small> </th>
+                        </tr>
+                        <tr>
+                        <th>
+                            <div class="row"> 
+                                <div class="col-sm-8 col-md-8 col-lg-8"> 
+                                    <small>Limit: </small>
+                                    <span>
+                                <input type="text" [formControl]="limits" style="width: 50px;"
+                                 [readOnly]="LeadAllocationObjects.selectAll.AllSelected == true" > / {{LeadAllocationObjects?.counts}}
+                                 <mat-error *ngIf="limits.value > LeadAllocationObjects?.counts || limits.value < 1 "><small>Limit not matched</small></mat-error>
+                                </span>
+                                </div>
+                                <div class="col-sm-4 col-md-4 col-lg-4"> 
+                                <input type="checkbox"
+                                [checked]="LeadAllocationObjects.selectAll.AllSelected == true"
+                                        (click)="SelectAllLeadsOrSingleLeads($event, 'AllSelect')">
+                                    </div>
+                                    </div>   
+                        </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let type of LeadAllocationObjects.LeadAllocationList; let proindex = index">
+                            <td>{{(LeadAllocationObjects?.presentpageLeadAllocation - 1)*10+proindex+1}}</td>
+                            <td>{{type?.first_name}} {{type?.middle_name}} {{type?.last_name}}</td>
+                            <td> <input type="checkbox" (click)="AddRemoveArr($event, type)" [checked]="type.checked == true" > </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="LeadAllocationObjects.LeadAllocationList?.length==0 || LeadAllocationObjects.LeadAllocationList == undefined ; else paginationpro"
+                    class="NodataAlign text-center">No Records Found...</div>
+                <ng-template #paginationpro>
+                    <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                        <button type="button" mat-icon-button
+                            [disabled]="LeadAllocationObjects.has_previousLeadAllocation == false" color="primary"
+                            (click)="LeadAllocationSearch('previous')">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{LeadAllocationObjects?.presentpageLeadAllocation}}
+                        <button type="button" mat-icon-button
+                            [disabled]="LeadAllocationObjects.has_nextLeadAllocation === false" color="primary"
+                            (click)="LeadAllocationSearch('next')">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+
+                </mat-card>
+
+            </div>
+
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <mat-card>
+                <form [formGroup]="LeadAllocationForm">
+                    <mat-form-field>
+                        <mat-label>Vendor</mat-label>
+                        <input #VendorInput type="text" matInput
+                            (keyup)="VendorDD(this.LeadAllocationForm.value.vendor)" formControlName="vendor"
+                            [matAutocomplete]="Vendor">
+                            <mat-icon matSuffix  id="iconInput">search</mat-icon>
+                        <mat-autocomplete #Vendor="matAutocomplete" [displayWith]="displayFnVendor">
+                            <mat-option *ngFor="let Vendor of LeadAllocationObjects.VendorList" [value]="Vendor">
+                                {{Vendor.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </form>
+
+                <button id="buttonsSubmit" class="btn btn-light" (click)="SubmitFinalDataAllocation()"> Allocate</button>
+
+                <!-- <button id="buttonsWhite" class="btn btn-light" (click)="ProductCancel()"> Cancel</button> -->
+
+                </mat-card>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+
+    </div>
+</div>

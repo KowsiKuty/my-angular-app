@@ -1,0 +1,228 @@
+<div class="Pad20">
+    <ng-container *ngIf="MigrationHeader">
+        <h2>Migration Header</h2>
+        <form [formGroup]="MigrationHeaderSearch">
+            <div class="DisplaySearchFlex">
+                <div class="search-auto-fit">
+                    <div id="matInput-size">
+                        <mat-form-field appearance="outline" class="width170px">
+                            <mat-label>Date</mat-label>
+                            <input matInput [matDatepicker]="startPicker" formControlName="Date" />
+                            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #startPicker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div id="matInput-size">
+                        <mat-form-field appearance="outline" class="width170px">
+                            <mat-label>Mono Status</mat-label>
+                            <mat-select formControlName="Status">
+                                <mat-option *ngFor="let data of MonoStatusData" [value]="data">
+                                    {{data}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <button class="btn-fill fill-primary" (click)="SearchFunc(1)">
+                        <mat-icon class="btn-icon">search</mat-icon>
+                    </button>
+                    <button class="btn-fill fill-secondary" (click)="ClearFunc()">
+                        <mat-icon class="btn-icon">refresh</mat-icon>
+                    </button>
+                    <button class="btn-fill fill-primary" (click)="PrepareMigrateFunction()">
+                        Prepare Migrate
+                    </button>
+                    <button class="btn-fill fill-primary" (click)="TruncateFunc()">
+                        Truncate
+                    </button>
+                </div>
+                <div>
+                    <button class="btn-fill fill-primary" (click)="MakeMigrate()">
+                        Make Migrate
+                    </button>
+                </div>
+            </div>
+
+        </form>
+        <div class="comp-table t-resposive">
+            <table>
+                <thead>
+                    <th>S.No</th>
+                    <th>Date</th>
+                    <th>Module</th>
+                    <th>Mono Status</th>
+                    <th>Total Count</th>
+                    <th>Completed Count</th>
+                    <th>Failed Count</th>
+                    <th>Action</th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of DataMigrateSummary;let i=index">
+                        <td>{{(DataMigratePagination?.index - 1) * 10 + i + 1}}</td>
+                        <td>{{data?.date}}</td>
+                        <td>{{data?.module}}</td>
+                        <td>{{data?.mono_status}}</td>
+                        <td>{{data?.total_count}}</td>
+                        <td>{{data?.completed_count}}</td>
+                        <td>{{data?.failed_count}}</td>
+                        <td>
+                            <div class="VisibilityFlex">
+                                <div>
+                                    <mat-checkbox [checked]="data?.bool" (change)="InputChangeFunc($event,data)"
+                                        [disabled]="DisabledSome() && !data?.bool"></mat-checkbox>
+                                </div>
+                                <div>
+                                    <mat-icon class="btn-icon CursorPointer"
+                                        (click)="HeaderVisibility(data?.id)">visibility</mat-icon>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="!DataMigrateSummary?.length" class="NoRecordsFound">No Records Found</div>
+        </div>
+        <div class="t-page-container">
+            <div class="t-pagination">
+                <button type="button" class="btn-fill" [disabled]="!DataMigratePagination?.hasPrev"
+                    (click)="FirstHead()">
+                    <mat-icon class="btn-icon">keyboard_double_arrow_left</mat-icon>
+                </button>
+                <button type="button" class="btn-fill" [disabled]="!DataMigratePagination?.hasPrev"
+                    (click)="PrevHead()">
+                    <mat-icon class="btn-icon">keyboard_arrow_left</mat-icon>
+                </button>
+                <p class="t-pg-count">{{DataMigratePagination?.index}}</p>
+                <button type="button" class="btn-fill" [disabled]="!DataMigratePagination?.hasNext"
+                    (click)="NextHead()">
+                    <mat-icon class="btn-icon">keyboard_arrow_right</mat-icon>
+                </button>
+                <button type="button" class="btn-fill" [disabled]="!DataMigratePagination?.hasNext"
+                    (click)="LastHead()">
+                    <mat-icon class="btn-icon">keyboard_double_arrow_right</mat-icon>
+                </button>
+            </div>
+        </div>
+
+    </ng-container>
+    <ng-container *ngIf="MigrationDetail">
+        <h2 class="MigrationHeader"><mat-icon (click)="ArrowBackFunc()"
+                class="CursorPointer">arrow_back</mat-icon>Migration Detail</h2>
+        <form [formGroup]="MigrationDetailSearch">
+            <div class="search-auto-fit">
+                <div id="matInput-size">
+                    <mat-form-field appearance="outline" class="width170px">
+                        <mat-label>Date</mat-label>
+                        <input matInput [matDatepicker]="startPicker1" formControlName="Date" />
+                        <mat-datepicker-toggle matSuffix [for]="startPicker1"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker1></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div id="matInput-size">
+                    <mat-form-field appearance="outline" class="width170px">
+                        <mat-label>CR No</mat-label>
+                        <input matInput formControlName="CRNo">
+                    </mat-form-field>
+                </div>
+                <div id="matInput-size">
+                    <mat-form-field appearance="outline" class="width170px">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="Status">
+                            <mat-option *ngFor="let data of StatusData" [value]="data">
+                                {{data}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <button class="btn-fill fill-primary" (click)="MainDetailSearchFunc()">
+                    <mat-icon class="btn-icon">search</mat-icon>
+                </button>
+                <button class="btn-fill fill-secondary" (click)="ClearMigrationFunc()">
+                    <mat-icon class="btn-icon">refresh</mat-icon>
+                </button>
+            </div>
+        </form>
+        <div class="comp-table t-resposive">
+            <table>
+                <thead>
+                    <th>S.No</th>
+                    <th>Date</th>
+                    <th>Mono Status</th>
+                    <th>CR No</th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of DataDetailSummary;let i=index">
+                        <td>{{(DataDetailPagination?.index - 1) * 10 + i + 1}}</td>
+                        <td>{{data?.date}}</td>
+                        <td>{{data?.mono_status}}</td>
+                        <td>{{data?.mono_crno}}</td>
+                        <td>{{data?.remarks}}</td>
+                        <td>{{data?.status}}</td>
+                        <td>
+                            <mat-icon class="btn-icon CursorPointer">visibility</mat-icon>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="!DataDetailSummary?.length" class="NoRecordsFound">No Records Found</div>
+        </div>
+        <div class="t-page-container">
+            <div class="t-pagination">
+                <button type="button" class="btn-fill" [disabled]="!DataDetailPagination?.hasPrev"
+                    (click)="FirstDetail()">
+                    <mat-icon class="btn-icon">keyboard_double_arrow_left</mat-icon>
+                </button>
+                <button type="button" class="btn-fill" [disabled]="!DataDetailPagination?.hasPrev"
+                    (click)="PrevDetail()">
+                    <mat-icon class="btn-icon">keyboard_arrow_left</mat-icon>
+                </button>
+                <p class="t-pg-count">{{DataDetailPagination?.index}}</p>
+                <button type="button" class="btn-fill" [disabled]="!DataDetailPagination?.hasNext"
+                    (click)="NextDetail()">
+                    <mat-icon class="btn-icon">keyboard_arrow_right</mat-icon>
+                </button>
+                <button type="button" class="btn-fill" [disabled]="!DataDetailPagination?.hasNext"
+                    (click)="LastDetail()">
+                    <mat-icon class="btn-icon">keyboard_double_arrow_right</mat-icon>
+                </button>
+            </div>
+        </div>
+    </ng-container>
+</div>
+<div [ngClass]="ShowOtpPopup?'popup-open':'popup'">
+    <div class="popup-container-md">
+        <div class="popup-head">
+            <h3 class="popup-title">Please verify your mobile number</h3>
+            <button type="button" class="close-popup" (click)="closePopup()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <div class="popup-body card-signin">
+            <!-- <h6 class="card-title text-center">Please verify your mobile number
+            </h6> -->
+            <form [formGroup]="mobile_form" class="login-container" (ngSubmit)="mobilelogin()">
+                <div class="form-label-group">Mobile Number
+                    <input type="hidden" id="mobile" class="form-control" autocomplete="off" name="Mobile "
+                        placeholder="Number" formControlName="mobile_number" [readonly]="true">
+                    <input id="mobile" class="form-control" autocomplete="off" name="Mobile " placeholder="Number"
+                        formControlName="mobile_num" [readonly]="true">
+                </div>
+                <p>Please enter the 8-digit verification <br />
+                    code we sent via SMS:(we want to make sure it's you before Login)</p>
+                <div class="form-label-group Margin10"> OTP
+                    <input type="password" id="password" class="form-control" autocomplete="off" name="login"
+                        formControlName="otp" placeholder="">
+                </div>
+                <p>Did not Recieve in {{count}}s? </p>
+                <p *ngIf="count==0" style="text-align: right; color: blue;" class="Margin10" (click)="gen_otp()">
+                    <a>Resend OTP</a>
+                </p>
+
+                <input type="submit" class="btn-fill fill-primary Margin10 verify" value="verify">
+
+            </form>
+        </div>
+    </div>
+</div>

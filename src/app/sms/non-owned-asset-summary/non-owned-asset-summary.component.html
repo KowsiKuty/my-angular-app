@@ -1,0 +1,314 @@
+<div style="margin-left:2%">
+    <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;font-size: 23px;">Non Owned Asset Maker Summary</h2>
+    <hr />
+</div>
+<br>
+<div style="margin-left:2%">
+        <form [formGroup]="noagropform" (ngSubmit)="getnoaApi()">
+            <div class="row" class="col-md-12">  
+                
+                    <mat-form-field class="example-full-width" style=" margin-left: 10px;width: 200px;">
+                        <mat-label>Branch</mat-label>
+                        <input class="toolbar-search" type="text" matInput autocomplete="off" #branchidInput [matAutocomplete]="branchref" formControlName="branch" style="width: 250px;" (keypress)="kyenbdata($event)" />
+                        <mat-autocomplete #branchref="matAutocomplete" [displayWith]="branchintreface" (opened)="autocompletebranchname()">
+                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option  title="{{d.code+' - '+d.name}}" *ngFor="let d of branchList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+               
+                    <mat-form-field style="width: 150px; margin-left: 10px;">
+                            <mat-label>Non Owned Asset ID </mat-label>
+                            <input matInput placeholder="Asset id" formControlName="Asset_id" #assetidInput autocomplete="off"   />
+                        <!--<input matInput placeholder="Asset" formControlName="Asset_id" #assetidInput autocomplete="off" [matAutocomplete]="autoasset" (keypress)="kyenbdata($event)" />
+                            <mat-autocomplete #autoasset="matAutocomplete" >
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of assetidList" [value]="d.barcode">{{d.barcode}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>-->
+                        </mat-form-field>
+                <!-- </div> -->
+                
+
+                <!--<mat-form-field style="width: 200px;margin-left: 50px;">
+                    <mat-label>Asset Category</mat-label>
+                    <input type="text" matInput formControlName="category" [matAutocomplete]="datacate" (keypress)="kyenbdata($event)">
+                    <mat-autocomplete #datacate="matAutocomplete" [displayWith]="categoryintreface" (opened)="autocompletesubname()">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of categoryList" [value]="d">{{d.subcatname}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>-->
+                <!-- <div class="col-md-2">  -->
+                    <mat-form-field style="width: 150px; margin-left: 10px;">
+                        <mat-label>Non Owned Product Name </mat-label>
+                        <input matInput placeholder="Product name" formControlName="Asset_name"  />
+                    </mat-form-field>
+                 <!-- </div> -->
+                 <!-- <div class="col-md-2" > -->
+                    <mat-form-field style="width: 150px; margin-left: 10px;">
+                        <mat-label>Make/Model </mat-label>
+                        <input matInput placeholder="Make/Model " formControlName="Make_model"  />
+                    </mat-form-field>
+                <!-- </div> -->
+
+            <!-- <div class="col-md-2"> -->
+
+                <mat-form-field style="width: 150px; margin-left: 10px;">
+                    <mat-label>Non Owned Asset Serial Number </mat-label>
+                    <input matInput placeholder="Non Owned Asset Serial Number" formControlName="asset_serial_number"  />
+                </mat-form-field>
+            <!-- </div> -->
+        <!-- </div> -->
+        <!-- <div class="row"> -->
+            <!-- <div class="col-md-2"> -->
+       
+                    <mat-form-field  style="margin-left: 10px;width: 200px;" >
+                        <mat-label>Non Owned Asset Use Start Date</mat-label>
+                        <input matInput  [matDatepicker]="picker1" placeholder="Start Date" formControlName="Start_date"  (dateChange)="onDateChange()" required readonly />
+                        <mat-datepicker-toggle matSuffix [for]="picker1">
+                            
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field> 
+            <!-- </div>   -->
+      
+     
+            <!-- <div  class="col-md-2">     -->
+        
+                    <mat-form-field  style="margin-left: 10px;width: 200px;" class="example-full-width">
+                        <mat-label>Non Owned Asset Use End Date</mat-label>
+                        <input matInput  [matDatepicker]="picker2" placeholder="Non Owned Asset Use End Date" formControlName="enddate" [min]="latest_date | date:'dd-MMM-yyyy'" required />
+                        <mat-datepicker-toggle matSuffix [for]="picker2">
+                            
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+                <!-- </div> -->
+               <!-- <div class="col-md-2"> -->
+
+                    <mat-form-field style="margin-left: 10px;width: 200px;">
+                        <mat-label>Status </mat-label>
+                       <!-- <input matInput placeholder="status" formControlName="status"  />-->
+                        <mat-select formControlName="status">
+                            <mat-option value="PENDING">PENDING</mat-option>
+                            <mat-option value="APPROVED">APPROVED</mat-option>
+                            <mat-option value="REJECTED">REJECTED</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                <!-- </div> -->
+          
+              
+
+                   <!-- <mat-form-field style="width: 200px;margin-left: 40px;">
+                        <mat-label>Asset Category</mat-label>
+                        <input type="text" matInput formControlName="category" [matAutocomplete]="datacate" (keypress)="kyenbdata($event)">
+                        <mat-autocomplete #datacate="matAutocomplete" [displayWith]="categoryintreface" (opened)="autocompletesubname()">
+                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let d of categoryList" [value]="d">{{d.subcatname}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>-->
+                <!-- <div class="col-md-6"> -->
+                    
+                    <button class="btn btn-outline-success" matTooltip="Search"  style="margin-left: 10px;border-radius: 40px; height: fit-content;">
+                        Search
+                    </button>
+               
+                   
+                     <button class="btn btn-outline-danger" (click)="resetdata()" matTooltip="Reset" style="margin-left: 10px;border-radius: 40px; height: fit-content;" type="button" >Reset</button>
+
+               
+              
+                     <button type="button"  matTooltip="Create Non Owned Asset" (click)="createNOA()"  class="btn btn-outline-success"
+                    style="border-radius:40px;margin-left:630px;height: fit-content;">Non Owned Asset<span class="fa fa-plus"></span></button> 
+                    
+               
+                            <button mat-raised-button type="button" class="btn btn-primary"  (click)="noa_maker_summary_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+                                Download
+                                    <mat-icon *ngIf="first"><mat-spinner color="green" diameter="20">
+                                    </mat-spinner></mat-icon>
+                                    <mat-icon *ngIf="!first" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                            </button>
+              
+                    <button type="button"   routerLink="/sms/smsmaster"  class="btn btn-outline-primary" style="border-radius: 40px;margin-left:10px;height: fit-content;">Back</button>
+            
+                 </div>
+       </form>
+</div>
+   <div  style="margin-left:2%"> 
+         <table class="table table-bordered" style="width:97%;margin-top: 2%;">
+            <thead class="table_header" >
+               <tr>
+                <th>S.No <button mat-icon-button [ngClass]="noaclr==false?'able':'disable'" matTooltip="asce" style="text-align: right;" 
+                    (click)="getnoaascdec('asce',1)"><mat-icon>arrow_upward</mat-icon></button>
+                <button mat-icon-button [ngClass]="noaclr1==false?'able':'disable'" matTooltip="dece" style="text-align: right;" color="primary"
+                    (click)="getnoaascdec('desc',2)"><mat-icon>arrow_downward</mat-icon></button></th>
+                <th>Branch Name</th>
+                <th>Non Owned Asset Id</th>
+                <th>Non Owned Product Name</th>
+                <th>Make/Model</th>
+                <th>Non Owned Asset Serial Number</th>
+                <th>Non Owned Asset Use - Start Date</th>
+                <!--<th>Asset Category</th>-->
+                <th>Non Owned Asset Use - End Date</th>
+                <th>Remarks</th>
+                <th>Status</th>
+                <th>Action</th>
+               </tr>
+            </thead>
+            <tbody >
+               <tr  *ngFor="let noa of noasummarydata; index as listIndex" >
+               <td scope="row">{{ (presentpagebuk-1)*pageSize+listIndex+1 }}</td>
+               <td>{{noa.branch_id.name}}</td>
+               <td>{{noa.asset_id}}</td>
+               <td>{{noa.asset_name}}</td>
+               <td>{{noa.asset_make_model}}</td>
+               <td>{{noa.asset_serial_no}}</td>
+               <td>{{noa.start_date | date:'dd-MMM-yyyy'}}</td>
+             <!--  <td>{{noa.asset_cat.name}}</td>-->
+               <td>{{noa.end_date | date:'dd-MMM-yyyy'}}</td>
+               <td>{{noa.remarks}}</td>
+               <td>{{noa.status}}</td>
+                <td>
+                    <button mat-icon-button matTooltip=" NOA Edit" class="iconbutton" [disabled]="disables(noa)" [ngClass]="noa.status=='REJECTED'||'APPROVED'?'prodactive':'proinactive'" (click)="edit_noa_screen(noa)" data-toggle="modal" data-target="#shownoaeditdetails"
+                    color="primary" >
+                    <mat-icon style="color: gray;" aria-label="Edit" >edit</mat-icon>
+                </button> 
+                </td>
+                <tr *ngIf="noasummarydata.length==0">
+                    <td colspan="10">
+                        No Records Found..
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+         
+                <td class="text-right" colspan="10">
+                <button mat-icon-button [disabled]="has_previousbuk === false" color="primary" (click)=" bukpreviousClick()">
+                <mat-icon>arrow_back</mat-icon></button>
+               {{presentpagebuk}}
+               <button mat-icon-button [disabled]="has_nextbuk === false" color="primary" (click)=" buknextClick()">
+               <mat-icon>arrow_forward</mat-icon>
+               </button>
+               </td>
+            </tfoot>
+         </table>
+    </div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    id="shownoaeditdetails">
+    <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #b8eeb8">
+                <h2 class="modal-title">
+                  Non Owned Asset Edit Screen</h2>
+                <button type="button" #closepopup class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="container" [formGroup]="noaeditform" >
+                <div class="row"> &nbsp;  &nbsp; 
+                            <mat-form-field class="example-full-width" style="margin-left: 10px;width: 200px;">
+                                <mat-label>Branch</mat-label>
+                                <input class="toolbar-search" type="text" matInput autocomplete="off" #branchidInput [matAutocomplete]="branchref" formControlName="branch" style="width: 250px;" (keypress)="kyenbdata($event)" required />
+                                <mat-autocomplete #branchref="matAutocomplete" [displayWith]="branchintreface" (opened)="autocompletebranchname()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option  title="{{d.code+' - '+d.name}}" *ngFor="let d of branchList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <mat-form-field style="width: 200px; margin-left: 30px;">
+                                    <mat-label>Non Owned Asset ID </mat-label>
+                                    <input matInput placeholder="Asset id" formControlName="Asset_id" #assetidInput autocomplete="off" required  />
+                                    <!--<input matInput placeholder="Asset" formControlName="Asset_id" #assetidInput autocomplete="off" [matAutocomplete]="autoasset" (keypress)="kyenbdata($event)" />
+                                    <mat-autocomplete #autoasset="matAutocomplete" >
+                                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let d of assetidList" [value]="d.barcode">{{d.barcode}}</mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>-->
+                                </mat-form-field>
+                            
+            
+                          <!-- <mat-form-field style="width: 200px;margin-left: 50px;">
+                                <mat-label>Asset Category</mat-label>
+                                <input type="text" matInput formControlName="category" [matAutocomplete]="datacate" (keypress)="kyenbdata($event)">
+                                <mat-autocomplete #datacate="matAutocomplete" [displayWith]="categoryintreface" (opened)="autocompletesubname()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of categoryList" [value]="d">{{d.subcatname}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>-->
+                            <mat-form-field style="width: 200px; margin-left: 30px;">
+                                <mat-label>Non Owned Product Name </mat-label>
+                                <input matInput placeholder="Product name" formControlName="Asset_name" required />
+                            </mat-form-field>
+                            <mat-form-field style="width: 200px; margin-left: 30px;">
+                                <mat-label>Make/Model </mat-label>
+                                <input matInput placeholder="Make/Model " formControlName="Make_model" required />
+                            </mat-form-field><br><br>
+                            <mat-form-field style="width: 200px; margin-left: 30px;">
+                                <mat-label>Non Owned Asset Serial Number </mat-label>
+                                <input matInput placeholder="Non Owned Asset Serial Number" formControlName="asset_serial_number" required />
+                            </mat-form-field>
+                            <div class="col-md-4">
+                    
+                                <mat-form-field  style="width: 300px;">
+                                    <mat-label>Non Owned Asset Use - Start Date</mat-label>
+                                    <input matInput  [matDatepicker]="picker1" placeholder="Start Date" formControlName="Start_date" (dateChange)="DateChange()" required />
+                                    <mat-datepicker-toggle matSuffix [for]="picker1">
+                                        
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+                            &nbsp;
+                            <div class="col-md-4">
+                    
+                                <mat-form-field  style="width: 300px;">
+                                    <mat-label>Non Owned Asset Use - End Date</mat-label>
+                                    <input matInput  [matDatepicker]="picker2" placeholder="Non Owned Asset Use - End Date" formControlName="enddate"  [min]="noaeditform.get('Start_date').value"required />
+                                    <mat-datepicker-toggle matSuffix [for]="picker2">
+                            
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                </mat-form-field>
+                            
+                        </div>
+            
+            
+                   <!--<div class="col-md-4">
+                    
+                        <mat-form-field style="margin-left: 10px;width: 200px;">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput placeholder="AMC Header Name" formControlName="remarks" #assetidInput autocomplete="off"  />
+            
+                        </mat-form-field>
+                    
+                </div>-->
+                <br><br>
+                <div class="col-md-5" style="text-align: right;">
+                    <button type="button" class="btn btn-outline-primary" (click)="updatenoa()" #closepopup  data-dismiss="modal" style="border-radius: 40px;font-size: 20px;height: 50px;" >Submit</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type="button" class="btn btn-outline-danger" (click)="editresetdata()" #closepopup  data-dismiss="modal"style="border-radius: 40px;font-size: 20px;height: 50px;"  >Reset</button>&nbsp;&nbsp;&nbsp;&nbsp;        
+                    <button type="reset" class="btn btn-outline-primary"  #closepopup data-dismiss="modal" style="border-radius: 40px;font-size: 20px;height: 50px;">Back</button>
+            
+                </div>
+            
+                
+                </div>
+            </form>
+            
+               
+
+            </div>
+        </div>
+    </div>
+  
+
+       

@@ -1,0 +1,235 @@
+<div>
+    <h1 style="font-family: 'Times New Roman', Times, serif;font-size: 23px;color: blue;">Electricity Details CO & DO
+         Summary</h1>
+</div>
+<hr>
+<div>
+    <form [formGroup]="codosearchform">
+        <div class="col-md-12 row">
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Consumer Name</mat-label>
+                    <input type="text" formControlName="consumername"  matInput >
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Consumer No</mat-label>
+                    <input type="text" matInput formControlName="consumerno">
+                </mat-form-field>
+            </div>
+            <!-- <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Consumer Name</mat-label>
+                    <input type="text" matInput formControlName="branch">
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-3" >
+                <mat-form-field style="width: 250px;" (click)="getstatelist('',state_presentpage=1)">
+                    <mat-label>State</mat-label>
+                    <input type="text" #typeinput  matInput formControlName="state"
+                             autocomplete="off"
+                        (keyup)="getstatelist($event.target.value,state_presentpage=1)"
+                        [matAutocomplete]="typeauto">
+                    <mat-autocomplete [panelWidth]="300" #typeauto="matAutocomplete"
+                        [displayWith]="displaystate" >
+
+
+                        <mat-option  *ngFor="let type of statedata" [value]="type">
+                            {{type.name}}</mat-option>
+
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-3" >
+                <mat-form-field style="width: 250px;"
+                (click)="getboard('','',board_currentpage=1)">
+                <mat-label>Electricity Board</mat-label>
+                <!-- <mat-select formControlName="consumer_board">
+                    <mat-option *ngFor="let electricity of electricityBoard" [value]="electricity.name">
+                        {{electricity.name}}
+                    </mat-option>
+                </mat-select> -->
+
+                <input placeholder="Board"  matInput formControlName="board"
+                    #boardinput [matAutocomplete]="boardtype"
+                    (keyup)="getboard($event.target.value,'',board_currentpage=1)">
+                <mat-autocomplete #boardtype="matAutocomplete" [displayWith]="displaywithboard"
+                    >
+                   
+                    
+                        <mat-option *ngFor="let board of boarddata" [value]="board">
+                            <!-- ({{branch.code}}){{branch.name+ " " }} -->
+                            {{board.name}}
+                        </mat-option>
+           
+                </mat-autocomplete>
+            </mat-form-field>
+            </div>
+
+            <div class="col-md-3" >
+                <mat-form-field style="width: 250px;" (click)="getregion('')">
+                    <mat-label>Region</mat-label>
+                    <input placeholder="Region" formControlName="region" matInput (keyup)="getregion($event.target.value)"
+                        #branchContactInput [matAutocomplete]="branchtype">
+                    <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displayregion"
+                        >
+                      
+                            <mat-option *ngFor="let branch of regiondata" [value]="branch">
+                                <!-- ({{branch.code}}){{branch.name+ " " }} -->
+                                {{branch.region_name}}
+                            </mat-option>
+                        
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;" (click)="getbranchdata('',branch_currentpage=1)">
+                    <mat-label>Choose Raiser Branch</mat-label>
+                    <input placeholder="branch" matInput 
+                        (keyup)="getbranchdata($event.target.value,branch_currentpage=1)" formControlName="branch"
+                        #branchContactInput [matAutocomplete]="branchtype1">
+                    <mat-autocomplete  [panelWidth]="300" #branchtype1="matAutocomplete" [displayWith]="displaydiss2"
+                       >
+
+                        <mat-option *ngFor="let branch of branchdata" [value]="branch">
+                            
+                            ({{branch.code}}){{branch.name}}
+                        </mat-option>
+
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <!-- <mat-form-field style="width: 200px;" (click)="getbranchdata('',branch_currentpage=1)">
+                    <mat-label>Choose Branch</mat-label>
+                    <input placeholder="branch" matInput formControlName="branch" (keyup)="getbranchdata($event.target.value,branch_currentpage=1)" [matAutocomplete]="branchtype1">
+                    <mat-autocomplete #branchtype1="matAutocomplete" [displayWith]="displaydiss2"
+                        >
+                       
+                            <mat-option *ngFor="let branch of branchdata" [value]="branch">
+                                ({{branch.code}}){{branch.name+ " " }}
+                            </mat-option>
+                       
+                    </mat-autocomplete>
+                </mat-form-field> -->
+            </div>
+
+            <div class="col-md-3" >
+                <mat-form-field style="width: 250px;" (click)="getoccupancydropdowndata('')">
+                    <mat-label>Occupancy</mat-label>
+                    <input placeholder="Occupancy"  matInput (keyup)="getoccupancydropdowndata($event.target.value)" formControlName="occupancy" #occupancyinput
+                        [matAutocomplete]="occupancyautocomplete">
+                    <mat-autocomplete  [panelWidth]="400" #occupancyautocomplete="matAutocomplete" [displayWith]="displayocc">
+                     
+                            <mat-option *ngFor="let occ of occupancydata" [value]="occ">
+                                ({{occ?.occupancy_code}}) - {{occ.occupancy_name}}
+                            </mat-option>
+                        
+                    </mat-autocomplete>
+                </mat-form-field> 
+            </div>
+
+            <div class="col-md-3" >
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Active/Inactive</mat-label>
+                    <!-- <input type="text" matInput formControlName="branch"> -->
+                    <mat-select formControlName="active" >
+                        <!-- <mat-option value="Modified">Modified</mat-option> -->
+                        <mat-option value="1">Active</mat-option>
+                        <!-- <mat-option value="Resubmitted">Resubmitted</mat-option> -->
+                        <mat-option value="0">Inactive</mat-option>
+                       
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="status">
+                        <mat-option value="1">Submitted</mat-option>
+                        <mat-option value="2">Approved</mat-option>
+                        <mat-option value="3">Rejected</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-3">
+                <!-- <button mat-mini-fab (click)="searchdata()" type="button" style="background-color: rgb(130, 182, 130);"><mat-icon>search</mat-icon></button>
+                <button type="button" style="border-radius: 40px;height: 40px;margin-left: 10px;" class="btn btn-outline-danger" (click)="resetdata()" >Reset</button>
+                <button mat-mini-fab type="button" style="background-color:rgb(130, 182, 130) ;margin-left: 10px;" (click)="navigaredata()"><mat-icon>add</mat-icon></button> -->
+
+                <button class="btn btn-outline-primary" type="submit" (click)="searchdata(presentpage=1)"
+                    style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                        aria-hidden="true"></i></button>
+                <button class="btn btn-outline-danger" (click)="resetdata()" type="button"
+                    style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+                    &nbsp;&nbsp;
+                <button class="btn btn-outline-primary" (click)="getexceldownloadforeb()"
+                    style="border-radius:40px;margin-top: 0px;" color="primary">
+                    <i matTooltip="Download Excel" class="fa fa-download"></i>
+                </button>
+                <button type="button" class="btn btn-outline-success" ngbTooltip="Create New"
+                    tooltipClass="my-custom-class" style="border-radius:40px;margin-left:15px;"
+                    (click)="navigaredata()"><span class="fa fa-plus"></span></button>
+
+            </div>
+        </div>
+    </form>
+    <div style="margin: 2% 0%;width:100%" class="table-responsive">
+        <table class="table table-bordered" style="width: 95%;font-size: 14px;">
+            <thead class="table_header">
+                <tr>
+                    <th>S.No</th>
+                    <th>Consumer No</th>
+                    <th>Consumer Name</th>
+                    <th>Raiser Branch Name</th>
+                    <th>Occupancy</th>
+                    <th>State</th>
+                    <th>Board Name</th>
+                    <th>Region</th>
+                    <th>Active/Deactive</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let d of summarydata;let i=index">
+                    <td>{{(presentpage-1)*pagesize+i+1}}</td>
+                    <td (click)="clickConsumerNo(d)" style="color: mediumblue;cursor: pointer;">{{d.consumer_no}}</td>
+                    <td>{{d.consumer_name}}</td>
+                    <td>({{d?.branch_id?.code}})-{{d['branch_id'].name}}</td>
+                    <td>({{d?.occupancy_id?.code}})-{{d?.occupancy_id?.occupancy_name}}</td>
+                    <td>{{d.consumer_state?.name}}</td>
+                    <td>{{d.consumer_board?.name}}</td>
+                    <td>{{d.region_id?.region_name}}</td>
+                    <td>{{d.makerisactive==1?'Active':'Inactive'}}</td>
+                    <td>{{d['consumer_status'].status}}</td>
+                </tr>
+                <tr *ngIf="summarydata.length==0">
+                    <td colspan="10">
+                        No Records Found..
+                    </td>
+                </tr>
+                <tr>
+                     <td colspan="6"></td>
+                     <td colspan="2" >Count: <code>{{count}}</code></td>
+                    <td colspan="2">
+                        <div style="float: center">
+                            <button type="button" mat-icon-button (click)="previousdata()" [disabled]="!has_previous"
+                                color="primary">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentpage}}
+                            <button type="button" mat-icon-button (click)="nextdata()" [disabled]="!has_next"
+                                color="primary">
+                                <mat-icon> arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                   
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

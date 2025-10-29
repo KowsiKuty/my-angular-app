@@ -1,0 +1,103 @@
+<div >
+    <form [formGroup]="brsreport">
+    <div class="row" style="margin-top: 2%;margin-left: 1%;width: 99%;margin-bottom: 2%;">
+       <div class="col-md-2" style="margin-right:3%;">
+           <mat-form-field  appearance="outline" style="width:auto">
+             <mat-label>Start Date<label style="color: red;">*</label></mat-label>
+             <input matInput formControlName="summarydate" [matDatepicker]="picker1" >
+             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+             <mat-datepicker #picker1></mat-datepicker>
+           </mat-form-field>
+        </div>
+        <div class="col-md-2" style="margin-right:3%;">
+            <mat-form-field  appearance="outline" style="width:auto">
+              <mat-label>End Date<label style="color: red;">*</label></mat-label>
+              <input matInput formControlName="summarydate2" [matDatepicker]="picker2" >
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+         </div>
+       <div  class="col-md-2">
+        <mat-form-field (click)="brachserach()" appearance="outline" style="width:auto">
+            <mat-label>Branch</mat-label>
+            <input matInput  formControlName="branch" [matAutocomplete]="branch">
+            <mat-autocomplete #branch="matAutocomplete" [displayWith]="displaybranch">
+                <mat-option *ngFor="let data of brscode" [value]="data">
+                    {{data.branch}}
+                
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div  class="col-md-2">
+        <mat-form-field (click)="brachserach()" appearance="outline" style="width:auto">
+            <mat-label>GL ACCNO</mat-label>
+            <input matInput  formControlName="GLACCNO" [matAutocomplete]="glno">
+            <mat-autocomplete #glno="matAutocomplete" [displayWith]="displaygl">
+                <mat-option *ngFor="let data of brscode" [value]="data">
+                    {{data.gl_code}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div  class="col-md-2">
+        <mat-form-field (click)="arsdroupdowntype()" appearance="outline" style="width:auto">
+            <mat-label>Actions</mat-label>
+            <input matInput  formControlName="arstype" [matAutocomplete]="action">
+            <mat-autocomplete #action="matAutocomplete" [displayWith]="displayaction" >
+                <mat-option *ngFor="let data of arstype" [value]="data" >
+                    {{data.type}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+      </div>
+       <div  class="col-md-1" style="margin-right:2%;margin-top:0.5%; margin-left: 2%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -30%;" type="submit"  (click)="summary_search()">Search</button>
+       </div>
+       <div  class="col-md-1" style="margin-top:0.5%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -50%;" type="submit"  (click)="summary_clear()">Clear</button>
+       </div>
+        <div  class="col-md-1" style="margin-top:0.5%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -30%;" type="submit"  (click)="summary_back()">Back</button>
+       </div>
+       <div  class="col-md-1" style="margin-top:1%;">
+        <i matTooltip="Download" style="cursor: pointer;font-size: 30px;" [ngStyle]="{'color': 'green'}" (click)="arsdownload()" class="fa fa-download"></i>
+       </div>
+    </div>
+   </form>
+</div>
+
+
+<div style=" margin-left: 4%;">
+    <table class="table table-bordered" id="boxlevel" style="margin-left: -2%;">
+        <thead class="table_header">
+            <th style="text-align: center;">S.No</th>
+            <th style="text-align: center;">Branch</th>
+            <th style="text-align: center;">Gl Code</th>
+            <th style="text-align: center;">Debit Amount</th>
+            <th style="text-align: center;">Credit Amount</th>
+            <th style="text-align: center;">Type</th>
+            <!-- <th style="text-align: center;">Action</th> -->
+        </thead>
+        <tbody *ngFor="let sum of actionsum; let i=index">
+            <td style="text-align: center;">{{i+1}}</td>
+            <td style="text-align: center;">{{sum.branch}}</td>
+            <td style="text-align: center;">{{sum.gl_code}}</td>
+            <td style="text-align: right;">{{ (sum.d_or_c === "D" ? (sum.amount | currency: 'INR') : "") }}</td>
+            <td style="text-align: right;">{{ (sum.d_or_c ==  "C" ? (sum.amount | currency:"INR")  : "") }}</td>
+            <td style="text-align: center;">{{sum.type}}</td> 
+            <!-- <td ></td>  -->
+        </tbody>
+    </table>
+    <div>
+        <p *ngIf="!data_found" style="text-align: center;">Data Not Found..</p>
+    </div>
+    <div style="font-size: small;text-align:right;margin-right: 1%;">
+        <button mat-icon-button [disabled]="has_previoustab === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back</mat-icon>
+        </button> {{presentpagetab}}
+        <button mat-icon-button [disabled]="has_nexttab === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    </div>
+<div>

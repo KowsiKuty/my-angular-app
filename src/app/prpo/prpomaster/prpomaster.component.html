@@ -1,0 +1,532 @@
+<div class="Container" style="margin-left: 40px;">
+    <div class="nav nav-tabs" style="margin-top: 1%;">
+        <span class="nav-item nav-link " data-toggle="tab" (click)="subModuleData(sub)" role="tab"
+            *ngFor="let sub of prpomasterList">
+            {{sub.name}}
+        </span>
+    </div>
+</div>
+<div>
+    <span *ngIf="isCommodityForm">
+        <app-commodity (onSubmit)="commoditySubmit()" (onCancel)="commodityCancel()"></app-commodity>
+    </span>
+</div>
+<div>
+    <span *ngIf="isDelmatMakerForm">
+        <app-delmat-maker (onSubmit)="delSubmit()" (onCancel)="delCancel()"></app-delmat-maker>
+    </span>
+</div>
+
+
+<!-- COMMODITY -->
+
+
+<div *ngIf="isCommodity" style="margin-left: 50px;">
+    <div class="row">
+        <div class="col-12">
+            <form [formGroup]="commoditySearchForm" (ngSubmit)="getcommodity(1)">
+                <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                    <input class="toolbar-search" type="text" matInput autocomplete="off" formControlName="code">
+                    <mat-placeholder>Code</mat-placeholder>
+                </mat-form-field>
+                <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                    <input class="toolbar-search" type="text" matInput autocomplete="off" formControlName="name">
+                    <mat-placeholder>Name</mat-placeholder>
+                </mat-form-field>
+                <mat-form-field style="margin-left: 3%;">
+                    <mat-label>Active/Inactive</mat-label>
+                    <mat-select formControlName="activeinactive">
+                        <mat-option value="ACTIVE">ACTIVE</mat-option>
+                        <mat-option value="INACTIVE">INACTIVE</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                    color="primary">Search</button>
+                <button class="btn btn-outline-primary" (click)="resetcom()" type="submit"
+                    style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+                <button type="button" class="btn btn-outline-success" style="border-radius:40px;margin-left: 50px"
+                    (click)="addcom()"><span class="fa fa-plus"> Commodity</span></button>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive" style="margin-top: 2%;width: 100%;">
+        <table class="table table-bordered">
+            <thead class="table_header">
+                <tr>
+                    <th>S.No</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Assign Product</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let com of commodityList; index as i">
+                    <td style="text-align:right"> {{(presentpagecom - 1)*pageSize +i+1 }} </td>
+                    <td style="text-align:left">{{ com?.code }}</td>
+                    <td style="text-align:left">{{ com?.name}}</td>
+                    <td class="cursor">
+                        <div *ngIf="com?.status === 0 ; else enable">
+                            <button mat-icon-button matTooltip="assign-product" class="iconbutton" color="primary" disabled
+                                title="Disabled in Inactive State" data-toggle="modal"
+                                data-target=".bd-example-modal-lgone">
+                                <mat-icon aria-label="assign-product">edit</mat-icon>
+                            </button>
+                        </div>
+
+                        <ng-template #enable>
+                            <button mat-icon-button matTooltip="assign-product" class="iconbutton" color="primary"
+                                data-toggle="modal" data-target=".bd-example-modal-lgone"
+                                (click)="commodityforProduct(com)">
+                                <mat-icon style="color: gray;" aria-label="assign-product">edit</mat-icon>
+                            </button>
+                        </ng-template>
+                    </td>
+                    <td class="cursor">
+                        <div *ngIf="com?.status === 1 ; else lock">
+                            <mat-icon (click)="forInactive(com)" title="Click to Inactive" style="color: green;"
+                                aria-label="inactive">wb_sunny</mat-icon>
+                        </div>
+                        <ng-template #lock>
+                            <mat-icon (click)="foractive(com)" title="Click to Active" style="color:black;"
+                                aria-label="inactive">wb_sunny</mat-icon>
+                        </ng-template>
+                    </td>
+                </tr>
+                <tr *ngIf="commodityList.length==0;else paginationcom" style="text-align: center;" class=" NodataAlign"><td colspan="5">No Records Found...</td></tr>
+                    <ng-template #paginationcom>
+                        <tr>
+                            <td colspan="5">
+                                <div style="text-align: right;">
+                                    <button mat-icon-button [disabled]="has_previouscom === false" color="primary"(click)="previousClickcom()">
+                                        <mat-icon>arrow_back</mat-icon>
+                                     </button>
+                                        {{presentpagecom}}
+                                    <button mat-icon-button [disabled]="has_nextcom === false" color="primary" (click)="nextClickcom()">
+                                        <mat-icon>arrow_forward</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+            </tbody>
+        </table>
+        <!-- <div *ngIf="commodityList?.length==0; else paginationcom" class="NodataAlign">No Records Found...</div>
+        <ng-template #paginationcom>
+            <div class="cursor" style="font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previouscom === false" color="primary"
+                    (click)="previousClickcom()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagecom}}
+                <button mat-icon-button [disabled]="has_nextcom === false" color="primary" (click)="nextClickcom()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template> -->
+    </div>
+</div>
+<!-- ////////////////////////////////////assign-product -->
+<div class="modal fade bd-example-modal-lgone" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="exampleModalLongTitle">
+                        Commodity Name:<span style="color: blue;"> {{commodname}}</span></h2>
+                        <form [formGroup]="prodsearchformg" style="margin-top: -10px;margin-left:20px;">
+                           <div>
+                              <mat-form-field >
+                    <mat-label>Search Product
+                    </mat-label>
+                    <input #prodserachinp  matInput 
+                        [matAutocomplete]="prodser" placeholder="Search Product" (input)="prodfetch()"  formControlName="prod">
+                    <mat-autocomplete #prodser="matAutocomplete" 
+                    >
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let prodt of prodList" [value]="com" (click)="clickprodsearch(prodt)">{{prodt?.product?.name}} 
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                           </div>
+                <!-- <div>
+                     <button class="btn btn-outline-primary" (click)="Resetprod()" type="submit"
+                    style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+                </div> -->
+                        </form>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <br>
+                <!-- <form [formGroup]="productSearchForm"> -->
+                <div class="row" style="margin-left: 5px;">
+                    <h2> Assigned Product: &nbsp;</h2>
+                    <br>
+                    <div style="overflow-y: scroll;max-height: 200px;    display: flex;flex-wrap: wrap;gap: 10px">
+                        <mat-chip *ngFor="let prodt of prodList; index as i">&nbsp;{{prodt?.product?.name}} </mat-chip>
+                    </div>
+                </div>
+                <form>
+                    <mat-form-field style="width: 100%;">
+
+                        <mat-label>Product Name</mat-label>
+
+                        <mat-chip-list #chipListprod>
+                            <mat-chip *ngFor="let pro of chipSelectedprod" [selectable]=true [removable]=true
+                                (removed)="removedprod(pro)">
+                                {{pro.name}}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                            <input #prodInput [formControl]="product_id" [matAutocomplete]="prod"
+                                [matChipInputFor]="chipListprod" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                [matChipInputAddOnBlur]=true>
+                        </mat-chip-list>
+
+                        <mat-autocomplete #prod="matAutocomplete" (optionSelected)="prodSelected($event)">
+                            <mat-option *ngFor="let prod of productList" [value]="prod">
+                                {{prod.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+
+
+
+
+                    <button data-dismiss="modal" type="submit" style="border-radius: 40px;margin-left: 10px;"
+                        class="btn btn-outline-success" (click)="productsubmit()">Add</button>
+
+                    <button *ngIf="prodList?.length===0; else disab" disabled data-dismiss="modal" type="submit"
+                        style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-danger"
+                        (click)="productremovesubmit()">Remove</button>
+                    <ng-template #disab>
+                        <button data-dismiss="modal" type="submit" style="border-radius: 40px;margin-left: 10px;"
+                            class="btn btn-outline-danger" (click)="productremovesubmit()">Remove</button>
+                    </ng-template>
+
+
+
+
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- DELMAT MAKER -->
+
+<div *ngIf="isDelmatMakers" style="margin-left: 50px;">
+    <div class="row">
+        <div class="col-12 row">
+            <form [formGroup]="delmatSearchForm" (ngSubmit)="getdelmat(1)">
+                <mat-form-field style="width: 200px; ">
+                    <mat-label>Search Employee</mat-label>
+                    <input #empInput placeholder="Search Employee" matInput formControlName="employee_id"
+                        [matAutocomplete]="emp">
+                    <mat-autocomplete #emp="matAutocomplete" [displayWith]="displayFnemp"
+                        (opened)="autocompleteempScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let emp of employeeList" [value]="emp">{{emp.full_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field style="width: 200px;margin-left: 50px;">
+                    <mat-label> Search Commodity
+                    </mat-label>
+                    <input #comInput placeholder="Search Commodity" matInput formControlName="commodity_id"
+                        [matAutocomplete]="com">
+                    <mat-autocomplete #com="matAutocomplete" [displayWith]="displayFncom"
+                        (opened)="autocompletecomScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let com of commodityLists" [value]="com">{{com.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field style="width: 200px;margin-left: 50px;">
+                    <mat-label>Select Delmat Type</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option>Select</mat-option>
+                        <mat-option *ngFor="let type of delmattypeList" [value]="type.id">{{type.text}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field style="margin-left: 50px; width:200px">
+                    <mat-label>Active/Inactive</mat-label>
+                    <mat-select formControlName="activeinactive">
+                        <mat-option value="ACTIVE">ACTIVE</mat-option>
+                        <mat-option value="INACTIVE">INACTIVE</mat-option>
+                     </mat-select>
+                </mat-form-field>
+
+              
+                <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;">Search</button>
+            
+                <button class="btn btn-outline-primary" (click)="resetdelmak()" type="submit"  style="border-radius:40px;margin-left: 15px;">Reset</button>
+                <button type="button" class="btn btn-outline-success" style="border-radius:40px;margin-left: 15px;"
+                    (click)="adddel()"><span class="fa fa-plus"> Delmat</span></button>
+                <button class="btn btn-outline-primary" (click)="delmatDownload()" type="button"  
+                style="border-radius:40px;margin-left: 15px;">Download</button>
+            
+           
+        </form>
+        </div>
+    </div>
+    <div class="table-resposive" style="margin-top: 2%;width: 100%; overflow-x: hidden;">
+        <table class="table table-bordered">
+            <thead class="table_header">
+                <tr>
+                    <th>S.no</th>
+                    <th>Employee Name</th>
+                    <th>Designation</th>
+                    <th>Branch</th>
+                    <th>Commodity Name</th>
+                    <th>Delmat Type</th>
+                    <th>Limit</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <!-- <th>Remarks</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let del of delmatList; index as i">
+                    <td style="text-align:right"> {{(presentpagedel - 1)*pageSize +i+1 }} </td>
+                    <td style="text-align:left">{{ del?.employee_id?.full_name}}</td>
+                    <td style="text-align:left">{{ del?.employee_id?.designation}}</td>
+                    <td style="text-align:left">{{ del?.employee_id?.employeebranch_code}} - 
+                                                {{ del?.employee_id?.employeebranch_name}}
+                    </td>
+                    <td style="text-align:left" >{{ del?.commodity_id?.name }}</td>
+                    <td style="text-align:rileftght">{{ del?.type }}</td>
+                    <td style="text-align:right">{{ del?.limit| amountPipeCustom }}</td>
+                    <td style="text-align:right">
+                        {{ del?.delmat_status }}
+                    </td>
+                    <td class="cursor">
+                        <div *ngIf="del?.status === 1 ; else lock">
+                            <mat-icon (click)="forInactivedel(del)" style="color: green;" title="Click to Inactive"
+                                aria-label="inactive">wb_sunny</mat-icon>
+                        </div>
+                        <ng-template #lock>
+                            <mat-icon (click)="foractivedel(del)" style="color: black;" title="Click to Active"
+                                aria-label="inactive">wb_sunny</mat-icon>
+                        </ng-template>
+                    </td>
+                </tr>
+                <tr *ngIf="delmatList?.length==0; else pagenadel" class="NodataAlign" style="text-align: center;"><td colspan="7">No Records Found...</td></tr>
+
+                <ng-template #pagenadel>
+                    <tr>
+                        <td colspan="7">
+                            <div style="text-align: right;">
+                                <button mat-icon-button [disabled]="has_previousdel === false" color="primary"
+                                    (click)="previousClickdel()">
+                                    <mat-icon>arrow_back
+                                    </mat-icon>
+                                </button>
+                                {{presentpagedel}}
+                                <button mat-icon-button [disabled]="has_nextdel === false" color="primary" (click)="nextClickdel()">
+                                    <mat-icon>arrow_forward
+                                    </mat-icon>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+               
+
+            </tbody>
+        </table>
+        
+</div>
+</div>
+
+<!-- DELMAT APPROVAL -->
+
+<div *ngIf="isDelmatApproval" style="margin-left: 50px;">
+    <div class="row">
+        <div class="col-12">
+            <form [formGroup]="delmatapprovalSearchForm" (ngSubmit)="delmatappSearch()">
+                <mat-form-field style="width: 200px">
+                    <mat-label>Search Employee</mat-label>
+                    <input #empappInput placeholder="Search Employee" matInput formControlName="employee_id"
+                        [matAutocomplete]="empapproval">
+                    <mat-autocomplete #empapproval="matAutocomplete" [displayWith]="displayFnempapproval"
+                        (opened)="autocompleteempapprovalScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let emp of employeeList" [value]="emp">{{emp.full_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field style="width: 175px;margin-left: 50px;">
+                    <mat-label> Search Commodity</mat-label>
+                    <input #comappInput placeholder="Search Commodity" matInput formControlName="commodity_id"
+                        [matAutocomplete]="comapproval">
+                    <mat-autocomplete #comapproval="matAutocomplete" [displayWith]="displayFncomapproval"
+                        (opened)="autocompletecomappScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let com of commodityLists" [value]="com">{{com.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field style="width: 175px;margin-left: 50px;">
+                    <mat-label>Select Delmat Type</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option>Select</mat-option>
+                        <mat-option *ngFor="let type of delmattypeList" [value]="type.id">{{type.text}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;">Search</button>
+                <button class="btn btn-outline-primary" (click)="resetdelapproval()" 
+                    style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+            </form>
+        </div>
+    </div>
+    <div  style="margin-top: 2%;width: 95%; overflow-x: hidden;">
+        <table class="table table-bordered">
+            <thead class="table_header">
+                <tr>
+                    <th>S.no</th>
+                    <th>Employee Name</th>
+                    <th>Commodity Name</th>
+                    <th>Delmat Type</th>
+                    <th>Limit</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let delapp of delmatappList; index as i">
+                    <td style="text-align:right">{{(presentpagedelapp - 1)*pageSize +i+1 }} </td>
+                    <td style="text-align:left">{{ delapp?.employee_id?.full_name}}</td>
+                    <td style="text-align:left">{{ delapp?.commodity_id?.name }}</td>
+                    <td style="text-align:left">{{ delapp?.type }}</td>
+                    <td style="text-align:right">{{ delapp?.limit| currency:'INR' }}</td>
+                    <td style="text-align:left">{{ delapp?.delmat_status }}</td>
+                    <td class="cursor">
+                        <span class="material-icons" (click)="approval(delapp)" data-toggle="modal"
+                            data-target=".bd-example-modal-lg">visibility</span>
+                    </td>
+                </tr>
+                <tr *ngIf="delmatappList.length==0; else pagepndelapp" class="NodataAlign" style="text-align: center;"><td colspan="7">No Records Found...</td></tr>
+                <ng-template #pagepndelapp>
+                    <tr>
+                        <td colspan="7">
+                          <div style="text-align:right">
+                            <button mat-icon-button [disabled]="has_previousdelapp === false" color="primary" (click)="previousClickdelapp()">
+                              <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentpagedelapp}}
+                            <button mat-icon-button [disabled]="has_nextdelapp === false" color="primary" (click)="nextClickdelapp()">
+                              <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                          </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </table>
+        <!-- <div *ngIf="delmatappList?.length==0; else paginationdelapp" class="NodataAlign">No Records Found...</div>
+        <ng-template #paginationdelapp>
+            <div style="font-size: small;text-align:right; margin-bottom:100px;">
+                <button mat-icon-button [disabled]="has_previousdelapp === false" color="primary"
+                    (click)="previousClickdelapp()">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpagedelapp}}
+                <button mat-icon-button [disabled]="has_nextdelapp === false" color="primary"
+                    (click)="nextClickdelapp()">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </ng-template> -->
+    </div>
+</div>
+
+<!-- ////////////////////////////////////////////////////////////////approval popup -->
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLongTitle" style="color: blue;">APPROVAL</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="table-responsive" style="margin-top: 2%;margin-left:50px; width: 90%; overflow-x: hidden;">
+                <table class="table table-bordered">
+                    <thead class="table_header">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Commodity</th>
+                            <th>Delmat Status</th>
+                            <th>Limit</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ delappemployee_id }}</td>
+                            <td>{{ delappcommodity_id }}</td>
+                            <td>{{ delmat_status }}</td>
+                            <td>{{ limit }}</td>
+                            <td>{{ type }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <form [formGroup]="approvalForm">
+                        <mat-form-field style="width: 500px; margin-left: 50px;">
+                            <mat-label>Approval Remarks</mat-label>
+                            <textarea matInput placeholder="APPROVE Remarks" maxlength="128" formControlName="remarks" requried
+                                autocomplete="off"></textarea>
+                        </mat-form-field>
+                        <button type="submit" data-dismiss="modal" (click)="approveClick()"
+                            class="btn btn-outline-success"
+                            style="border-radius: 40px;margin-left: 10px;">APPROVE</button>
+                    </form>
+
+                    <form [formGroup]="rejectForm">
+                        <mat-form-field style="width: 500px; margin-left: 50px;">
+                            <mat-label>Rejected Remarks</mat-label>
+                            <textarea matInput placeholder="REJECT Remarks"  maxlength="128" requried formControlName="remarks"
+                                autocomplete="off"></textarea>
+                        </mat-form-field>
+                        <button type="button" data-dismiss="modal" (click)="rejectClick()"
+                            class="btn btn-outline-danger" [disabled]="rejectForm.invalid"
+                            style="border-radius: 40px;margin-left: 10px;">REJECT</button> 
+
+                         <!-- hintLabel="should be more than 10 characters  &nbsp; {{rejectForm.value.remarks?.length}}/10"  -->
+                        <br>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" type="line-scale-party">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner>

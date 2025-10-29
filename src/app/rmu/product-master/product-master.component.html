@@ -1,0 +1,399 @@
+<div style="padding: 1%;" *ngIf="product_master">
+   
+    <h2>Product Master</h2>
+<br>
+    <form [formGroup]="summaryform">
+        <section role="search" class="row products">
+            <!-- <div class="col-md-3" class="npm-mat-edit" >
+                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                    <mat-label>Product Code</mat-label>
+                    <input matInput formControlName="code">
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-3" class="npm-mat-edit">
+                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                    <mat-label>Product Name</mat-label>
+                    <input matInput formControlName="name">
+                </mat-form-field>
+            </div>
+            <div class="col-md-6">
+                <!-- <div id="rmubtngrp"> -->
+                <button matTooltip="Search Records" matTooltipClass="rmutooltip" (click)="getsummary()"
+                    class="btn btn-outline-success" style="margin-left:5%" id="rmubtn" color="primary"><i
+                        class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-warning" matTooltipClass="rmutooltip" (click)="summaryform_reset()"
+                    [matTooltip]="'Clear Entries'" style="margin-left:20px" id="rmubtn">Clear</button>
+                <button matTooltip="Add Product" matTooltipClass="rmutooltip" type="button"
+                    (click)="productformcreation()" data-toggle="modal" class="btn btn-outline-success" id="rmubtn"
+                    style="margin-left: 20px;"><span class="fa fa-plus"></span>
+                    ADD</button>
+                <button matTooltip="Product Mapping" matTooltipClass="rmutooltip" type="button" (click)="product_mapping()"
+                    data-toggle="modal" class="btn btn-outline-success" id="rmubtn" style="margin-left: 20px;"><span
+                        class="fa fa-plus"></span>
+                    Product Mapping</button>
+                    <!-- <button matTooltip="Add Product" matTooltipClass="rmutooltip" type="button"
+                    (click)="sub_product()" data-toggle="modal" class="btn btn-outline-success" id="rmubtn"
+                    style="margin-left: 20px;"><span class="fa fa-plus"></span>
+                    Sub Product</button> -->
+                <!-- </div> -->
+            </div>
+
+
+        </section>
+    </form>
+    <div id="rmucontent" class="table-responsive">
+        <table class="table table-bordered" id="rmutable">
+            <thead class="table_header">
+                <tr>
+                <th>S.No</th>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Retention Period in Months</th>
+                <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let sum of summarylist;index as ind">
+                <tr>
+                <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                <td>{{sum.code}}</td>
+                <td>{{sum.name}} </td>
+                <td>{{sum.retention_period}}</td>
+                <td>
+                    <button id="rmubtn" matTooltipClass="rmutooltip" matTooltip="Edit Product" data-toggle="modal"
+                        (click)="editproduct(sum)" mat-icon-button class="btn btn-outline-success">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="!summarylist.length" style="margin-left: 42%;">
+            <h3>Sorry no data found!... </h3>
+        </div>
+
+        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+            <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false" color="primary">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{pagination.index}}
+            <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="productmodal" tabindex="-1" aria-labelledby="productmodal" aria-hidden="true" *ngIf="product_master">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title mb-0" *ngIf="!productform.value.id" id="productmodal" style="font-weight: 600;">
+                    Product Creation</p>
+                <p class="modal-title mb-0" *ngIf="productform.value.id" id="productmodal" style="font-weight: 600;">
+                    Product Updation</p>
+                <button type="button" class="close" data-dismiss="modal" #closeproducted aria-label="Close"
+                    (click)="closedpopup()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form [formGroup]="productform">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                <mat-label>Product Name*</mat-label>
+                                <input matInput formControlName="name" maxlength="100">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                <mat-label>Product Code*</mat-label>
+                                <input matInput formControlName="code" maxlength="50">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                <mat-label>Retention Period In Months*</mat-label>
+                                <input matInput formControlName="retention_period" type="number" maxlength="2">
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Business Owner</mat-label>
+                                    <input matInput formControlName="business_owner">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Batches Per Box</mat-label>
+                                    <input matInput formControlName="batches_per_box" type="number">
+                                </mat-form-field>
+                            </div> -->
+                    </div>
+
+                    <!-- <div class="row">
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Counts Per Batch</mat-label>
+                                    <input matInput formControlName="counts_per_batch" type="number">
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Counts Per Box*</mat-label>
+                                    <input matInput formControlName="counts_per_box" type="number">
+                                </mat-form-field>
+                            </div>
+                           
+
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 1</mat-label>
+                                    <input matInput formControlName="arc_1">
+                                </mat-form-field>
+                            </div>
+
+
+                        </div> -->
+                    <!-- <div class="row">
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 2</mat-label>
+                                    <input matInput formControlName="arc_2">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 3</mat-label>
+                                    <input matInput formControlName="arc_3">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 4</mat-label>
+                                    <input matInput formControlName="arc_4">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 5</mat-label>
+                                    <input matInput formControlName="arc_5">
+                                </mat-form-field>
+                            </div>
+                        </div> -->
+                    <!-- <div class="row">
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 6</mat-label>
+                                    <input matInput formControlName="arc_6">
+                                </mat-form-field>
+                            </div>
+
+
+
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 7</mat-label>
+                                    <input matInput formControlName="arc_7">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-3">
+                                <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                    <mat-label>Field 8</mat-label>
+                                    <input matInput formControlName="arc_8">
+                                </mat-form-field>
+                            </div>
+
+
+                        </div> -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" (click)="submitproduct()" class="btn btn-outline-success">Submit</button>
+                <button type="button" #closeproducted (click)="closedpopup()" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding: 1%;" *ngIf="product_mapping_screen">
+    <br>
+    <div class="comp-header" *ngIf="product_mapping_screen">
+        <i class="fa fa-arrow-left" (click)="back_btn()" style="cursor: pointer;"></i> <span style="font-weight: 600;cursor: pointer;">Product Mapping</span>
+    </div>
+
+    <form [formGroup]="product_mapping_form">
+        <section role="search" class="row products" >
+            <div class="col-md-3"  class="npm-mat-edit">
+                <mat-form-field   appearance="outline" style="width: 100%;">
+                    <mat-label>Product Code</mat-label>
+                    <input matInput formControlName="code" maxlength="50">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3" style="padding-left: 2%;"  class="npm-mat-edit">
+                <mat-form-field  appearance="outline" style="width: 100%;">
+                    <mat-label>Product Name</mat-label>
+                    <input matInput formControlName="name" maxlength="100">
+                </mat-form-field>
+            </div>
+<!--             
+            <div class="col-md-3" style="padding: 2%;">
+                <mat-form-field appearance="outline" class="npm-mat-edit">
+                    <mat-label>BOX Name</mat-label>
+                    <mat-select matInput formControlName="product_box">
+                        <mat-option *ngFor="let val of boxmaster" [value]="val">
+                            {{val.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+
+            <div class="col-md-3">
+                <button matTooltip="Search Records" matTooltipClass="rmutooltip" (click)="get_mapping_summary()"
+                    class="btn btn-outline-success" style="margin-left:5%" id="rmubtn" color="primary"><i
+                        class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-warning" matTooltipClass="rmutooltip" (click)="summaryform_mapping_reset()"
+                    [matTooltip]="'Clear Entries'" style="margin-left:20px" id="rmubtn">Clear</button>
+                <!-- <button matTooltip="Add Product" matTooltipClass="rmutooltip" type="button"
+                    (click)="product_mapping_create()" data-toggle="modal" class="btn btn-outline-success" id="rmubtn"
+                    style="margin-left: 20px;"><span class="fa fa-plus"></span>ADD</button>                -->
+            </div>
+        </section>
+    </form>
+    <div id="rmucontent" class="table-responsive">
+        <table class="table table-bordered" id="rmutable">
+            <thead class="table_header">
+                <tr>
+                <th>S.No</th>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Box Count</th>
+                <th>Box Name</th>                
+                <th>Retention Period in Months</th>
+                <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let sum of mapping_summarylist;index as ind">
+                <tr>
+                <td>{{(pagination_mapping.index-1)*limit+ind+1}}</td>
+                <td>{{sum.code}}</td>
+                <td>{{sum.name}} </td>
+                <td>{{sum?.productbox_data[0]?.box_count}}</td>
+                <td>
+                    <ul>
+                      <li *ngFor="let data of sum.productbox_data">
+                        {{ data?.box_data?.name }}
+                      </li>
+                    </ul>
+                  </td>
+                <td>{{sum.retention_period}}</td>
+                <td>
+                    <button id="rmubtn" matTooltipClass="rmutooltip" matTooltip="Edit Product" data-toggle="modal"
+                        (click)="edit_mapping_product(sum)" mat-icon-button class="btn btn-outline-success">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="!mapping_summarylist.length" style="margin-left: 42%;">
+            <h3>Sorry no data found!... </h3>
+        </div>
+
+        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+            <button (click)="prevpage()" mat-icon-button [disabled]="pagination_mapping.has_previous === false" color="primary">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{pagination_mapping.index}}
+            <button (click)="nextpage()" mat-icon-button [disabled]="pagination_mapping.has_next === false" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mappingmodal" tabindex="-1" aria-labelledby="productmodal" aria-hidden="true" *ngIf="product_mapping_screen">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title mb-0" *ngIf="!productform.value?.id" id="mappingmodal" style="font-weight: 600;">
+                    Product Mapping Creation</p>
+                <p class="modal-title mb-0" *ngIf="productform.value?.id" id="mappingmodal" style="font-weight: 600;">
+                    Product Mapping Updation</p>
+                <button type="button" class="close" data-dismiss="modal" #closeproductedmapping aria-label="Close"
+                    (click)="closed_mappingpopup()">
+                    <i aria-hidden="true">&times;</i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form [formGroup]="product_mapping_popup">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field class="npm-mat-edit" style="width: 100%;" (click)="product_master_dd('')" matTooltip="{{Products.value}}" appearance="outline">
+                                <mat-label>Products*</mat-label>
+                                <input #Products type="text" matInput formControlName="product"
+                                    [matAutocomplete]="product_auto" (keyup)="product_master_dd($event.target.value)" >
+                                <mat-autocomplete #product_auto="matAutocomplete"
+                                (opened)="product_master_Scroll()"  [displayWith]="product_display">
+                                <mat-option *ngIf="prodct_searchloading">Loading...</mat-option>
+                                <ng-container *ngIf="!prodct_searchloading">
+                                    <mat-option  *ngFor="let Products of product_master_dda_list" [value]="Products"
+                                    matTooltip={{Products.name}} >
+                                        {{Products.name}}
+                                    </mat-option>
+                                    <mat-option *ngIf="!prodct_searchloading">
+                                        No Records Found
+                                      </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>Box Count*</mat-label>
+                                <input matInput formControlName="box_count">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="paycomponent_search('')" class="leftMargin" appearance="outline"  style="width: 100%;">
+                                <mat-label>Box Name*</mat-label>
+                              <mat-chip-list #chiplist>
+                                <mat-chip *ngFor="let company of box_selected_data" [selectable]="true" [removable]="true"
+                                  (removed)="removedcompany(company)">
+                                  {{company.name}}
+                                  <mat-icon matChipRemove >cancel</mat-icon>
+                                </mat-chip>
+                                <input #chip_box_input formControlName="box" [matAutocomplete]="auto"
+                                  [matChipInputFor]="chiplist" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                  [matChipInputAddOnBlur]="true" (keyup)="paycomponent_search($event.target.value)">
+                              </mat-chip-list>
+                              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="companySelected($event)">
+                                <mat-option *ngIf="box_searchloading">Loading...</mat-option>
+                                <ng-container *ngIf="!box_searchloading">
+                                  <mat-option *ngFor="let thiscompany of box_hold_data" [value]="thiscompany" title="{{thiscompany.name}}">
+                                    {{thiscompany.name}}
+                                  </mat-option>
+                                  <mat-option *ngIf="!box_hold_data?.length">
+                                    No Records Found
+                                  </mat-option>
+                                </ng-container>
+                              </mat-autocomplete>
+                            </mat-form-field>                              
+                        </div>                       
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" (click)="submit_mapping_product()" class="btn btn-outline-success">Submit</button>
+                <button type="button" #closeproductedmapping (click)="closedpopup()" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

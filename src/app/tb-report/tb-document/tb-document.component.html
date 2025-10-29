@@ -1,0 +1,95 @@
+<div class="container">
+    <h2> TB Documents</h2>
+    <div>
+        <from [formGroup]="tb_doc_summary">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>Status</mat-label>
+                            <mat-select formControlName="status">
+                                <mat-option *ngFor="let status of status_list" [value]="status">
+                                    {{status.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>File Name</mat-label>
+                            <input matInput formControlName="file_name" placeholder="File Name" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>Created Date</mat-label>
+                            <input matInput [matDatepicker]="create_date" formControlName="create_date">
+                            <mat-datepicker-toggle matSuffix [for]="create_date"></mat-datepicker-toggle>
+                            <mat-datepicker #create_date startView="multi-year"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="submit" (click)="tb_doc_search(tb_doc_summary.value)" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Search</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" (click)="clear_doc()" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Clear</button>
+                    </div>                
+                </div>
+            </div>
+        </from>
+    </div>
+    <div style="    padding-top: 2%;">
+        <div class="tableFixHead">
+
+            <table class="table table-bordered" fixed-header>
+                <thead style="    background-color: #00800021;">
+                    <tr>
+                        <th>S.No</th>
+                        <th>File Name</th>
+                        <th>File Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tb_doc_obj of tb_doc_data;index as ind">
+                        <td>{{(presentpage-1)*10+ind+1}}</td>
+                        <td>{{tb_doc_obj.file_name}}</td>
+                        <td>{{tb_doc_obj.type==1?'TB Business Report':(tb_doc_obj.type==2 ? 'GL Report': (tb_doc_obj.type==3 ? 'Cost of Funds' : (tb_doc_obj.type==4 ?
+                            'Gross Intrest Income':(tb_doc_obj.type==5 ? 'Non Intrest Income':(tb_doc_obj.type==6 ? 'Establishment Cost' : (tb_doc_obj.type==7 ?
+                            'Other Operating Expence' :(tb_doc_obj.type==8 ? 'FAS Report':'--')))))))}}</td>
+                        <td>{{tb_doc_obj.created_date | date:'yyyy-MMM-dd'}}</td>
+                        <!-- <td>{{(tb_doc_obj.status==1 && tb_doc_obj.status !=3 ) ? 'Uploaded':(tb_doc_obj.status==2 ? 'Processing' : ((tb_doc_obj.status==3 || tb_doc_obj.status==4 ) ? 'Success': ((tb_doc_obj.status==1 && tb_doc_obj.status ==3) ? 'File Download Processing':'--')))}} -->
+                        <td>{{(tb_doc_obj.status == 1 ? "Started" : (tb_doc_obj.status == 2 ? "Processing" : (tb_doc_obj.status == 5 ? "No Data Found" : ((tb_doc_obj.status == 3 || tb_doc_obj.status == 4) ? "Success" : "--"))))}}</td>
+                        <td>
+                            <mat-icon 
+                                [ngStyle]="{'color':(tb_doc_obj.status == 3 || tb_doc_obj.status == 4) ? 'green' : 'gray','cursor': (tb_doc_obj.status == 3 || tb_doc_obj.status == 4) ? 'pointer':'default'}"
+                                [matTooltip]="(tb_doc_obj.status == 3 || tb_doc_obj.status == 4) ? 'Download' : ''"
+                                aria-label="Download" (click)="(tb_doc_obj.status == 3 || tb_doc_obj.status == 4)?tb_doc_file(tb_doc_obj):''">
+                                download
+                            </mat-icon>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_found" style="text-align: center;">Data Not Found</p>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

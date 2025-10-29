@@ -1,0 +1,825 @@
+<div style="margin-left: 50px">
+  <div>
+    <form [formGroup]="branchcertificationId">
+      <div
+        class="table-responsive"
+        style="margin-top: 2%; width: 35%; overflow-x: hidden; margin-left: 30%"
+      >
+        <table class="table table-bordered" fixed-header>
+          <thead class="table_header" style="text-align: center">
+            <tr>
+              <th>Invoice Data Entry</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <label style="margin-left: 20px; color: blue">Branch: </label>
+                <mat-form-field
+                  style="width: 250px; margin-left: 50px; margin-bottom: -16px"
+                  (keyup.backspace)="getbranchid()"
+                >
+                  <mat-label>Branch</mat-label>
+                  <input
+                    placeholder="branch"
+                    matInput
+                    formControlName="branch_id"
+                    #branchContactInput
+                    [matAutocomplete]="branch"
+                    (click)="clearPremises()"
+                    (keyup)="branchname()"
+                    required
+                  />
+                  <mat-autocomplete
+                    #branch="matAutocomplete"
+                    [displayWith]="displayfnbranch"
+                    (opened)="autocompletebranchnameScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let branch of branchList"
+                        [value]="branch"
+                        (focusout)="branchFocusOut(branch)"
+                      >
+                        ({{ branch.code }}){{ branch.name + " " }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label style="margin-left: 20px; color: blue">Site: </label>
+                <mat-form-field
+                  style="width: 250px; margin-left: 70px; margin-bottom: -16px"
+                  (keyup.backspace)="getpremiseid()"
+                >
+                  <mat-label>Site</mat-label>
+                  <input
+                    placeholder="Site"
+                    matInput
+                    formControlName="premise_id"
+                    #PremiseContactInput
+                    [matAutocomplete]="premise"
+                    required
+                    (keyup)="premisename()"
+                  />
+                  <mat-autocomplete
+                    #premise="matAutocomplete"
+                    [displayWith]="displayfnpremise"
+                    (opened)="autocompletePremisenameScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let premise of premiseList"
+                        [value]="premise"
+                        (focusout)="premiseFocusOut(premise)"
+                      >
+                        ({{ premise.code }}){{ premise.name + " " }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label style="margin-left: 20px; color: blue">Month: </label>
+                <mat-form-field
+                  style="width: 250px; margin-left: 50px; margin-bottom: -16px"
+                >
+                  <input
+                    matInput
+                    readonly
+                    [matDatepicker]="dp"
+                    placeholder="Month"
+                    formControlName="monthdate"
+                    [formControl]="monthdate"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="dp"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker
+                    #dp
+                    startView="multi-year"
+                    (yearSelected)="chosenYearHandler($event)"
+                    (monthSelected)="chosenMonthHandler($event, dp)"
+                    panelClass="example-month-picker"
+                  >
+                  </mat-datepicker>
+                </mat-form-field>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="dataEntryButton">
+          <button
+            type="button"
+            class="btn btn-outline-success"
+            style="border-radius: 40px"
+            (click)="onClickInvoiceButton()"
+          >
+            Data Entry
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="isShowtable">
+    <h1 style="padding-left: 38%">Invoice Data Entry</h1>
+    <h3 style="margin-top: 2%; margin-bottom: -3%; margin-left: 14%">
+      Branches are Advice to take utmost care in filling the data in invoice
+      data entry as it plays vital role in the wage Calculations
+    </h3>
+    <form [formGroup]="addInvoice" style="margin-top: 3%; margin-bottom: 3%">
+      <table>
+        <div
+          class="table-responsive"
+          style="margin-top: 2%; overflow-x: hidden; margin-left: 42%"
+        >
+          <table class="table table-bordered" fixed-header>
+            <tbody>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Data Entry For Site
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Site</mat-label>
+                    <input
+                      matInput
+                      placeholder="Site"
+                      [readonly]="true"
+                      (keypress)="keyPressAlphanumeric($event)"
+                      formControlName="dataentrysite"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">Invoice Month</div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Month</mat-label>
+                    <input
+                      matInput
+                      placeholder="Month"
+                      [readonly]="true"
+                      (keypress)="only_char($event)"
+                      formControlName="invoicemonth"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+                <!-- <td>
+                                    <mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+                                        <input matInput readonly [matDatepicker]="picker1" formControlName="invoicemonth" 
+                                        placeholder="invoicemonth">
+                                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker1></mat-datepicker>
+                                    </mat-form-field>
+                                </td> -->
+              </tr>
+
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">Security PAN</div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Security Pan</mat-label>
+                    <input
+                      matInput
+                      placeholder="Security Pan"
+                      [readonly]="true"
+                      formControlName="securitypan"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Security Agence Name
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Security Agence Name</mat-label>
+                    <input
+                      matInput
+                      placeholder="Security Agence Name"
+                      [readonly]="true"
+                      formControlName="securityagencename"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <!-- <tr>
+                                <td>
+                                    <div style="color: blue;text-align: left;">Security Tax Number</div>
+                                </td>
+                                <td>
+                                    <mat-form-field style="width: 175px;margin-bottom: -24px;margin-top: -13px;">
+                                        <mat-label>Security Tax Number</mat-label>
+                                        <input matInput placeholder="Security Tax Number" (keypress)="keyPressAlphanumeric($event)"  formControlName="servicetaxno"
+                                            autocomplete="off" required>
+                                    </mat-form-field>
+                                </td>
+                            </tr> -->
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">GST Number</div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>GST Number</mat-label>
+                    <!-- <input matInput placeholder="GST Number" (keypress)="keyPressAlphanumeric($event)"  formControlName="gst_no"
+                                            autocomplete="off" required> -->
+                    <input
+                      type="text"
+                      matInput
+                      placeholder="GST Number"
+                      formControlName="gst_no"
+                      [ngModel]="inputGstValue"
+                      (ngModelChange)="inputGstValue = $event.toUpperCase()"
+                      (keydown.space)="$event.preventDefault()"
+                      (keypress)="keyPressAlphanumeric($event)"
+                      autocomplete="off"
+                      maxlength="15"
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Invoice Number
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Invoice Number</mat-label>
+                    <input
+                      matInput
+                      placeholder="Invoice Number"
+                      formControlName="invoiceno"
+                      autocomplete="off"
+                      (keypress)="omit_ForwardSlash($event)"
+                      maxlength="16"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">Invoice Date</div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <input
+                      matInput
+                      readonly
+                      [max]="maxDate"
+                      [matDatepicker]="picker2"
+                      formControlName="invoicedate"
+                      placeholder="Invoicedate"
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="picker2"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Number of Armed Guards - No of duties per day
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Value</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      [readonly]="true"
+                      (keypress)="numberOnly($event)"
+                      formControlName="aguarddutiespday"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Total No.of duties for Whole Month - Armed Guards
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Value</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      [readonly]="true"
+                      (keypress)="numberOnly($event)"
+                      formControlName="aguarddutiesmonth"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Bill Amount -Armed Guard
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Value</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      [readonly]="true"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="abillamt"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Number of Security Guards (Unarmed) - No of duties per day
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Value</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      [readonly]="true"
+                      (keypress)="numberOnly($event)"
+                      formControlName="unaguarddutiespday"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Total no.of duties for Whole Month - Security Guards
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Value</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      [readonly]="true"
+                      (keypress)="numberOnly($event)"
+                      formControlName="unaguarddutiesmonth"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Bill Amount - Security Guard
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Value</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      [readonly]="true"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="sbillamt"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Total Bill Amount (Security + Armed )
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Total Bill Amount</mat-label>
+                    <input
+                      matInput
+                      placeholder="Total Bill Amount"
+                      [readonly]="true"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="totlbillamt"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">CGST AMOUNT</div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>CGST Amount</mat-label>
+                    <input
+                      matInput
+                      placeholder="Amount"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="cgstamt"
+                      autocomplete="off"
+                      [readonly]="true"
+                      (keyup)="Cgst($event)"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    SGST/UTGST AMOUNT
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>SGST Amount</mat-label>
+                    <input
+                      matInput
+                      placeholder="Amount"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="sgstamt"
+                      [readonly]="true"
+                      (keyup)="Sgst($event)"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">IGST AMOUNT</div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>IGST Amount</mat-label>
+                    <input
+                      matInput
+                      placeholder="Amount"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="igstamt"
+                      [readonly]="true"
+                      (keyup)="Igst($event)"
+                      autocomplete="off"
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    CGST + SGST / UTGST (TOTAL GST)
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Total GST Amount</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="totalgst"
+                      autocomplete="off"
+                      [readonly]="true"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="color: blue; text-align: left">
+                    Total Amount Payable
+                  </div>
+                </td>
+                <td>
+                  <mat-form-field
+                    style="
+                      width: 175px;
+                      margin-bottom: -24px;
+                      margin-top: -13px;
+                    "
+                  >
+                    <mat-label>Total Amount</mat-label>
+                    <input
+                      matInput
+                      placeholder="Value"
+                      [readonly]="true"
+                      (keypress)="keyPressAmounts($event)"
+                      formControlName="totlamtpayable"
+                      autocomplete="off"
+                      required
+                    />
+                  </mat-form-field>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </table>
+
+      <div style="margin-left: 23%">
+        <table>
+          <div>
+            <tr>
+              <!-- <td>
+								<mat-form-field style="width: 250px;" (click)="approvalBranch()">
+                                    <mat-label>Approval Branch</mat-label>
+									<input #approvalbranchInput placeholder="Approval Branch" matInput
+										formControlName="approval_branch" [matAutocomplete]="approvalbranch" required>
+									<mat-autocomplete #approvalbranch="matAutocomplete" [displayWith]="displayFnapprovalbranch">
+										<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+										<ng-container *ngIf="!isLoading">
+											<mat-option *ngFor="let branch of approvalbranchList" [value]="branch">
+												{{branch.code}}-{{branch.name}}
+											</mat-option>
+										</ng-container>
+									</mat-autocomplete>
+								</mat-form-field>
+							</td> -->
+              <td>
+                <mat-form-field
+                  style="width: 250px"
+                  (click)="approvalBranchClick()"
+                >
+                  <mat-label>Approval Branch</mat-label>
+                  <input
+                    #appBranchInput
+                    placeholder="Approval Branch"
+                    matInput
+                    formControlName="approval_branch"
+                    (click)="clearAppBranch()"
+                    [matAutocomplete]="approvalBranch"
+                    required
+                  />
+                  <mat-autocomplete
+                    #approvalBranch="matAutocomplete"
+                    (opened)="autocompleteapprovalBranchScroll()"
+                    [displayWith]="displayFnappBranch"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let appBranch of appBranchList"
+                        [value]="appBranch"
+                        (focusout)="FocusApprovalBranch(appBranch)"
+                      >
+                        ({{ appBranch.code }}){{ appBranch.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field
+                  style="width: 250px; margin-left: 50px"
+                  (click)="approvername()"
+                >
+                  <mat-label>Approver</mat-label>
+                  <input
+                    #employeeInput
+                    placeholder="Approver"
+                    matInput
+                    #ApproverContactInput
+                    formControlName="approver"
+                    [matAutocomplete]="employee"
+                    required
+                  />
+                  <mat-autocomplete
+                    #employee="matAutocomplete"
+                    (opened)="autocompleteapprovernameScroll()"
+                    [displayWith]="displayFnEmployee"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let employee of employeeList"
+                        [value]="employee"
+                        >{{ employee.full_name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </td>
+              <!-- <td>
+								<mat-form-field style="width: 250px;margin-left: 50px;">
+									<mat-label>Approval Branch</mat-label>
+                                    <input matInput [readonly] = "true" formControlName="approval_branch_name">
+                                </mat-form-field>
+							</td> -->
+            </tr>
+          </div>
+        </table>
+
+        <input
+          type="file"
+          #fileInput
+          id="uploadFile"
+          class="choose-file"
+          (change)="onFileSelectForRaiseReq($event)"
+          name="uploadFile"
+          multiple="multiple"
+        />
+
+        <div class="btn-bottom">
+          <button
+            type="submit"
+            style="border-radius: 40px"
+            class="btn btn-outline-primary"
+            (click)="onSubmitClick()"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            (click)="onCancelClick()"
+            class="btn btn-outline-primary"
+            style="border-radius: 40px; margin-left: 10px"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<ngx-spinner
+  bdColor="rgba(51, 51, 51, 0.8)"
+  size="default"
+  [fullScreen]="true"
+  type="ball-spin-clockwise"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>
+
+<!-- <pre>{{addInvoice.value|json}}</pre> -->

@@ -1,0 +1,291 @@
+<div>
+    <h2 style="color:blue; text-align: center;">Vendor Statement</h2>
+</div>
+<div style="margin-left: 20px; margin-right: 80%; margin-top: 4%; width: 111%;">
+    <form [formGroup]="vendorForm" (ngSubmit)="vendor()">
+        <div class="row" style="width: 100%;">
+            <div class="col-md-2">
+                <mat-form-field class="example-full-width" appearance="outline" style="width: 200px;">
+                    <mat-label>Choose Vendor</mat-label>
+                    <input class="toolbar-search" type="text" matInput autocomplete="off" matInput
+                        [matAutocomplete]="checkerven" #venidInput formControlName="ven" style="width: 250px;"
+                        (click)="vendor()" />
+                    <mat-placeholder>Vendor</mat-placeholder>
+                    <mat-autocomplete #checkerven="matAutocomplete" [displayWith]="displayVendorName">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let d of vendata" [value]="d" (onSelectionChange)="vendorAct(d)">
+                                {{ d.name }}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+
+                </mat-form-field>
+            </div>
+            <div class="col-md-2">
+                <mat-form-field class="example-full-width" appearance="outline" style="width: 200px;">
+                    <mat-label>Choose From Date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="_inputCtrl" />
+                    <!-- <mat-hint>DD/MM/YYYY</mat-hint>  (input)="date()"  -->
+                    <mat-datepicker-toggle matSuffix [for]="picker">
+                        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <!-- <div class="col-md-2">
+            <mat-form-field class="example-full-width" appearance="outline" style="width: 200px;">
+                <mat-label>Choose To Date</mat-label>
+                <input matInput [matDatepicker]="topicker" formControlName="_toinputCtrl" />
+                 <mat-hint>DD/MM/YYYY</mat-hint>  (input)="date()"  
+                <mat-datepicker-toggle matSuffix [for]="topicker">
+                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                </mat-datepicker-toggle>
+                <mat-datepicker #topicker></mat-datepicker>
+            </mat-form-field>
+        </div> -->
+            <!-- <div class="col-md-8" style="margin-top: 10px;margin-left: -1%;"> -->
+            <div class="col-md-1">
+                <button mat-raised-button type="button" class="btn btn-primary" (click)="submit()"
+                    style="border-radius: 40px;height: 40px;margin-left: 5px;margin-top:10px">Search</button>
+            </div>
+
+            <div class="col-md-1">
+                <button mat-raised-button type="button" class="btn btn-primary" (click)="clear()"
+                    style="border-radius: 40px;height: 40px;margin-left:5px;margin-top:10px">Clear</button>
+            </div>
+
+            <div class="col-md-1">
+                <!-- <button mat-raised-button type="button" class="btn btn-primary" (click)="actionVendorDownload()"
+                    style="border-radius: 40px; height: 40px; margin-left: 2%; margin-top:10px; display: flex; align-items: center; justify-content: center; gap: 5px;">Download
+                    <span *ngIf=" first" class="position-absolute">
+                        <mat-spinner color="accent" diameter="20"></mat-spinner>
+                    </span>
+                    <span *ngIf="!first" class="position-absolute">
+                        <mat-icon style="color:white;margin-top: 10px;">download</mat-icon>
+                    </span>
+                </button> -->
+                <!-- <button mat-raised-button type="button" class="custom-btn" style="margin-top: 10px;"
+                    (click)="actionVendorDownload()">Download
+                    <span *ngIf="first">
+                        <mat-spinner color="accent" diameter="20"></mat-spinner>
+                    </span>
+                    <span *ngIf="!first" class="btn-content">
+                        <mat-icon>download</mat-icon>
+                    </span>
+                </button> -->
+
+                <button mat-raised-button type="button" class="btn btn-primary" (click)="actionVendorDownload()"
+                    style="border-radius: 40px;height: 40px;margin-left: 1%;margin-top: 10px;">
+                    Download
+                    <mat-icon *ngIf="first"><mat-spinner color="accent" diameter="20">
+                        </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!first" inline=true style="color:rgb(250, 242, 242)">download</mat-icon>
+                </button>
+
+            </div>
+            <!-- </div> -->
+            <!-- <div class="col-md-2">
+                <button mat-raised-button type="button" class="btn btn-primary" (click)="pdfVendorDownload()"
+                    style="border-radius: 40px; height: 40px; margin-left:20%; margin-top:10px">Download PDF
+                    <span *ngIf="second">
+                        <mat-spinner color="accent" diameter="20"></mat-spinner>
+                    </span>
+                    <span *ngIf="!second">
+                        <mat-icon style="color:white;margin-top: 10px;">download</mat-icon>
+                    </span>
+                </button>
+            </div> -->
+            <div class="col-md-2">
+                <button mat-raised-button type="button" class="btn btn-primary" [hidden]=" " (click)="manualRun()"
+                    style="border-radius: 40px;height: 40px;margin-left:23%;margin-top:10px">Manual Run</button>
+            </div>
+            <!-- <div class="col-md-2">
+                <button mat-raised-button type="button" class="btn btn-primary" [hidden]=" "data-toggle="modal" data-target="#myModal1"
+                (click)="IMmigration()" #closepopup  style="border-radius: 40px;height: 40px;margin-left:3%;margin-top:10px">IM Migrations</button>
+            </div> -->
+            <!-- && this.subopenbulk==true" -->
+            <div *ngIf="this.entityid==1 && this.subopenbulk==true" class="col-md-2">
+                <button mat-raised-button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#myModal2"
+                    style="border-radius: 40px;height: 40px;margin-left:3%;margin-top:10px">Vendor Upload</button>
+
+            </div>
+        </div>
+        <!-- <div class="modal fade" id="myModal1" data-backdrop="false" data-keyboard="false">
+                    <form [formGroup]="filruploadform">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+
+                              
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size: x-large;font-weight: bold;"></h4>
+                                    <button type="button" #closebutton class="close"
+                                        data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="timeline-steps aos-init aos-animate" data-aos="fade-up"
+                                                style="margin-top: -2%;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+
+                                    <input type="file" #fileinput class="choosefile"#takeInput accept=".xlsx"
+                                        (change)="onFileSelected($event )" formControlName="fileArr">
+                                    <button type="button" class="btn btn-secondary"#closepopup
+                                        data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        (click)="onUpload()">Validate</button>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div> -->
+
+
+    </form>
+    <!-- <h2>Vendor Statement for the period of {{mo1}}</h2> -->
+    <div class="table-responsive" style="padding-right: 40px; margin-top: 1%; width: 90%; ">
+        <!-- <mat-card style="background-color: #01a85a; margin-bottom: 1%;color: white;">
+            <h2 style="text-align: center; margin-right:60px;"><b>Vendor Name: {{venName}}</b></h2>
+        </mat-card> -->
+        <table class="table table-bordered">
+            <thead class="table_header">
+                <tr style="text-align: center;">
+                    <th>S.No</th>
+                    <th style="width: 150px;">Invoice Date</th>
+                    <th>Description</th>
+                    <th>Invoice No</th>
+                    <th>UTR/ADV</th>
+                    <th>Amount</th>
+                    <th>Credit</th>
+                    <th>Debit</th>
+                    <!-- <th>Txn Balance</th> -->
+                    <th>Closing Balance</th>
+                    <th>Nature of Transaction</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let entry of operatorDataVendor; index as x">
+                    <tr *ngFor="let d of venNameDetail; index as p"
+                        [ngClass]="d.name=='Bank Payment' ? 'changeFont':''">
+                        <td *ngIf="p==0" [attr.rowspan]="venNameDetail.length">{{ (presentpage-1)*pageSize+x+1 }}</td>
+                        <td style="width: 150px;"><span *ngIf="p==0" [attr.rowspan]="venNameDetail.length">
+                                {{entry.Invoice_Date}}
+                            </span>
+                            <span *ngIf="p==6" [attr.rowspan]="venNameDetail.length" style="font-weight: bold;">
+                                {{entry.payment_Date}}
+                            </span>
+                        </td>
+                        <td>{{d.name}}</td>
+                        <td *ngIf="p==0" [attr.rowspan]="venNameDetail.length" (click)="invoiceNo(entry,x,temp)"><span
+                                style="color: #01a85a;">{{entry.Invoiceno}}</span></td>
+                        <td *ngIf="p==0" [attr.rowspan]="venNameDetail.length">{{entry.UTRNO}}</td>
+                        <!-- <td *ngIf="p==0">{{entry.Total_Amount | number:'1.0-0'}}</td> -->
+                        <td *ngIf="p==0">{{entry.Base_Amount | number:'1.0-0'}}</td>
+                        <td *ngIf="p==1">{{entry.SGST | number:'1.0-0'}}</td>
+                        <td *ngIf="p==2">{{entry.CGST | number:'1.0-0'}}</td>
+                        <td *ngIf="p==3">{{entry.IGST | number:'1.0-0'}}</td>
+                        <td *ngIf="p==4">{{entry.TDS_Amount | number:'1.0-0'}}</td>
+                        <td *ngIf="p==5">{{entry.LIQ_Amount | number:'1.0-0'}}</td>
+                        <td *ngIf="p==6" style="font-weight: bold;">{{entry.Bank_Payment | number:'1.0-0'}}</td>
+                        <td *ngIf="p==0" [attr.rowspan]="venNameDetail.length">{{entry.credit_amount | number:'1.0-0'}}
+                        </td>
+                        <td *ngIf="p==0" [attr.rowspan]="venNameDetail.length">{{entry.debit_amount | number:'1.0-0'}}
+                        </td>
+                        <!-- <td>
+                            <span *ngIf="p==0" [attr.rowspan]="venNameDetail.length">
+                                {{0}}
+                            </span>
+                            <span *ngIf="p==6" [attr.rowspan]="venNameDetail.length">
+                                {{entry.opening_balance | number:'1.0-0'}}
+                            </span>
+                        </td> -->
+                        <td>
+                            <!-- <span *ngIf="p==0" [attr.rowspan]="venNameDetail.length">
+                                {{0}}
+                            </span> -->
+                            <span *ngIf="p==0" [attr.rowspan]="venNameDetail.length">
+                                {{entry.closing_balance | number:'1.0-0'}}
+                            </span>
+                        </td>
+                        <td *ngIf="p==0" [attr.rowspan]="venNameDetail.length">{{entry.Nature_of_Transaction }}
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-template #temp>
+                    <div style="background: #01a85a;">
+                        <h2 style="color: white; text-align: center;">Invoice Number</h2>
+                    </div>
+                    <div style="align-items: center; padding-left: 10px;">
+                        <!-- <button mat-raised-button color="primary" style="margin-left: 10px;" (click)="onConfirmClick(entry.id, listIndex)" tabindex="-1">YES</button>
+                        <button mat-raised-button mat-dialog-close style="margin-left: 10px;" tabindex="-1">NO</button> -->
+                    </div>
+                </ng-template>
+                <!-- <tr *ngFor="let entry of operatorDataVendor; index as listIndex1" style="text-align: center;">
+                    <th scope="row">{{ (presentpage-1)*pageSize+listIndex1+1 }}</th>
+                    <td>{{entry.Invoice_Date}}</td>
+                    <td *ngFor="let i of venNameDetail; index as listindex">
+                        {{i.name}} -->
+
+                <!-- Base Amount: {{entry.Base_Amount}}<br>
+                        Tax Amount: {{entry.Tax_Amount}}<br>
+                        TDS Amount: {{entry.TDS_Amount}}<br>
+                        Total Amount: {{entry.Total_Amount}} -->
+                <!-- </td>
+                    <td>{{entry.Invoiceno}}</td>
+                    <td>{{entry.debit}}</td>
+                    <td>{{entry.credit}}</td> -->
+            </tbody>
+            <div *ngIf="operatorDataVendor.length==0 else paginationpage;" class="NodataAlign">No Records Found...</div>
+            <ng-template #paginationpage>
+                <div class="cursor" style="font-size: small; text-align: right; float: right;">
+                    <button mat-icon-button color="primary" (click)="previousClic()"
+                        [disabled]="has_previous === false">
+                        <mat-icon>arrow_back </mat-icon>
+                    </button>
+                    {{presentpage}}
+                    <button mat-icon-button color="primary" (click)="nextClic()" [disabled]="has_next === false"
+                        color="primary">
+                        <mat-icon>arrow_forward </mat-icon>
+                    </button>
+                </div>
+            </ng-template>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="myModal2" data-backdrop="false" data-keyboard="false">
+    <form [formGroup]="bulkuploadform">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title" style="font-size: x-large;font-weight: bold;">Bulk Upload</h4>
+                    <button type="button" #closebox class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="timeline-steps aos-init aos-animate" data-aos="fade-up"
+                                style="margin-top: -2%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="file" #fileinput1 class="choosefile" #takeInput1 accept=".xlsx"
+                        (change)="onFileSelected($event )" formControlName="fileArr">
+                    <button #closebox type="button" class="btn btn-secondary" data-dismiss="modal"
+                        (click)="closefunc()">Close</button>
+                    <button type="button" class="btn btn-secondary" (click)="BulkUpload(fileinput1)">Upload</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,770 @@
+<section class="screen-padding screen-lm">
+    <form [formGroup]="retrievalform">
+    <div style="display: flex; align-items: center;">
+        <p   (click)="backbtn()"class="comp-header-p">
+            <i class="fa fa-arrow-left back-button"></i>
+        </p>
+        <span  style="display: flex; align-items: center; margin-left: 7px;margin-top: -10px;">{{this.title}} : <label class="codecolor">{{this.retrievalcode}} </label>
+           <div style="margin-left: 8px;">
+            <mat-label>Retrieval Type</mat-label>:
+           </div>
+           <div style="margin-top: 19px; margin-left: 8px;">
+            <lib-vs-dynamicform-cmp 
+            [InputFields]="retrievalfield"
+            (dataEvent)="selectedVal($event)"    [ResetForm]="retrievalvar"></lib-vs-dynamicform-cmp>
+           </div>
+                
+            
+            <!-- <mat-form-field id="type" style="margin-bottom:-2%;margin-top: -2%;width:20%;" appearance="outline">
+                <mat-select matInput formControlName="retrieval_type" required>
+                    <mat-option *ngFor="let item of rettypelist" [value]="item.value" (click)="selectedVal(item)">
+                        {{item.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field> -->
+            
+            <button style="margin-left: 22px;" *ngIf="retrieval_no != 'new'" mat-button class="btn btn-outline-primary actionbtn"
+                (mouseenter)="trigger.openMenu()" [matMenuTriggerFor]="menu" type="button" id="rmubtn"
+                data-toggle="modal">Action
+                <mat-icon style="margin-bottom: 5px;">arrow_drop_down</mat-icon>
+            </button>
+
+            <mat-menu #menu="matMenu">
+                <div *ngIf="status > 1" (mouseleave)="trigger.closeMenu()">
+                    <button *ngIf="maker" mat-menu-item data-toggle="modal" data-target="#cancelpopup">Request
+                        Cancellation</button>
+                    <button *ngIf="checker && status == 2" mat-menu-item data-toggle="modal" data-target="#actionpopup"
+                        (click)="action='Approval'">Approve</button>
+                    <button *ngIf="checker && status == 2" mat-menu-item data-toggle="modal" data-target="#actionpopup"
+                        (click)="action='Reject'">Reject</button>
+                    <button mat-menu-item data-toggle="modal" (click)="popupopen()" >Retrieval History</button>
+                </div>
+            </mat-menu>
+        </span>
+
+    </div>
+
+        <!-- <fieldset id="rmufieldset" style="min-height:24rem">
+            <legend id="rmulegend">Selected Docs list</legend>
+            <mat-grid-list [cols]="5" rowHeight="150px">
+                <div *ngIf="retrievalform.value.details.length > 0">
+                    <mat-grid-tile (mouseenter)="item.showdelete = true" (mouseleave)="item.showdelete=false"
+                        *ngFor="let item of retrievalform.value.details | slice:docpage:docpagenext index as ind">
+
+                        <mat-card #matcard style="width:90%;">
+                            <mat-icon [matTooltipPosition]="'above'" matTooltipClass="rmutooltip"
+                                matTooltip="Document No"> insert_drive_file</mat-icon>
+                            <mat-label id="cardlabel">{{item.document_no}}</mat-label><br>
+
+                            <span [matTooltipPosition]="'above'" matTooltipClass="rmutooltip"
+                                matTooltip="Vendor Barcode"
+                                style="vertical-align:super;cursor:pointer;margin: 0px 3px;font-size: 1.2rem;"
+                                class="fa-barcode fa"></span>
+
+                            <mat-label id="cardlabel">{{item.barcode}}</mat-label><br>
+                            <mat-icon [matTooltipPosition]="'above'" matTooltipClass="rmutooltip" matTooltip="Product">
+                                tab</mat-icon>
+                            <mat-label id="cardlabel">{{item.product?.name}}</mat-label><br>
+                        </mat-card>
+                        <mat-icon [matTooltipPosition]="'above'" (click)="deletedocument(item.document_no)" #tool
+                            matTooltipClass="rmutooltip" style="color:red" matTooltip="Delete"
+                            *ngIf="item.showdelete && maker && status < 3">
+                            delete_sweep</mat-icon>
+
+
+                    </mat-grid-tile>
+                </div>
+
+                <mat-grid-tile *ngIf="retrievalform.value.details.length ==0" [colspan]="5">
+                    No Document Selected For Retrieval
+                </mat-grid-tile>
+            </mat-grid-list>
+            <div style="text-align:center;margin-bottom: 1%;" *ngIf="retrievalform.value.details.length >10 ">
+
+                <button style="padding:6px;width:70px" class="btn btn-outline-dark icononly" id="rmubtn"
+                    [disabled]="docpage == 0" (click)="!docpagenext=docpagenext-10;docpage=docpage-10">
+                    <mat-icon>arrow_back_ios</mat-icon>
+                </button>
+                <button style="padding:6px;width:70px;margin-left:5%"
+                    [disabled]="docpagenext>=retrievalform.value.details.length" class="btn btn-outline-dark icononly"
+                    id="rmubtn" (click)="docpagenext=docpagenext+10;docpage=docpage+10;">
+                    <mat-icon>arrow_forward_ios</mat-icon>
+                </button>
+            </div>
+
+        </fieldset> -->
+<div style="width: 90%;">
+        <mat-accordion>
+            <mat-expansion-panel [expanded]="isExpandeds">
+              <mat-expansion-panel-header>
+                <mat-panel-title style="font-weight: 600;"> Selected Docs list </mat-panel-title>
+              </mat-expansion-panel-header>
+                <mat-grid-list [cols]="5" rowHeight="150px">
+                    <div *ngIf="retrievalform.value.details.length >10">
+
+                    <button class="scroll-button left"  [disabled]="docpage == 0" (click)="!docpagenext=docpagenext-10;docpage=docpage-10">
+                        <mat-icon>arrow_left</mat-icon>
+                      </button>
+                      </div>
+                <div *ngIf="retrievalform.value.details.length > 0">
+                   
+                    <mat-grid-tile 
+                        *ngFor="let item of retrievalform.value.details | slice:docpage:docpagenext index as ind">
+
+                        <mat-card #matcard style="width:90%; position: relative;">
+                            <button style="position: absolute ; top: 0; right: 0;"    mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                              </button>
+                              <mat-menu #menu="matMenu">
+                                <button mat-menu-item   (click)="deletedocument(item.document_no)">
+                                  <mat-icon style="color:red">delete_sweep</mat-icon>
+                                  <span>Delete</span>
+                                </button>
+                              </mat-menu>
+                            <mat-icon [matTooltipPosition]="'above'" matTooltipClass="rmutooltip"
+                                matTooltip="Document No" class="card-icon"> insert_drive_file</mat-icon>
+                            <mat-label id="cardlabel">{{item.document_no}}</mat-label><br>
+
+                            <span [matTooltipPosition]="'above'" matTooltipClass="rmutooltip"
+                                matTooltip="Vendor Barcode"
+                                style="vertical-align:super;cursor:pointer;margin: 0px 3px;font-size: 1.2rem;"
+                                class="fa-barcode fa card-icon"></span>
+
+                            <mat-label id="cardlabel">{{item.barcode}}</mat-label><br>
+                            <mat-icon [matTooltipPosition]="'above'" class="card-icon" matTooltipClass="rmutooltip" matTooltip="Product">
+                                tab</mat-icon>
+                            <mat-label id="cardlabel">{{item.product?.name}}</mat-label><br>
+                        </mat-card>
+                        <!-- <mat-icon [matTooltipPosition]="'above'" (click)="deletedocument(item.document_no)" #tool
+                            matTooltipClass="rmutooltip" style="color:red" matTooltip="Delete"
+                            *ngIf="item.showdelete && maker && status < 3">
+                            delete_sweep</mat-icon> -->
+
+
+                    </mat-grid-tile>
+                </div>
+                <div *ngIf="retrievalform.value.details.length >10 ">
+                    <button class="scroll-button right" [disabled]="docpagenext>=retrievalform.value.details.length" (click)="docpagenext=docpagenext+10;docpage=docpage+10;">
+                        <mat-icon>arrow_right</mat-icon>
+                      </button>
+                </div>
+                
+                <mat-grid-tile *ngIf="retrievalform.value.details.length ==0" [colspan]="5">
+                    No Document Selected For Retrieval
+                </mat-grid-tile>
+            </mat-grid-list>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+
+        <button *ngIf="maker && status < 3" (click)="searchdocs()" class="btn btn-outline-success subbtn" id="rmubtn"
+            style="position:static;margin-left:87%;float:right" data-toggle="modal" data-target="#searchmodal">
+
+            <mat-icon style="vertical-align:bottom;color:black">insert_drive_file</mat-icon>
+            <i class="fa fa-search" style="color:black" aria-hidden="true"></i>
+            Search
+        </button>
+
+
+<div style="width: 90%; margin-top: 5px;">
+        <mat-accordion>
+            <mat-expansion-panel [expanded]="isExpandedscard" style="width: 100%;">
+              <mat-expansion-panel-header>
+                <mat-panel-title style="font-weight: 600;"> Delivery Details </mat-panel-title>
+              </mat-expansion-panel-header>
+            
+           
+                <mat-grid-list [cols]="breakpoint" rowHeight="101px">
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Branch/Dept</mat-label>
+                            <input rows="1" style="max-height:60px;" matInput [value]="dept | titlecase" readonly required>
+                        </mat-form-field>
+    
+                    </mat-grid-tile>
+    
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Required Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker3" placeholder="Date" autocomplete="off"
+                                [min]="this.retrievalform.value.request_date" formControlName="retrieval_date" required>
+                            <mat-datepicker-toggle  matSuffix [for]="picker3">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker3></mat-datepicker>
+    
+                        </mat-form-field>
+    
+                    </mat-grid-tile>
+    
+                    <mat-grid-tile>
+                        <mat-form-field *ngIf="showDurations" appearance="outline">
+                            <mat-label>Holding Duration in Days</mat-label>
+                            <input matInput formControlName="holding_duration" placeholder="Enter Days" required>
+                        </mat-form-field>
+    
+                    </mat-grid-tile>
+    
+                    <mat-grid-tile>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Requested Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker4" placeholder="Date" autocomplete="off"
+                                formControlName="request_date" required>
+                            <mat-datepicker-toggle  matSuffix [for]="picker4" [disabled]="true">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker4></mat-datepicker>
+    
+                        </mat-form-field>
+    
+                    </mat-grid-tile>
+    
+                    <mat-grid-tile [colspan]="2">
+                        <mat-form-field style="width:82%;    margin-top: 5%;" appearance="outline">
+                            <mat-label>Delivery Address</mat-label>
+                            <textarea matInput style="max-height:60px;" [value]="retrievalform.value.address | titlecase"
+                                rows="3" cols="10" [readonly]="!retrievalform.value.addresschange" formControlName="address"
+                                required></textarea>
+                            <mat-checkbox style="margin-left:10px" formControlName="addresschange"
+                                (change)="addresschange()" matSuffix [color]="'primary'">Change
+                            </mat-checkbox>
+    
+                            <!-- <button (click)="check($event.target.value)" matSuffix mat-button>Change</button> -->
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="2">
+                        <mat-form-field style="width:82%;     margin-top: 5%;" appearance="outline">
+                            <mat-label>Reason for retrieval</mat-label>
+                            <textarea matInput style="max-height:60px;" rows="3" cols="10" matInput
+                                formControlName="remarks" required></textarea>
+                        </mat-form-field>
+                    </mat-grid-tile>
+    
+                </mat-grid-list>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+        <!-- <fieldset id="rmufieldset">
+            <legend id="rmulegend">Delivery Details</legend>
+            <mat-grid-list [cols]="breakpoint" rowHeight="101px">
+                <mat-grid-tile>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Branch/Dept</mat-label>
+                        <input rows="1" style="max-height:60px;" matInput [value]="dept | titlecase" readonly required>
+                    </mat-form-field>
+
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Required Date</mat-label>
+                        <input matInput readonly [matDatepicker]="picker3" placeholder="Date" autocomplete="off"
+                            [min]="this.retrievalform.value.request_date" formControlName="retrieval_date" required>
+                        <mat-datepicker-toggle  matSuffix [for]="picker3">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker3></mat-datepicker>
+
+                    </mat-form-field>
+
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field *ngIf="showDurations" appearance="outline">
+                        <mat-label>Holding Duration in Days</mat-label>
+                        <input matInput formControlName="holding_duration" placeholder="Enter Days" required>
+                    </mat-form-field>
+
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Requested Date</mat-label>
+                        <input matInput readonly [matDatepicker]="picker4" placeholder="Date" autocomplete="off"
+                            formControlName="request_date" required>
+                        <mat-datepicker-toggle  matSuffix [for]="picker4" [disabled]="true">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker4></mat-datepicker>
+
+                    </mat-form-field>
+
+                </mat-grid-tile>
+
+                <mat-grid-tile [colspan]="2">
+                    <mat-form-field style="width:82%;    margin-top: 5%;" appearance="outline">
+                        <mat-label>Delivery Address</mat-label>
+                        <textarea matInput style="max-height:60px;" [value]="retrievalform.value.address | titlecase"
+                            rows="3" cols="10" [readonly]="!retrievalform.value.addresschange" formControlName="address"
+                            required></textarea>
+                        <mat-checkbox style="margin-left:10px" formControlName="addresschange"
+                            (change)="addresschange()" matSuffix [color]="'primary'">Change
+                        </mat-checkbox>
+
+                        <button (click)="check($event.target.value)" matSuffix mat-button>Change</button>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="2">
+                    <mat-form-field style="width:82%;     margin-top: 5%;" appearance="outline">
+                        <mat-label>Reason for retrieval</mat-label>
+                        <textarea matInput style="max-height:60px;" rows="3" cols="10" matInput
+                            formControlName="remarks" required></textarea>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+            </mat-grid-list>
+        </fieldset> -->
+        <button *ngIf="maker && status < 3 && retrievalform.value.details.length >0"  class="btn btn-outline-success subbtn"
+            data-target="#branchemp" data-toggle="modal" id="rmubtn">Proceed</button>
+
+
+
+        <div class="modal fade" id="branchemp" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header hdrclr">
+                        <h2 class="modal-title" id="exampleModalLongTitle">Select Approver</h2>
+                        <button mat-icon-button data-dismiss="modal">
+                            <mat-icon>backspace</mat-icon>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset>
+                            <mat-form-field class="rmubranch">
+                                <mat-label>Branch</mat-label>
+                                <input type="text" placeholder="Select Branch" matInput [matAutocomplete]="branchauto"
+                                    formControlName="branch" required>
+                                <button mat-button matSuffix mat-icon-button aria-label="Clear">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                                <mat-autocomplete #branchauto="matAutocomplete" (opened)="branchScroll()"
+                                    [displayWith]="autoshow">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngIf="branchlist.length <1">
+                                            No Records Found
+                                        </mat-option>
+                                        <mat-option *ngFor="let branch of branchlist" [value]="branch">
+                                            ({{branch.code}}) {{branch.name}}
+                                        </mat-option>
+                                    </ng-container>
+
+                                </mat-autocomplete>
+                            </mat-form-field>
+
+
+                            <mat-form-field class="rmuemployee" (click)="isLoading = true;">
+                                <mat-label>Employee</mat-label>
+                                <input type="text" required placeholder="Select Employee" matInput
+                                    [matAutocomplete]="empauto" formControlName="approver_id">
+                                <button mat-button matSuffix mat-icon-button aria-label="Clear">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                                <mat-autocomplete #empauto="matAutocomplete" [displayWith]="autoshow">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngIf="approverlist.length <= 0">No records found</mat-option>
+                                        <mat-option *ngFor="let emp of approverlist" [value]="emp">
+                                            ({{emp.code}}) {{emp.name}} --{{emp.designation}}
+                                        </mat-option>
+                                    </ng-container>
+
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="rmubtn" (click)="submitform()"
+                            class="btn btn-outline-success">Submit</button>
+                        <button type="button" #modalclose id="rmubtn" class="btn btn-outline-secondary"
+                            data-dismiss="modal">Close</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="modal fade" id="searchmodal" style="margin:0 auto;size:600px" tabindex='-4' role="dialog"
+        aria-hidden="true">
+        <div class="modal-dialog">
+
+
+
+
+            <div class="modal-content" style="width:fit-content;margin-left: -60%;">
+                <div class='modal-header hdrclr'>
+                    <h2> Select Documents For Retrieval </h2>
+                    <button mat-icon-button data-dismiss="modal">
+                        <mat-icon>backspace</mat-icon>
+                    </button>
+                </div>
+
+                <div class="modal-body" style="width:1150px">
+                    <!-- <fieldset id="rmufieldset">
+
+                        <legend id="rmulegend">Select Retrieval Docs</legend> -->
+                    <form [formGroup]="searchform">
+
+                        <mat-grid-list [cols]="breakpoint+1" rowHeight="70px" (window:resize)="onResize($event)">
+
+
+                            <mat-grid-tile>
+                                <mat-form-field appearance="outline" style="margin-top: 10%;">
+                                    <mat-label>Vendor</mat-label>
+                                    <input matInput formControlName="vendor">
+                                </mat-form-field>
+
+                            </mat-grid-tile>
+
+                            <!-- <mat-grid-tile>
+                                <mat-form-field>
+                                    <mat-label></mat-label>
+                                    <input matInput formControlName="department" required>
+                                </mat-form-field>
+                            </mat-grid-tile> -->
+
+                            <mat-grid-tile>
+                                <mat-form-field appearance="outline" style="margin-top: 10%;">
+                                    <mat-label>Product</mat-label>
+                                    <mat-select matInput formControlName="product_id" required>
+                                        <mat-option *ngFor="let product of productlist" [value]="product.id">
+                                            {{product.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-grid-tile>
+
+                            <!-- <mat-grid-tile>
+                                <mat-form-field>
+                                    <mat-label>Vendor Barcode</mat-label>
+                                    <input matInput formControlName="barcode" #barcodeinput [matAutocomplete]="barcode">
+                                    <mat-autocomplete #barcode="matAutocomplete">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let bar of barcodelist" [value]="bar.name">
+                                                {{bar.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </mat-grid-tile> -->
+
+                            <mat-grid-tile>
+                                <mat-form-field appearance="outline" style="margin-top: 10%;">
+                                    <mat-label>Doc No</mat-label>
+                                    <input matInput formControlName="doc_no" #docinput [matAutocomplete]="document">
+                                    <mat-autocomplete #document="matAutocomplete">
+                                        <!-- <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option> -->
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let doc of documentlist" [value]="doc.name">
+                                                {{doc.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </mat-grid-tile>
+
+                            <mat-grid-tile>
+                                <mat-form-field appearance="outline" style="margin-top: 10%;">
+                                    <mat-label>From Date</mat-label>
+                                    <input matInput readonly [matDatepicker]="picker1" placeholder="Date"
+                                        (dateChange)="fromdatechange()" autocomplete="off" formControlName="from_date"
+                                        required>
+                                    <mat-datepicker-toggle  matSuffix [for]="picker1">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                </mat-form-field>
+                            </mat-grid-tile>
+
+                            <mat-grid-tile>
+                                <mat-form-field appearance="outline" style="margin-top: 10%;">
+                                    <mat-label>To Date</mat-label>
+                                    <input matInput readonly [matDatepicker]="picker2" placeholder="Date"
+                                        autocomplete="off" formControlName="to_date" [min]="searchform.value.from_date">
+                                    <mat-datepicker-toggle  matSuffix [for]="picker2">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                </mat-form-field>
+                            </mat-grid-tile>
+
+
+
+
+
+                            <!-- <mat-grid-tile>
+                                <mat-form-field>
+                                    <mat-label>Retrieval Method</mat-label>
+                                    <mat-select matInput formControlName="retr_method" required [disabled]="true">
+                                        <mat-option *ngFor="let item of retmethodlist" [value]="item.value">
+                                            {{item.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-grid-tile> -->
+
+                            <mat-grid-tile>
+                                <div>
+                                    <button style="margin-left: -4rem;" matTooltip="Search Records"
+                                        [matTooltipPosition]="'above'" #tool matTooltipClass="rmutooltip"
+                                        (click)="searchdocs()" class="btn btn-outline-success" id="rmubtn"><i
+                                            class="fa fa-search" aria-hidden="true"></i></button>
+                                    <button class="btn btn-warning" [matTooltip]="'Clear Entries'"
+                                        [matTooltipPosition]="'above'" #tool (click)="searchformreset()"
+                                        matTooltipClass="rmutooltip" style="margin-left:20px" id="rmubtn">Clear</button>
+                                </div>
+                            </mat-grid-tile>
+
+                        </mat-grid-list>
+                    </form>
+                    <mat-grid-tile-footer>
+                        <div class="col-sm-4" *ngIf="retrievalreqlist.length == 10 || pagination.index > 1"
+                            style="font-size: small;text-align:right;float:right;width:50px;margin-top:22%">
+                            <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false"
+                                color="primary">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{pagination.index}}
+                            <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false"
+                                color="primary">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                        <table *ngIf="retrievalreqlist.length >0" class="table table-bordered" id="rmutable"
+                            style="margin: 1% 2%;width: 93%;">
+                            <thead class="table_header">
+                                <th>S.No</th>
+                                <!-- <th>Product</th> -->
+                                <th>Vendor Barcode</th>
+                                <th>Doc No</th>
+                                <th>Select All <mat-checkbox [color]="'warn'" [(ngModel)]="selectall" (change)="selectalldocs()">
+                                    </mat-checkbox>
+                                </th>
+                            </thead>
+                            <tbody *ngFor="let data of retrievalreqlist index as ind">
+                                <td>{{(pagination.index-1)*10+ind+1}}</td>
+                                <!-- <td>{{data.product_name}}</td> -->
+                                <td>{{data.barcode}}</td>
+                                <td>{{data.document_no}}</td>
+                                <td>
+                                    <mat-checkbox [(ngModel)]="data.select" (change)="adddocs(data)"
+                                        [color]="'primary'">
+                                    </mat-checkbox>
+                                </td>
+                            </tbody>
+                        </table>
+                        <div *ngIf="retrievalreqlist.length ==0" style="text-align:center">
+                            <h2>No records found</h2>
+                        </div>
+                    </mat-grid-tile-footer>
+
+                </div>
+
+                <!-- <div class="modal-footer">
+                    <button id="rmubtn" class="btn btn-outline-success" (click)="adddocs()">
+                        Submit
+                    </button>
+                    <button id="rmubtn" class="btn btn-outline-dark" data-dismiss="modal">
+                        Close
+                    </button>
+                </div> -->
+            </div>
+
+
+        </div>
+    </div>
+
+
+<!-- <pre>{{retrievalform.value | json}}</pre> -->
+
+<!-- Modal -->
+<div class="modal fade" id="cancelpopup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header hdrclr">
+                <h2 class="modal-title" id="exampleModalLongTitle">Request For Cancellation</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <mat-form-field>
+                    <mat-label>Reason</mat-label>
+                    <input matInput>
+                </mat-form-field>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="rmubtn" class="btn btn-outline-success">Submit</button>
+                <button type="button" #modalclose id="rmubtn" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="actionpopup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header hdrclr">
+                <h2 class="modal-title" id="exampleModalLongTitle">{{action}} : Confirmation</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Remarks</mat-label>
+                    <input matInput [(ngModel)]="actionreason">
+                </mat-form-field>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="rmubtn" (click)="appaction()" class="btn btn-outline-primary">Ok</button>
+                <button type="button" #actionclose id="rmubtn" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div
+class="modal fade"
+id="historypopup"
+tabindex="-1"
+aria-labelledby="historypopup"
+aria-hidden="true"
+>
+<div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-content" >
+    <div class="modal-header">
+      <p class="modal-title mb-0" id="historypopup" style="font-weight: 600;">Retrieval History</p>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        #closeretrivalpopup
+        aria-label="Close"
+        (click)="close()"
+      >
+        <i aria-hidden="true">&times;</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+        <div id="rmucontent" class="table-responsive">
+            <table class="table table-bordered" id="rmutable">
+                <thead class="table_header">
+                    <th>S.No</th>
+                    <th>Date</th>
+                    <th>Employee</th>
+                    <th>Branch</th>
+                    <th>Comments</th>
+                    <th>Retrieval Status</th>
+
+                </thead>
+                <tbody *ngFor="let sum of historylist;index as ind">
+                    <td>{{ind+1}}</td>
+                    <td>
+                        {{sum?.request_date |date:'dd-MMM-yyyy'}}
+                        {{sum?.approval_date | date:'dd-MMM-yyyy'}}
+                    </td>
+                    <td>
+                        ({{sum.employee_code}}) {{sum.employee_name}}
+                    </td>
+                    <td>
+                        ({{sum.branch_code}}) {{sum.branch_name | titlecase}}
+                    </td>
+                    <td>{{sum.comment}}</td>
+                    <td>{{sum.status |titlecase}}</td>
+                </tbody>
+            </table>
+            <div *ngIf="!historylist.length" style="margin-left: 42%;">
+                <h3>Sorry no data found!... </h3>
+            </div>
+
+            <!-- <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false" color="primary">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{pagination.index}}
+                <button  mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+    
+            </div> -->
+        </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" #closeretrivalpopup id="rmubtn" class="btn btn-outline-secondary"
+            data-dismiss="modal" (click)="close()">Close</button> 
+    </div>
+  </div>
+</div>
+</div>
+
+
+<div class="modal fade" id="historypopup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLongTitle">Retrieval History</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="rmucontent" class="table-responsive">
+                    <table class="table table-bordered" id="rmutable">
+                        <thead class="table_header">
+                            <th>S.No</th>
+                            <th>Date</th>
+                            <th>Employee</th>
+                            <th>Branch</th>
+                            <th>Comments</th>
+                            <th>Retrieval Status</th>
+
+                        </thead>
+                        <tbody *ngFor="let sum of historylist;index as ind">
+                            <td>{{ind+1}}</td>
+                            <td>
+                                {{sum?.request_date |date:'dd-MMM-yyyy'}}
+                                {{sum?.approval_date | date:'dd-MMM-yyyy'}}
+                            </td>
+                            <td>
+                                ({{sum.employee_code}}) {{sum.employee_name}}
+                            </td>
+                            <td>
+                                ({{sum.branch_code}}) {{sum.branch_name | titlecase}}
+                            </td>
+                            <td>{{sum.comment}}</td>
+                            <td>{{sum.status |titlecase}}</td>
+                        </tbody>
+                    </table>
+                    <div *ngIf="!historylist.length" style="margin-left: 42%;">
+                        <h3>Sorry no data found!... </h3>
+                    </div>
+
+                    <!-- <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                        <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false" color="primary">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{pagination.index}}
+                        <button  mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+            
+                    </div> -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" #modalclose id="rmubtn" class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</section>

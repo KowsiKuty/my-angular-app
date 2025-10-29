@@ -1,0 +1,761 @@
+<div style="margin-bottom: 30px;">
+
+    <div class="table-responsive" *ngIf="isOccupancyTable">
+        <table class="table table-bordered" style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Code</th>
+                    <th>Occupancy Usage</th>
+                    <th> Occupancy Usage Code</th>
+                    <th>Area Occupied Usagewise(sq ft) </th>
+                    <th> Status </th>
+                    <th *ngIf="isEditBtn"> Action </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let occupancy of occupancyModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td  style="cursor: pointer; color: #3684BF; " (click)="OccupancyView(occupancy.id)">{{ occupancy.code }}</td>
+                    <td>{{ occupancy.usage}}</td>
+                    <td>{{ occupancy.usage_code_id.code}} - {{ occupancy.usage_code_id.name }}</td>
+                    <td>{{ occupancy.area_occupied}}</td>
+                    <td>{{ occupancy.modify_data}}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="occupancy.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="occupancyEdit(occupancy)" color="primary" id="modification-summary-0002">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Delete" *ngIf="occupancy.modify_data != 'Delete'"
+                            class="iconbutton" (click)="deleteoccupancy(occupancy)" color="primary" id="modification-summary-0003">
+                            <mat-icon class="edit-btn" aria-label="Delete">delete</mat-icon>
+                        </button>
+
+                        <button *ngIf="occupancy.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="occupancyEdit(occupancy)" color="primary" id="modification-summary-0004">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Delete" class="iconbutton"
+                            *ngIf="occupancy.modify_data == 'Delete'" [disabled]="true" [class.linkDisabled]="true"
+                            (click)="deleteoccupancy(occupancy)" color="primary" id="modification-summary-0005">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Delete">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive" *ngIf="paramsData == 'Amenities & Infrastructure'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Amenities Name</th>
+                    <th>Remarks </th>
+                    <th>Status </th>
+                    <th *ngIf="isEditBtn"> Action </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let amenities of amenitiesModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td>{{ amenities?.amenties.name }}</td>
+                    <td>{{ amenities.remarks}}</td>
+                    <td>{{ amenities.modify_data}}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="amenities.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="amenitiesEdit(amenities)" color="primary" id="modification-summary-0006">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="amenities.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="amenitiesDelete(amenities.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="amenities.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="amenitiesEdit(amenities)" color="primary" id="modification-summary-0007">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="amenities.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="amenitiesDelete(amenities.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- <div class="table-responsive" *ngIf="paramsData == 'EB Details'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>EB Circle</th>
+                    <th>Service Provider</th>
+                    <th>Consumer Number </th>
+                    <th> Status </th>
+                    <th> Action </th>
+                    <th>Add EB Advance </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let ebDetails of ebDetailsModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td>{{ ebDetails?.EB_circle_id.circle_name }}</td>
+                    <td>{{ ebDetails?.service_provider }}</td>
+                    <td>{{ ebDetails?.cosumer_number }}</td>
+                    <td>{{ ebDetails?.modify_data }}</td>
+                    <td>
+                        <button *ngIf="ebDetails.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="EbdetailsEdit(ebDetails)" color="primary" id="modification-summary-0008">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="ebDetails.modify_data != 'Delete'" mat-icon-button matTooltip=" Delete"
+                            class="iconbutton" color="primary" id="modification-summary-0009">
+                            <mat-icon class="edit-btn" aria-label="Delete" (click)="ebdetailsDelete(ebDetails)">
+                                delete</mat-icon>
+                        </button>
+                        <button *ngIf="ebDetails.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            matTooltip=" Edit" class="iconbutton" (click)="EbdetailsEdit(ebDetails)" color="primary" id="modification-summary-0010">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="ebDetails.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            matTooltip=" Delete" class="iconbutton" color="primary" id="modification-summary-0011">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Delete" (click)="ebdetailsDelete(ebDetails)">
+                                delete</mat-icon>
+                        </button>
+
+                    </td>
+                    <td>
+                        <div *ngIf='ebDetails.modify_data === "Modify"; else dismiss'>
+                            <button type="button" class="btn btn-outline-success" data-toggle="modal" [disabled]="true"
+                                data-target="#rejectModal" (click)="addadvance(ebDetails)" id="modification-summary-0012"><span
+                                    class="fa fa-plus"></span>
+                            </button>
+                        </div>
+                        <ng-template #dismiss>
+                            <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                                data-target="#rejectModal" (click)="addadvance(ebDetails)" id="modification-summary-0013"><span
+                                    class="fa fa-plus"></span>
+                            </button>
+                        </ng-template>
+                        
+                    <ng-template #dismiss>
+                        <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                            data-target="#rejectModal" (click)="addadvance(ebDetails)" id="modification-summary-0014"><span class="fa fa-plus"></span>
+                        </button>
+                    </ng-template> 
+                        <button type="button" class="btn btn-outline-success" data-toggle="modal" *ngIf="btn"
+                            data-target="#rejectModal" (click)="addadvance(ebDetails)" id="modification-summary-0015"><span class="fa fa-plus"></span>
+                        </button> 
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div> -->
+    <div class="table-responsive" *ngIf="paramsData == 'Statutory Payments'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Statutory Tax Name</th>
+                    <th>Statutory Tax Amount</th>
+                    <th>Payment Due Date</th>
+                    <th> Remarks </th>
+                    <th> Status </th>
+                    <th *ngIf="isEditBtn"> Action </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let statutory of statutoryPaymentModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td>{{ statutory?.tax_name.name }}</td>
+                    <td>{{ statutory.tax_amount}}</td>
+                    <td>{{ statutory.due_date |date: 'dd-MMM-yyyy'}}</td>
+                    <td>{{ statutory.remarks}}</td>
+                    <td>{{ statutory.modify_data}}</td>
+
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="statutory.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="statutoryEdit(statutory)" color="primary" id="modification-summary-0016">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="statutory.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="statutoryDelete(statutory.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Delete">delete</mat-icon>
+                        </button>
+                        <button *ngIf="statutory.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="statutoryEdit(statutory)" color="primary" id="modification-summary-0017">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="statutory.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="statutoryDelete(statutory.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Delete">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive" *ngIf="paramsData == 'Licenses & Certificate'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Licenses Number</th>
+                    <th>Licenses Type</th>
+                    <th>Start Date</th>
+                    <th> Renewal date </th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn"> Action </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let license of licenseDetailsModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td>{{ license?.licensenumber }}</td>
+                    <td>{{ license?.licensetype.name}}</td>
+                    <td>{{ license.start_date |date: 'dd-MMM-yyyy'}}</td>
+                    <td>{{ license.renewal_date |date: 'dd-MMM-yyyy'}}</td>
+                    <td>{{ license.remarks}}</td>
+                    <td>{{ license.modify_data}}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="license.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="licensesDetailsEdit(license)" color="primary" id="modification-summary-0018">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="license.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="licensesDelete(license.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="license.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="licensesDetailsEdit(license)" color="primary" id="modification-summary-0019">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="license.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="licensesDelete(license.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive" *ngIf="paramsData == 'Repairs & Maintenance'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Damage Descirtption</th>
+                    <th>Date Of Occurrence</th>
+                    <th>Amount of Damage</th>
+                    <th> Insurance Claim</th>
+                    <th>Amount Claimed</th>
+                    <th> Remarks </th>
+                    <th> Status </th>
+                    <th *ngIf="isEditBtn"> Action </th>
+                    <th>Details repair & maintenance</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let repair of repairModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td>{{ repair?.description }}</td>
+                    <td>{{ repair?.date |date: 'dd-MMM-yyyy'}}</td>
+                    <td>{{ repair.damage_amount }}</td>
+                    <td>
+                        <div *ngIf="repair.is_insurance_claimed==true">Yes</div>
+                        <div *ngIf="repair.is_insurance_claimed==false">No</div>
+                    </td>
+                    <!-- <td>{{ repair.is_insurance_claimed}}</td> -->
+                    <td>{{ repair.amount_claimed}}</td>
+                    <td>{{ repair.remarks}}</td>
+                    <td>{{ repair.modify_data}}</td>
+                    <td *ngIf="isEditBtn">
+
+                        <button *ngIf="repair.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="RepairEdit(repair)" color="primary" id="modification-summary-0020">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="repair.modify_data != 'Delete'" mat-icon-button matTooltip=" Delete"
+                            class="iconbutton" (click)="RepairDelete(repair)" color="primary" id="modification-summary-0021">
+                            <mat-icon class="edit-btn" aria-label="Delete">delete</mat-icon>
+                        </button>
+                        <button *ngIf="repair.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="RepairEdit(repair)" color="primary" id="modification-summary-0022">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="repair.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Delete" class="iconbutton"
+                            (click)="RepairDelete(repair)" color="primary" id="modification-summary-0023">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Delete">delete</mat-icon>
+                        </button>
+                    </td>
+                    <td>
+                        <div *ngIf='repair.modify_data === "Modify"; else dismiss'>
+                            <button type="button" class="btn btn-outline-success" (click)="adddetailRM(repair)"
+                                [disabled]="true" id="modification-summary-0024"><span class="fa fa-plus"></span>
+                            </button>
+                        </div>
+
+                        <ng-template #dismiss>
+                            <button type="button" class="btn btn-outline-success" (click)="adddetailRM(repair)" id="modification-summary-0025"><span
+                                    class="fa fa-plus"></span>
+                            </button>
+                        </ng-template>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-responsive" *ngIf="paramsData == 'Renovations & Additions'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Date of Renovation / Additions</th>
+                    <th>Description of work done</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn"> Action </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let renovation of renovationModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td>{{ renovation?.date |date: 'dd-MMM-yyyy'}}</td>
+                    <td>{{ renovation?.description }}</td>
+                    <td>{{ renovation.amount }}</td>
+                    <td>{{ renovation.modify_data }}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="renovation.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="renovationEdit(renovation)" color="primary" id="modification-summary-0026">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="renovation.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="deleterenovation(renovation)" color="primary" id="modification-summary-0027">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="renovation.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="renovationEdit(renovation)" color="primary" id="modification-summary-0028">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="renovation.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="deleterenovation(renovation)" color="primary" id="modification-summary-0029">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-responsive" *ngIf="paramsData == 'Insurance Details'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Insurance Certificate Number</th>
+                    <th>Insurance Type</th>
+                    <th>Premium Amount</th>
+                    <th>Premium Due Date</th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let InsDetail of insuranceDetailsModiData; index as i">
+                    <td>{{ i+1 }}</td>
+                    <td>{{ InsDetail.insurancenumber}}</td>
+                    <td>{{ InsDetail.insurancetype.name }}</td>
+                    <td>{{ InsDetail.premiumamount }}</td>
+                    <td>{{ InsDetail.end_date | date:'dd-MMM-yyyy '}}</td>
+                    <td>{{ InsDetail.remarks }}</td>
+                    <td>{{ InsDetail.modify_data }}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="InsDetail.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="insuranceDetailsEdit(InsDetail)" color="primary" id="modification-summary-0030">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="InsDetail.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="insuranceDetailsDelete(InsDetail.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="InsDetail.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="insuranceDetailsEdit(InsDetail)" color="primary" id="modification-summary-0031">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="InsDetail.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="insuranceDetailsDelete(InsDetail.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive" *ngIf="paramsData == 'Legal & Statutory Notice'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Date of Notice</th>
+                    <th>Due Date </th>
+                    <th>Court Hearing Date</th>
+                    <th>Hearing Location</th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let notice of statutoryNoticeModiData; index as i">
+                    <td>{{ i+1 }}</td>
+                    <td>{{ notice.notice_date | date:'dd-MMM-yyyy ' }}</td>
+                    <td>{{ notice.due_date | date:'dd-MMM-yyyy '}}</td>
+                    <td>{{ notice.hearing_date | date:'dd-MMM-yyyy '}}</td>
+                    <td>{{ notice.hearing_location}}</td>
+                    <td>{{ notice.remarks}}</td>
+                    <td>{{ notice.modify_data}}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="notice.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="legalNoticeEdit(notice)" color="primary" id="modification-summary-0032">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="notice.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="statutoryDelete(notice.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Delete">delete</mat-icon>
+                        </button>
+                        <button *ngIf="notice.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="legalNoticeEdit(notice)" color="primary" id="modification-summary-0033">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="notice.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="statutoryDelete(notice.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Delete">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="table-responsive" *ngIf="paramsData == 'Agreement and Rent'">
+        <div *ngIf="request_status == 'MODIFICATION'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Schedule Type</th>
+                    <th>Lease Period</th>
+                    <th>Agreement Status</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let agreement of leaseAgreementModiData; index as i">
+                    <th scope="row">{{i+1 }}</th>
+                    <td style="cursor: pointer; color: #3684BF; " (click)="agreementView(agreement.id)"> {{ agreement.start_date | date:'dd-MMM-yyyy '}}</td>
+                    <td>{{ agreement.end_date | date:'dd-MMM-yyyy'}}</td>
+                    <td>{{ agreement.type.text}}</td>
+                    <td>{{ agreement.lease_period}}</td>
+                    <td>{{ agreement.lease_status.text}}</td>
+                    <td>{{ agreement.modify_data }}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="agreement.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="agreementEdit(agreement)" color="primary" id="modification-summary-0034">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="agreement.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="agreementDelete(agreement.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="agreement.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="agreementEdit(agreement)" color="primary" id="modification-summary-0035">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="agreement.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="agreementDelete(agreement.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div *ngIf="request_status == 'RENEWAL'">
+            <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                <thead class="table_header" style="text-align: left;">
+                    <tr>
+                        <th>S.no </th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Schedule Type</th>
+                        <th>Lease Period</th>
+                        <th>Agreement Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let agreement of leaseAgreementRenewalData; index as i">
+                        <th scope="row">{{i+1 }}</th>
+                        <td style="cursor: pointer; color: #3684BF; " (click)="agreementView(agreement.id)"> {{ agreement.start_date | date:'dd-MMM-yyyy '}}</td>
+                        <td>{{ agreement.end_date | date:'dd-MMM-yyyy'}}</td>
+                        <td>{{ agreement.type.text}}</td>
+                        <td>{{ agreement.lease_period}}</td>
+                        <td>{{ agreement.lease_status.text}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-responsive" *ngIf="paramsData == 'Premise Details'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no </th>
+                    <th>Building Name</th>
+                    <th>Building Built-up Area (Sq ft)</th>
+                    <th>Primary Contact</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let premiseDetails of premisesDetailsModiData; index as i">
+                    <th> {{i+1 }} </th>
+                    <td style="cursor: pointer; color: #3684BF; " (click)="premiseDetailsView(premiseDetails.id)"> {{ premiseDetails.building_name }}</td>
+                    <td>{{premiseDetails.building_details.buildup_area }}</td>
+                    <td>{{ premiseDetails.primary_contact.full_name}}</td>
+                    <td>{{ premiseDetails.modify_data }}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="premiseDetails.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" color="primary" (click)="premiseDetailsEdit(premiseDetails)" id="modification-summary-0036">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="premiseDetails.modify_data  != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" color="primary" (click)="premiseDetailsDelete(premiseDetails.id)">
+                            <mat-icon class="edit-btn" aria-label="">delete</mat-icon>
+                        </button>
+                        <button *ngIf="premiseDetails.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton" color="primary"
+                            (click)="premiseDetailsEdit(premiseDetails)" id="modification-summary-0037">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="premiseDetails.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton" color="primary"
+                            (click)="premiseDetailsDelete(premiseDetails.id)">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive" *ngIf="paramsData == 'Legal Clearance'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+
+                <tr>
+                    <th>S.no </th>
+                    <th>Legal Clearance / Documents </th>
+                    <th>Document Date</th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let legal of legalClearanceModidata; index as i">
+                    <th> {{i+1 }} </th>
+                    <td>{{ legal.document_type.name}}</td>
+                    <td>{{ legal.date | date:'dd-MMM-yyyy'}}</td>
+                    <td>{{ legal.remarks}}</td>
+                    <td>{{ legal.modify_data }}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="legal.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="legalClearanceEdit(legal)" color="primary" id="modification-summary-0038">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="legal.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="legalClearanceDelete(legal.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="legal.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="legalClearanceEdit(legal)" color="primary" id="modification-summary-0039">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="legal.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="legalClearanceDelete(legal.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div class="table-responsive" *ngIf="paramsData == 'Landlord Details'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+
+                <tr>
+                    <th>S.no </th>
+                    <th>Name</th>
+                    <th>Mobile Number</th>
+                    <th>PAN Number</th>
+                    <th>GST Number</th>
+                    <th>Email ID</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let landlord of landlordModidata; index as i">
+                    <td>{{i+1}}</td>
+                    <td style="cursor: pointer; color: #3684BF; " (click)="landLordView(landlord.id)">
+                        {{ landlord.name}}</td>
+                    <td>{{ landlord.mobile}}</td>
+                    <td>{{ landlord.panno}}</td>
+                    <td>{{ landlord.gstno}}</td>
+                    <td>{{ landlord.email }}</td>
+                    <td>{{ landlord.modify_data }}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="landlord.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" color="primary" (click)="landlordEdit(landlord)" id="modification-summary-0040">
+
+                            <!-- <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon> -->
+                            <mat-icon class="enabled_icon" aria-label="Edit">visibility</mat-icon>
+                        </button>
+                        <button *ngIf="landlord.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="deletelanlord(landlord)" color="primary" id="modification-summary-0041">
+                            <mat-icon class="edit-btn" aria-label="Delete">delete</mat-icon>
+                        </button>
+
+                        <button *ngIf="landlord.modify_data == 'Delete'"  mat-icon-button
+                             matTooltip=" Edit" class="iconbutton" color="primary"
+                            (click)="landlordEdit(landlord)" id="modification-summary-0042">
+
+                            <!-- <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon> -->
+                            <mat-icon class="enabled_icon" aria-label="Edit">visibility</mat-icon>
+                        </button>
+                        <button *ngIf="landlord.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="deletelanlord(landlord)" color="primary" id="modification-summary-0043">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Delete">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div class="table-responsive" *ngIf="paramsData == 'Documents'">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+
+                <tr>
+                    <th>S.no </th>
+                    <th>Document Type</th>
+                    <th>Document Reference No</th>
+                    <th>Document Date</th>
+                    <th>Remarks</th>
+                    <th>Files</th>
+                    <th>Status</th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let document of DocumentModidata; index as i">
+                    <th>{{ i+1 }}</th>
+                    <td>{{ document?.type.name }}</td>
+                    <td>{{ document?.doc_ref}}</td>
+                    <td>{{ document?.date | date:'dd-MMM-yyyy '}}</td>
+                    <td>{{ document?.remarks}}</td>
+
+                    <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                        <div *ngFor="let file of document.file_data ;index as i;" title="{{file.file_name }}"
+                            (click)="fileDownload(file.id,file.file_name )" class=" btn-link"><i
+                                class="fa fa-download"></i>
+                            {{i+1}}. {{file.file_name }}
+                        </div>
+                    </td> -->
+                    <td style="font-size: small;width: 150px;cursor: pointer;">
+                        <div *ngFor="let file of document.file_data ;index as i;" title="{{file.file_name }}"
+                            data-toggle="modal" data-target="#modification-summary-0001"
+                            (click)="imagePreview(file.file_id,file.file_name ,file)" class=" btn-link"><i
+                                class="fa fa-download"></i>
+                            {{i+1}}. {{file.file_name }}
+                        </div>
+                    </td>
+
+                    <td>{{ document?.modify_data }}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="document.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="documentEdit(document)" color="primary" id="modification-summary-0044">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="document.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="documentDelete(document.id)" color="primary">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="document.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="documentEdit(document)" color="primary" id="modification-summary-0045">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="document.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="documentDelete(document.id)" color="primary">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div id="modification-summary-0001" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true" tabindex="-1" role="dialog"
+        *ngIf="isImages">
+        <div class="modal-dialog" data-dismiss="modal">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

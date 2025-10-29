@@ -1,0 +1,252 @@
+
+<div style="margin-top: 40px;margin-left: 40px;">
+  <h2>
+      eClaim Report Tour Summary
+  </h2>
+  <div class="row">
+      <div class="col-12">
+          <form [formGroup]="tareportForm">
+         <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 20px;">
+
+  <div style="display: flex; align-items: center; gap: 50px;">
+    <mat-form-field style="width:175px;">
+      <mat-label>Tour No</mat-label>
+      <input type="text" matInput formControlName="requestno">
+    </mat-form-field>
+
+    <mat-form-field style="width: 175px;">
+      <mat-label>Branch</mat-label>
+      <input matInput [matAutocomplete]="branchname" formControlName="branch" #branchinput>
+      <mat-autocomplete #branchname="matAutocomplete" [displayWith]="display_branch" (opened)="autocompleteScroll_branch()">
+        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+        <ng-container *ngIf="!isLoading">
+          <mat-option *ngFor="let branch of branchlist" (click)="getemployeelist(1)" [value]="branch">
+            {{branch.code}}-{{branch.name}}
+          </mat-option>
+        </ng-container>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field style="width: 175px;" (click)="branchchoosen()">
+      <mat-label>Employee</mat-label>
+      <input matInput [matAutocomplete]="empname" formControlName="employee" #empinput>
+      <mat-autocomplete #empname="matAutocomplete" [displayWith]="display_employee" (opened)="autocompleteScroll_employee()" (click)="getemployeelist(1)">
+        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+        <ng-container *ngIf="!isLoading">
+          <mat-option *ngFor="let emp of employeelist" [value]="emp">{{emp.code}}-{{emp.name}}</mat-option>
+        </ng-container>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field style="width:150px;">
+      <mat-label>Grade</mat-label>
+      <input type="text" matInput formControlName="grade" (input)="onInputChange($event)">
+    </mat-form-field>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 30px;">
+    <mat-form-field>
+      <mat-label>From Date</mat-label>
+      <input matInput [matDatepicker]="from" formControlName="fromdate" readonly>
+      <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+      <mat-datepicker #from></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>TO Date</mat-label>
+      <input matInput [matDatepicker]="to" formControlName="todate" readonly>
+      <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+      <mat-datepicker #to></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Month</mat-label>
+      <mat-select formControlName="month">
+        <mat-option *ngFor="let type of monthList" [value]="type.text">{{ type.text }}</mat-option>
+      </mat-select>
+      <button *ngIf="tareportForm.get('month')?.value"
+              matSuffix mat-icon-button
+              aria-label="Clear"
+              (click)="tareportForm.get('month')?.setValue(null)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+
+    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;" (click)="tourdownload()">
+      <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+    </button>
+  <button mat-stroked-button class="btn btn-outline-primary" style="border-radius:40px; margin-left: -16px;"
+        (click)="provisiondownload()">
+  <mat-icon style="margin-right:5px;">download</mat-icon>
+  Prepare Excel
+</button>
+
+    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;" (click)="provisionreportdownload()">
+      <i matTooltip="Provision Report Download" class="fa fa-download" aria-hidden="true"></i>
+    </button>
+    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;" (click)="tourSearch(1)">
+      <i matTooltip="Search" class="fa fa-search" aria-hidden="true"></i>
+    </button>
+    <button class="btn btn-outline-primary" type="clear" style="border-radius:40px;" (click)="reset()">Clear</button>
+  </div>
+</div>
+
+     
+          </form>
+      </div>
+  </div>
+  </div>
+
+  <div class="container">
+      <div class="row">
+        <div class="table-responsive" >
+            <table class="table table-bordered" fixed-header
+            style="width: 95%;margin-top: 10px;overflow-x: hidden;">
+        <thead class="table_header" style="text-align: left;">
+        <tr>
+        <th style="text-align: center;">S.No</th>
+        <th style="text-align: center;">Employee</th>
+        <th style="text-align: center;">Employee Code</th>
+        <th style="text-align: center;">Designation</th>
+        <th style="text-align: center;">Grade</th>
+        <th style="text-align: center;">Branch</th>
+        <th style="text-align: center;">Tour NO</th>
+        <th style="text-align: center;">Reason</th>
+        <th style="text-align: center;">Tour Request Date</th>
+        <th style="text-align: center;">From Date</th>
+        <th style="text-align: center;">To Date</th>
+        <th style="text-align: center;">Total Approved Amount</th>
+        <th style="text-align: center;">Total Advance Amount</th>
+        <th style="text-align: center;">Claim Status</th>
+        <th style="text-align: center;">Tour Detail</th>
+        <th style="text-align: center;">Tour Advance</th>
+        <th style="text-align: center;">Tour Expenses</th>
+        <th style="text-align: center;">Tour history</th>
+
+        
+        </tr>
+        </thead>
+      <tbody>
+            <tr *ngFor="let report of gettourreportList; index as i">
+            <td style="text-align: center;">{{(presentpage-1)*pageSize+i+1}}</td> 
+            <td style="text-align: center;">{{report.employee_name}}</td> 
+            <td style="text-align: center;">{{report.employee_code}}</td> 
+            <td style="text-align: center;">{{report.empdesignation}}</td>
+            <td style="text-align: center;">{{report.empgrade}}</td>
+            <td style="text-align: center;">({{report.branch_code}}){{report.branch_name}}</td>
+            <td style="text-align: center;">{{report.requestno}}</td>
+            <td style="text-align: center;">{{report.reason}}</td> 
+            <td style="text-align: center;">{{report.requestdate}}</td>
+            <td style="text-align: center;">{{report.startdate}}</td>
+            <td style="text-align: center;">{{report.enddate}}</td>
+            <td style="text-align: center;">{{report.approvedamount}}</td> 
+            <td style="text-align: center;">{{report.advanceamount}}</td>
+            <td style="text-align: center;">{{report.claim_status}}</td>
+            <td style="text-align: center;color:blue;"><span matTooltip= "View Detail" class="fa fa-arrow-up" aria-hidden="true" (click)="gettourdetail(report)"></span></td>
+            <td style="text-align: center;color:rgb(178, 18, 18);"><span matTooltip= "View Advance" class="fa fa-arrow-up" aria-hidden="true" (click)="gettouradvance(report)"></span></td>
+            <td style="text-align: center;color:blueviolet;"><span matTooltip= "View Expense" class="fa fa-arrow-up" aria-hidden="true" (click)="gettourexpense(report)"></span></td>
+            <td style="text-align: center;color:green;"><span matTooltip= "History" class="fa fa-arrow-up" data-toggle="modal" data-target="#approval" (click)="getadvanceapprovesumm(report.tourid)"></span></td>
+      </tr>
+      <tr *ngIf="gettourreportList?.length==0; else pagepm"  style="text-align: center;" class="NodataAlign"><td colspan="14">No Records Found</td></tr>
+      <ng-template #pagepm>
+      <tr>
+          <td colspan="4">Total Count:{{this.total_count}}</td>
+          <td colspan="10">
+          <div style="text-align: right;">
+            <button mat-icon-button color="primary"
+            (click)="First_Click()" matTooltip="First Page">
+            <mat-icon>first_page</mat-icon>
+            </button>
+              <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                  (click)="previousClick()" matTooltip="Previous Page">
+                  <mat-icon>arrow_back
+                  </mat-icon>
+              </button>
+              {{presentpage}}
+              <button mat-icon-button [disabled]="has_next=== false" color="primary" (click)="nextClick()" matTooltip="Next Page">
+                  <mat-icon>arrow_forward
+                  </mat-icon>
+              </button>
+              <button mat-icon-button color="primary"
+              (click)="last_Click()" matTooltip="Last Page">
+              <mat-icon>last_page</mat-icon>
+              </button>
+          </div>
+          </td>
+      </tr>
+      </ng-template>
+  </tbody>
+  </table>
+        
+  </div>
+    
+</div>
+</div>
+<div class="modal fade" tabindex="-1"  data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabels"
+aria-hidden="true" id="approval">
+<div class="modal-dialog modal-xl " style="width: 80%;">
+  <div class="modal-content">
+    <div class="modal-header"  style="background: rgba(69, 239, 69, 0.288);">
+      <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">Approval Flow</h2>
+      <button type="button" class="close" data-dismiss="modal" #closefile aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+<div class="table-responsive" style="width:100%;margin-top: 1%; margin-bottom: 2%; margin-left: 100px; overflow-x: hidden;">
+  <table class="table table-bordered" fixed-header style="width: 80%;margin-top: 10px;">
+    <thead class="table_header" style="text-align: left;">
+      <tr>
+        <th>S.No</th>
+        <th>Date</th>
+        <th>Type </th>
+        <th>Employee</th>
+        <th>Raised By</th>
+
+        <th>Remarks</th>
+        <th>Status</th>
+
+      </tr>
+    </thead>
+
+    <tbody>
+    <tbody>
+      <tr
+        *ngFor="let advanceapprove of getAdvanceapproveList|paginate: { itemsPerPage: pageSize, currentPage: page_no }; index as i">
+        <td scope="row" style="vertical-align: middle;"> {{((page_no-1)*pageSize)+i+1}}</td>
+        <td>{{advanceapprove.approveddate| date:'dd-MMM-yyyy'}}</td>
+        <td>{{advanceapprove.apptype}}</td>
+        <td>({{advanceapprove.approver_code}}) {{advanceapprove.approvedby}}</td>
+        <td>({{advanceapprove.onbehalfof.code}}) {{advanceapprove.onbehalfof.full_name}}</td>
+
+        <td style="overflow-wrap:anywhere">{{advanceapprove.comment}}</td>
+        <td>
+          <p *ngIf="advanceapprove.status == 1">
+            REQUESTED</p>
+          <p *ngIf="advanceapprove.status == 2">
+            PENDING</p>
+          <p *ngIf="advanceapprove.status == 3">
+            APPROVED</p>
+          <p *ngIf="advanceapprove.status == 4">
+            REJECTED</p>
+          <p *ngIf="advanceapprove.status == 5">
+            RETURNED</p>
+          <p *ngIf="advanceapprove.status == 6"> Tour Advance Submitted</p>
+          <p *ngIf="advanceapprove.status == 17">
+            Tour Advance Cancel Submitted</p>
+
+
+        </td>
+    </tbody>
+    <tr>
+      <th colspan="7">
+        <div class="pagination">
+          <pagination-controls responsive="true" (pageChange)="page_no = $event"></pagination-controls>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+</div>
+</div>
+</div>  

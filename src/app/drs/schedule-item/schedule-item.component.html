@@ -1,0 +1,412 @@
+<div class="container" style="margin-top: 2%;">
+    <div *ngIf="summaryshow">
+        <form [formGroup]="Schdular_master_summary">
+            <h2 style="text-align: center;">Schedule Master</h2>
+            <div class="row" style="margin-left: 6%; margin-top: 2%; width: 90%;">
+                <div class="col-md-2">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="" formControlName="Schdularmastersummaryname" autocomplete="off">
+                    </mat-form-field>
+                </div>
+                <div  class="col-md-3" style="margin-top: 2.5%;">  <mat-label>Exception Schedule</mat-label>          
+                    <mat-checkbox  class="element-map"
+                    [checked]="summary_checked"                                      
+                      (change)="map_schedule_summary($event)"></mat-checkbox>
+                </div> 
+                <div class="col-md-1">
+                    <!-- <div class="row"> -->
+                    <button type="button" style="border-radius: 25px; margin-top: 15px;" class="btn btn-outline-primary"
+                        (click)="Schedule_summary(Schdular_master_summary.value)"><span class="fa fa-search"></span></button>
+                    <!-- </div> -->
+                </div>
+                <div class="col-md-1">
+                    <button type="button" style="border-radius: 25px; margin-top: 15px;" class="btn btn-outline-primary"
+                        (click)="Add('ADD')"><span class="fa fa-plus"></span></button>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-outline-primary" (click)="Schedule_Master_clear()"
+                    style="border-radius: 40px;margin-top: 20px;">
+                    Clear</button>
+                </div>
+            </div>
+        </form>
+        <div *ngIf="summary_data_checked ==false" style="margin-top: 2%;" class="tableFixHead">
+            <div class="example-list">
+                <table class="table table-bordered" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Source Type</th>
+                            <th>Name</th>
+                            <th>Schedule Number</th>
+                            <th>Upper Hierarchy</th>
+                            <th>Schedule Type</th>
+                            <th>Template</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let Summary of summarydata ; let i = index">
+                            <td>{{ (presentpage-1)*10+i+1 }}</td>
+                            <td>{{Summary.code}}</td>
+                            <td>{{Summary.type?.name}}</td>
+                            <td>{{Summary.name}}</td>
+                            <td>{{Summary.number}}</td>
+                            <td>{{Summary.upper_hierarchy}}</td>
+                            <td>{{Summary.flag?.name}}</td>
+                            <td>{{Summary.template}}</td>    
+                            <td>
+                                <div style="display: flex;">
+                                    <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                        data-target="#exampleModal5" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="SchdularMater_edit(Summary,'edit')">
+                                        <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="view" data-toggle="modal"
+                                        data-target="#exampleModal5" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="SchdularMater_edit(Summary,'view')">
+                                        <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="delete" class="iconbutton" color="primary"
+                                    style="color: green;" (click)="SchdularMater_delete(Summary)">
+                                        <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_scdhele_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="summary_data_checked ==true" style="margin-top: 2%;" class="tableFixHead">
+            <div class="example-list">
+                <table class="table table-bordered" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <!-- <th>Finyear</th> -->
+                            <th>Name</th>
+                            <th>Add or Less</th> 
+                            <th>Action</th>                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let Summary of summarydata ; let i = index">
+                            <td>{{ (presentpage-1)*10+i+1 }}</td>
+                            <!-- <td>{{Summary.finyear}}</td> -->
+                            <td>{{Summary.name}}</td>
+                            <td>{{Summary.add_or_less?.name}}</td>
+                              
+                            <td>
+                                <div style="display: flex;">
+                                    <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                        data-target="#exampleModal5" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="SchdularMater_edit(Summary,'edit')">
+                                        <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="view" data-toggle="modal"
+                                        data-target="#exampleModal5" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="SchdularMater_edit(Summary,'view')">
+                                        <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="delete" class="iconbutton" color="primary"
+                                    style="color: green;" (click)="SchdularMater_delete(Summary)">
+                                        <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_scdhele_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="hasprevious === false" color="primary"
+                    (click)="previousSummaryClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="hasnext === false" color="primary" (click)="nextSummaryClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="schedule-container">
+    <div *ngIf="!summaryshow">
+        <form [formGroup]="Schdularmastersum" class="schedule-form">
+            <!-- <div>  -->
+                <!-- <div style="margin-left: 2%;">
+                    <mat-form-field (click)="finyear_dropdown()">
+                        <mat-label>Fin Year*</mat-label>
+                        <input placeholder="" matInput formControlName="finyear" #finyearInput
+                            [matAutocomplete]="fin_year" [readonly]="schd_mas_view">
+                        <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let finyearname of finyearList" [value]="finyearname">
+                                    {{finyearname.finyer}} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div> -->
+                <div style="margin-left: 2%;">
+                    <mat-form-field>
+                        <mat-label>Name*</mat-label>
+                        <input matInput placeholder="" formControlName="Schdularmastername" autocomplete="off" [readonly]="schd_mas_view">
+                    </mat-form-field>
+                </div>   
+                <div style="margin-top: 1.5%;">  <mat-label>Exception Schedule</mat-label>          
+                    <mat-checkbox  class="element-map"
+                    [checked]="check_value"  
+                    [disabled]="viewFunctionActive"                                    
+                      (change)="map_schedule($event)"></mat-checkbox>
+                </div>  
+                <div style="margin-top: 1.5%;">  <mat-label>Is Quarter</mat-label>          
+                    <mat-checkbox class="element-map" formControlName="is_quarter"></mat-checkbox>
+                </div>  
+                <div *ngIf="map_show_hide">
+                    <mat-form-field>
+                        <mat-label>Add or Less</mat-label>
+                        <input type="text" matInput formControlName="add_or_less" [readonly]="schd_mas_view" [matAutocomplete]="add_less_mat" />
+                        <mat-autocomplete #add_less_mat="matAutocomplete" [displayWith]="add_less_display">
+                            <mat-option *ngFor="let add_less of add_or_less_list"
+                                [value]="add_less">
+                                {{ add_less.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>    
+                <div *ngIf="map_hide_show">
+                    <mat-form-field >
+                        <mat-label>Schedule Number</mat-label>
+                        <input matInput placeholder="" formControlName="Schdularmaster_item_number" [readonly]="schd_mas_view" autocomplete="off" >
+                    </mat-form-field>
+                </div>
+                <div *ngIf="map_hide_show">
+                    <mat-form-field (click)="Schdulartype_dropdown()">
+                        <mat-label>Schedule Type</mat-label>
+                        <input type="text" matInput formControlName="Schdulartypes" [readonly]="schd_mas_view" [matAutocomplete]="schdulartype" />
+                        <mat-autocomplete #schdulartype="matAutocomplete" [displayWith]="schdulartype_display">
+                            <mat-option *ngFor="let schedtype of Schedule_Type" (click)="scd_type(schedtype)"
+                                [value]="schedtype">
+                                {{ schedtype.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="map_hide_show">
+                    <mat-label style="padding-left: 25px;">Upper Hierarchy:</mat-label>
+                    <mat-radio-group aria-label="Select an option" [disabled]="schd_mas_view" formControlName="Upper_aierachy"
+                        [(ngModel)]="selectedOption1" (ngModelChange)="onRadioChange1()">
+                        &nbsp;&nbsp;
+                        <mat-radio-button class="radio" value="YES">YES</mat-radio-button>&nbsp;&nbsp;
+                        <mat-radio-button value="NO">NO</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <div *ngIf="sub_show">
+                    <mat-label style="padding-left: 25px;">Sub Level:</mat-label>
+                    <mat-radio-group aria-label="Select an option" [disabled]="schd_mas_view" formControlName="sub_level"
+                       >
+                        &nbsp;&nbsp;
+                        <mat-radio-button class="radio" value="YES" (change)="onRadioChange2('YES')">YES</mat-radio-button>&nbsp;&nbsp;
+                        <mat-radio-button value="NO" (change)="onRadioChange2('NO')">NO</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <div *ngIf="schedule_master == true">
+                    <mat-form-field  (click)="Schdularmaster_dropdown()">
+                        <mat-label>Schedule Master</mat-label>
+                        <input #Sche_data matInput [readonly]="schd_mas_view"  placeholder="Schedule Master" formControlName="Schdularmaster"
+                            autocomplete="off" #branchSumContactInput [matAutocomplete]="schdularmaster">
+                        <mat-autocomplete #schdularmaster="matAutocomplete" [displayWith]="schdularmaster_display"
+                            (opened)="autocompleteschedule_mas_Scroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <!-- <mat-option *ngFor="let branchsums of brasum_list_sum" (click)="branch_clear()"
+                                    [value]="branchsums">{{branchsums.code}}-{{branchsums.name}} </mat-option> -->
+                                <mat-option *ngFor="let schedmaster of Schdularmaster_list"
+                                    [value]="schedmaster">{{ schedmaster.name }}-{{ schedmaster.code }} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <!-- <div *ngIf="schedule_master == true">
+                    <mat-form-field (click)="Schdularmaster_dropdown()">
+                        <mat-label>Schedule Master</mat-label>
+                        <input #Sche_data type="text" matInput [readonly]="schd_mas_view" formControlName="Schdularmaster"
+                            [matAutocomplete]="schdularmaster" (keyup)="Schdularmaster_dropdown()" />
+                        <mat-autocomplete #schdularmaster="matAutocomplete" [displayWith]="schdularmaster_display"
+                            (opened)="autocompleteschedule_mas_Scroll()">
+                            <mat-option *ngFor="let schedmaster of Schdularmaster_list"
+                                (click)="select_value1(schedmaster, 'Schedule')" [value]="schedmaster"
+                                matTooltip="{{ schedmaster.name }}">
+                                {{ schedmaster.name }}-{{ schedmaster.code }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div> -->
+                
+                <div *ngIf="map_hide_show">
+                    <mat-label style="padding-left: 15px;">Source Type:</mat-label>
+                    <mat-radio-group aria-label="Select an option" [disabled]="schd_mas_view" formControlName="status" [(ngModel)]="selectedOption"
+                        >
+                        &nbsp;&nbsp;
+                        <mat-radio-button class="radio" value="GL" (change)="onRadioChange('GL')">GL</mat-radio-button>&nbsp;&nbsp;
+                        <mat-radio-button value="SL" (change)="onRadioChange('SL')">SL</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <div *ngIf="category_hide && map_hide_show" style="margin-left: 10%;">
+                    <mat-form-field (click)="Catagorys()">
+                        <mat-label>Category</mat-label>
+                        <input #cata_data type="text" matInput formControlName="cat" [readonly]="schd_mas_view" [matAutocomplete]="Catagory"
+                            (keyup)="Catagorys()" />
+                        <mat-autocomplete #Catagory="matAutocomplete" [displayWith]="Catagory_display"
+                            (opened)="autocompletecatScroll()">
+                            <mat-option *ngFor="let Catagory of Catagory_list" (click)="select_value(Catagory, 'Category')"
+                                [value]="Catagory" matTooltip="{{ Catagory.name }}">
+                                {{ Catagory.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="sortorder_hide && map_hide_show" style="margin-left: 10%;">
+                    <mat-form-field (click)="SortOrder()">
+                        <mat-label>Sort Order</mat-label>
+                        <input #sort_order_dta type="text" matInput formControlName="sort" [readonly]="schd_mas_view" [matAutocomplete]="SortOrd"
+                            (keyup)="SortOrder()" />
+                        <mat-autocomplete #SortOrd="matAutocomplete" [displayWith]="sort_order_display"
+                            (opened)="autocompleteSortOrderScroll()">
+                            <mat-option *ngFor="let Sort of SortOrder_list" (click)="select_value(Sort, 'Sorts')"
+                                [value]="Sort" matTooltip="{{ Sort.name }}">
+                                {{ Sort.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+            <!-- </div> -->
+           
+            <!-- <div *ngIf="schedule_master">
+            <mat-form-field (click)="Schdularmaster_dropdown()">
+                <mat-label>Schedule Master</mat-label>
+                <input type="text" matInput formControlName="Schdularmaster" [matAutocomplete]="schdularmaster" />
+                <mat-autocomplete #schdularmaster="matAutocomplete" [displayWith]="schdularmaster_display">
+                    <mat-option *ngFor="let schedmaster of Schdularmaster_list" [value]="schedmaster">
+                        {{ schedmaster.name }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div> -->
+
+            
+            <!-- <mat-form-field (click)="Schdularmaster_dropdown()">
+            <mat-label>Schedule Master</mat-label>
+            <input type="text" matInput formControlName="Schdularmaster" [matAutocomplete]="schdularmaster" />
+            <mat-autocomplete #schdularmaster="matAutocomplete" [displayWith]="schdularmaster_display">
+                <mat-option *ngFor="let schedmaster of Schdularmaster_list" [value]="schedmaster">
+                    {{ schedmaster.name }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field> -->
+            <div>
+                <button type="button" style="border-radius: 40px; margin-left: 20%;" class="btn btn-outline-primary"
+                    (click)="schedule_clear()" [hidden]="view_true">
+                    Clear
+                </button> 
+            </div>
+            <div *ngIf="scdular_mas_sub_btn">
+                <!-- <button  [disable]="!submit_btn"  type="button" style="border-radius: 40px" class="btn btn-outline-primary"
+                    (click)="submit(Schdularmastersum.value)">
+                    Submit
+                </button> -->
+                <button  type="button" style="border-radius: 40px" class="btn btn-outline-primary"
+                (click)="submit(Schdularmastersum.value)">
+                Submit
+            </button>
+            </div>
+            <div>
+                <button type="button" style="border-radius: 40px" class="btn btn-outline-primary" (click)="back()">
+                    Back
+                </button>
+            </div>
+            <!-- <div *ngIf="scdular_mas_sub_btn" style="margin-left: 2%;">
+                <button *ngIf="validate" type="button" style="border-radius: 40px" class="btn btn-outline-primary" (click)="validate_fun(Schdularmastersum.value)">
+                    Validate
+                </button>
+            </div> -->
+            <!-- <div>
+            <button type="button" style="border-radius: 40px" class="btn btn-outline-primary" (click)="Add()"><span class="fa fa-plus"></span></button>
+        </div> -->
+        </form>
+    </div>
+</div>
+<div *ngIf="summarysshow === false">
+    <div class="containers">
+        <!-- <div class="scrollable-table"> -->
+            <div class="wrapper" #editableContent id="editableContents" [attr.contenteditable]="isEditable ? 'true' : null"  (input)="editable($event)" (paste)="selectedOption === 'GL'?'':onPaste($event)">
+                <ng-container *ngIf="multidata.length != 0">
+                    <span *ngFor="let gd of multidata; let i=index" (keydown)="closes($event,i)"> 
+                        {{ gd?.name ? gd.name : gd }}
+                        <!-- {{ gd.name }} -->
+                    </span>
+                </ng-container>            
+            </div>
+        <!-- </div> -->
+    </div>
+    <!-- <div class="containers">
+        <div class="view-div" #editableContent contenteditable (input)="editable($event)">
+            <ng-container *ngIf="multidata.length != 0">
+                <span *ngFor="let gd of multidata; let i=index" (keydown)="closes($event,i)"> {{gd.name}} -->
+
+
+
+                    <!-- <ng-container 
+                *ngIf="gd.name == '(' || gd.name == ')' || gd.name == '+' ||gd.name == '-' ||gd.name == '%' || gd.name == 'x' ||gd.name == '*' || gd.name == '÷' ">
+                <button class="symbols">{{ gd.name }}</button>
+            </ng-container>
+            <ng-container  *ngIf="!(gd.name == '(' || gd.name == ')' ||gd.name == '+' || gd.name == '-' || gd.name == '%' || gd.name == 'x' || gd.name == '*' ||gd.name == '÷')">
+                <button class="add-text">{{ gd.name }}</button>
+            </ng-container> -->
+
+
+
+                <!-- </span>
+            </ng-container>
+        </div> -->
+
+
+
+        <!-- <div class="addOn-div"> -->
+        <!-- <div class="symbols-div">
+            <button class="symbols" (click)="divd('+')">+</button>
+            <button class="symbols" (click)="divd('-')">-</button>
+            <button class="symbols" (click)="divd('%')">%</button>
+            <button class="symbols" (click)="divd('*')">*</button>
+            <button class="symbols" (click)="divd('x')">x</button>
+            <button class="symbols" (click)="divd('÷')">÷</button>
+            <button class="symbols" (click)="divd('(')">(</button>
+            <button class="symbols" (click)="divd(')')">)</button>
+        </div> -->
+        <!-- <div class="text-div">
+            <div *ngIf="multidata.length != 0">
+                <div *ngFor="let types of multidata; let i = index">
+                    <button class="add-text" (click)="comon(types)">
+                        {{ types.name }}
+                    </button>
+                </div>
+            </div>
+        </div> -->
+        <!-- </div> -->
+
+    <!-- </div> -->
+</div>
+<!-- [ngStyle]="(cals.calculation.id == 5 || cals.calculation.id == 6) ? {'color': 'blue'} : {}" -->

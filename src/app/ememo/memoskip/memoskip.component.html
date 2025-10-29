@@ -1,0 +1,423 @@
+<section class="main-container">
+  <!-- Header -->
+  <section class="header-container">
+    <!-- Header Div 1 -->
+    <div class="header-div1">
+      <p>
+        {{ rdo_IOM_nfa_bna }}
+      </p>
+      <div>
+        <div *ngIf="this.priorityName === 'High'; else elseBlock1">
+          <p style="color: #ec1b1b"><b>Priority:</b> {{ priorityName }}</p>
+        </div>
+        <ng-template #elseBlock1>
+          <p><b>Priority:</b> {{ priorityName }}</p>
+        </ng-template>
+      </div>
+      <div>
+        <div *ngIf="this.confidentialselect === 'NO'; else elseBlock">
+          <p><b>Confidential:</b> {{ this.confidentialselect }}</p>
+        </div>
+        <ng-template #elseBlock>
+          <div style="color: #ec1b1b">
+            <b>Confidential:</b> {{ this.confidentialselect }}
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    <!-- Header Div 2 -->
+    <div class="header-div2">
+      <p>
+        <b>Created Date :</b>
+        {{ createdDate | date : "dd-MMM-yyyy hh:mm a" : "offset" }}
+      </p>
+      <p>
+        <b>From :</b>
+        {{ senderName }}
+      </p>
+    </div>
+  </section>
+  <!-- Header End -->
+  <div>
+    <p><b>Subject:</b>{{ subjectName }}</p>
+  </div>
+  <!-- Toggle Section -->
+  <section class="Toggle-container">
+    <div class="toggle-div1">
+      <details>
+        <summary>Memo Details</summary>
+        <hr />
+        <div class="toggle-table-container">
+          <table class="toggle-content1">
+            <tr>
+              <td class="toggle-head"><b>Memo No</b></td>
+              <td>{{ ionName }}</td>
+            </tr>
+            <tr>
+              <td class="toggle-head"><b>Author</b></td>
+              <td>{{ createdBy }}</td>
+            </tr>
+            <tr>
+              <td class="toggle-head"><b>Category</b></td>
+              <td>{{ categoryName }}</td>
+            </tr>
+            <tr>
+              <td class="toggle-head"><b>SubCategory</b></td>
+              <td>{{ subCategoryName }}</td>
+            </tr>
+            <tr *ngIf="sharedService.Memofrom === 'IOMEMO'">
+              <td class="toggle-head">
+                <b>To</b>
+              </td>
+              <td>
+                <span
+                  *ngFor="
+                    let tolist of toList;
+                    first as isFirst;
+                    last as isLast
+                  "
+                >
+                  <ng-container *ngIf="!isFirst">,</ng-container>
+                  {{ tolist.full_name }}
+                  <ng-container *ngIf="isLast">,</ng-container>
+                </span>
+                <span *ngFor="let dept of departmentList; first as isFirst">
+                  <ng-container *ngIf="!isFirst">, </ng-container>
+                  <div *ngIf="dept.branch_code">
+                    ({{ dept.branch_code }} - {{ dept.branch }})
+                  </div>
+                  <div *ngIf="dept.name">{{ dept.name }}</div>
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="is_sender_dept">
+              <td class="toggle-head"><b>BTo</b></td>
+              <td>
+                <span *ngFor="let bto of btoList"> {{ bto.full_name }},</span>
+              </td>
+            </tr>
+            <tr *ngIf="sharedService.Memofrom === 'IOMEMO'">
+              <td class="toggle-head"><b>CC</b></td>
+              <td>
+                <span *ngFor="let cc of ccList"> {{ cc.full_name }},</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="toggle-head">
+                <b>Recommended By</b>
+              </td>
+              <td>
+                <span *ngFor="let recomm of recomList">
+                  <div *ngIf="recomm.status === 2 || recomm.status === 8">
+                    <span>{{ recomm.order }}.{{ recomm.full_name }} </span>
+                  </div>
+                  <div *ngIf="recomm.status === 6">
+                    <span
+                      >{{ recomm.order }}.{{ recomm.full_name }}(Skipped)
+                    </span>
+                  </div>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td
+                *ngIf="sharedService.Memofrom === 'IOMEMO'"
+                class="toggle-head"
+              >
+                <b>Signed By</b>
+              </td>
+              <td
+                class="toggle-head"
+                *ngIf="
+                  sharedService.Memofrom === 'NFA-MEMO' ||
+                  sharedService.Memofrom === 'BNA-MEMO'
+                "
+              >
+                <b>Approved By</b>
+              </td>
+              <td>
+                <span *ngFor="let approver of approverList">
+                  <div *ngIf="approver.status === 2 || approver.status === 8">
+                    <span
+                      >{{ approver.order }}.{{
+                        approver.full_name
+                      }}
+                      (Approved),</span
+                    >
+                  </div>
+                  <div *ngIf="approver.status === 3 || approver.status === 9">
+                    <span
+                      >{{ approver.order }}.{{
+                        approver.full_name
+                      }}
+                      (Review/Resubmit initiated),</span
+                    >
+                  </div>
+                  <div *ngIf="approver.status === 6">
+                    <span
+                      >{{ approver.order }}.{{
+                        approver.full_name
+                      }}
+                      (Skipped),</span
+                    >
+                  </div>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="toggle-head"><b>Department Reference No</b></td>
+              <td>{{ manualreference }}</td>
+            </tr>
+            <tr>
+              <td class="toggle-head"><b>Watermark Text</b></td>
+              <td>{{ watermarktext }}</td>
+            </tr>
+            <tr>
+              <td class="toggle-head"><b>Parallel Delivery</b></td>
+              <td *ngIf="this.paralleldelivery === true">Yes</td>
+              <td *ngIf="this.paralleldelivery === false">No</td>
+            </tr>
+          </table>
+        </div>
+      </details>
+    </div>
+    <div class="toggle-div2">
+      <details>
+        <summary>Opinion List</summary>
+        <hr />
+        <div class="toggle-table-container">
+          <table class="toggle-content2">
+            <tr class="toggle-table-head">
+              <td>Raised By</td>
+              <td>Remarks</td>
+              <td>Opinioner</td>
+            </tr>
+            <ng-container *ngFor="let data of OpinionList">
+              <tr>
+                <td
+                  [attr.rowspan]="data.opinioner.length + 1"
+                  class="tabletext"
+                >
+                  {{ data?.raiser?.name }}
+                </td>
+                <td [attr.rowspan]="data.opinioner.length + 1">
+                  {{ data?.comment == null ? "-" : data?.comment }}
+                </td>
+              </tr>
+              <tr *ngFor="let opinionrs of data?.opinioner">
+                <td class="tabletext">
+                  <span
+                    [ngClass]="
+                      opinionrs?.status?.id == 1
+                        ? 'pendingstate whitecolor'
+                        : opinionrs?.status?.id == 0
+                        ? 'pendingQueue whitecolor'
+                        : opinionrs?.status?.id == 2
+                        ? 'approvedState whitecolor'
+                        : opinionrs?.status?.id == 3
+                        ? 'rejectedState whitecolor'
+                        : ''
+                    "
+                  >
+                    {{ opinionrs?.user?.name }}
+                  </span>
+                </td>
+              </tr>
+            </ng-container>
+            <div *ngIf="OpinionList?.length == 0">No Records Found!</div>
+          </table>
+        </div>
+      </details>
+    </div>
+  </section>
+  <!-- Toggle Section End -->
+
+  <!-- Table View -->
+  <section class="table-view">
+    <table class="common-table">
+      <tr *ngFor="let recom of recomList">
+        <td class="user-state">Recommender</td>
+        <td class="user-name">
+          <div
+            *ngIf="recom.status === 0"
+            style="color: white; background-color: grey"
+          >
+            {{ recom.full_name }}
+          </div>
+          <div
+            *ngIf="recom.status === 1 || recom.status === 7"
+            style="color: white; background-color: blue"
+          >
+            {{ recom.full_name }}
+          </div>
+          <div
+            *ngIf="recom.status === 2 || recom.status === 8"
+            style="color: white; background-color: green"
+          >
+            {{ recom.full_name }}
+          </div>
+          <div
+            *ngIf="recom.status === 3 || recom.status === 9"
+            style="color: white; background-color: red"
+          >
+            {{ recom.full_name }}
+          </div>
+          <div
+            *ngIf="recom.status === 4 || recom.status === 10"
+            style="color: white; background-color: rgb(246, 68, 214)"
+          >
+            {{ recom.full_name }}
+          </div>
+          <div
+            *ngIf="recom.status === 6"
+            style="color: white; background-color: mediumpurple"
+          >
+            {{ recom.full_name }}
+          </div>
+        </td>
+        <td class="user-status">
+          <div *ngIf="recom.status === 0">PendingQueue</div>
+          <div *ngIf="recom.status === 1">Pending</div>
+          <div *ngIf="recom.status === 7">DA Pending</div>
+          <div *ngIf="recom.status === 2">Approved</div>
+          <div *ngIf="recom.status === 8">DA Approved</div>
+          <div *ngIf="recom.status === 3">Review/Resubmit initiated</div>
+          <div *ngIf="recom.status === 9">DA Review/Resubmit initiated</div>
+          <div *ngIf="recom.status === 4">OpinionAsked</div>
+          <div *ngIf="recom.status === 10">DA OpinionAsked</div>
+          <div *ngIf="recom.status === 6">Skipped</div>
+        </td>
+        <td>
+          <div
+            *ngIf="
+              recom.status === 0 || recom.status === 1 || recom.status === 7
+            "
+          >
+            <input
+              type="checkbox"
+              name="skipselection"
+              (change)="SelectSkipCheckBox($event, recom)"
+            />
+          </div>
+        </td>
+      </tr>
+
+      <tr
+        *ngFor="let approver of approverList; first as isFirst; last as isLast"
+      >
+        <td class="user-state">Approver</td>
+        <td class="user-name">
+          <div
+            *ngIf="approver.status === 0"
+            style="color: white; background-color: grey"
+          >
+            {{ approver.full_name }}
+          </div>
+          <div
+            *ngIf="approver.status === 1 || approver.status === 7"
+            style="color: white; background-color: blue"
+          >
+            {{ approver.full_name }}
+          </div>
+          <div
+            *ngIf="approver.status === 2 || approver.status === 8"
+            style="color: white; background-color: green"
+          >
+            {{ approver.full_name }}
+          </div>
+          <div
+            *ngIf="approver.status === 3 || approver.status === 9"
+            style="color: white; background-color: red"
+          >
+            {{ approver.full_name }}
+          </div>
+          <div
+            *ngIf="approver.status === 4 || approver.status === 10"
+            style="color: white; background-color: rgb(246, 68, 214)"
+          >
+            {{ approver.full_name }}
+          </div>
+          <div
+            *ngIf="approver.status === 6"
+            style="color: white; background-color: mediumpurple"
+          >
+            {{ approver.full_name }}
+          </div>
+        </td>
+        <td class="user-status">
+          <div *ngIf="approver.status === 0">PendingQueue</div>
+          <div *ngIf="approver.status === 1">Pending</div>
+          <div *ngIf="approver.status === 7">DA Pending</div>
+          <div *ngIf="approver.status === 2">Approved</div>
+          <div *ngIf="approver.status === 8">DA Approved</div>
+          <div *ngIf="approver.status === 3">Review/Resubmit initiated</div>
+          <div *ngIf="approver.status === 9">DA Review/Resubmit initiated</div>
+          <div *ngIf="approver.status === 4">OpinionAsked</div>
+          <div *ngIf="approver.status === 10">DA OpinionAsked</div>
+          <div *ngIf="approver.status === 6">Skipped</div>
+        </td>
+        <td>
+          <div
+            *ngIf="
+              (approver.status === 0 ||
+                approver.status === 1 ||
+                approver.status === 7) &&
+              !isLast
+            "
+          >
+            <input
+              type="checkbox"
+              name="skipselection"
+              (change)="SelectSkipCheckBox($event, approver)"
+            />
+          </div>
+        </td>
+      </tr>
+    </table>
+  </section>
+  <!-- Table View End -->
+
+  <!-- Comment Container -->
+  <section class="comment-container">
+    <textarea
+      #txtComments
+      rows="6"
+      cols="100"
+      placeholder="Skip comments..."
+      (focus)="onTextareaFocus()"
+    ></textarea>
+    <div class="comment-btns">
+      <button
+      id="skipsave"
+        type="button"
+        class="btn btn-outline-primary"
+        [disabled]="commentdraftClick_disabled"
+        style="border-radius: 20px"
+        (click)="commentdraft_Click(commentType.skip_cmt)"
+      >
+        Save as Draft
+      </button>
+      <button
+      id="skipsubmit"
+        type="button"
+        class="btn btn-outline-primary"
+        (click)="btnSubmit()"
+      >
+        Submit
+      </button>
+      <button id="skipback" type="button" class="btn btn-outline-primary" (click)="btnBack()">
+        Back
+      </button>
+    </div>
+  </section>
+  <!-- Comment Container End -->
+</section>
+
+<ngx-spinner
+  bdColor="rgba(51, 51, 51, 0.8)"
+  size="default"
+  [fullScreen]="true"
+  type="ball-spin-clockwise"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>

@@ -1,0 +1,102 @@
+<div class="container mt-1">
+    <mat-card>
+
+        <ng-container *ngIf="showSummary;else showComponent">
+            <h2>Employee Task Summary</h2>
+            <div class="row ml-2">
+                <form [formGroup]="EmployeeTask">
+                    <table>
+                        <tr>
+                            <td>
+                                <!-- <mat-label>Code / Name </mat-label><br> -->
+                                <mat-form-field>
+                                    <input type="text" matInput autocomplete="off" placeholder="Code"
+                                        formControlName="codename">
+                                </mat-form-field>
+                            </td>
+
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsSubmit"
+                                    aria-label="Search" (click)="EmployeeTaskSearch('')">
+                                    <mat-icon>search</mat-icon>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsWhite"
+                                    (click)="ResetTask()">Clear</button>
+
+                            </td>
+                            <!-- <td>
+                            <button class="ml-2" mat-stroked-button type="button" id="buttonsWhite"
+                            
+                                (click)="AddProduct()">Add</button>
+
+                        </td> -->
+                    </table>
+                </form>
+            </div>
+
+
+            <div class="col-sm-12 col-md-12 col-lg-12">
+
+                <table class="table table-bordered" id="tableGlobal">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Product</th>
+                            <th>Lead</th>
+                            <!-- <th>Start Time</th>
+                        <th>Start Time</th> -->
+                            <th>Task </th>
+                            <th>Process </th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let type of EmployeeTaskObjects.EmployeeTaskList; let proindex = index">
+                            <td>{{proindex+1}}</td>
+                            <td>({{type?.product?.product_code}}) {{type?.product?.product_name}} </td>
+                            <td><span id="hyperlink"> {{type?.lead?.lead_first_name}} </span> </td>
+                            <td>{{type?.task?.name}}</td>
+                            <td>
+                                <button mat-icon-button (click)="goToTask(type)">
+                                    <mat-icon>
+                                        edit
+                                    </mat-icon>
+                                </button>
+                            </td>
+                            <td>{{type?.is_closed}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="EmployeeTaskObjects.EmployeeTaskList?.length==0 || EmployeeTaskObjects.EmployeeTaskList == undefined || EmployeeTaskObjects.EmployeeTaskList == '' ; else paginationpro"
+                    class="NodataAlign text-center">No Records Found...</div>
+                <ng-template #paginationpro>
+                    <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                        <button type="button" mat-icon-button
+                            [disabled]="EmployeeTaskObjects.has_previousEmployeeTask == false" color="primary"
+                            (click)="EmployeeTaskSearch('previous')">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{EmployeeTaskObjects?.presentpageEmployeeTask}}
+                        <button type="button" mat-icon-button
+                            [disabled]="EmployeeTaskObjects.has_nextEmployeeTask === false" color="primary"
+                            (click)="EmployeeTaskSearch('next')">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+
+
+            </div>
+        </ng-container>
+
+        <ng-template #showComponent>
+            <app-employee-task-edit (processFinished)="showSummary = true;EmployeeTaskSearch('')"></app-employee-task-edit>
+        </ng-template>
+
+
+
+
+    </mat-card>
+
+</div>

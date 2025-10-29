@@ -1,0 +1,448 @@
+<div class="chart-container">
+  <!-- <p>chart reprot</p> -->
+  <!-- <form [formGroup]="chartform" >
+    <table  >
+        <tr>
+            <td>
+
+                <mat-label  > Vendor</mat-label><br>
+
+
+                <mat-form-field class="example-full-width" appearance="outline" (click)="vendordata('')" style="width: 250px;">
+                    <input class="toolbar-search" formControlName="vendor" type="text" (keyup)="vendordata($event.target.value)" matInput autocomplete="off" matInput [matAutocomplete]="checkerven" #venidInput 
+                     />
+                    <mat-placeholder>Vendor</mat-placeholder>
+                    <mat-autocomplete #checkerven="matAutocomplete" #ven [displayWith]="displayvendor" >
+                       
+                       
+                            <mat-option *ngFor="let d of vendata" [value]="d" >
+                                {{d.name}}
+                            </mat-option>
+                        
+                    </mat-autocomplete>
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-label style="margin-left: 30px;" >Campaign</mat-label><BR>
+                <mat-form-field  style="margin-left: 30px;width:250px" (click)="CampaignDD('')" >
+                    <input #campaignInput formControlName="campaign" type="text" matInput
+                        (keyup)="CampaignDD($event.target.value)"
+                      [matAutocomplete]="campaign">
+                   
+                    <mat-autocomplete #campaign="matAutocomplete" [displayWith]="displayFnCampaign">
+                        <mat-option *ngFor="let campaign of campaingdata" [value]="campaign">
+                            {{campaign.code}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </td>
+
+            <td>
+                
+
+                <button mat-fab style="margin-left: 20px;background-color: white;" (click)="getchartdata()"
+                aria-label="Search">
+                <mat-icon>search</mat-icon>
+              </button>
+
+              <button mat-fab type="submit" (click)="resetsearchform()"
+              style="border-radius:40px;margin-left: 20px;background-color: white;color: black;">Clear</button>
+            </td>
+        </tr>
+    </table>
+</form>
+    <br>
+    <br> -->
+
+  <!-- <div >
+        <canvas   id="MyChart"  >{{ chart }}
+           
+        </canvas>
+        <div class="center" *ngIf="total != '' && total !=null" >
+            <h2 style="font-weight:700" >Total Leads : {{total}}</h2>
+    
+        </div>
+
+    </div> 
+    <br> -->
+
+  <!-- <canvas
+    baseChart
+    chartType="doughnut"
+    [data]="doughnutChartData"
+    [labels]="doughnutChartLabels"
+    [options]="chartOptions"
+    [legend]="true">
+    </canvas> -->
+
+  <div class="overalldiv">
+
+    <form [formGroup]="chartform">
+      <table>
+        <tr>
+          <!-- <td>
+            <mat-label>Lead Style</mat-label><br>
+            <mat-form-field style="width:300px">
+              <mat-select formControlName="chartstyle">
+                <mat-option [value]="1">Table</mat-option>
+                <mat-option (click)="getcampaignchartdata('',true)" [value]="2">Chart</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td> -->
+          <td>
+            <mat-label style="margin-left:20px;" >Campaign or Vendor</mat-label><br>
+            <mat-form-field style="margin-left:20px;width:300px">
+              <mat-select formControlName="camp_or_vendor">
+                <mat-option [value]="1">Campaign</mat-option>
+                <mat-option [value]="2" (click)="getvendorleads()" >Vendor</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+      </table>
+
+
+      <div *ngIf="chartform.value.camp_or_vendor == 1">
+        
+        <!-- <div>
+          <button mat-icon-button  ><mat-icon>download</mat-icon></button>
+      </div> -->
+
+        <ul class="wtree1">
+          <li>
+            <span>
+              <table>
+                <tr>
+                  <th class="col colcamp1">S.No</th>
+                  <th class="col colcamp2">Campaign</th>
+                  <th class="col colcamp3">Total Leads</th>
+                  <th class="col colcamp4">LTC</th>
+                  <th class="col colcamp5">Not Interested</th>
+                  <th class="col colcamp6">Remaining Leads</th>
+                  <th class="col colcamp7">Download</th>
+
+                </tr>
+              </table>
+            </span>
+          </li>
+          <!-- </ul>
+          <ul class="wtree1" > -->
+          <li *ngFor="let list of reportdata; let i = index; first as isFirst">
+
+           
+
+            <span>
+              <table>
+                <tr (click)="getcampaignvendor(list.campaign_id,false,i)">
+                  <td class="col colcamp1">
+                    {{ i + 1 }}
+                  </td>
+                  <td class="col colcamp2">{{ list.campaign_name }}</td>
+                  <td class="col colcamp3">{{ list.LEADCOUNT }}</td>
+                  <td class="col colcamp4">{{ list.LEADTOCUSTOMER }}</td>
+                  <td class="col colcamp5">{{ list.NOTINTERESTEDLEAD }}</td>
+                  <td class="col colcamp6">{{ list.remaining_leads }}</td>
+                  <td class="col colcamp7">
+                    <button mat-icon-button (click)="getexceldownload(list,i)"><mat-icon>download</mat-icon></button>
+                  </td>
+
+                </tr>              
+
+              </table>
+            </span>
+
+
+            <div class="wtree" @displayState *ngIf="list.is_expansion">
+              <ul>
+                <li>
+                  <span>
+                    <table>
+                      <tr>
+                        <th class="col col1">S.No</th>
+                        <th class="col col2">Vendor</th>
+                        <th class="col col3">Total Leads</th>
+                        <th class="col col4">LTC</th>
+                        <th class="col col5">Not Interested</th>
+                        <th class="col col6">Remaining Leads</th>
+                      </tr>
+                    </table>
+                  </span>
+                </li>
+
+                <li *ngFor="let tab of list.vendor_list; first as isFirst;let j=index">
+                  <span>
+                    <table>
+                      <tr (click)="getvendoremployeeleadsdata(i,j,tab?.vendor_id,list.campaign_id)">
+                        <td class="col col1">
+                          {{ j + 1 }}
+                        </td>
+                        <td class="col col2">{{ tab.vendor_name }}</td>
+                        <td class="col col3">{{ tab.LEADCOUNT }}</td>
+                        <td class="col col4">{{ tab.LEADTOCUSTOMER }}</td>
+                        <td class="col col5">{{ tab.NOTINTERESTEDLEAD }}</td>
+                        <td class="col col6">{{ tab.remaining_leads }}</td>
+                      </tr>
+                    </table>
+                  </span>
+
+                  <div *ngIf="tab.is_expansion">
+                    <ul>
+                      <li>
+                        <span>
+                          <table>
+                            <tr>
+                              <th class="col col1">S.No</th>
+                              <th class="col col2">Employee</th>
+                              <th class="col col3">Total Leads</th>
+                              <th class="col col4">LTC</th>
+                              <th class="col col5">Not Interested</th>
+                              <th class="col col6">Remaining Leads</th>
+                            </tr>
+                          </table>
+                        </span>
+                      </li>
+                      <li *ngFor="let emp of tab.employee_list; first as isFirst;let k=index">
+                        <span>
+                          <table>
+                            <tr  >
+                              <td (click)="getemployeeleads(i,j,k,list.campaign_id,tab?.vendor_id,emp?.employee_id)" class="col col1">
+                                {{ k + 1 }}
+                              </td>
+                              <td (click)="getemployeeleads(i,j,k,list.campaign_id,tab?.vendor_id,emp?.employee_id)" class="col col2">{{ emp.employee_name }}</td>
+                              <td class="col col3" [ngClass]="(emp.leadview == 1)? 'activetd':''" >{{ emp.emp_leads }}</td>
+                              <td class="col col4" [ngClass]="(emp.leadview == 2)? 'activetd':''"  >{{ emp.lead_to_customer }}</td>
+                              <td class="col col5" [ngClass]="(emp.leadview == 3)? 'activetd':''" >{{ emp.not_int_lead }}</td>
+                              <td class="col col6">{{ emp.remaining_leads }}</td>
+                            </tr>
+                          </table>
+                        </span>
+
+                        <div *ngIf="emp.is_expansion">
+                          <ul>
+                            <li>
+                              <span>
+                                <table>
+                                  <tr>
+                                    <th class="col col1">S.No</th>
+                                    <th class="col col2">Lead</th>
+                                    <th class="col col3">Product</th>
+                                    <!-- <th class="col col4">Aadhaar</th>
+                                    <th class="col col5">Pan</th> -->
+                                    <!-- <th class="col col6">Remaining Leads</th> -->
+                                  </tr>
+                                </table>
+                              </span>
+                            </li>
+                            <li *ngFor="let data of emp.leaadsdata; first as isFirst;let i=index">
+                              <span>
+                                <table>
+
+                                  <tr>
+                                    <td class="col col1">{{i+1}}
+                                      
+                                        <small *ngIf="data?.lead_status == 2" style="color: green;" class="leadstatus"  >* LTC</small>
+                                        <small *ngIf="data?.lead_status == 3" style="color: red;" class="leadstatus"  >* NI</small>
+                                      
+                                    </td>
+                                    <td class="col col2">{{data?.lead_id?.lead_first_name}}</td>
+                                    <td class="col col3">{{data?.product_id?.name}}</td>
+                                    <!-- <td class="col col4">{{data?.lead_id?.aadhaar_no}}</td>
+                                    <td class="col col5">{{data?.lead_id?.pan_no}}</td> -->
+                                  </tr>
+                                </table>
+
+                              </span>
+                            </li>
+                          </ul>
+
+                        </div>
+
+                      </li>
+                    </ul>
+
+                  </div>
+
+                </li>
+
+
+
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="chartform.value.camp_or_vendor == 2" >
+        <!-- <p>Vendor veiws</p> -->
+        <ul class="wtree1">
+          <li>
+            <span>
+              <table>
+                <tr>
+                  <th class="col col1">S.No</th>
+                  <th class="col col2">Vendor</th>
+                  <th class="col col3">Total Leads</th>
+                  <th class="col col4">LTC</th>
+                  <th class="col col5">Not Interested</th>
+                  <th class="col col6">Remaining Leads</th>
+                </tr>
+              </table>
+            </span>
+          </li>
+          <!-- </ul>
+          <ul class="wtree1" > -->
+          <li *ngFor="let list of vendorleadsreport; let i = index; first as isFirst">
+            <span>
+              <table>
+                <tr (click)="getcampaignlead(i,list.vendor_id)">
+                  <td class="col col1">
+                    {{ i + 1 }}
+                  </td>
+                  <td class="col col2">{{ list.vendor_name }}</td>
+                  <td class="col col3">{{ list.leadcount }}</td>
+                  <td class="col col4">{{ list.lead_to_customer }}</td>
+                  <td class="col col5">{{ list.not_int_lead }}</td>
+                  <td class="col col6">{{ list.remaining_leads }}</td>
+                </tr>
+              </table>
+            </span>
+
+
+            <div class="wtree" @displayState *ngIf="list.is_expansion">
+              <ul>
+                <li>
+                  <span>
+                    <table>
+                      <tr>
+                        <th class="col col1">S.No</th>
+                        <th class="col col2">Campaign</th>
+                        <th class="col col3">Total Leads</th>
+                        <th class="col col4">LTC</th>
+                        <th class="col col5">Not Interested</th>
+                        <th class="col col6">Remaining Leads</th>
+                      </tr>
+                    </table>
+                  </span>
+                </li>
+
+                <li *ngFor="let tab of list.campaign_data; first as isFirst;let j=index">
+                  <span>
+                    <table>
+                      <tr (click)="getcampaignemployee(i,j,list.vendor_id,tab.campaign_id)">
+                        <td class="col col1">
+                          {{ j + 1 }}
+                        </td>
+                        <td class="col col2">{{ tab.campaign_name }}</td>
+                        <td class="col col3">{{ tab.leadcount }}</td>
+                        <td class="col col4">{{ tab.lead_to_customer }}</td>
+                        <td class="col col5">{{ tab.not_int_lead }}</td>
+                        <td class="col col6">{{ tab.remaining_leads }}</td>
+                      </tr>
+                    </table>
+                  </span>
+
+                  <div *ngIf="tab.is_expansion">
+                    <ul>
+                      <li>
+                        <span>
+                          <table>
+                            <tr>
+                              <th class="col col1">S.No</th>
+                              <th class="col col2">Employee</th>
+                              <th class="col col3">Total Leads</th>
+                              <th class="col col4">LTC</th>
+                              <th class="col col5">Not Interested</th>
+                              <th class="col col6">Remaining Leads</th>
+                            </tr>
+                          </table>
+                        </span>
+                      </li>
+                      <li *ngFor="let emp of tab.employee_list; first as isFirst;let k=index">
+                        <span>
+                          <table>
+                            <tr (click)="getleadsofcampaignemployee(i,j,k,tab.campaign_id,list.vendor_id,emp?.employee_id)" >
+                              <td class="col col1">
+                                {{ k + 1 }}
+                              </td>
+                              <td class="col col2">{{ emp.employee_name }}</td>
+                              <td class="col col3">{{ emp.emp_leads }}</td>
+                              <td class="col col4">{{ emp.lead_to_customer }}</td>
+                              <td class="col col5">{{ emp.not_int_lead }}</td>
+                              <td class="col col6">{{ emp.remaining_leads }}</td>
+                            </tr>
+                          </table>
+                        </span>
+
+                        <div *ngIf="emp.is_expansion">
+                          <ul>
+                            <li>
+                              <span>
+                                <table>
+                                  <tr>
+                                    <th class="col col1">S.No</th>
+                                    <th class="col col2">Lead</th>
+                                    <th class="col col3">Product</th>
+                                    <!-- <th class="col col4">Aadhaar</th>
+                                    <th class="col col5">Pan</th> -->
+                                    <!-- <th class="col col6">Remaining Leads</th> -->
+                                  </tr>
+                                </table>
+                              </span>
+                            </li>
+                            <li *ngFor="let data of emp.leaadsdata; first as isFirst;let i=index">
+                              <span>
+                                <table>
+
+                                  <tr>
+                                    <td class="col col1">{{i+1}}
+                                      
+                                        <small *ngIf="data?.lead_status == 2" style="color: green;" class="leadstatus"  >* LTC</small>
+                                        <small *ngIf="data?.lead_status == 3" style="color: red;" class="leadstatus"  >* NI</small>
+                                      
+                                    </td>
+                                    <td class="col col2">{{data?.lead_id?.lead_first_name}}</td>
+                                    <td class="col col3">{{data?.product_id?.name}}</td>
+                                    <!-- <td class="col col4">{{data?.lead_id?.aadhaar_no}}</td>
+                                    <td class="col col5">{{data?.lead_id?.pan_no}}</td> -->
+                                  </tr>
+                                </table>
+
+                              </span>
+                            </li>
+                          </ul>
+
+                        </div>
+
+                      </li>
+                    </ul>
+
+                  </div>
+
+                </li>
+
+
+
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="chartform.value.chartstyle == 2">
+        <div>
+          <canvas id="MyChart">{{ chart }}
+
+          </canvas>
+          <div class="center" *ngIf="total != '' && total !=null">
+            <h2 style="font-weight:700">Total Leads : {{total}}</h2>
+
+          </div>
+        </div>
+      </div>
+    </form>
+
+
+
+  </div>
+
+</div>

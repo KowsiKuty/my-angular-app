@@ -1,0 +1,380 @@
+<main style="margin-top:1%;margin-left:15px">
+    <h2>Destroy Summary</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered" id="destroysummary" style="text-align: center;">
+            <thead class="table_header">
+                <th>S.No</th>
+                <th>Request Date</th>
+
+                <!-- <th>comment</th> -->
+                <th>Request Type</th>
+                <!-- <th>Approver</th> -->
+                <th>Status</th>
+                <!-- <th>View</th> -->
+                <th>Action</th>
+
+
+            </thead>
+            <tbody *ngFor="let summ of destroyapprove;index as ind">
+
+                <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                <td>{{summ.date | date:'dd-MM-yyyy'}}</td>
+
+
+                <!-- <td>{{summ.comment}}</td> -->
+                <td>{{summ.request_type}}</td>
+                <td>{{summ.status?.value}}</td>
+                <!-- <td>
+                    <button type="button" class="btn btn-light" (click)="viewdestroydetails(summ.request_id)"
+                        style="margin-left: 50px" data-toggle="modal" data-target="#viewdestroyform"><span
+                            class="fa fa-eye"></span>
+                    </button>
+                </td> -->
+                <td>
+                    <!-- <a data-toggle="modal" data-target="#filelevelform" ><i class="fa fa-eye" matTooltip="File level"></i></a> -->
+                    <button mat-button class="btn btn-outline-primary actionbtns" [matMenuTriggerFor]="menu"
+                        type="button" id="rmubtn" data-toggle="modal">Action
+                        <mat-icon style="margin-bottom: 5px;">arrow_drop_down</mat-icon>
+
+                    </button>
+
+                    <mat-menu #menu="matMenu">
+                        <div (mouseleave)="trigger.closeMenu()">
+                            <button mat-menu-item data-toggle="modal" 
+                                (click)="approve(summ)">
+                                APPROVE</button>
+                            <button mat-menu-item data-toggle="modal" 
+                                (click)="reject(summ)">REJECT</button>
+                            <button mat-menu-item data-toggle="modal" 
+                                (click)="return(summ)">RETURN</button>
+                                <button mat-menu-item data-toggle="modal"
+                                (click)="viewdestroydetails(summ.request_id)">VIEW</button>
+
+                        </div>
+                    </mat-menu>
+                </td>
+
+
+
+            </tbody>
+        </table>
+
+
+
+    </div>
+    <div
+    class="modal fade"
+    id="approvepopup"
+    tabindex="-1"
+    aria-labelledby="approvepopup"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="approvepopup" style="font-weight: 600;">Approve Confirmation</p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closedestroyapproverpopup
+            aria-label="Close"
+            (click)="close()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+    
+        <div class="modal-body">
+            <form [formGroup]="approverequest">
+                <div class="modal-body">
+                    <mat-form-field appearance="outline" style="width:100%">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput formControlName="comment">
+                    </mat-form-field>
+                </div>
+            </form>
+            
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="rmubtn" (click)="approveaction()"
+        class="btn btn-outline-primary">Ok</button>
+    <button type="button" #closedestroyapproverpopup id="rmubtn" class="btn btn-outline-secondary"
+        data-dismiss="modal">Close</button>
+</div>
+    </div>
+    </div>
+</div>
+    <!-- <div class="modal fade" id="approvepopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header hdrclr">
+                    <h2 class="modal-title" id="exampleModalLongTitle">Approve Confirmation</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form [formGroup]="approverequest">
+                    <div class="modal-body">
+                        <mat-form-field appearance="outline" style="width:100%">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput formControlName="comment">
+                        </mat-form-field>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" id="rmubtn" (click)="approveaction()"
+                        class="btn btn-outline-primary">Ok</button>
+                    <button type="button" #actionclose id="rmubtn" class="btn btn-outline-secondary"
+                        data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- <div class="modal fade" id="recjectpopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header hdrclr">
+                    <h2 class="modal-title" id="exampleModalLongTitle">Reject Confirmation</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form [formGroup]="approverequest">
+                    <div class="modal-body">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput>
+                        </mat-form-field>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" id="rmubtn" class="btn btn-outline-primary"
+                        (click)="rejectaction()">Ok</button>
+                    <button type="button" #closedestroyapproverpopup  class="btn btn-outline-secondary"
+                        data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div
+    class="modal fade"
+    id="recjectpopup"
+    tabindex="-1"
+    aria-labelledby="recjectpopup"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="recjectpopup" style="font-weight: 600;">Reject Confirmation</p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closedestroyapproverpopup
+            aria-label="Close"
+            (click)="close()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+    
+        <div class="modal-body">
+            <form [formGroup]="approverequest">
+                <div class="modal-body">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+            </form>
+            
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="rmubtn" class="btn btn-outline-primary"
+        (click)="rejectaction()">Ok</button>
+    <button type="button" #closedestroyapproverpopup  class="btn btn-outline-secondary"
+        data-dismiss="modal">Close</button>
+</div>
+    </div>
+    </div>
+</div>
+
+    <!-- <div class="modal fade" id="returnpopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header hdrclr">
+                    <h2 class="modal-title" id="exampleModalLongTitle">Return Confirmation</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form [formGroup]="approverequest">
+                    <div class="modal-body">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput>
+                        </mat-form-field>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" id="rmubtn" class="btn btn-outline-primary"
+                        (click)="returnaction()">Ok</button>
+                    <button type="button" #actionclose id="rmubtn" class="btn btn-outline-secondary"
+                        data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div
+    class="modal fade"
+    id="returnpopup"
+    tabindex="-1"
+    aria-labelledby="returnpopup"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="returnpopup" style="font-weight: 600;">Return Confirmation</p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closedestroyapproverpopup
+            aria-label="Close"
+            (click)="close()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+    
+        <div class="modal-body">
+            <form [formGroup]="approverequest">
+                <div class="modal-body">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput>
+                    </mat-form-field>
+                </div>
+            </form>
+            
+      </div>
+      <div class="modal-footer">
+        <button type="button"  class="btn btn-outline-primary"
+                        (click)="returnaction()">Ok</button>
+                    <button type="button" #actionclose class="btn btn-outline-secondary"
+                        data-dismiss="modal">Close</button>
+</div>
+    </div>
+    </div>
+</div>
+
+ 
+
+    <!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="viewpopup" aria-hidden="true"
+        id="viewpopup" #viewpopup>
+        <div class="modal-dialog modal-xl" style="width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">Destroy Documents List</h2>
+                    <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <br>
+                <br>
+
+                <div style="margin-left:10px;">
+                    <table class="table table-bordered" id="doclistview">
+                        <thead class="table_header">
+                            <th>S.No</th>
+                            <th>Destroy Code</th>
+                            <th>Comment</th>
+                            <th>Requested By</th>
+                            
+                        </thead>
+                        <tbody>
+                            <td>1</td>
+                            <td>{{doclistview?.destroy_code}}</td>
+                            <td>{{doclistview?.maker_data.comment}}</td>
+                            <td>{{doclistview?.maker_data.employee.code}}</td> -->
+                            
+                            <!-- <td>{{doclistview.maker_data.date}}</td>
+                            <td>{{doclistview.maker_data.comment}}</td>
+                            <td>{{doclistview.maker_data.request_type}}</td> -->
+                          
+                        <!-- </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+    <div
+    class="modal fade"
+    id="viewpopup"
+    tabindex="-1"
+    aria-labelledby="viewpopup"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="viewpopup" style="font-weight: 600;">Destroy Documents List </p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closedestroyapproverpopup
+            aria-label="Close"
+            (click)="close()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+    
+        <div class="modal-body">
+            <!-- <lib-vs-cbox-summary  [SummaryDetails]="destoryapprove_summary"
+            [SummaryApiObj]="destorydesvoe_summaryapi"></lib-vs-cbox-summary> -->
+            <div style="margin-left:10px;">
+                <table class="table table-bordered" id="doclistview">
+                    <thead class="table_header">
+                        <th>S.No</th>
+                        <th>Destroy Code</th>
+                        <th>Comment</th>
+                        <th>Requested By</th>
+                        
+                    </thead>
+                    <tbody>
+                        <td>1</td>
+                        <td>{{doclistview?.destroy_code}}</td>
+                        <td>{{doclistview?.maker_data.comment}}</td>
+                        <td>{{doclistview?.maker_data.employee.code}}</td>
+                        
+                        <!-- <td>{{doclistview.maker_data.date}}</td>
+                        <td>{{doclistview.maker_data.comment}}</td>
+                        <td>{{doclistview.maker_data.request_type}}</td> -->
+                      
+                    </tbody>
+                </table>
+
+
+            </div>
+            
+      </div>
+    </div>
+    </div>
+</div>
+
+</main>

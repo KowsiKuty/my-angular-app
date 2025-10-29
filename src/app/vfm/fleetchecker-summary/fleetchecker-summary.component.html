@@ -1,0 +1,114 @@
+<!-- <h2 style="margin-left: 57px;margin-top: 1%;">Vehicle Summary</h2> -->
+<div style=" margin: auto;margin-top: 1%;">
+    <div>
+        <div class="col-12">
+            <div style="margin-left: 20px;">
+                <form [formGroup]="fleetIdentificationSearch" (ngSubmit)="searchClick()">
+                    <mat-form-field style="margin-left: 20px;width: 150px;">
+                        <input class="toolbar-search" (change)="vehicleno($event)" type="text" matInput autocomplete="off" formControlName="vehicle_no">
+                        <mat-placeholder>Vehicle No</mat-placeholder>
+                    </mat-form-field>
+                    <mat-form-field style="width: 150px;margin-left: 50px;">
+                        
+                        <input class="toolbar-search" (change)="permitupdate($event)" type="text" matInput autocomplete="off" formControlName="code">
+                        <mat-placeholder>Code</mat-placeholder>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="maker">
+                        <mat-form-field style="width: 150px;margin-left: 50px;">
+                        <mat-label>Status</mat-label>
+                        <mat-select [(value)]="statusselected" readonly="readonly" (selectionChange)="onStatusChange($event.value)">
+                            <mat-option *ngFor="let status of statusList" [value]="status.text">
+                                {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    </ng-container>
+                                        <!-- ////4860 -->
+                    <ng-container *ngIf="!maker">
+                    <mat-form-field style="width: 150px;margin-left: 50px;">
+                        <mat-label>Status</mat-label>
+                        <mat-select [(value)]="statusselected" readonly="readonly" (selectionChange)="onStatusChange($event.value)">
+                            <mat-option *ngFor="let status of statusLists" [value]="status.text">
+                                {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </ng-container>
+                <!-- ////4860 -->
+                    <mat-form-field  style="width: 250px;margin-left: 50px;" floatLabel="always">
+                        <mat-label>Branch</mat-label>
+                        <input type="text" #inputassetid placeholder="Select Branch" matInput
+                            [matAutocomplete]="assetid" formControlName="branch_id">
+                        <mat-autocomplete #assetid ="matAutocomplete" (opened)="autocompleteid()">
+                            <mat-option *ngFor="let branch of branchlist" (click)="branchname(branch.id)"
+                                [value]="'('+(branch.code)+') '+(branch.name)">
+                                ({{branch.code}})-{{branch.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <button class="btn btn-outline-primary" type="submit" (click)="fleetMakerSearch()" style="border-radius:40px;margin-left: 15px;"
+                        color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-primary" type="button"
+                        style="border-radius:40px;margin-left: 15px;" color="primary" (click)=reset()>Reset</button>
+                    <button *ngIf="isadd" type="button" class="btn btn-outline-success"
+                        (click)=addIdentificationForm() style="border-radius: 20px; cursor: pointer;margin-left: 5rem;"
+                        color="primary"><span class="fa fa-plus"></span>Add
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive" style="margin-top: 2%;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>Code</th>
+                    <th>Vehicle Number</th>
+                    <th>Vehicle Model</th>
+                    <th>Ownership Type</th>
+                    <!-- <th>Fuel Type</th> -->
+                    <th>Branch</th>
+                    <th>Request Status</th>     
+                    <th>Status</th>                                           
+                    <th *ngIf="isedit">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let fleet of fleetList; index as i">
+                    <td> {{(presentpage - 1)*pagesize +i+1 }} </td>
+                    <td>{{ fleet.code }}</td>
+                    <td style="cursor: pointer; color: #3684BF; " (click)="premiseView(fleet)">{{ fleet.vehicle_no }}</td>
+                    <td>{{ fleet.vehicle_model}}</td>
+                    <td>{{ fleet.ownership_type.text}}
+                    </td>
+                    <!-- <td>{{ fleet.fuel_type.text}}</td> -->
+                    <td>({{fleet.branch.code}}) {{fleet.branch.name}}</td>
+                    <td>{{ fleet.request_status.text}}</td>
+                    <td>{{ fleet.approval_status.status}}</td>
+                    <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                        (click)="fleetEdit(fleet)">
+                        
+                        <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                    </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="fleetList ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>   
+        </div>
+        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isfleetList">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                (click)="pre_previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="pre_nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

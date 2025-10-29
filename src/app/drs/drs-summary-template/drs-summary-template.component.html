@@ -1,0 +1,638 @@
+<div *ngIf="drssummary">
+  <app-drssummary></app-drssummary>
+</div>
+<div class="container" *ngIf="tempsummary">
+  <form [formGroup]="templatesummary">
+    <h1 style="margin-top: 3%;font-weight: 500;text-align: center;margin-right: 20%;">{{report_data_name?report_data_name:""}}</h1>
+      <div class="row mt-3 ml-1">
+          <mat-form-field   style="width:auto" *ngIf="!ViewFullData?.Quarter">
+              <mat-label>Choose a date</mat-label>
+              <input matInput formControlName="date" [matDatepicker]="picker1" [max]="endDate">
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+        	<mat-form-field (click)="getfinyear('')" *ngIf="ViewFullData?.Quarter">
+						<mat-label>Fin Year</mat-label>
+						<input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput
+							[matAutocomplete]="fin_year" required (keyup)="getfinyear($event.target.value)">
+						<mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">
+							<mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+							<ng-container *ngIf="!isLoading">
+								<mat-option *ngFor="let finyearname of finyearList" [value]="finyearname">
+									{{finyearname.finyer}} </mat-option>
+							</ng-container>
+						</mat-autocomplete>
+					</mat-form-field>
+            <mat-form-field (click)="Stagedrop()" style="margin-left:3%" *ngIf="!ViewFullData?.Quarter">
+              <mat-label>Stage</mat-label>
+              <input #stageinput matInput formControlName="stage" #StageContactInput [matAutocomplete]="stagesum">
+              <mat-autocomplete #stagesum="matAutocomplete" [displayWith]="displaystage"	(opened)="autocompleteStageScroll()">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                 <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let stage_datas of Stage_list_" [value]="stage_datas">{{stage_datas.name}} </mat-option>
+                  </ng-container>
+               </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field style="margin-left:3%" *ngIf="ViewFullData?.Quarter">
+              <mat-label>Quarter</mat-label>
+              <mat-select formControlName="quarter">
+                <mat-option *ngFor="let data of QuarterDropData" [value]="data">
+                  {{data}}
+                </mat-option>
+              </mat-select> 
+            </mat-form-field>
+            <mat-form-field (click)="amountdrop()" style="margin-left: 3%;">
+              <mat-label>Amount</mat-label>
+              <input matInput formControlName="amount" [matAutocomplete]="report_name">
+              <mat-autocomplete #report_name="matAutocomplete">
+                  <mat-option *ngFor="let reportgroupcreates of amount"
+                      [value]="reportgroupcreates" >
+                      {{reportgroupcreates}}
+                  </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <!-- <section class="example-section" >
+              <mat-checkbox formControlName="ischeck"></mat-checkbox>
+            </section> -->
+          <div class="mt-3">
+              <button type="button" style="border-radius: 30px;margin-left: 50px;" class="btn btn-outline-primary" (click)="SeachFunction(templatesummary.value)">
+                  <i class="fa fa-search" aria-hidden="true"></i></button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary mt-3 ml-5" (click)="backtosummary()">
+              Back</button>
+          </div>
+          <div *ngIf="!ViewFullData?.Quarter">
+        
+            <button class="btn btn-primary my-3 ml-4"  data-toggle="modal" (click)="downloads_screens('pdf')"
+                                            data-target="#exampleModalreturn"><mat-icon>picture_as_pdf</mat-icon></button>
+            <button class="btn btn-primary my-3 ml-4" (click)="downloads_screens('excel')" data-toggle="modal"
+                                            data-target="#exampleModalreturn"><mat-icon>description</mat-icon></button>
+
+          </div>
+      </div>
+  </form>
+
+  <ng-container *ngIf="!ViewFullData?.Quarter">
+    <div class="preformatted"  #preformattedDiv>
+      <header *ngIf="preheader">
+        <b style="text-align: left;font-size: 40px;color: green;">{{report_data_name?report_data_name:""}}</b>
+        <p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;">As at {{curDate}}</p>
+        <button *ngIf="add" type="button" style="border-radius: 30px;margin-left: 90%;margin-top: -15%;font-size: small;font-weight: bolder;text-align: right;margin-right: 5%;"class="btn btn-outline-success" data-toggle="modal" data-target="#exampleModal2"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        <p style="margin-top: -4%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: right;margin-right: 5%;">&#8377;INR in {{amountinvalue}}</p>
+      </header>
+      <table style="min-height:59.99%;max-height:59.99%;text-align:center;width: 90%;border: none;margin-left: 3%;">
+        <tr style="border-block-color: green;" *ngIf="pretable"></tr>
+        <tr style="border-block-color: green;" *ngIf="pretable">
+          <td *ngIf="Flag_boolean== true"><p style="font-size: small;margin-right: -17%;font-weight: bolder;"></p></td>
+
+          <td><p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: left;">Particular</p></td>
+          <!-- <div *ngIf="Expand_schedule"> -->
+          <!-- </div>          -->
+          <td *ngIf="Flag_booleans== true"><p style="margin-bottom: 10%;font-size: small;margin-right: -17%;font-weight: bolder;text-align: right;">Schedule</p></td>
+          <td *ngIf="!(Expand_schedule || templatesummary.controls['stage'].value.id == 99 || showLeftArrow)"></td>
+          <td *ngIf="showLeftArrow"><p><span  class="left-arrow" type="button" style="font-size: small;font-weight: bolder;text-align: right; border-radius: 50px;" (click)="Expand_summary(templatesummary.value)"  matTooltip="Audit Entries" >&larr;</span></p></td>
+            <td *ngIf="Expand_schedule || templatesummary.controls['stage'].value.id == 99" style="padding-left: 20px;">TB</td>
+            <td *ngIf="Expand_schedule || templatesummary.controls['stage'].value.id == 99">Audit</td>
+           <td *ngIf="templatesummary.controls['stage'].value.id == 99"></td>
+          <td><p style="margin-top: 0%;font-size: small;margin-left: -10%;font-weight: bolder;color: green;text-align: right;width: 111%;">As at <br> &nbsp; {{curDate}}</p></td>
+          <!-- <td *ngIf="showaudittotal && templatesummary.controls['stage'].value.id == 99 == false"><p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: left;">Audit</p></td>
+          <td *ngIf="showaudittotal && templatesummary.controls['stage'].value.id == 99 == false"><p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: left;">Total</p></td>  -->
+          <td><p style="margin-top: 0%;font-size: small;margin-left: -10%;font-weight: bolder;text-align: right;width: 111%;">As at <br> &nbsp; {{peryear}}</p></td>        
+          <td style="width: 11%;" *ngIf="monthcondition === true"><p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: right;">As at <br> &nbsp; {{modaldate1}}</p></td>
+          <td style="width: 11%;" *ngIf="monthcondition2 === true"><p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: right;">As at <br> &nbsp; {{modaldate2}}</p></td>
+          <td style="width: 11%;" *ngIf="monthcondition3 === true"><p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: right;">As at <br> &nbsp; {{modaldate3}}</p></td>
+        </tr>
+       <tbody *ngFor="let report of report_data;let i = index;">
+              <tr  style="border:none " *ngIf="report.type === 'Headers' || report.type === 'Group' || report.type === 'Total' || report.type === 'Item'" style="border:none">
+                <td style="text-align: center;cursor: pointer;" *ngIf="Flag_boolean== true" (click)="reportMain(report)" data-toggle="modal" data-target="#exampleModal3">{{ Flag_boolean== true ? report.code:""}}</td>
+
+                <!-- <td></td> -->
+                  <td  [ngStyle]="{'color': report.type === 'Headers' ? 'green' : 'black', 'font-weight': report.type === 'Headers' ? '900' : report.type === 'Total' ? '700' : 'normal', 'border-top': report.type === 'Total' ? '1px solid black' : 'none', 'border-bottom': report.type === 'Total' ? '1px solid black' : 'none'}">{{ (report.type == "Headers"? report.name:(report.type == "Group"? report.name:(report.type == "Item"?report.name:(report.type == "Total"?report.name:report.name) )))}}</td>
+                  <!-- <td  [ngStyle]="{'color': report.type === 'Headers' ? 'green' : 'black', 'font-weight': report.type === 'Headers' ? '900' : report.type === 'Total' ? '700' : 'normal'}">{{ (report.type == "Headers"? report.amount:(report.type == "Group"? report.amount:(report.type == "Item"?report.amount:(report.type == "Total"?report.total_amount:report.amount) )))}}1a</td> -->
+
+           <td style="text-align: right;" *ngIf="Flag_booleans== true" [ngStyle]="{'border-top': report.type == 'Total' ? '1px solid black' : 'none','cursor': report.code ? 'pointer' : '','border-bottom': report.type == 'Total' ? '1px solid black' : 'none'}"  (click)="report.code ? reportMain(report) : null" 
+                  [attr.data-toggle]="report.code ? 'modal' : null" 
+                  [attr.data-target]="report.code ? '#exampleModal3' : null" data-toggle="modal" data-target="#exampleModal3">{{Flag_booleans== true ? report.code:""}}</td>
+                                    <td *ngIf="Expand_schedule && showLeftArrow" [ngStyle]="{'border-top': report.type == 'Total' ? '1px solid black' : 'none','cursor': report.code ? 'pointer' : '','border-bottom': report.type == 'Total' ? '1px solid black' : 'none'}"></td>
+                  <!-- <td *ngIf="(showLeftArrow && Expand_schedule)"></td> -->
+                   <!-- <td *ngIf="!Expand_schedule && templatesummary.controls['stage'].value?.id == 99"></td> -->
+                   <!-- <td *ngIf="Expand_schedule && templatesummary.controls['stage'].value?.id != 99"></td> -->
+                   <!-- <td *ngIf="!Expand_schedule && !templatesummary.controls['stage'].value.id == 99"></td> -->
+
+                   <td *ngIf="Expand_schedule ||  templatesummary.controls['stage'].value?.id == 99" [ngClass]="{'total-cell': report.type === 'Total'}">
+                    <ng-container *ngFor="let report_extend of report_data_extand; let j= index;">
+                      <!-- <div style="display: inline-block; padding: 5px;"> -->
+                      <!-- <tr *ngIf="reports.type === 'Headers' || reports.type === 'Group' || reports.type === 'Total' || reports.type === 'Item'" style="border:none"> -->
+                        <span  *ngIf="j === i" [ngStyle]="{'color': report_extend.type === 'Headers' ? 'green' : 'black', 'font-weight': report_extend.type === 'Headers' ? '900' : report_extend.type === 'Total' ? '700' : 'normal'}" >{{ (report_extend.type == "Headers"? myMath.abs(report_extend.amount):(report_extend.type == "Group"? myMath.abs(report_extend.amount):(report_extend.type == "Item"?myMath.abs(report_extend.amount):(report_extend.type == "Total"?myMath.abs(report_extend.total_amount):myMath.abs(report_extend.amount)) ))) | number:'1.2-2': 'en-IN' }}</span>
+                      <!-- </div> -->
+                        <!-- <td *ngIf="Expand_schedule" [ngStyle]="{'color': report.type === 'Headers' ? 'green' : 'black', 'font-weight': report.type === 'Headers' ? '900' : report.type === 'Total' ? '700' : 'normal'}">{{ (report.type == "Headers"? report.amount:(report.type == "Group"? report.amount:(report.type == "Item"?report.amount:(report.type == "Total"?report.total_amount:report.amount) )))}}</td> -->
+
+                      <!-- </tr> -->
+                    </ng-container>
+                  </td>
+                 
+                  <td *ngIf="Expand_schedule ||  templatesummary.controls['stage'].value.id == 99" [ngClass]="{'total-cell': report.type === 'Total'}">
+                    <ng-container *ngFor="let reports of report_datas; let k= index;">
+                      <!-- <tr *ngIf="reports.type === 'Headers' || reports.type === 'Group' || reports.type === 'Total' || reports.type === 'Item'" style="border:none"> -->
+                        <span *ngIf="k === i" [ngStyle]="{'color': reports.type === 'Headers' ? 'green' : 'black', 'font-weight': reports.type === 'Headers' ? '900' : reports.type === 'Total' ? '700' : 'normal'}" >{{ (reports.type == "Headers"? myMath.abs(reports.amount):(reports.type == "Group"? myMath.abs(reports.amount):(reports.type == "Item"?myMath.abs(reports.amount):(reports.type == "Total"?myMath.abs(reports.total_amount):myMath.abs(reports.amount)) ))) | number:'1.2-2': 'en-IN' }}</span>
+                      <!-- </tr> -->
+                    </ng-container>
+                  </td>  
+                  <td [hidden]="Expand_schedule && showLeftArrow" [ngStyle]="{'border-top': report.type == 'Total' ? '1px solid black' : 'none','border-bottom': report.type == 'Total' ? '1px solid black' : 'none'}"><p></p></td>
+                  <td style="color: green;text-align: right;" [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal', 'border-top': report.type === 'Total' ? '1px solid black' : 'none', 'border-bottom': report.type === 'Total' ? '1px solid black' : 'none'}">{{(report.type == "Headers" ?  myMath.abs(report.amount):(report.type == "Group"? myMath.abs(report.amount):(report.type == "Item"? myMath.abs(report.amount):(report.type == "Total"? myMath.abs(report.total_amount):myMath.abs(report.amount)) )))| number:'1.2-2': 'en-IN' }}</td>
+                   <td style="text-align: right;"
+                    [ngStyle]="{
+                      'font-weight': report.type === 'Total' ? '700' : 'normal',
+                      'border-top': preyearrecord && preyearrecord[i]?.type === 'Total' ? '1px solid black' : 'none',
+                      'border-bottom': preyearrecord && preyearrecord[i]?.type === 'Total' ? '1px solid black' : 'none'
+                    }">
+                  {{
+                    (
+                      preyearrecord && preyearrecord[i]?.type === 'Headers' ? myMath.abs(preyearrecord[i]?.amount) :
+                      preyearrecord && preyearrecord[i]?.type === 'Group' ? myMath.abs(preyearrecord[i]?.amount) :
+                      preyearrecord && preyearrecord[i]?.type === 'Item' ? myMath.abs(preyearrecord[i]?.amount) :
+                      preyearrecord && preyearrecord[i]?.type === 'Total' ? myMath.abs(preyearrecord[i]?.total_amount) :
+                      preyearrecord && myMath.abs(preyearrecord[i]?.amount)
+                    ) | number:'1.2-2':'en-IN'
+                  }}
+                </td>
+
+
+                  
+                  <!-- <td *ngIf="monthcondition === true" style="text-align: right;" [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal'}">{{ (monthdata[i]?.type == "Headers" ? monthdata[i]?.amount : (monthdata[i]?.type == "Group" ? monthdata[i]?.amount : (monthdata[i]?.type == "Item" ? monthdata[i]?.amount: (monthdata[i]?.type == "Total" ? monthdata[i]?.total_amount: monthdata[i]?.amount )))) }}</td> -->
+                  <!-- <td *ngIf="showaudittotal && !templatesummary.controls['stage'].value.id == 99">
+                        {{  rtbreport_data[i]?.amount  }}
+                      </td>
+                      <td *ngIf="showaudittotal && !templatesummary.controls['stage'].value.id == 99" style="text-align: right;">
+                        {{
+                          rtbreport_data[i]?.amount
+                        | number:'1.2-2':'en-IN' }}
+                      </td> -->
+
+
+                  <td *ngIf="monthcondition === true" style="text-align: right;" [ngClass]="{'total-cell': report.type === 'Total'}">
+                    <ng-container *ngFor="let report1 of monthdata; let j = index;">
+                        <span [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal'}" *ngIf="j === i">{{ report1.type == "Headers" ? myMath.abs(report1.amount) : (report1.type == "Group" ? myMath.abs(report1.amount) : (report1.type == "Item" ? myMath.abs(report1.amount) : (report1.type == "Total" ? myMath.abs(report1.total_amount) : myMath.abs(report1.amount)))) | number:'1.2-2': 'en-IN' }}</span>
+                    </ng-container>
+                </td>
+                <td *ngIf="monthcondition2 === true" style="text-align: right;" [ngClass]="{'total-cell': report.type === 'Total'}">
+                  <ng-container *ngFor="let report1 of monthdata2; let j = index;">
+                      <span [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal'}" *ngIf="j === i">{{ report1.type == "Headers" ? myMath.abs(report1.amount) : (report1.type == "Group" ? myMath.abs(report1.amount) : (report1.type == "Item" ? myMath.abs(report1.amount) : (report1.type == "Total" ? myMath.abs(report1.total_amount) : myMath.abs(report1.amount)))) | number:'1.2-2': 'en-IN'}}</span>
+                  </ng-container>
+                </td>
+                <td *ngIf="monthcondition3 === true" style="text-align: right;" [ngClass]="{'total-cell': report.type === 'Total'}">
+                  <ng-container *ngFor="let report1 of monthdata3; let j = index;">
+                      <span [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal'}" *ngIf="j === i">{{ report1.type == "Headers" ? myMath.abs(report1.amount) : (report1.type == "Group" ? myMath.abs(report1.amount) : (report1.type == "Item" ? myMath.abs(report1.amount) : (report1.type == "Total" ? myMath.abs(report1.total_amount) : myMath.abs(report1.amount)))) | number:'1.2-2': 'en-IN' }}</span>
+                  </ng-container>
+                </td>
+            </tr>
+        </tbody>
+      </table>
+  </div>
+  </ng-container>
+  <ng-container *ngIf="ViewFullData?.Quarter">
+    <div class="preformatted class-container"  #preformattedDiv>
+      <header *ngIf="preheader">
+        <b style="text-align: left;font-size: 40px;color: green;">{{report_data_name?report_data_name:""}}</b>
+        <!-- <p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;">As at {{curDate}}</p>
+        <button *ngIf="add" type="button" style="border-radius: 30px;margin-left: 90%;margin-top: -15%;font-size: small;font-weight: bolder;text-align: right;margin-right: 5%;"class="btn btn-outline-success" data-toggle="modal" data-target="#exampleModal2"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        <p style="margin-top: -4%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: right;margin-right: 5%;">&#8377;INR in {{amountinvalue}}</p> -->
+      </header>
+      <div class="table-responsive">
+              <table style="min-height:59.99%;max-height:59.99%;text-align:center;width: 97%;border: none;margin-left: 1%;">
+        <tr style="border-block-color: green;" *ngIf="pretable"></tr>
+  
+        <tr style="border:none;" *ngIf="pretable">
+          <td *ngIf="Flag_boolean== true"><p style="font-size: small;margin-right: -17%;font-weight: bolder;"></p></td>
+
+          <td class="ParticularWidth" rowspan="2"><p style="margin-top: 0%;font-size: small;margin-left: 1%;font-weight: bolder;text-align: left;" >Particular</p></td>
+  
+          <td *ngIf="Flag_booleans== true" class="ScheduleWidth" rowspan="2"><p style="margin-bottom: 10%;font-size: small;font-weight: bolder;text-align: right;" >Schedule</p></td>
+           <td *ngIf="QuarterlyLength.length" [attr.colspan]="QuarterlyLength.length" style="margin-bottom: 10%;font-size: small;font-weight: bolder;text-align: center;" [ngClass]="ClassDefineFunc('Q')">Quarter Ended</td>
+          <td *ngIf="HalfYearLength.length" [attr.colspan]="HalfYearLength.length" style="margin-bottom: 10%;font-size: small;font-weight: bolder;text-align: center;" [ngClass]="ClassDefineFunc('H')">Half Year Ended</td>
+          <td *ngIf="YearLength.length" [attr.colspan]="YearLength.length" style="margin-bottom: 10%;font-size: small;font-weight: bolder;text-align: center;" [ngClass]="ClassDefineFunc('Y')">Year Ended</td>
+
+        </tr>
+        <tr>
+          <td *ngFor="let data of QuarterData['Header']" class="Width95px" [ngClass]="ClassDefineFunc(data)"><p style="margin-bottom: 10%;font-size: small;font-weight: bolder;text-align: right;">{{SliceFunc(data)}}</p></td> 
+        </tr>
+       <tbody *ngFor="let report of TableDataReturn();let i = index;">
+              <tr  style="border:none " *ngIf="report.type === 'Headers' || report.type === 'Group' || report.type === 'Total' || report.type === 'Item'" style="border:none">
+                <td style="text-align: center;cursor: pointer;" *ngIf="Flag_boolean== true" (click)="reportMain(report)" data-toggle="modal" data-target="#exampleModal3">{{ Flag_boolean== true ? report.code:""}}</td>
+
+                  <td  [ngStyle]="{'color': report.type === 'Headers' ? 'green' : 'black', 'font-weight': report.type === 'Headers' ? '900' : report.type === 'Total' ? '700' : 'normal', 'border-top': report.type === 'Total' ? '1px solid black' : 'none', 'border-bottom': report.type === 'Total' ? '1px solid black' : 'none'}" class="ParticularWidth">{{ (report.type == "Headers"? report.name:(report.type == "Group"? report.name:(report.type == "Item"?report.name:(report.type == "Total"?report.name:report.name) )))}}</td>
+
+           <td style="text-align: right;" class="ScheduleWidth" *ngIf="Flag_booleans== true" [ngStyle]="{'border-top': report.type == 'Total' ? '1px solid black' : 'none','cursor': report.code ? 'pointer' : '','border-bottom': report.type == 'Total' ? '1px solid black' : 'none'}"  (click)="report.code ? QuarterMain(report) : null" 
+                  [attr.data-toggle]="report.code ? 'modal' : null" 
+                  [attr.data-target]="report.code ? '#exampleModal4' : null" data-toggle="modal" data-target="#exampleModal4">{{Flag_booleans== true ? report.code:""}}</td>
+                  <td *ngFor="let data of QuarterData['Header']" class="Width95px" [ngStyle]="{'border-top': report.type == 'Total' ? '1px solid black' : 'none','border-bottom': report.type == 'Total' ? '1px solid black' : 'none'}" style="margin-bottom: 10%;text-align:right" [ngClass]="ClassDefineFunc(data)">{{QuarterFilFunc(data,report?.id)}}</td>
+                                    <!-- <td *ngIf="Expand_schedule && showLeftArrow" [ngStyle]="{'border-top': report.type == 'Total' ? '1px solid black' : 'none','cursor': report.code ? 'pointer' : '','border-bottom': report.type == 'Total' ? '1px solid black' : 'none'}"></td>
+             
+
+                   <td *ngIf="Expand_schedule ||  templatesummary.controls['stage'].value?.id == 99" [ngClass]="{'total-cell': report.type === 'Total'}">
+                    <ng-container *ngFor="let report_extend of report_data_extand; let j= index;">
+
+                        <span  *ngIf="j === i" [ngStyle]="{'color': report_extend.type === 'Headers' ? 'green' : 'black', 'font-weight': report_extend.type === 'Headers' ? '900' : report_extend.type === 'Total' ? '700' : 'normal'}" >{{ (report_extend.type == "Headers"? myMath.abs(report_extend.amount):(report_extend.type == "Group"? myMath.abs(report_extend.amount):(report_extend.type == "Item"?myMath.abs(report_extend.amount):(report_extend.type == "Total"?myMath.abs(report_extend.total_amount):myMath.abs(report_extend.amount)) ))) | number:'1.2-2': 'en-IN' }}</span>
+        
+                    </ng-container>
+                  </td>
+                 
+                  <td *ngIf="Expand_schedule ||  templatesummary.controls['stage'].value.id == 99" [ngClass]="{'total-cell': report.type === 'Total'}">
+                    <ng-container *ngFor="let reports of report_datas; let k= index;">
+                        <span *ngIf="k === i" [ngStyle]="{'color': reports.type === 'Headers' ? 'green' : 'black', 'font-weight': reports.type === 'Headers' ? '900' : reports.type === 'Total' ? '700' : 'normal'}" >{{ (reports.type == "Headers"? myMath.abs(reports.amount):(reports.type == "Group"? myMath.abs(reports.amount):(reports.type == "Item"?myMath.abs(reports.amount):(reports.type == "Total"?myMath.abs(reports.total_amount):myMath.abs(reports.amount)) ))) | number:'1.2-2': 'en-IN' }}</span>
+                    </ng-container>
+                  </td>  
+                  <td [hidden]="Expand_schedule && showLeftArrow" [ngStyle]="{'border-top': report.type == 'Total' ? '1px solid black' : 'none','border-bottom': report.type == 'Total' ? '1px solid black' : 'none'}"><p></p></td>
+                  <td style="color: green;text-align: right;" [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal', 'border-top': report.type === 'Total' ? '1px solid black' : 'none', 'border-bottom': report.type === 'Total' ? '1px solid black' : 'none'}">{{(report.type == "Headers" ?  myMath.abs(report.amount):(report.type == "Group"? myMath.abs(report.amount):(report.type == "Item"? myMath.abs(report.amount):(report.type == "Total"? myMath.abs(report.total_amount):myMath.abs(report.amount)) )))| number:'1.2-2': 'en-IN' }}</td>
+                   <td style="text-align: right;"
+                    [ngStyle]="{
+                      'font-weight': report.type === 'Total' ? '700' : 'normal',
+                      'border-top': preyearrecord && preyearrecord[i]?.type === 'Total' ? '1px solid black' : 'none',
+                      'border-bottom': preyearrecord && preyearrecord[i]?.type === 'Total' ? '1px solid black' : 'none'
+                    }">
+                  {{
+                    (
+                      preyearrecord && preyearrecord[i]?.type === 'Headers' ? myMath.abs(preyearrecord[i]?.amount) :
+                      preyearrecord && preyearrecord[i]?.type === 'Group' ? myMath.abs(preyearrecord[i]?.amount) :
+                      preyearrecord && preyearrecord[i]?.type === 'Item' ? myMath.abs(preyearrecord[i]?.amount) :
+                      preyearrecord && preyearrecord[i]?.type === 'Total' ? myMath.abs(preyearrecord[i]?.total_amount) :
+                      preyearrecord && myMath.abs(preyearrecord[i]?.amount)
+                    ) | number:'1.2-2':'en-IN'
+                  }}
+                </td>
+
+
+                  
+            
+
+                  <td *ngIf="monthcondition === true" style="text-align: right;" [ngClass]="{'total-cell': report.type === 'Total'}">
+                    <ng-container *ngFor="let report1 of monthdata; let j = index;">
+                        <span [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal'}" *ngIf="j === i">{{ report1.type == "Headers" ? myMath.abs(report1.amount) : (report1.type == "Group" ? myMath.abs(report1.amount) : (report1.type == "Item" ? myMath.abs(report1.amount) : (report1.type == "Total" ? myMath.abs(report1.total_amount) : myMath.abs(report1.amount)))) | number:'1.2-2': 'en-IN' }}</span>
+                    </ng-container>
+                </td>
+                <td *ngIf="monthcondition2 === true" style="text-align: right;" [ngClass]="{'total-cell': report.type === 'Total'}">
+                  <ng-container *ngFor="let report1 of monthdata2; let j = index;">
+                      <span [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal'}" *ngIf="j === i">{{ report1.type == "Headers" ? myMath.abs(report1.amount) : (report1.type == "Group" ? myMath.abs(report1.amount) : (report1.type == "Item" ? myMath.abs(report1.amount) : (report1.type == "Total" ? myMath.abs(report1.total_amount) : myMath.abs(report1.amount)))) | number:'1.2-2': 'en-IN'}}</span>
+                  </ng-container>
+                </td>
+                <td *ngIf="monthcondition3 === true" style="text-align: right;" [ngClass]="{'total-cell': report.type === 'Total'}">
+                  <ng-container *ngFor="let report1 of monthdata3; let j = index;">
+                      <span [ngStyle]="{'font-weight': report.type === 'Total' ? '700' : 'normal'}" *ngIf="j === i">{{ report1.type == "Headers" ? myMath.abs(report1.amount) : (report1.type == "Group" ? myMath.abs(report1.amount) : (report1.type == "Item" ? myMath.abs(report1.amount) : (report1.type == "Total" ? myMath.abs(report1.total_amount) : myMath.abs(report1.amount)))) | number:'1.2-2': 'en-IN' }}</span>
+                  </ng-container>
+                </td> -->
+            </tr>
+        </tbody>
+      </table>
+      </div>
+
+  </div>
+  <!-- <div class="preformatted">
+    <header *ngIf="preheader">
+        <b style="text-align: left;font-size: 40px;color: green;">{{report_data_name?report_data_name:""}}</b>
+    </header>
+  </div> -->
+  </ng-container>
+</div>
+<div style="text-align: right;" *ngIf="downloadbtn">
+  <button class="btn btn-primary my-3 ml-4" (click)="downloadPDF()"><mat-icon>picture_as_pdf</mat-icon></button>
+  <button class="btn btn-primary my-3 ml-4" (click)="downloadExcel()"><mat-icon>description</mat-icon></button>
+</div>
+
+
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content" style="width: 900px;">
+          <div class="modal-header" style="width: 900px;background-color: #00800021; ">
+              <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Date</b></h5>
+              <button type="button" class="close" aria-hidden="true" data-dismiss="modal" #report_group_close aria-label="Close">
+                  &times;
+              </button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="templatemodal">
+              <div class="row">
+                <mat-form-field  appearance="outline" style="width:auto;margin-left: 5%;">
+                  <mat-label>Choose a date</mat-label>
+                  <input matInput formControlName="modaldate" [matDatepicker]="picker2">
+                  <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                  <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+                <div class="mt-3">
+                  <button type="button" class="btn btn-primary mt-1 ml-5" (click)="month_summary(templatemodal.value)">
+                    Add</button>
+              </div>
+              </div>
+            </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content" style="width: 900px;">
+          <div class="modal-header" style="width: 900px;background-color: #00800021; ">
+              <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Schedule Master</b><b *ngIf="ReportName"> ( {{ReportName}} )</b></h5>
+              <button type="button" class="close" aria-hidden="true" data-dismiss="modal" #report_group_close aria-label="Close" (click)="schedularclear()">
+                  &times;
+              </button>
+          </div>
+          <div class="modal-body">
+            <mat-accordion>
+              <mat-expansion-panel [expanded]="false" hideToggle style="box-shadow: none !important;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title style="display: block;display: flex;justify-content: space-between;">
+                    <th>Name</th>
+                    <div class="AmountFlex">
+                      <th>{{curDate}}</th>
+                      <th>{{MinusYear(curDate)}}</th>
+                    </div>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+              <mat-expansion-panel hideToggle *ngFor="let data of Schedulermaster;let i=index"  (opened)="PanelOpened(data)">
+                  <mat-expansion-panel-header>
+                      <mat-panel-title style="display: block;display: flex;justify-content: space-between;">
+                          <td style="color: green;font-weight: 600;">{{data.name}} </td>
+                          <div class="AmountFlex">
+                            <!--<td style="cursor: default;" [attr.data-target]="data.sub_level !== '' ? '#myModal' : null"  [attr.data-toggle]="data.sub_level !== '' ? 'modal' : null" >{{myMath.abs(data.report_amount) | number:'1.2-2': 'en-IN'}}</td>
+                            <td style="cursor: default;" [attr.data-target]="Schedulermaster1[i]?.sub_level !== '' ? '#myModal' : null"  [attr.data-toggle]="Schedulermaster1[i]?.sub_level !== '' ? 'modal' : null">{{myMath.abs(Schedulermaster1[i]?.report_amount) | number:'1.2-2': 'en-IN'}}</td> -->
+                            
+                            <td style="cursor: default;" [attr.data-target]="data.sub_level !== '' ? '#myModal' : null"  [attr.data-toggle]="data.sub_level !== '' ? 'modal' : null" >{{data.report_amount | number:'1.2-2': 'en-IN'}}</td>
+                            <td style="cursor: default;" [attr.data-target]="Schedulermaster1[i]?.sub_level !== '' ? '#myModal' : null"  [attr.data-toggle]="Schedulermaster1[i]?.sub_level !== '' ? 'modal' : null">{{Schedulermaster1[i]?.report_amount | number:'1.2-2': 'en-IN'}}</td>
+                          </div>
+                          
+                      </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div *ngFor="let data1 of child;let j=index" hideToggle> 
+                    <div style="display: flex; justify-content: space-between; padding: 8px; cursor: pointer;margin-left:2px"
+                         >
+                      <td [ngStyle]="{'color': data1.sub_level === 1 ? 'blue' : 'inherit', 'cursor': data1.sub_level === 1 ? 'pointer' : 'default'}" (click)="data1.sub_level === 1 ? PanelOpeneds(data1) : null">{{ data1.name }}</td>
+                      <div  class="AmountFlex">
+                         <!-- <td [ngStyle]="{'cursor': data1.sub_level !== 1 ? 'pointer' : 'default'}" (click)="data1.sub_level === 2 ? amount1($event, data1) : null"  [attr.data-toggle]="data1.sub_level !== 1 ? 'modal' : null"
+                          [attr.data-target]="data1.sub_level !== 1 ? '#myModal' : null">
+                            {{  myMath.abs(data1.report_amount) | number:'1.2-2': 'en-IN' }}
+                          </td> -->
+                          <td [ngStyle]="{'cursor': data1.sub_level !== 1 ? 'pointer' : 'default'}" (click)="data1.sub_level === 2 ? amount1($event, data1) : null"  [attr.data-toggle]="data1.sub_level !== 1 ? 'modal' : null"
+                          [attr.data-target]="data1.sub_level !== 1 ? '#myModal' : null">
+                            {{  data1.report_amount | number:'1.2-2': 'en-IN' }}
+                          </td>
+                          <!-- <td [ngStyle]="{'cursor': child1[j]?.sub_level !== 1 ? 'pointer' : 'default'}" (click)="child1[j]?.sub_level === 2 ? amount1($event, data1) : null"  [attr.data-toggle]="child1[j]?.sub_level !== 1 ? 'modal' : null"
+                          [attr.data-target]="child1[j].sub_level !== 1 ? '#myModal' : null">
+                            {{  myMath.abs(child1[j]?.report_amount) | number:'1.2-2': 'en-IN' }}
+                          </td> -->
+                           <td [ngStyle]="{'cursor': child1[j]?.sub_level !== 1 ? 'pointer' : 'default'}" (click)="child1[j]?.sub_level === 2 ? amount2($event, data1) : null"  [attr.data-toggle]="child1[j]?.sub_level !== 1 ? 'modal' : null"
+                          [attr.data-target]="child1[j].sub_level !== 1 ? '#myModal' : null">
+                            {{  child1[j]?.report_amount | number:'1.2-2': 'en-IN' }}
+                          </td>
+                      </div>
+                    </div>
+                
+                    <div *ngIf="isExpanded(data1)" hideToggle>
+                      <div *ngFor="let sub of sub_childs;let z=index" style="display: flex; justify-content: space-between; padding: 8px;">
+                        <td style="margin-left: 3%;">{{ sub.name }}</td>
+                        <div class="AmountFlex">
+                          <!-- <td style="text-align: right; cursor: pointer;" (click)="amount1($event, sub)">{{ myMath.abs(sub.report_amount) | number:'1.2-2': 'en-IN' }}</td>
+                          <td style="text-align: right; cursor: pointer;" (click)="amount1($event, sub)">{{ myMath.abs(sub_childs1[z]?.report_amount) | number:'1.2-2': 'en-IN' }}</td> -->
+                          <td style="text-align: right; cursor: pointer;" (click)="amount1($event, sub)">{{sub.report_amount | number:'1.2-2': 'en-IN' }}</td>
+                          <td style="text-align: right; cursor: pointer;" (click)="amount2($event, sub)">{{ sub_childs1[z]?.report_amount | number:'1.2-2': 'en-IN' }}</td>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </mat-expansion-panel>
+              <!-- <mat-expansion-panel *ngFor="let data1 of child" hideToggle>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title style="display: block;display: flex;justify-content: space-between;" >
+                      <td [ngStyle]="{'color': data1.sub_level === 1 ? 'blue' : 'inherit'}" (click)="data1.sub_level === 1 ? PanelOpeneds(data1) : null" hideToggle>{{data1.name}} </td>
+                      <td  (click)="amount1($event,data1)"  data-toggle="modal" data-target="#myModal" style="cursor: pointer;">{{data1.report_amount | number:'1.2-2': 'en-IN'}}</td>
+                    </mat-panel-title>  
+                  </mat-expansion-panel-header> 
+                  <div *ngIf="data1.isExpanded">
+                    <div *ngFor="let sub of sub_childs">
+                      <td>{{ sub.name }}</td>
+                      <td style="text-align: right;">{{ sub.report_amount | number:'1.2-2': 'en-IN' }}</td>
+                    </div>
+                  </div>
+                </mat-expansion-panel> -->
+
+
+          </mat-accordion>
+          
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- <button (click)="report_item(1)"  data-toggle="modal" data-target="#exampleModal3">report item</button> -->
+
+
+ <div class="modal" id="myModal" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" #myModal [ngClass]="openpopup == true ?'openpopup':'closepop' ">
+   <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" style="font-size: x-large;font-weight: 600;">{{templatename}}</h4>
+            <button type="button" class="close" #popupclose (click)="colosemodal()" data-dismiss="modal">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <mat-card>
+                <mat-card-actions>
+                  <div>
+                    <table class="table" style="border: none;">
+                      <thead class="table_header" style="text-align: center;">
+                          <th>Template</th>
+                      </thead>
+                      <tbody style="text-align: center;">
+                        <tr style="border: none;display: flex;padding: 2%;" class="row">
+                          <ng-container  *ngFor="let data of template1 ; let i = index" >
+                            <td (click)="highlightCorrespondingItem1(i)" [ngClass]="{'highlight': highlightedIndex === i}">
+                              {{data}}
+                            </td>
+                          </ng-container>
+                         </tr>  
+                         <!-- <tr > -->
+                          <!-- <td [ngClass]="{'highlight': highlightedIndex === i}">
+                            <ng-container  *ngFor="let data1 of template1; let i = index">
+                              {{ i === 0 ? '' : ' ' }}{{ data1 }}
+                            </ng-container>
+                          </td>
+                        </tr>            -->
+                      </tbody>
+                    </table>
+                  </div>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+
+            <div class="col-md-6">    
+              <mat-card>
+                <mat-card-actions>
+                                      <div>
+                    <table class="table" style="border: none;">
+                      <thead class="table_header" style="text-align: center;">
+                          <th>Amount</th>
+                      </thead>
+                      <tbody style="text-align: center;">
+                           <tr style="border: none;display: flex;padding: 2%;" class="row" >
+                            <ng-container *ngFor="let data of template ; let i = index">
+                              <!-- <td (click)="highlightCorrespondingItem(i)" [ngClass]="{'highlight': highlightedIndex1 === i}">
+                                  {{ isNumeric(data) ? (myMath.abs(data) | number:'1.2-2':'en-IN') : data }}
+                              </td> -->
+                               <td (click)="highlightCorrespondingItem(i)" [ngClass]="{'highlight': highlightedIndex1 === i}">
+                                  {{ data | number:'1.2-2':'en-IN'  }}
+                              </td>
+                            </ng-container>
+                           </tr>
+                      </tbody>
+                    </table>
+                  </div> 
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+
+          </div>
+
+        </div>
+      </div>
+   </div>
+ </div>
+ 
+ 
+<div class="modal fade" id="exampleModalreturn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 150%">
+            <div class="modal-header" style="width: 100%;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>DRS Summary
+                        {{ pdffile ? 'PDF' : 'Excel' }}</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" 
+                    #Audit_return_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="drs_summary_file">
+                    <div class="rows">
+                        <div class="col-md-4">
+                             <mat-label>Remarks</mat-label>
+                            <mat-form-field class="max-widths">
+                         <textarea  style="max-height:100px; " rows="1" matInput formControlName="remarks" required></textarea>
+                      </mat-form-field>
+                        </div>
+                        <div class="col-md-4">
+                       <button type="button" 
+        style="border-radius: 40px;" 
+        class="btn btn-outline-primary"
+        (click)="pdffile ? downloadBEpdf(templatesummary.value) : (excels ? downloadBEExcel(templatesummary.value) : null)">
+  {{ pdffile ? 'Generate PDF' : 'Generate Excel' }}
+</button>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header" style="background-color: #00800021;">
+              <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Schedule Master</b><b *ngIf="ReportName"> ( {{ReportName}} )</b></h5>
+              <button type="button" class="close" aria-hidden="true" data-dismiss="modal" #report_group_close aria-label="Close" (click)="schedularQuarterclear()">
+                  &times;
+              </button>
+          </div>
+          <div class="modal-body">
+            <mat-accordion class="class-container">
+              <mat-expansion-panel [expanded]="false" hideToggle style="box-shadow: none !important;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title style="display: flex; align-items: center; justify-content: space-between; ">
+                    <p style=" width: 650px; flex-shrink: 0; 
+                    display: flex;align-items: center;">Name</p>
+                    <div *ngIf="schMasQtrWid > 0" [style.width.px]="schMasQtrWid"
+                        style="background-color: #bfbfbf;display: flex;justify-content: center;align-items: center;"> Quarter Ended</div>
+                    <div *ngIf="schMasHalfWid > 0" [style.width.px]="schMasHalfWid"
+                    style="background-color: #d0d0d0;display: flex;justify-content: center;align-items: center;"> Half Year Ended</div>
+                    <div *ngIf="schMasYearWid > 0" [style.width.px]="schMasYearWid"
+                    style="background-color: #bfbfbf;display: flex;justify-content: center;align-items: center;"> Year Ended</div>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+              </mat-expansion-panel>
+              <mat-expansion-panel [expanded]="false" hideToggle style="box-shadow: none !important;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title style="display: flex; align-items: center; justify-content: space-between; ">
+                    <div style="width: 650px; flex-shrink: 0;"></div>
+                    <div 
+                        style="width: 105px; flex-shrink: 0" 
+                        *ngFor="let data of SchedulermasterQuarter?.Header"
+                        [ngClass]="ClasSchMstr(data)"
+                      >
+                        {{SliceFunc(data)}}
+                    </div>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+              </mat-expansion-panel>
+              <mat-expansion-panel hideToggle *ngFor="let data of PopTableDataReturn();let i=index"  (opened)="PanelOpenendQuarter(data)">
+                <mat-expansion-panel-header>
+                    <mat-panel-title style="display: flex; align-items: center; justify-content: space-between; margin-right:0px">
+                      <p style="width: 650px; flex-shrink: 0;color: green;font-weight: 600;">{{data.name}} </p>
+                      <div 
+                          style="width: 105px; flex-shrink: 0;text-align: right;"
+                          *ngFor="let datas of SchedulermasterQuarter?.Header"
+                        [ngClass]="ClasSchMstr(datas)"
+                        >
+                          {{PopQuarterFilFunc(datas,data?.id)}}
+                      </div>
+                          
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div *ngFor="let data1 of PopTableDataFChildReturn();let j=index" hideToggle> 
+                    <div style="display: flex; align-items: center; justify-content: space-between; ">
+                      <p 
+                        style="width: 650px; flex-shrink: 0;"
+                        [ngStyle]="{'color': data1.sub_level === 1 ? 'blue' : 'inherit', 'cursor': data1.sub_level === 1 ? 'pointer' : 'default'}" 
+                        (click)="data1.sub_level === 1 ? PanelOpenendsQuarter(data1) : null"
+                      >
+                        {{ data1.name }}
+                      </p>
+                      <div 
+                          style="width: 105px; flex-shrink: 0;text-align: right;"
+                          *ngFor="let datas of SchedulermasterQuarterChild?.Header"
+                        [ngClass]="ClasSchMstrChild(datas)"
+                        >
+                          {{PopQuarterFChildFilFunc(datas,data1?.id)}}
+                      </div>
+                    </div>
+                
+                    <ng-container *ngIf="isExpandedQuarter(data1)" hideToggle>
+                      <div *ngFor="let sub of PopTableDataSChildReturn();let z=index">
+                        <div style="display: flex; justify-content: space-between;">
+                          <p style="width: 650px; flex-shrink: 0;">{{ sub.name }}</p>
+                          <div 
+                              style="width: 105px; flex-shrink: 0;text-align: right;"
+                              *ngFor="let datass of SchedulermasterQuarterChildSecond?.Header"
+                        [ngClass]="ClasSchMstrChildSec(datass)"
+                            >
+                              {{PopQuarterSChildFilFunc(datass,sub?.id)}}
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                </div>
+              </mat-expansion-panel>
+          </mat-accordion>
+          
+          </div>
+      </div>
+  </div>
+</div>

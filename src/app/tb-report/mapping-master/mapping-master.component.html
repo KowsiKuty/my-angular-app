@@ -1,0 +1,162 @@
+<div class="container">
+
+<div class="row margin_left_align">
+    <div class="col-md-12">
+        <lib-vs-search-cmp [SearchArr]="mapping_mas_search"  (dataoutput)="mapping_master_summary($event)">
+        </lib-vs-search-cmp>
+    </div>
+    <div class="col-md-1">
+        <button type="button" style="border-radius: 40px;" class="btn_add" (click)="mapping_mast_create()">
+            Add
+        </button>
+    </div>
+</div>
+
+<div class="margin_left_align">
+    <form [formGroup]="mapping_grp">
+        <div style="margin-top: 6%; white-space: nowrap;" class="tableFixHead" formArrayName="mapping_arr">
+            <table class="table table-bordered" id="commonstyle" fixed-header>
+                <thead style="background-color: #ddefdd;">
+                    <th>S.No</th>
+                    <th>Code</th> 
+                    <th>Label</th>
+                    <th>Business</th>     
+                    <th>Template</th>               
+                    <th>Status</th>                        
+                    <th>Action</th>
+                </thead>
+                <ng-container *ngIf="mapping_report_array?.length!=0">
+                <tbody *ngFor="let arr_val of mapping_grp.controls.mapping_arr['controls']; let ind=index">
+                   
+                    <tr  [formGroupName]="ind" [hidden]="array_hide"> 
+                        <td>{{(presentpage - 1)*10 + ind+1 }}</td>
+                        <td>
+                            <div *ngIf="arr_val.value.isEditable==true;else label_nameelse">
+                                {{arr_val.value.code}}
+                            </div>
+                            <ng-template #label_nameelse>
+                                <mat-form-field   [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                    <mat-label>Code</mat-label>
+                                    <input placeholder="Code" matInput formControlName="code" >                                        
+                                </mat-form-field>   
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div *ngIf="arr_val.value.isEditable==true;else label_else">
+                                {{arr_val.value.label?.name}}
+                            </div>
+                            <ng-template #label_else>                                    
+                                <mat-form-field [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                    <mat-label>Label </mat-label>
+                                    <input placeholder="Label" matInput  formControlName="label" #businessInput
+                                        [matAutocomplete]="business_name">
+                                    <mat-autocomplete #business_name="matAutocomplete" [displayWith]="displayfnbusiness"
+                                        (opened)="autocompletebusinessnameScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let label of businessList" 
+                                                [value]="label">
+                                                {{label.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div *ngIf="arr_val.value.isEditable==true;else label_name_else">
+                                {{arr_val.value.business?.name}}
+                            </div>
+                            <ng-template #label_name_else>                                    
+                                <mat-form-field (click)="Business_dropdown()"  [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                    <mat-label>Business Name</mat-label>
+                                    <input placeholder="Business" matInput  formControlName="business" #businessInput
+                                        [matAutocomplete]="business_name">
+                                    <mat-autocomplete #business_name="matAutocomplete" [displayWith]="displayfnbusiness"
+                                        (opened)="autocompletebusinessnameScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let business of businessList" 
+                                                [value]="business">
+                                                {{business.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </ng-template>
+                            <!-- <ng-template #label_name_else>
+                                <mat-form-field   [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                    <mat-label>Business</mat-label>
+                                    <input placeholder="Business" matInput formControlName="business" >                                        
+                                </mat-form-field>   
+                            </ng-template> -->
+                        </td>
+                        <td>
+                            <div *ngIf="arr_val.value.isEditable==true;else temp_arrelse">
+                                {{arr_val.value.template}}
+                            </div>
+                            <ng-template #temp_arrelse>
+                                <mat-form-field   [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                    <mat-label>Tempalte</mat-label>
+                                    <input placeholder="Template" matInput formControlName="template" >                                        
+                                </mat-form-field>   
+                            </ng-template>
+                        </td>
+                        <!-- <td>
+                            <div *ngIf="arr_val.value.isEditable==true;else sort_arrelse">
+                                {{arr_val.value.sort_order}}
+                            </div>
+                            <ng-template #sort_arrelse>
+                                <mat-form-field   [appearance]="arr_val.value.isEditable ? 'none' : 'outline'">
+                                    <mat-label>Sort Order</mat-label>
+                                    <input placeholder="Sort Order" matInput formControlName="sort_order" >                                        
+                                </mat-form-field>   
+                            </ng-template>
+                        </td>                             -->
+                      
+                        <td>{{arr_val.value.status===0?'In-Active':'Active'}}</td>
+                       
+                        <td style="font-size: 13px;">
+                            <button mat-icon-button class="material-icons app-toolbar-menu save-button" matTooltip="Save Changes"
+                             (click)="saveexpgrp_mapping(arr_val,ind)"
+                              *ngIf="!arr_val.value.isEditable" style="color:'#0297ff'">
+                              <mat-icon>check_circle</mat-icon>
+                            </button>
+          
+                            <button mat-icon-button class="material-icons app-toolbar-menu cancel-button"
+                              matTooltip="Cancel Changes" color="warn" (click)="cancelexpgrp_mapping(arr_val,ind)"
+                              *ngIf="!arr_val.value.isEditable">
+                              <mat-icon>cancel</mat-icon>
+                            </button>
+          
+                            <button  mat-icon-button class="material-icons app-toolbar-menu save-button" [hidden]="arr_val.value.status == 0"
+                              *ngIf="arr_val.value.isEditable" matTooltip="Edit" style="color:'#66bb6a'"
+                              (click)="Editexpgrp_mapping(arr_val,ind)">
+                              <mat-icon >edit</mat-icon>
+                            </button>             
+                           
+                              <button mat-icon-button class="material-icons app-toolbar-menu delete-button" (click)="deletelabel(arr_val,ind)"
+                              *ngIf="arr_val.value.isEditable" [ngStyle]="{'color':arr_val.value.status == 0 ? 'red'  :'#66bb6a'  }" [matTooltip]="arr_val.value.status == 0 ? 'Active' : 'In-Active' " color="warn">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          
+                        </td>
+                    </tr>
+                </tbody>
+                </ng-container>
+                <div *ngIf="mapping_report_array?.length==0" style="margin-left: 182%;">
+                    <h3> Sorry no data found!.. </h3>
+                </div>
+            </table>
+        </div>
+    </form>
+    <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back</mat-icon>
+        </button> {{presentpage}}
+        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    
+    </div>
+</div>

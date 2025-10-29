@@ -1,0 +1,680 @@
+<!-- <div *ngIf="a === true" style="float: right;margin-right:5%; border-radius: 40px;
+margin-top: 1.5%;">
+    <div *ngIf="b === 3">
+        <button type="button" class="btn btn-outline-success" style="border-radius: 40px;margin-top:1%;"
+            (click)="accept()" id="premisedocinfo-view-0009"><span></span> ACCEPT</button>
+        <button type="button" class="btn btn-outline-danger" style="border-radius: 40px;margin-top:1%;margin-left:10px"
+            (click)="reject()" id="premisedocinfo-view-0010"><span></span> REJECT</button>
+    </div>
+    <div *ngIf="b === 1">
+        <button type="button" class="btn btn-outline-success" style="border-radius: 40px;margin-top:1%;"
+            (click)="movetoapp()" id="premisedocinfo-view-0011"><span></span> MOVE TO APPROVER</button>
+    </div>
+</div> -->
+<div *ngIf="premisenameViewData?.can_approve===true" style="float: right;margin-right:17%;margin-top: 1%;">
+
+    <button type="button" class="btn btn-outline-success" data-toggle="modal"
+        data-target="#premisedocinfo-view-0006" style="border-radius: 40px;margin-top:1%;" id="premisedocinfo-view-0012"><span></span>
+        APPROVE/REJECT</button>
+
+</div>
+
+<div style="margin-left: 50px;">
+    <table width="100%" style="margin-top: 2%;">
+        <tbody>
+            <tr>
+                <td width="0%" valign="top">
+                    <table width="100%;" style="font-size:14px;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p style="color: #808080; margin: 0px 0 4px;">Premises Name : <span
+                                            style="color: black;margin-left: 5%;">
+                                            {{ premisenameViewData?.name }}</span>
+                                    </p>
+                                </td>
+                                <td>
+                                    <p style="color: #808080; margin: 0px 0 4px;">Area(sq ft) : <span
+                                            style="color: black;margin-left: 5%;">
+                                            {{ premisenameViewData?.area }}</span>
+                                    </p>
+                                </td>
+                                <td>
+                                    <p style="color: #808080; margin: 0px 0 4px;">Offered Rent(Exclusive of GST) : <span
+                                            style="color: black;margin-left: 5%;">
+                                            {{ premisenameViewData?.offered_rent }}</span>
+                                    </p>
+                                </td>
+                                <td *ngIf="this.statusForPremiseName == 2">
+                                    <p style="color: #808080; margin: 0px 0 4px;">Approved Rent(Rs) : <span
+                                            style="color: black;margin-left: 5%;">
+                                            {{ premisenameViewData?.approved_rent }}</span>
+                                    </p>
+                                </td>
+
+                                <td>
+                                    <p style="color: #808080; margin: 0px 0 4px;">Status : <span
+                                            style="color: black;margin-left: 5%;">
+                                            {{ premisenameViewData?.status.text }}</span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="font-size:14px;">
+        <p style="color: #808080; margin: 0px 0 4px;">Recommendation Comments : <span
+                style="color: black;margin-left: 1%;">
+                {{ premisenameViewData?.remarks }}</span>
+        </p>
+    </div>
+    <div style="font-size:14px;">
+        <p style="margin-left: 0%;display: inline;">
+            <span style="color: #808080; margin: 0px 0 4px;">Address
+                :</span>&nbsp;&nbsp;&nbsp;&nbsp;{{premisenameViewData?.address.line1}},
+            {{premisenameViewData?.address.line2}},
+            {{premisenameViewData?.address.line3}}
+            {{premisenameViewData?.address.city_id.name}},
+            {{premisenameViewData?.address.district_id.name}},
+            {{premisenameViewData?.address.state_id.name}},
+            {{premisenameViewData?.address.pincode_id.no}}.
+        </p>
+
+
+
+        <p style="color: #808080; margin: 0px 0 4px;margin-top: 3px;">Note :
+        <p style="margin-left: 52px;margin-top: -24px;" [innerHTML]="note">
+
+        </p>
+
+    </div>
+    <div style="font-size:14px;margin-top: 25px;" *ngIf="this.statusForPremiseName == 2">
+        <p style="color: #808080; margin: 0px 0 4px;">Content : <span style="color: black;margin-left: 1%;">
+                {{ approvedData?.content }}</span>
+        </p>
+        <span style="color: #808080;margin-top: 0%;width: 50%;">Attachments:<i class="fa fa-download"></i></span>
+        <!-- <p style="cursor: pointer;color: #808080;margin-top: 0%;width: 50%;">Attachments:<i class="fa fa-download"></i> -->
+        <span style="cursor: pointer;color: #2b89d6;margin-top: 0%;"
+            *ngFor="let file of approvedData?.doc_info ;index as i;" class="btn btn-link">
+            <span data-target="#premisedocinfo-view-0002" data-toggle="modal"
+                (click)="estatecellAttachment(file.file_id,file.file_name )">{{i+1}}.{{file.file_name }},</span>
+            <button mat-icon-button style="color:gray;margin-right: 2px;"
+                (click)="fileDownloadsapproved(file.file_id,file.file_name)" id="premisedocinfo-view-0013">
+                <mat-icon> get_app</mat-icon>,
+            </button>
+        </span>
+        <!-- </p> -->
+        <!-- <p style="cursor: pointer;color: #808080;margin-top: 0%;width: 50%;">Attachments:<i class="fa fa-download"></i>
+            <a style="cursor: pointer;color: #2b89d6;margin-top: 0%;width: 50%;">
+                <p style="margin-left:-1%" data-target="#my-modal" data-toggle="modal"
+                    *ngFor="let file of approvedData?.doc_info ;index as i;" title="{{file.file_name }}"
+                    (click)="estatecellAttachment(file.file_id,file.file_name )" class=" btn-btn-link">
+                    {{i+1}}. {{file.file_name }}</p>
+            </a>
+        </p> -->
+
+
+
+    </div>
+    <hr />
+
+    <div style="margin-top:0%" *ngIf="(ownershipType != 1 && ownershipType != 4)">
+        <span class="tab-title">
+            <h2>Term Details</h2>
+
+
+            <button type="button" *ngIf="premisenameViewData?.can_create===true" class="btn btn-outline-success"
+                data-toggle="modal" data-target="#premisedocinfo-view-0008"
+                style="margin-left:81%;margin-top:1%;border-radius: 40px;" (click)="addTermDetails()"
+                color="primary" id="premisedocinfo-view-0014"><span class="fa fa-plus"></span>
+                Term Details
+            </button>
+
+        </span>
+
+    </div>
+
+
+    <div class="center" *ngIf="(ownershipType != 1 && ownershipType != 4)">
+        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header">
+                <tr>
+                    <th>S.No</th>
+                    <th>Term</th>
+                    <th>No of Months</th>
+                    <th>Base Rent Amount</th>
+                    <th *ngIf="premisenameViewData?.can_create===true">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let term of termDetailsList; index as i">
+                    <th> {{i+1 }} </th>
+                    <td style="cursor: pointer; color: #3684BF; ">
+                        {{ term?.term }}</td>
+                    <td>{{ term?.no_of_month}}</td>
+                    <td>{{term?.base_rent }}</td>
+                    <td *ngIf="premisenameViewData?.can_create===true">
+                        <mat-icon style="color: gray;cursor: pointer;" data-toggle="modal" data-target="#premisedocinfo-view-0008" matTooltip="Edit"
+                            (click)="getEditTermDetails(term.id)">edit
+                        </mat-icon>
+                        <mat-icon class="edit-btn" style="color: gray;cursor: pointer;" matTooltip="Delete"
+                            (click)="termDetailsDelete(term.id)" aria-label="Edit">delete</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="termDetailsList ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+
+    </div>
+
+
+
+    <div style="margin-top:2%">
+        <span class="tab-title">
+            <h2>Document Details</h2>
+
+            <button type="button" *ngIf="premisenameViewData?.can_create===true" class="btn btn-outline-success"
+                style="margin-left:81%;border-radius: 40px;margin-top:1%" data-toggle="modal" data-target="#premisedocinfo-view-0004"
+                (click)="adddocinfo('')" id="premisedocinfo-view-0015"><span class="fa fa-plus"></span>
+                Premises Documents</button>
+        </span>
+
+    </div>
+
+
+    <div>
+        <table class="table" fixed-header style="width: 98%;margin-top: 10px;">
+
+            <tbody>
+                <!-- <h2 style="color: indigo;">Document Details</h2> -->
+                <ul *ngFor="let docInfo of premiseDocumentInfoData; index as i"
+                    style="margin-top: 2%;width: 100%;  border: 1px solid #ddd; padding: 25px;">
+                    <!-- <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" style="float: right;margin-top: 9%;"
+                        (click)="docInfoEdit(docInfo)" data-toggle="modal" data-target="#rejectModal" id="premisedocinfo-view-0016">
+                        <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                    </button> -->
+                    <!-- <li>{{i+1}}</li> -->
+                    <div *ngIf="hideid" [(ngModel)]="doccreatecheck">{{ docInfo.can_create}}</div>
+                    <!-- float:right;margin-top: -4%; -->
+                    <button *ngIf="premisenameViewData?.can_create===true" mat-icon-button matTooltip=" Edit"
+                        class="iconbutton" color="primary" style=" margin-left: 95%;margin-top: -4%;"
+                        (click)="docInfoEdit(docInfo)" data-toggle="modal" data-target="#premisedocinfo-view-0004" id="premisedocinfo-view-0017">
+                        <mat-icon style="color: gray;" class="editic" aria-label="Edit">edit</mat-icon>Edit
+                    </button>
+
+                    <p style="margin-top: 0%;">Document Type : {{ docInfo.doctype.name}}</p>
+                    <!-- <button *ngIf="ismakercheckerButton"  mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" style="margin-left: 71%;  float:right;margin-top: -4%;"
+
+                        (click)="docInfoEdit(docInfo)" data-toggle="modal" data-target="#rejectModal" id="premisedocinfo-view-0018">
+                        <mat-icon style="color: gray;" class="editic"aria-label="Edit">edit</mat-icon>Edit
+                    </button> -->
+                    <!-- <p style="margin-top: -3%;">Document Type:{{ docInfo.doctype.name}}</p> -->
+
+                    <p >Status : {{ docInfo.status.text}}</p>
+                    <!-- style="margin-top: -3%;margin-left: 70.7%;" -->
+                    <!-- <p style="margin-top: 0%;">Initiation Date:&nbsp;&nbsp;&nbsp;{{docInfo.initiation_date | date:'dd-MMM-yyyy '}}</p> -->
+                    <p >Approver Name:{{ docInfo.approved_by.name }}
+                        <!-- style="margin-left: 70.7%;;margin-top: -0.6%;" -->
+                    </p>
+                    <p style="width: 50%;margin-top: 0%;">Remarks : {{ docInfo.remarks}}</p>
+                    <!-- margin-bottom: 1%; -->
+                    <span>Attachment(s):</span>
+                    <span style="margin-left:-1%" *ngFor="let file of docInfo.attachments ;index as i;"
+                        class="btn btn-link">
+
+                        <span data-target="#premisedocinfo-view-0002" data-toggle="modal"
+                            (click)="documentSummary(file.id,file.file_name)">{{i+1}}. {{file.file_name }},</span>
+                        <button mat-icon-button style="color:gray;margin-right: 2px;"
+                            (click)="fileDownloads(file.id,file.file_name)">
+                            <mat-icon> get_app</mat-icon>,
+                        </button>
+                    </span>
+                    <!-- <p>
+                        <a style="margin-left:-1%">
+                            <p class="btn btn-link" style="margin-left:-1%" data-target="#my-modal" data-toggle="modal"
+                                *ngFor="let file of docInfo.attachments ;index as i;"
+                                (click)="documentSummary(file.id,file.file_name)">
+                                {{i+1}}. {{file.file_name }}
+                                <button mat-icon-button style="color:gray;margin-right: 2px;"
+                                (click)="fileDownloads(file.id,file.file_name)">
+                                <mat-icon> get_app</mat-icon>,
+                            </button></p>
+                        </a>
+                    </p> -->
+
+                    <div>
+                        <!-- <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" style="margin-top: 1%;margin-bottom: 2%;"
+                                (click)="docInfoEdit(docInfo)" data-toggle="modal" data-target="#rejectModal" id="premisedocinfo-view-0019">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>Edit
+                            </button> -->
+
+                        <button *ngIf="docInfo.status.id===1 && docInfo.can_approver===true" type="button"
+                            class="btn btn-outline-success" (click)="toggle(docInfo)"
+                            style="border-radius: 20px; cursor: pointer;margin-left: 5rem;float: right;margin-top: -3%;"
+                            color="primary"><span class="fa fa-plus"></span> Comment/Approve
+                        </button>
+                        <button *ngIf="docInfo.status.id!=1" type="button" class="btn btn-outline-success"
+                            (click)="toggle(docInfo)"
+                            style="border-radius: 20px; cursor: pointer;margin-left: 5rem;float: right;margin-top: -3%;"
+                            color="primary"><span class="fa fa-plus"></span> Comment
+                        </button>
+                        <button *ngIf="docInfo.status.id===1 && docInfo.can_approver===false" type="button"
+                            class="btn btn-outline-success" (click)="toggle(docInfo)"
+                            style="border-radius: 20px; cursor: pointer;margin-left: 5rem;float: right;margin-top: -5%;"
+                            color="primary"><span class="fa fa-plus"></span> Comment
+                        </button>
+                        <!-- <button *ngIf="docInfo.status.id===1 && docInfo.can_approver===true" type="button" class="btn btn-outline-success" (click)="toggle(docInfo)"  
+                                style="border-radius: 20px; cursor: pointer;margin-left: 5rem;float: right;margin-top: -3%;" color="primary"><span
+                                    class="fa fa-plus"></span> Comment/Approve
+                            </button>
+                            <button *ngIf="docInfo.status.id!=1 && docInfo.can_approver===true" type="button" class="btn btn-outline-success" (click)="toggle(docInfo)"  
+                            style="border-radius: 20px; cursor: pointer;margin-left: 5rem;float: right;margin-top: -3%;" color="primary"><span
+                                class="fa fa-plus"></span> Comment
+                        </button>
+                        <button *ngIf="rolesvalue==='Maker' " type="button" class="btn btn-outline-success" (click)="toggle(docInfo)"  
+                        style="border-radius: 20px; cursor: pointer;margin-left: 5rem;float: right;margin-top: -5%;" color="primary" id="premisedocinfo-view-0020"><span
+                            class="fa fa-plus"></span> Comment
+                    </button> -->
+                        <div *ngIf="docInfo.show">
+                            <form [formGroup]="commentForm">
+                                <textarea class="form-control z-depth-1" rows="3" formControlName="content"
+                                    [(ngModel)]="defaultValue" placeholder="Your reply to the Documents..." id="premisedocinfo-view-0021"></textarea>
+
+                                <mat-form-field class="input-style">
+                                    <mat-label>Document Type</mat-label>
+                                    <mat-select formControlName="doctype" id="premisedocinfo-view-0022">
+                                        <mat-option *ngFor="let type of documentTypecomments" [value]="type.id">
+                                            {{type.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <input type="file" #fileInput id="premisedocinfo-view-0001" class="choose-file" style="width: 40%;"
+                                    (change)="onFileSelecteds($event)" name="uploadFile" multiple="multiple" />
+                                    
+                                    <button type="button" class="btn btn-outline-success"
+                                    (click)="submitcomment(docInfo); toggle(docInfo)"
+                                    style="border-radius: 20px; cursor: pointer;margin-left: 10px;"
+                                    color="primary" id="premisedocinfo-view-0024"><span></span> Comment
+                                </button>
+                                <button type="button" class="btn btn-outline-success" (click)="canceltext(docInfo)"
+                                    style="border-radius: 20px; cursor: pointer;margin-left: 10px;" color="primary" id="premisedocinfo-view-0023">
+                                    Cancel
+                                </button>
+                                <button *ngIf="docInfo.can_approver===true" type="button"
+                                    class="btn btn-outline-success"
+                                    (click)="submitcommentapproved(docInfo); toggle(docInfo)"
+                                    style="border-radius: 20px; cursor: pointer;margin-left: 10px;"
+                                    color="primary" id="premisedocinfo-view-0025"><span></span> Approve
+                                </button>
+                                <button *ngIf="docInfo.can_approver===true" type="button" class="btn btn-outline-danger"
+                                    (click)="submitcommentreject(docInfo); toggle(docInfo)"
+                                    style="border-radius: 20px; cursor: pointer;margin-right: 100px;float: right;margin-top: 10px;"
+                                    color="primary" id="premisedocinfo-view-0026"><span></span> Reject
+                                </button>
+                                <!-- <button *ngIf="statussapproverid===1 && rolesvalue==='Checker'" type="button" class="btn btn-outline-success" (click)="submitcommentapproved(docInfo); toggle(docInfo)"
+                    style="border-radius: 20px; cursor: pointer;margin-left: 5rem;" color="primary" id="premisedocinfo-view-0027"><span
+                        ></span> Approve
+                </button>
+                <button *ngIf="statussapproverid===1 && rolesvalue==='Checker'" type="button" class="btn btn-outline-danger" (click)="submitcommentreject(docInfo); toggle(docInfo)"
+                    style="border-radius: 20px; cursor: pointer;margin-left: 5rem;float: right;margin-top: -3.5%;" color="primary" id="premisedocinfo-view-0028"><span
+                        ></span> Reject
+                </button> -->
+                                <!-- 
+                <button *ngIf="statussapproverid===2" type="button" class="btn btn-outline-success" (click)="submitcomment(docInfo); toggle(docInfo)"
+                style="border-radius: 20px; cursor: pointer;margin-left: 5rem;" color="primary" id="premisedocinfo-view-0029"><span
+                    ></span> Comment
+            </button> -->
+                            </form>
+                        </div>
+                    </div>
+                    <div *ngFor="let item of getContent(docInfo.id);index as i"
+                        style="width: 100%;height:10%; border: 1px solid #ddd;padding-right:30px;padding-bottom: 0px;padding-left:41px ;margin-top: 2%; ">
+                        <p style="margin-top: 3%;margin-bottom:0%;font-size:large;">
+                            {{item.created_by.name}}({{(item.created_by.code)}})</p>
+                        <p style="float: right;margin-top:0%">{{item.created_date| date:'MM/dd/yy h:mm:ss a'}}</p>
+
+                        <!-- <br> -->
+                        <!-- {{item.created_by.name}}({{(item.created_by.code)}})<br> -->
+                        <!-- <br> -->
+
+                        {{item.content}} <br>
+                        <!-- <br> -->
+
+
+                        <a *ngIf="item.doc_info" style="margin-left:-1%">
+                            <p class="btn btn-link" style="margin-left:-1%" data-target="#premisedocinfo-view-0002" data-toggle="modal"
+                                *ngFor="let doc of item.doc_info" (click)="commentPopup(doc.file_id,doc.file_name)">
+                                File Name:{{doc.file_name }}</p>
+                        </a>
+                        <!-- <br> -->
+                    </div>
+
+                    <!-- <li *ngFor="let item of getContent(docInfo.id)">Content: {{item.content}}</li> -->
+                </ul>
+            </tbody>
+        </table>
+        <div *ngIf="premiseDocumentInfoData ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+        <div *ngIf="isDocInfo" class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+            <button mat-icon-button [disabled]="previous_docInfo === false" color="primary" (click)="previousDocInfo()" id="premisedocinfo-view-0030">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{presentPageDocInfo}}
+            <button mat-icon-button [disabled]="next_docInfo === false" color="primary" (click)="nextDocInfo()" id="premisedocinfo-view-0031">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<div *ngIf="showPopupImages" id="premisedocinfo-view-0002" class="modal fade" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- w-100 class so that header
+        div covers 100% width of parent div -->
+                <h5 class="modal-title w-100" id="premisedocinfo-view-0003">
+                    Attachment View
+                </h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="premisedocinfo-view-0032">
+                    <span aria-hidden="true">
+                        ×
+                    </span>
+                </button>
+            </div>
+            <!-- <div class="modal-body" *ngIf="jpgUrls" >
+                <img [src]="jpgUrls" class="img-responsive" style="width: 100%;">
+                
+            </div> -->
+            <div class="modal-body">
+                <img src="{{jpgUrls}}">
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    id="premisedocinfo-view-0004">
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Premises Documents</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close" id="premisedocinfo-view-0033">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+                <div *ngIf="isDocInfoForm">
+                    <form [formGroup]="premiseDocInfoForm" (ngSubmit)="premiseDocInfoCreate()">
+                        <table>
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field class="input-style">
+                                            <mat-label>Premises Name</mat-label>
+                                            <input placeholder="Select Premises Name " matInput [readonly]="true"
+                                                formControlName="premiseidentificationname" #primaryyContactInput
+                                                [matAutocomplete]="autoPrimary1" id="premisedocinfo-view-0034">
+                                            <mat-autocomplete #autoPrimary1="matAutocomplete"
+                                                (opened)="premisesNameScroll()" [displayWith]="displayFn1">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let i of iList" [value]="i">
+                                                        {{i.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="input-style2">
+                                            <mat-label>Approver</mat-label>
+                                            <input placeholder="Select Approver " matInput formControlName="approved_by"
+                                                #primaryContactInput [matAutocomplete]="autoPrimary" id="premisedocinfo-view-0035">
+                                            <mat-autocomplete #autoPrimary="matAutocomplete"
+                                                (opened)="autocompletePrimaryScroll()" [displayWith]="displayFn">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let primary of primaryContactList"
+                                                        [value]="primary">
+                                                        {{primary.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <!-- <td>
+                                            <mat-form-field style="width: 175px;margin-left: 0px;">
+                                                <mat-label>Premises Name</mat-label>
+                                                <mat-select formControlName="premiseidentificationname" id="premisedocinfo-view-0036">
+                                                    <mat-option *ngFor="let pname of prelist" [value]="pname.id">
+                                                        {{pname.name}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </td> -->
+                                    <!-- <td>
+                                            <mat-form-field class="input-style2">
+                                                <mat-label>Initiation Date</mat-label>
+                                                <input matInput [matDatepicker]="picker"
+                                                    formControlName="initiation_date" placeholder="Initiation Date" id="premisedocinfo-view-0037">
+                                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                                <mat-datepicker #picker></mat-datepicker>
+                                            </mat-form-field>&nbsp;&nbsp;
+                                        </td> -->
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <mat-form-field class="input-style">
+                                            <mat-label>Remarks</mat-label>
+                                            <input matInput placeholder="Remarks" autocomplete="off"
+                                                formControlName="remarks" required id="premisedocinfo-view-0038">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="input-style2">
+                                            <mat-label>Document Type</mat-label>
+                                            <mat-select formControlName="doctype" id="premisedocinfo-view-0039">
+                                                <mat-option *ngFor="let type of documentTypeData" [value]="type.id">
+                                                    {{type.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+
+                            </div>
+                        </table>
+                        <div *ngIf="fileData">Attachements
+                            <span *ngFor="let file of fileData;let index = index" class="btn-link">
+                                {{index+1}}. {{file.file_name}}
+                            </span>
+                        </div>
+                        <input type="file" #fileInput id="premisedocinfo-view-0005" class="choose-file" formControlName="images"
+                            style="width: 40%;" (change)="onFileSelected($event)" name="uploadFile"
+                            multiple="multiple" /><br><br>
+
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" style="float: left; " data-toggle="modal" data-target="#premisedocinfo-view-0004"
+                                class="btn btn-outline-primary" id="premisedocinfo-view-0040" matTooltip="Submit">
+                                Submit</button>
+                            <button type="button" matTooltip="Cancel" data-dismiss="modal" class="btn btn-outline-primary" id="premisedocinfo-view-0041">
+                                Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    id="premisedocinfo-view-0006">
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Final Recommendation</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close" id="premisedocinfo-view-0042">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 68%;">
+                <div>
+                    <!-- <div style="margin-left: 50px;">
+                            <mat-label> Is Budgeted</mat-label>
+                            <mat-radio-group formControlName="budgeted">
+                                <mat-radio-button *ngFor="let n of yesorno" [value]="n.value" style="margin-left: 10px;">
+                                    {{n.display}}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div> -->
+                    <mat-radio-group aria-label="Select an option">
+                        <mat-radio-button value="approve" (click)="approveButton()">Approve</mat-radio-button>
+                        <mat-radio-button value="reject" (click)="rejectButton()">Reject</mat-radio-button>
+                    </mat-radio-group>
+                    <div *ngIf="isApprove">
+                        <form [formGroup]="approverForm" (ngSubmit)="approverSubmitForPremiseName()">
+
+
+
+                            <table>
+                                <tr>
+                                    <td *ngIf="ownershipType != 1 && ownershipType != 4">
+                                        <mat-form-field class="input-style">
+                                            <mat-label>Approved Rent(Rs)</mat-label>
+                                            <input matInput placeholder="Approved Rent(Rs)" autocomplete="off"
+                                                formControlName="approved_rent" (keypress)="omit_special_char($event)" required id="premisedocinfo-view-0043">
+                                        </mat-form-field>
+                                    </td>
+                                    <td *ngIf="ownershipType == 1 || ownershipType == 4">
+                                        <mat-form-field class="input-style">
+                                            <mat-label>Approved Rent(Rs)</mat-label>
+                                            <input matInput placeholder="Approved Rent(Rs)" autocomplete="off"
+                                                formControlName="approved_rent" readonly id="premisedocinfo-view-0044">
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+
+
+                                <textarea class="form-control z-depth-1" rows="3" style="width: 200%;"
+                                    formControlName="content" placeholder="Approver's Remarks..." id="premisedocinfo-view-0045"></textarea>
+                                <tr>
+                                    <td>
+                                        <mat-form-field class="input-style">
+                                            <mat-label>Document Type</mat-label>
+                                            <mat-select formControlName="doctype" id="premisedocinfo-view-0046">
+                                                <mat-option *ngFor="let type of documentTypeapp" [value]="type.id">
+                                                    {{type.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+
+                                <input type="file" #fileInput id="premisedocinfo-view-0007" class="choose-file"
+                                    (change)="onFileSelectedForApprover($event)" name="uploadFile"
+                                    multiple="multiple" />
+
+                            </table>
+                            <div class="d-flex justify-content-center">
+
+                            <button type="submit" style="float: left;" data-toggle="modal" matTooltip="Submit"
+                                data-target="#premisedocinfo-view-0006" class="btn btn-outline-primary" id="premisedocinfo-view-0047">
+                                Submit</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+                    <div *ngIf="isReject">
+                        <form [formGroup]="approverFormForReject">
+
+                            <textarea class="form-control z-depth-1" rows="3" style="width: 99%;"
+                                formControlName="content" placeholder="Reject Remarks.." id="premisedocinfo-view-0048"></textarea>
+
+
+                            <button type="button" class="btn btn-outline-danger" (click)="approverSubmitForReject()"
+                                style="float: left;" data-toggle="modal"
+                                data-target="#premisedocinfo-view-0006" id="premisedocinfo-view-0049">Reject</button>
+                        </form>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="premisedocinfo-view-0008" *ngIf=isTermDetails>
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Term Details</h2>
+                <button type="button" #closePop class="close" data-dismiss="modal" aria-label="Close" id="premisedocinfo-view-0050">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div style="margin-left: 70px;margin-right: 80%;margin-top: 3%; width: 80%;">
+                <form [formGroup]="termDetailsForm" (ngSubmit)="termDetails()">
+                    <table>
+                        <div>
+                            <tr>
+                                <td>
+                                    <mat-form-field>
+                                        <mat-label>Term</mat-label>
+                                        <input matInput placeholder="Term" autocomplete="off"
+                                            (keypress)="numberOnly($event)" formControlName="term" id="premisedocinfo-view-0051">
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field style="margin-left: 50px;">
+                                        <mat-label>No Of Month</mat-label>
+                                        <input matInput placeholder="No of Month" (keypress)="numberOnly($event)"
+                                            autocomplete="off" formControlName="no_of_month" id="premisedocinfo-view-0052">
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field style="margin-left: 50px;">
+                                        <mat-label>Base Rent Amount</mat-label>
+                                        <input matInput placeholder="Base Rent Amount" (keypress)="numberOnly($event)"
+                                            autocomplete="off" formControlName="base_rent" id="premisedocinfo-view-0053">
+                                    </mat-form-field>
+                                </td>
+                            </tr>
+                        </div>
+                    </table>
+                    <div class="d-flex justify-content-center">
+                    <button type="submit" matTooltip="Submit" data-target="#premisedocinfo-view-0008" class="btn btn-outline-primary" id="premisedocinfo-view-0054">
+                        Submit</button>
+                    <button type="button"  matTooltip="Cancel" data-dismiss="modal" class="btn btn-outline-primary" id="premisedocinfo-view-0055">
+                        Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>

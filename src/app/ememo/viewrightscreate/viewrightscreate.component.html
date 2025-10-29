@@ -1,0 +1,169 @@
+<section>
+    <div class="main-content">
+      <form [formGroup]="Viewrights">
+        <div class="row">
+        <div>
+            <mat-form-field  (click)="enmpname()" appearance="outline">
+                <mat-label>Employee</mat-label>
+                <input #pinCodeInput placeholder="Select Employee"  matInput formControlName="employee_id" autocomplete="off"
+                    [matAutocomplete]="pintype" required>
+                <mat-autocomplete #pintype="matAutocomplete" [displayWith]="displayFnpin" (opened)="employescroll()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let pin of employelist"   title="{{pin.full_name}}" [value]="pin">
+                            {{pin.full_name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field  (click)="assignname()" appearance="outline" >
+                <mat-label>Assignee</mat-label>
+                <input #assigninput placeholder="Select Assignee"  matInput formControlName="assigned_to" autocomplete="off"
+                    [matAutocomplete]="assigntype" required>
+                <mat-autocomplete #assigntype="matAutocomplete" [displayWith]="displayassin" (opened)="assignedscroll()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let pin of assignedlist"   title="{{pin.full_name}}" [value]="pin">
+                            {{pin.full_name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+    </div>
+      </form>
+    </div>
+    <form [formGroup]="remarks">
+      <mat-form-field id="attendremarks" appearance="outline" style="max-width: 1250px; width: 100%">
+        <mat-label>Remarks</mat-label>
+        <input
+          type="text"
+          matInput
+          autocomplete="off"
+          formControlName="remarks"
+        />
+      </mat-form-field>
+    </form>
+  
+    <div class="main-btn">
+      <button
+      id="attendsubmit"
+        type="submit"
+        class="btn btn-outline-primary"
+        style="border-radius: 40px; margin-left: 12px"
+        (click)="Submitmemo()"
+      >
+        Submit
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <div class="main-content">
+      <form [formGroup]="Searchform">
+        <div class="row">
+        <div>
+            <mat-form-field  (click)="enmpsearchname()" appearance="outline">
+                <mat-label>Employee</mat-label>
+                <input #pinCodesearchInput placeholder="Select Employee"  matInput formControlName="employee_id" autocomplete="off"
+                    [matAutocomplete]="pintypesearch" >
+                <mat-autocomplete #pintypesearch="matAutocomplete" [displayWith]="displaysearchFnpin" (opened)="employesearchscroll()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let pin of Searchemployelist"   title="{{pin.full_name}}" [value]="pin" (click)="searchemp(pin)">
+                            {{pin.full_name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field  (click)="assignsearchname()" appearance="outline" >
+                <mat-label>Assignee</mat-label>
+                <input #assignsearchinput placeholder="Select Assignee"  matInput formControlName="assigned_to" autocomplete="off"
+                    [matAutocomplete]="assignsearchtype" >
+                <mat-autocomplete #assignsearchtype="matAutocomplete" [displayWith]="displaysearchassin" (opened)="assignedsearchscroll()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let pin of assignedsearchlist"   title="{{pin.full_name}}" [value]="pin"  (click)="searchassign(pin)">
+                            {{pin.full_name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div>
+          <button
+          id="attendsubmit"
+            type="submit"
+            class="btn btn-outline-primary"
+            style="border-radius: 40px; margin-left: 12px"
+            (click)="searchsummary()"
+          >
+            Search
+          </button>
+        </div>
+        <div>
+          <button
+          id="attendsubmit"
+            type="submit"
+            class="btn btn-outline-primary"
+            style="border-radius: 40px; margin-left: 12px"
+            (click)="Clearsummary()"
+          >
+            Clear
+          </button>
+        </div>
+    </div>
+      </form>
+    </div>
+  </section>
+
+  <div class="table-responsive" style="width: 100%;margin-top: 15px;">
+    <table class="table table-hover" id="commonstyle">
+        <thead class="table_header">
+            <tr>
+            <th>S.NO</th>
+            <th>Employee</th>
+            <th>Assignee</th>
+            <th>Created By</th>
+            <th>Created Date</th>
+            <th>Remarks</th>
+            <th>Status</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody class="table-body">
+            <tr *ngFor="let datas of summaryassignedlist; index as i">
+                <td>{{(this.asssummarypage - 1) * pageSize + i + 1}}</td>
+                <td>{{datas.emp_name.full_name}}</td>
+                <td>{{datas.assigned_to.full_name}}</td>
+                <td>{{datas.created_by.full_name}}</td>
+                <td>{{datas.created_date}}</td>
+                <td>{{datas.remarks}}</td>
+                <td ><span *ngIf="datas.is_active==true">Active</span> 
+                     <span *ngIf="datas.is_active==false">Inactive</span>
+               </td>
+                <td><button mat-icon-button  (click)="active_inactive(datas)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                </td>
+               
+            </tr>
+            <tr *ngIf="summaryassignedlist.length === 0">
+              <td colspan="8" class="text-center">No Records Found</td>
+          </tr>
+        </tbody>
+    </table>
+    <div style=" font-size: small; text-align: right">
+        <button mat-icon-button [disabled]="asssummaryhas_previous === false" color="primary" (click)="previousClick()">
+          <mat-icon>arrow_circle_left</mat-icon>
+        </button>
+        <span style="font-size: 17px;font-weight: bold;"> {{ asssummarypage }}</span>
+        <button mat-icon-button [disabled]="asssummaryhas_next === false" color="primary" (click)="nextClick()">
+          <mat-icon>arrow_circle_right</mat-icon>
+        </button>
+      </div>
+  </div>

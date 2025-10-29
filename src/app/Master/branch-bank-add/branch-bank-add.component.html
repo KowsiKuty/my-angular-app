@@ -1,0 +1,110 @@
+<div style="margin-left: 15px;margin-top: 2%;">
+    <div *ngIf="!readonly">
+    <h1 *ngIf="createbranch" style="color:blue;font-family:'Times New Roman', Times, serif;font-size:23px">Branch Bank Details Creation</h1>
+    <h1 *ngIf="!createbranch" style="color:blue;font-family:'Times New Roman', Times, serif;font-size:23px">Branch Bank Details Edit</h1>
+    </div>
+    <div *ngIf="readonly">
+    <h1 style="color:blue;font-family:'Times New Roman', Times, serif;font-size:23px">Branch Bank Details View Screen</h1>
+    </div>
+    <br>
+<form [formGroup]="branchbankForm">
+    <div class="row">
+        <div class="col-md-3">
+            <mat-form-field style="width: 250px;">
+                <mat-label class="search_text">Type<label style="color:red">*</label></mat-label>
+                <input type="text" matInput formControlName="type" [readonly]="readonly" maxlength="20" [matAutocomplete]="typemat">
+                <mat-autocomplete #typemat="matAutocomplete" [displayWith]="gettypeinterface" (opened)="autocompletetypeScrollpay()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option  (click)="select_type();get_paymode()"   *ngFor="let d of ref_type_list" [value]="d">{{d.text}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field style="width: 250px;">
+                <mat-label class="search_text">Paymode<label style="color:red">*</label></mat-label>
+                <input type="text" matInput formControlName="paymode" [readonly]="readonly" maxlength="20" [matAutocomplete]="payemp"  #payinput>
+                <mat-autocomplete #payemp="matAutocomplete" [displayWith]="getemppaymodeinterface">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let d of paymodelist" [value]="d">{{d.name}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field style="width: 250px;">
+                <mat-label class="search_text">Bank Name<label style="color:red">*</label></mat-label>
+                <input type="text" matInput formControlName="bankname" [readonly]="readonly" maxlength="60"  [matAutocomplete]="bankemp" (click)="getbankdata()" #bankinput (keypress)="keypressnodigit($event)">
+                <mat-autocomplete #bankemp="matAutocomplete" [displayWith]="getempbanknameinterface">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let d of banknamelist" [value]="d">{{d.name}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field style="width: 250px;">
+                <mat-label class="search_text">Branch Name<label style="color:red">*</label></mat-label>
+                <input type="text" matInput formControlName="branchname" [readonly]="readonly" maxlength="60"  [matAutocomplete]="branchemp" (click)="getbranchdata()" #branchinput (keypress)="keypressnodigitbranch($event)">
+                <mat-autocomplete #branchemp="matAutocomplete" [displayWith]="getbranchinterface" (opened)="autocompleteDeptScrollBranch()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let d of branchnamelist" (focusout)="ifsc(d)" [value]="d">{{d.name}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field style="width: 250px;">
+                <mat-label class="search_text">Account Number<label style="color:red">*</label></mat-label>
+                <input  matInput formControlName="accountno" [maxlength]="64" [readonly]="readonly" (keypress)="keypressd($event)">
+            </mat-form-field>
+
+        </div>
+        <div class="col-md-3">
+            <mat-form-field style="width: 250px;">
+                <mat-label class="search_text">Benificiary Name<label style="color:red">*</label></mat-label>
+                <input type="text" matInput maxlength="50" formControlName="benifiencyname" [readonly]="readonly" (keypress)="keypressdd($event)" >
+            </mat-form-field>
+        </div>
+        <div class="col-md-3" *ngIf="employee">
+            <mat-form-field style="width: 250px;">
+                <mat-label class="search_text">Employee<label style="color:red">*</label></mat-label>
+                <input type="text" #empinput matInput formControlName="employee" maxlength="60"  [matAutocomplete]="emploeeauto" (click)="get_emp_dropdown('')">
+                <mat-autocomplete #emploeeauto="matAutocomplete" [displayWith]="getemployeeinterface" (opened)="autocompleteempScrollpay()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let d of emplist" [value]="d">{{d.full_name}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3" *ngIf="employeebranch">
+            <mat-form-field  style="width: 250px;"> 
+                <mat-label class="search_text">Employee Branch<label style="color:red">*</label></mat-label>
+                <input type="text" matInput formControlName="empbranch"  autocomplete="off" [matAutocomplete]="empbranchinfo" #empbranInput (click)="employee_branchdrop()">
+                <mat-autocomplete #empbranchinfo="matAutocomplete" [displayWith]="getemployeebranchinterface" (opened)="autocompleteScrollempbranch()">
+                    <mat-option *ngIf="isLoading">loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let d of empbranchnamelist" [value]="d" >{{d.codename}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        
+
+
+        <div class="col-md-3" style="margin-top:10px;" *ngIf="!readonly">
+            <button *ngIf="createbranch" type="button" class="btn btn-success" style="border-radius:40px;margin-left: 15px;" (click)="branchbankcreate()">Submit</button>
+            <button *ngIf="!createbranch" type="button" class="btn btn-success" style="border-radius:40px;margin-left: 15px;" (click)="branchbankedit()">Submit</button>
+            <button type="button" class="btn btn-danger" style="border-radius:40px;margin-left: 15px;" (click)="onCancelClick()">Cancel</button>
+        </div>
+        <div class="col-md-3" style="margin-top:10px;" *ngIf="readonly">
+            <button type="button" class="btn btn-danger" style="border-radius:40px;margin-left: 15px;" (click)="onCancelClick()">Cancel</button>
+        </div>
+    </div>
+</form>
+</div>

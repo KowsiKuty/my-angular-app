@@ -1,0 +1,406 @@
+<div class="modal-body">
+  <!-- <h3>Branch Edit Form</h3> -->
+  <!-- <span><h4>Code:<code>{{branchcode}}</code></h4></span> -->
+  <!-- BUG ID:5586 -->
+
+  <h3 style="margin-bottom: 20px;">
+    Code:<span style="color: red">{{ branchcode }}</span>
+  </h3>
+
+  <form
+    [formGroup]="branchEditForm"
+    autocomplete="off"
+    class="d-flex flex-column"
+  >
+    <div class="flex-for-sepDate">
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            autocomplete="off"
+            type="text"
+            (keypress)="namevalidation($event)"
+            formControlName="name"
+            required
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Limitdays</mat-label>
+          <input
+            matInput
+            formControlName="limitdays"
+            type="number"
+            (blur)="numberOnly($event.target.value)"
+            min="1"
+            max="3"
+            autocomplete="off"
+            required
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Credit Terms</mat-label>
+          <input
+            matInput
+            formControlName="creditterms"
+            type="text"
+            (keypress)="namevalidation($event)"
+            autocomplete="off"
+            required
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>GST Number</mat-label>
+          <!-- <input type = "text" matInput placeholder="gstno" formControlName="gstno" [ngModel]="inputGstValue"
+                                  (ngModelChange)="inputGstValue = $event.toUpperCase()" (keydown.space)="$event.preventDefault();"  (focusout)="validationGstNo($event)" 
+                                  autocomplete="off" maxlength="15" -->
+          <!-- BUG ID:7019 -->
+          <input
+            type="text"
+            matInput
+            formControlName="gstno"
+            [ngModel]="inputGstValue"
+            (ngModelChange)="inputGstValue = $event.toUpperCase()"
+            (keydown.space)="$event.preventDefault()"
+            (focusout)="validationGstNo($event)"
+            autocomplete="off"
+            maxlength="15"
+            [readonly]="PANNO == false"
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>PAN Number</mat-label>
+          <input
+            matInput
+            [readonly]="true"
+            formControlName="panno"
+            [ngModel]="inputPanValue"
+            (ngModelChange)="inputPanValue = $event.toUpperCase()"
+            (focusout)="validationPAN($event)"
+            maxlength="10"
+            autocomplete="off"
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Remarks</mat-label>
+          <input
+            matInput
+            formControlName="remarks"
+            (keypress)="omit_special_char($event)"
+            autocomplete="off"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 10px;">Contact</h3>
+    <div [formGroup]="branchEditForm.controls.contact" class="flex-for-sepDate">
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            (keypress)="keyPressAlphaNumeric($event)"
+            autocomplete="off"
+            required
+          />
+        </mat-form-field>
+      </div>
+
+      <lib-vs-dynamicform-cmp
+        class="package-width"
+        [formGroup]="branchEditForm.controls.contact"
+        [InputFields]="designationeditfield"
+        
+      ></lib-vs-dynamicform-cmp>
+      
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            type="text"
+            matInput
+            formControlName="email"
+            autocomplete="off"
+            type="email"
+          />
+        </mat-form-field>
+      </div>
+
+      <!-- <mat-form-field (click)="designame()"  appearance="outline">
+                                    <mat-label>Designation</mat-label>
+                                    <input #designationInput matInput
+                                        formControlName="designation_id" autocomplete="off" [matAutocomplete]="desg" required>
+                                    <mat-autocomplete #desg="matAutocomplete" [displayWith]="displayFnDesg"
+                                        (opened)="designationScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let designation of designationList"
+                                                [value]="designation" title="{{designation.name}}">{{designation.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field> -->
+
+
+      <!-- <td>
+                                <mat-form-field style="width: 175px; ">
+                                    <mat-label>Type</mat-label>
+                                    <input #contactInput placeholder="Select Type" matInput formControlName="type_id"
+                                        autocomplete="off" [matAutocomplete]="contactType">
+                                    <mat-autocomplete #contactType="matAutocomplete"
+                                        [displayWith]="displayFnContactType" (opened)="contactScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let contact of contactTypeList" [value]="contact">
+                                                {{contact.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td> -->
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>LandLine 1</mat-label>
+          <input
+            matInput
+            formControlName="landline"
+            (keypress)="numberOnlyForValidation($event)"
+            maxlength="10"
+            autocomplete="off"
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>LandLine 2</mat-label>
+          <input
+            matInput
+            formControlName="landline2"
+            autocomplete="off"
+            (keypress)="numberOnlyForValidation($event)"
+            maxlength="10"
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Mobile 1</mat-label>
+          <input
+            matInput
+            formControlName="mobile"
+            autocomplete="off"
+            pattern="\d{10}"
+            (keypress)="numberOnlyForValidation($event)"
+            maxlength="10"
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Mobile 2</mat-label>
+          <input
+            matInput
+            formControlName="mobile2"
+            autocomplete="off"
+            pattern="\d{10}"
+            (keypress)="numberOnlyForValidation($event)"
+            maxlength="10"
+          />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>DOB</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker"
+            formControlName="dob"
+            [max]="futureDays"
+            (dateChange)="DOBSelection($event.value)"
+            [formControl]="defaultDate"
+          />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Wedding Date</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker2"
+            formControlName="wedding_date"
+            [min]="select"
+            [formControl]="defaultDate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker2"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 10px;">Address</h3>
+    <div [formGroup]="branchEditForm.controls.address" class="flex-for-sepDate">
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Land Mark</mat-label>
+          <input matInput formControlName="line1" autocomplete="off" required />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Land Mark2</mat-label>
+          <input matInput formControlName="line2" autocomplete="off" />
+        </mat-form-field>
+      </div>
+
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Land Mark3</mat-label>
+          <input matInput formControlName="line3" autocomplete="off" />
+        </mat-form-field>
+      </div>
+
+      <lib-vs-dynamicform-cmp
+        class="package-width"
+        [formGroup]="branchEditForm.controls.address"
+        [InputFields]="pincodeeditfield"
+        (dataEvent)="pincodeeditdata($event)"
+      ></lib-vs-dynamicform-cmp>
+      <!-- <mat-form-field (click)="pincodename()" appearance="outline">
+                            <mat-label>Pin Code</mat-label>
+                            <input #pinCodeInput  matInput formControlName="pincode_id" maxlength="6"
+                                autocomplete="off" [matAutocomplete]="pintype" required>
+                            <mat-autocomplete #pintype="matAutocomplete" [displayWith]="displayFnpin"
+                                (opened)="pinCodeScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let pin of pinCodeList" (focusout)="pinCode(pin)" [value]="pin">
+                                        {{pin.no}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+
+      <lib-vs-dynamicform-cmp
+        class="package-width"
+        [formGroup]="branchEditForm.controls.address"
+        [InputFields]="cityeditfield"
+        (dataEvent)="cityeditdata($event)"
+      ></lib-vs-dynamicform-cmp>
+      <!-- <mat-form-field (click)="cityname()" appearance="outline">
+                            <mat-label>City</mat-label>
+                            <input #cityInput matInput formControlName="city_id" autocomplete="off"
+                                [matAutocomplete]="autocit" required>
+                            <mat-autocomplete #autocit="matAutocomplete" [displayWith]="displaycit"
+                                (opened)="cityScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let city of cityList" (focusout)="citys(city)" [value]="city">
+                                        {{city.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+
+      <lib-vs-dynamicform-cmp
+        class="package-width"
+        [formGroup]="branchEditForm.controls.address"
+        [InputFields]="districteditfield"
+        (dataEvent)="districteditdata($event)"
+      ></lib-vs-dynamicform-cmp>
+      <!-- <mat-form-field  (click)="districtname()" appearance="outline">
+                            <mat-label>District</mat-label>
+                            <input #districtInput matInput formControlName="district_id" 
+                                autocomplete="off" [matAutocomplete]="autodis" required>
+                            <mat-autocomplete #autodis="matAutocomplete" [displayWith]="displaydis"
+                                (opened)="districtScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let district of districtList" [value]="district">
+                                        {{district.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+
+      <!-- <mat-form-field (click)="statename()" appearance="outline">
+                            <mat-label>State</mat-label>
+                            <input #stateInput  matInput formControlName="state_id"
+                                autocomplete="off" [matAutocomplete]="statetype" required>
+                            <mat-autocomplete #statetype="matAutocomplete" [displayWith]="displayFnstate"
+                                (opened)="stateScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let state of stateList" [value]="state">
+                                        {{state.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+      <lib-vs-dynamicform-cmp
+        class="package-width"
+        [formGroup]="branchEditForm.controls.address"
+        [InputFields]="stateeditfield"
+        (dataEvent)="stateeditdata($event)"
+      ></lib-vs-dynamicform-cmp>
+    </div>
+  </form>
+</div>
+<div class="custom-alert-popup" [style]="'display:' + customPopup">
+  <div class="popup-content">
+    <h3>{{message}}</h3>
+    <button class="btn btn-outline-success" (click)="customPopupFnClose()">
+      Ok
+    </button>
+  </div>
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-outline-primary"
+    (click)="onCancelClick()"
+  >
+    Cancel
+  </button>
+  <button type="submit" class="btn btn-outline-primary"
+  (click)="branchEditForm_()">Submit</button>
+</div>
+
+<ngx-spinner
+  bdColor="rgba(51, 51, 51, 0.8)"
+  size="default"
+  [fullScreen]="true"
+  type="ball-spin-clockwise"
+>
+  <p>Please Wait.</p>
+</ngx-spinner>

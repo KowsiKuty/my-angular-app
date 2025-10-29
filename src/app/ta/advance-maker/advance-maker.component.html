@@ -1,0 +1,1054 @@
+<div id="tamain" *ngIf="!showselfonbehalf">
+  <div>
+    <h2 style="margin-left: 44px;margin-top:2%;color: rgb(0, 0, 0);font-size: 22px; font-weight:500;">
+      eClaim Advance
+
+      <h4 style="float:right">
+        <label>Tour No </label>
+        <span style="font-weight:bold">
+          {{reqnodata}}
+        </span>
+
+      </h4>
+    </h2>
+    <div *ngIf='onbehalfenable'>
+      <h3 style="color: black;margin-left: 44px;font-size: 18px;font-weight: 500px;">
+        On BeHalf Employee - {{onbehalfname}}
+      </h3>
+    </div>
+  </div>
+  <hr>
+  <div class="col-md-12" style="margin-left: 30px;margin-right: 30px;margin-top: 2%; width: 100%;">
+    <h3 style="color:rgb(0, 0, 0); font-size: 18px; font-weight:500;">
+      Tour Details
+    </h3>
+    <div>
+      <div class="row">
+
+        <!-- <div class="col-md-3">
+          <mat-form-field>
+            <mat-label>Tour No</mat-label>
+            <input matInput [disabled]="true" [value]="requestno" autocomplete="off" required>
+          </mat-form-field>
+        </div> -->
+        <div class="col-md-3">
+          <mat-form-field>
+            <mat-label>Requested Date</mat-label>
+            <input matInput [matDatepicker]="picker3" placeholder="Requested Date" autocomplete="off" [disabled]="true"
+              [value]="requestdate">
+            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+            <mat-datepicker #picker3></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-md-3">
+          <mat-form-field>
+            <mat-label>Tour Reason</mat-label>
+            <input matInput [disabled]="true" [value]="reason" autocomplete="off" required>
+          </mat-form-field>
+        </div>
+        <div class="col-md-3">
+          <mat-form-field>
+            <mat-label>Start Date</mat-label>
+            <input matInput [matDatepicker]="picker1" [disabled]="true" placeholder="Start Date" autocomplete="off"
+              [value]="startdate">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+          <mat-form-field>
+            <mat-label>Tour End Date</mat-label>
+            <input matInput [matDatepicker]="picker2" [disabled]="true" placeholder="End Date" autocomplete="off"
+              [min]="select" [value]="enddatee">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+      </div>
+      <form [formGroup]="advanceform">
+        <h3 style="color:rgb(0, 0, 0);font-size: 18px; font-weight:500;">
+          Employee Details
+        </h3>
+
+        <div class="row">
+          <div class="col-md-3">
+            <mat-form-field>
+              <mat-label>Employee</mat-label>
+              <input matInput [disabled]="true" [value]="employee_name+' ('+employee_code+')'" autocomplete="off"
+                required>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field>
+              <mat-label>Designation</mat-label>
+              <input matInput placeholder="Employee Designation" [disabled]="true" [value]="empdesignation"
+                autocomplete="off" required>
+            </mat-form-field>
+          </div>
+          <div class="col-md-2">
+            <mat-form-field style="width:80%">
+              <mat-label>Grade</mat-label>
+              <input matInput placeholder="Employee Grade" [disabled]="true" [value]="empgrade" autocomplete="off"
+                required>
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <button *ngIf="addbtn" type="button" class="btn btn-outline-primary"
+              [disabled]='!disableList.includes(advanceform.value.advance?.at(-1)?.statuss)' (click)="addSection()"
+              style="border-radius:40px;"><span class="fa fa-plus"></span>
+              Advance
+            </button>
+            <button type="button" class="btn btn-outline-success" [disabled]='isDisabled' data-toggle="modal"
+              data-target="#ccbsModal" (click)='valuecheck()' style="border-radius:40px;margin-left:5%"><span
+                class="fa fa-plus"></span>
+              CCBS</button>
+          </div>
+        </div>
+        <div formArrayName="advance" class="table-responsive" style="margin-top: 1%;">
+          <table class="table table-bordered" fixed-header>
+            <thead class="table_header" style="text-align: left;">
+              <tr>
+                <th>S.No</th>
+                <th>Reason<label style="color:red">*</label></th>
+                <th>Advance Amount<label style="color:red">*</label></th>
+                <th>Approved Amount<label style="color:red">*</label></th>
+                <th>CRN No</th>
+                <th>Status</th>
+                <th>PDF</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let dtl of advanceform.controls.advance['controls']|paginate: { itemsPerPage: pageSize, currentPage: p ,id:'advance' }; index as ind"
+                [formGroupName]="fieldGlobalIndex(ind)">
+                <td scope="row" style="vertical-align: middle;"> {{((p-1)*pageSize)+ind+1}}</td>
+
+                <td>
+                  <mat-form-field floatLabel="never">
+                    <input matInput placeholder="e.g For Ticket" formControlName="reason"
+                      [readonly]="checkdisable(dtl) || applevel ==1" [value]="dtl.reason"
+                      (keypress)="omit_special_char($event)" autocomplete="off" required>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field floatLabel="never">
+                    <input matInput placeholder="e.g 1000" [readonly]="checkdisable(dtl) || applevel ==1" min="0"
+                      appNumberOnly (change)="datasums()" formControlName="reqamount" [value]="dtl.reqamount"
+                      autocomplete="off" required>
+                  </mat-form-field>
+                </td>
+
+                <td>
+                  <mat-form-field floatLabel="never">
+
+                    <input *ngIf="approver == false" matInput formControlName="appamount" [value]="dtl.appamount"
+                      autocomplete="off" [readonly]="true" min="1">
+                    <input *ngIf="approver" matInput formControlName="appamount" [readonly]="checkdisable(dtl)"
+                      appNumberOnly (mouseout)="updateapproveamt($event,dtl)" [value]="dtl.appamount"
+                      autocomplete="off">
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field floatLabel="never">
+                    <input matInput placeholder="-" formControlName="crnno" [value]="dtl.crnno" autocomplete="off"
+                      [readonly]="true">
+                  </mat-form-field>
+                </td>
+                <td>
+
+                  <mat-form-field floatLabel="never">
+                    <input matInput placeholder="Status" formControlName="statuss" [value]="dtl.statuss"
+                      autocomplete="off" [readonly]="true">
+                  </mat-form-field>
+                </td>
+                <td>
+
+                  <!-- <span (click)="advpdfdownload(dtl)" *ngIf="dtl.statuss =='APPROVED'">
+                          <mat-icon>file_download</mat-icon>
+                        </span> -->
+                  <button *ngIf="pdfcheck(dtl)" mat-icon-button matTooltip="PDF" (click)="advpdfdownload(dtl)"
+                    class="iconbutton" color="primary">
+                    <mat-icon style="color:green;" aria-label="Delete">file_download</mat-icon>
+                  </button>
+
+                </td>
+
+                <td>
+                  <button mat-icon-button matTooltip="Delete" class="iconbutton"
+                    [disabled]='checkremove(dtl)||isDisabled || ind == 0 || applevel == 1'
+                    (click)="removeSection(((p-1)*pageSize)+ind)" color="primary">
+                    <mat-icon style="color:green;" aria-label="Delete">clear</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <tr>
+
+              <th class="totaldisplay" colspan="2"> Total Amount </th>
+              <td>{{sum | currency:'INR' }}</td>
+              <td>{{approvesum | currency:'INR' }}</td>
+              <th colspan="4"></th>
+
+              <!-- <th class="totaldisplay" colspan="2"></th>
+                    <td>&#8377;{{summ}}</td> -->
+            </tr>
+            <tr>
+              <th colspan="8">
+                <div class="pagination" style="text-align: center;">
+                  <pagination-controls responsive="true" (pageChange)="p = $event" id="advance"></pagination-controls>
+                </div>
+              </th>
+            </tr>
+          </table>
+
+        </div>
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+          id="ccbsModal">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header" style="background:#DDEFDD">
+                <h2 class="modal-title" style="width: 250px;margin-left: 20px;">CCBS (Tour No) : {{this.reqnodata}} </h2>
+                <div style="width:77%">
+                  <h2 style="float:right;">Approved Amount :
+                    {{approvesum}}</h2>
+                </div>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div style="width:92%">
+
+                <h3 style="float:right">Requested Amount : {{this.amt}}</h3>
+
+              </div>
+              <div class="modal-body">
+
+                <fieldset [disabled]="applevel ==1 " formArrayName='ccbss'>
+                  <table>
+
+                    <tr *ngFor="let dt2 of advanceform.get('ccbss')['controls'];let ind=index;" [formGroupName]="ind">
+                      <td>
+
+                        <mat-form-field style="width: 250px;margin-left: 20px;">
+                          <mat-label>BS<label style="color:red">*</label></mat-label>
+                          <input [readonly]="ccbsreadonly(dt2)" type="text" #bsid placeholder="Select BS" matInput
+                            [matAutocomplete]="bsss" (keypress)="checkind(ind)" formControlName="bsid">
+                          <mat-autocomplete #bssid #bsss="matAutocomplete" (opened)="bsidget()" [displayWith]="bsview">
+                            <mat-option *ngFor="let bsid of bisinesslist" (click)="getBS(bsid.id,ind)" [value]="bsid">
+                              {{bsid.code}}-{{bsid.name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </td>
+                      <!-- <td>
+
+                        <mat-form-field style="width: 250px;margin-left: 20px;">
+                          <mat-label>CC</mat-label>
+                          <input [readonly]="ccbsreadonly(dt2)" type="text" placeholder="Select CC" matInput
+                            (click)="checkccind(ind)" [matAutocomplete]="csss" formControlName="ccid">
+                          <mat-autocomplete #csss="matAutocomplete" [displayWith]="csview">
+                            <mat-option *ngFor="let ccid of costlist" [value]="ccid">
+                              {{ccid.code}}-{{ccid.name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </td> -->
+                      <td>
+                        <mat-form-field style="width: 250px;">
+                            <mat-label>CC<label style="color:red">*</label></mat-label>
+                            <input type="text" matInput formControlName="ccid" autocomplete="off" [matAutocomplete]="csss" (click)="checkccind(ind)" [readonly]="ccbsreadonly(dt2)">
+                            <mat-autocomplete #csss="matAutocomplete" [displayWith]="csview">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container  *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of costlist" [value]="d">{{d.name}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                      </td>
+
+                      <td>
+                        <mat-form-field style="width: 175px;margin-left: 20px;">
+                          <mat-label>Advance Amount<label style="color:red">*</label></mat-label>
+                          <input matInput placeholder="Advance Amount" [readonly]="ccbsreadonly(dt2) || !this.amt"
+                            formControlName="amount" (blur)="percen_calc($event,ind)" appNumberOnly  (input)="ccbs_validation(ind,'amount')"
+                            autocomplete="off">
+                          <!-- {{this.value1}} -->
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <mat-form-field style="width: 175px;margin-left: 20px;">
+                          <mat-label>Percentage<label style="color:red">*</label></mat-label>
+                          <input matInput placeholder="Percentage" [readonly]="ccbsreadonly(dt2) || !this.amt"
+                            maxlength="4" min="1" [max]="100" appNumberOnly formControlName="percentage" (input)="ccbs_validation(ind)"
+                            (blur)="amount_calc($event,ind)" autocomplete="off">
+                          <!-- {{this.value}} -->
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <div style="width: 175px;margin-left: 35px;">
+                          <button type="button" class="btn btn-outline-danger"
+                            [disabled]='advanceform.value.ccbss.length == 1 || (ccbsreadonly(dt2)||isDisabled || applevel ==1) '
+                            (click)="removeSection1(ind,dt2)" style="border-radius:40px;"><span
+                              class="fa fa-trash"></span>
+                          </button>
+                          <button type="button" class="btn btn-outline-success"
+                            *ngIf="ind ==  advanceform.value.ccbss.length-1" [disabled]="applevel ==1"
+                            (click)="addccbs()" style="border-radius:40px;margin-left: 2%;"><span
+                              class="fa fa-plus"></span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </fieldset>
+                <div class="col-md-11 text-center" style="margin-bottom: 4%;">
+                  <button type="submit" style="border-radius: 40px;margin-left: 10px;" (click)="submitccbs()"
+                    [disabled]="applevel ==1" class="btn btn-outline-success">Submit</button>
+
+                  <button type="button" data-dismiss="modal" class="btn btn-outline-secondary"
+                    style="border-radius: 40px;margin-left: 20px;">Close</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div *ngIf="show_approvediv" style="margin-top: 1%;margin-left :40px">
+          <div class="col-md-6" style="padding-left:0px">
+            <h4 style="color:black;font-size: 18px;font-weight: 500px;">Attachment</h4>
+            <div class="form-group">
+              <tr class="row">
+                <!-- <input type="file" name="file" style="width:250px;" (change)="fileProgress($event)" /> -->
+                <!-- <td>
+                  <input type="file" #fileInput id="uploadFile" [disabled]="(feilds_disable)? true:false"
+                    style="width:250px;margin-top: 10px;" (change)="onFileSelected($event)" multiple="multiple" />
+                </td> -->
+                <td>
+                  <input type="file" #fileInput id="uploadFile" 
+                    style="width:250px;margin-top: 10px;" (change)="onFileSelected_admaker($event)" multiple="multiple" />
+                </td>
+                <td style="margin-left: 40px;">
+                  <h4>File Count:{{this.total_list_count}}</h4>
+                </td>
+                <td>
+                  <div>
+                    <button type="button" class="btn btn-outline-success" style="border-radius: 40px;margin-left: 50px;"
+                    data-toggle="modal" data-target="#attachmentpopup" (click)="getselectedFiles()">
+                    Attachment</button>
+                  </div>
+                  
+                </td>
+              </tr>
+              <h3 style="margin-left: 40px;margin-top:10px;">Count:{{selectedFiles.length}}</h3>
+            </div>
+          </div>
+          <div class='row' *ngIf="approver">
+            <div class="col-md-4">
+              <mat-form-field style="width: 300px;">
+                <mat-label>Reason<label style="color:red">*</label></mat-label>
+                <input [disabled]="ischanged" (keypress)="omit_special_char($event)" matInput placeholder="Enter Reason"
+                  (change)="reson($event)" [value]="lastcomment" autocomplete="off">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <!-- <div ngIf="applevel != 1"> -->
+        <!-- <td>
+          <input type="file" #fileInput id="uploadFile" 
+            style="width:250px;margin-top: 10px;" (change)="onFileSelected($event)" multiple="multiple" />
+        </td>
+        <td style="padding-left: 40px;">
+          File Count:{{getfilecount()}}
+        </td>
+      </div> -->
+        <h3 *ngIf="applevel != 1" style="color:rgb(0, 0, 0);font-size: 18px; font-weight:500; margin-top: 0.5%;">
+          To Approver
+        </h3>
+        <div *ngIf="applevel != 1">
+          <mat-form-field class="tabranch">
+            <mat-label>Branch<label style="color:red">*</label></mat-label>
+            <input [attr.disabled]="advanceform.value.empbranchid?.id ? true : null" type="text" #inputassetid
+              placeholder="Select Branch" matInput [matAutocomplete]="conoffice" formControlName="empbranchid">
+            <button mat-button matSuffix (click)="brclear()" mat-icon-button aria-label="Clear">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete [displayWith]="displaybrnch" #assetid #conoffice="matAutocomplete"
+              (opened)="autocompleteid()">
+              <mat-option *ngFor="let branch of branchlist" (click)="selectBranch(branch.id)" [value]="branch">
+                ({{branch.code}}) {{branch.name}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <!-- <fieldset [disabled]="advanceform.value.approval"> -->
+          <mat-form-field class="taemployee">
+            <mat-label>Approver<label style="color:red">*</label></mat-label>
+            <input [attr.disabled]="advanceform.value.approval?.id ? true : null" type="text" (keypress)="omit_special_char($event)"
+              placeholder="Select Employee" matInput [matAutocomplete]="empc" formControlName="approval" #empinput>
+            <button mat-button matSuffix (click)="empclear()" mat-icon-button aria-label="Clear">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete #empid #empc="matAutocomplete" [displayWith]="displayFn" (opened)="empScroll()">
+              <mat-option *ngFor="let emp of employeelist" [value]="emp" (click)="empidupdate(emp.id)">
+                ({{emp.code}}) {{emp.full_name}}-{{emp.employee_designation}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <!-- </fieldset> -->
+          <!-- <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label>Employee</mat-label>
+                <input matInput placeholder="Employee" [value]
+="tourmodel.approval" formControlName=
+"approval" autocomplete="off" required>
+                </mat-form-field> -->
+          <mat-form-field *ngIf="remarksbtn" class="tatextarea">
+            <mat-label>Remarks<label style="color:red">*</label></mat-label>
+            <textarea cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
+              matInput placeholder="Remarks" (keypress)="omit_special_char($event)" (change)="remarksupdate($event)"
+              formControlName="remarks" autocomplete="off"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div *ngIf="submitbtn" class="col-md-12 text-center" style="margin-bottom: 30px; margin-top: 1%;">
+          <button *ngIf="approver == false" type="submit" style="border-radius: 40px;margin-left: 20px;"
+            class="btn btn-outline-success" [disabled]="isSumbitbtn" (click)="submitForm()">Submit</button>
+          <button *ngIf="approver" [disabled]="ischanged" type="submit" style="border-radius: 40px;margin-left: 20px;"
+            class="btn btn-outline-success" [disabled]="isSumbitbtn" (click)="approved()">Approve</button>
+          <button *ngIf="approver" type="submit" [disabled]="ischanged" style="border-radius: 40px;margin-left: 20px;"
+            class="btn btn-outline-secondary" [disabled]="ischanged" (click)="returned()">Return</button>
+          <button *ngIf="approver" type="submit" style="border-radius: 40px;margin-left: 20px;"
+            class="btn btn-outline-danger" [disabled]="ischanged" (click)="rejected()">Reject</button>
+
+          <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary"
+            style="border-radius: 40px;margin-left: 20px;">Back</button>
+        </div>
+        <div *ngIf="show_cancelbtn" style="margin-bottom: 50px;text-align: center;">
+          <mat-form-field style="width: 350px;">
+            <mat-label>Reason<label style="color:red">*</label></mat-label>
+            <input matInput placeholder="Enter Reason" (change)="reasonvals($event)" autocomplete="off">
+          </mat-form-field>
+          <br>
+          <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-success"
+            (click)="cancelapprove()">Approve</button>
+
+
+          <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-danger"
+            (click)="cancelreject()">Reject</button>
+
+
+          <button type="button" (click)="cancelback()" class="btn btn-outline-primary"
+            style="border-radius: 40px;margin-left: 10px;">Back</button>
+        </div>
+        <div *ngIf="ishidden" style="text-align: center;margin-bottom: 20px;">
+          <span>
+            <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-success"
+              (click)="cancel()">Submit</button>
+          </span>
+          <span class="col-md-12 text-center">
+            <button type="button" (click)="CancelClick()" class="btn btn-outline-primary"
+              style="border-radius: 40px;margin-left: 20px;">Back</button>
+          </span>
+        </div>
+        <div *ngIf="approve" style="text-align: center;">
+          <span style="text-align: center;">
+            <button type="button" (click)="Cancelback()" class="btn btn-outline-primary"
+              style="border-radius: 40px;margin-left: 20px;">Back</button>
+          </span>
+        </div>
+        <!-- <div *ngIf="showccbs" style="">CCBS is Required</div> -->
+
+        <div *ngIf="appflow" style="margin-bottom: 2%;">
+          <h3 style="color:rgb(0, 0, 0);font-size: 18px; font-weight:500;">
+            Approval Flow
+          </h3>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table_header" style="text-align: left;">
+                <tr>
+                  <th>S.No</th>
+                  <th>Date</th>
+                  <th>Type </th>
+                  <th>Employee</th>
+                  <th>Raised By</th>
+
+                  <th>Remarks</th>
+                  <th>Status</th>
+
+
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr
+                  *ngFor="let advanceapprove of getAdvanceapproveList|paginate: { itemsPerPage: pageSize, currentPage: s,id:'flow' }; index as i">
+                  <td scope="row" style="vertical-align: middle;"> {{((s-1)*pageSize)+i+1}}</td>
+                  <td>{{advanceapprove.approveddate| date:'dd-MMM-yyyy'}}</td>
+                  <td>{{advanceapprove.apptype}}</td>
+                  <td>({{advanceapprove.approver_code}}) {{advanceapprove.approvedby}}</td>
+                  <td>({{advanceapprove.onbehalfof.code}}) {{advanceapprove.onbehalfof.full_name}}</td>
+
+                  <td style="overflow-wrap:anywhere">{{advanceapprove.comment}}</td>
+                  <td *ngIf="applevel == 1">
+                    <p *ngIf="advanceapprove.status == 1">
+                      REQUESTED</p>
+                    <p *ngIf="advanceapprove.status == 2">
+                      PENDING</p>
+                    <p *ngIf="advanceapprove.status == 3">
+                      APPROVED</p>
+                    <p *ngIf="advanceapprove.status == 4">
+                      REJECTED</p>
+                    <p *ngIf="advanceapprove.status == 5">
+                      RETURNED</p>
+                    <p *ngIf="advanceapprove.status == 6"> Tour Advance Submitted</p>
+                    <p *ngIf="advanceapprove.status == 17">
+                      Tour Advance Cancel Submitted</p>
+
+
+                  </td>
+
+                  <td *ngIf="applevel != 1">
+                    <p *ngIf="advanceapprove.status == 4">
+                      Tour Advance Rejected</p>
+                    <p *ngIf="advanceapprove.status == 3">
+                      Tour Advance Approved</p>
+                    <p *ngIf="advanceapprove.status == 2">
+                      Tour Advance Submitted To Approver</p>
+                    <p *ngIf="advanceapprove.status == 15">
+                      Tour Advance Cancel Submitted To Approver</p>
+                    <p *ngIf="advanceapprove.status == 5">
+                      Tour Advance Returned From Approver</p>
+                    <p *ngIf="advanceapprove.status == 1"> Tour Advance Submitted</p>
+                    <p *ngIf="advanceapprove.status == 15">
+                      Tour Advance Cancel Submitted</p>
+                  </td>
+                </tr>
+
+              </tbody>
+
+              <th colspan="7">
+                <div class="pagination">
+                  <pagination-controls responsive="true" (pageChange)="s = $event" id="flow"></pagination-controls>
+                </div>
+              </th>
+
+            </table>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div>
+
+  <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" 
+      id="attachmentpopup">
+      <div class="modal-dialog modal-lg " style="width: 70%;">
+          <div class="modal-content">
+              <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                  <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">Attachments</h2>
+                  <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+             </div> 
+              <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 80%;">
+                  <div class="container">
+                      <div class="row">
+                          <div class="table-responsive" style="margin-top: 1%;">
+                              <h3 style="font-weight: bold;">Attached Files</h3>
+                              <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                  <thead class="table_header" style="text-align: left;">
+                                  <tr>
+                                    
+                                      <th style="text-align: center;">S.No</th>
+                                      <th style="text-align: center;">File Name</th>
+                                      <th style="text-align: center;">View</th>
+                                      <th style="text-align: center;">Delete</th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                       <tr  *ngFor="let files of selectedFiles; let index = index">
+                                          <td>{{index+1}}</td>
+                                          <td>{{files?.name}}</td>
+                                          <td style="text-align: center;" >
+                                               <button class="fa fa-external-link"  title="View" aria-hidden="true" style="color:blue;font-size: 24px;margin-left: 20px;"
+                                                  (click)="filepreview(files)" data-toggle="modal" mat-icon-button data-target="#my-modalpreview">
+                                                </button>
+                                              </td>
+                                         <td style="text-align: center;">                                             
+                                              <button (click)="deletefileUpload(index)" mat-icon-button>
+                                                  <mat-icon title="Delete" matTooltipClass="custom-tooltipnew">delete</mat-icon>
+                                             </button>
+                                          </td>
+                                       </tr>                                        
+                                  </tbody>
+                              </table>
+                              <br>
+                              <div *ngIf="appflow">
+                                <h3 style="font-weight: bold;">Advance Maker Attached Files</h3>
+                                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                  <thead class="table_header" style="text-align: left;">
+                                    <tr>
+                                      <th style="text-align: center;">S.No</th>
+                                      <th style="text-align: center;">File Name</th>
+                                      <th style="text-align: center;">View</th>
+                                      <th style="text-align:center">Download</th>
+                                      <!-- <th style="text-align: center;">Delete</th> -->
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tbody>
+                                      <tr *ngFor="let attach of attachmentlist; index as i">
+                                        <td style="text-align: center;">{{i+1}}</td>
+                                        <td style="text-align: center;">{{attach.file_name}}</td>
+                                        <td style="text-align: center">
+                                          <div matTooltip="View" class="fa fa-external-link" style="color:blue;font-size: 24px;margin-left: 20px;" aria-hidden="true" data-target="#exampleModal1"
+                                            data-toggle="modal" (click)="commentPopup(attach.id,attach.file_name )">                   
+                                           <!-- (click)="getimages()" -->
+                                            <!-- getimagedownload(attach.url,attach.file_name)"    -->
+
+                                          </div>
+                                        </td>
+                                        <!-- (click)="openpdfimage(attach.url)" -->
+                                        <td style="text-align: center;">
+                                          <button class="btn btn-outline-primary" type="submit"
+                                            style="border-radius:40px;margin-left: 15px;" color="primary"
+                                            (click)="getimagedownload(attach.url,attach.file_name)">
+                                            <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+                                          </button>
+                                        </td>                                           
+                                        <!-- <td style="text-align: center;">
+                                          <button mat-icon-button type="button">
+                                            <mat-icon style="color: gray;" aria-label="Edit" (click)="fileDeleted(attach.id,i)">
+                                              delete</mat-icon>
+                                          </button>
+                                        </td> -->
+                                      </tr>
+                                  </tbody>                                  
+                                </table>
+                            </div>
+                            <div *ngIf="appflow">
+                              <h3 style="font-weight: bold;">Advance Approver Attached Files</h3>
+                              <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                <thead class="table_header" style="text-align: left;">
+                                  <tr>
+                                    <th style="text-align: center;">S.No</th>
+                                    <th style="text-align: center;">File Name</th>
+                                    <th style="text-align: center;">View</th>
+                                    <th style="text-align:center">Download</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                  <tbody>
+                                    <tr *ngFor="let attach of advance_approverlist; index as i">
+                                      <td style="text-align: center;">{{i+1}}</td>
+                                      <td style="text-align: center;">{{attach.file_name}}</td>
+                                      <td style="text-align: center">
+                                        <div matTooltip="View" class="fa fa-external-link" style="color:blue;font-size: 24px;margin-left: 20px;" aria-hidden="true" data-target="#exampleModal1"
+                                          data-toggle="modal" (click)="commentPopup(attach.id,attach.file_name )">                   
+                                     
+
+                                        </div>
+                                      </td>
+                                      <td style="text-align: center;">
+                                        <button class="btn btn-outline-primary" type="submit"
+                                          style="border-radius:40px;margin-left: 15px;" color="primary"
+                                          (click)="getimagedownload(attach.url,attach.file_name)">
+                                          <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+                                        </button>
+                                      </td>                                           
+                                      
+                                    </tr>
+                                </tbody>                                  
+                              </table>
+                          </div>
+
+                          </div>
+                          <tr>
+                              <td>
+                                  <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:220px;
+                                                          border-color: black; margin-bottom: 20px;
+                                                          background-color: white;" (click)="fileback()">Back</button>
+                              </td>
+                          </tr>
+                      </div>
+                  </div>  
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<div>
+  
+  <div *ngIf="showimageHeaderPreview" id="my-modalpreview" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+           </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div *ngIf="showimageHeaderPreviewPDF" id="my-modalpreview" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                <h2 class="modal-title">Attachments</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <pdf-viewer [src]="pdfurl" [original-size]="false" [render-text]='false' [show-borders]="true"
+                [fit-to-page]="true" [show-all]="true" style="display: block; height: 600px;" [fit-to-page]="true">
+            </pdf-viewer>
+        </div>
+    </div>
+</div>
+
+  <div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLongTitle" aria-hidden="true" id="showattachmentpopup">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="width:fit-content;margin-left:-30%">
+        <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);">
+          <h2 class="modal-title" style="color:black ;text-align: center;">Tour Attachment View</h2>
+          <button type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body" style="width:850px">
+
+          <div class="row">
+            <!-- <div *ngIf="attachmentlist.length >0"> -->
+              <table class="table table-bordered" fixed-header
+                style="width: 100%;margin-top: 10px;margin-left:30px;">
+                <thead class="table_header" style="text-align: left;">
+                  <tr>
+                    <th style="text-align: center;">S.No</th>
+                    <th style="text-align: center;">File Name</th>
+                    <th style="text-align: center;">View</th>
+                    <th style="text-align: center;">Download</th>
+                     <th style="text-align: center;">Delete</th> 
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let attach of attachmentlist; index as i">
+                    <td style="text-align: center;">{{i+1}}</td>
+                    <td style="text-align: center;">{{attach.file_name}}</td>
+                    <td style="text-align: center;color:blue;">
+                      <div matTooltip="View" class="fa fa-arrow-up" aria-hidden="true" data-target="#exampleModal1"
+                        data-toggle="modal" (click)="commentPopup(attach.id,attach.file_name )">
+
+                        <!-- (click)="getimages()" -->
+                        <!-- getimagedownload(attach.url,attach.file_name)"    -->
+                      </div>
+                    </td>
+                    <!-- (click)="openpdfimage(attach.url)" -->
+                    <td style="text-align: center;">
+                      <button class="btn btn-outline-primary" type="submit"
+                        style="border-radius:40px;margin-left: 15px;" color="primary"
+                        (click)="getimagedownload(attach.url,attach.file_name)">
+                        <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                    <td style="text-align: center;">
+                      <button mat-icon-button type="button">
+                        <mat-icon style="color: gray;" aria-label="Edit" (click)="fileDeleted(attach.id,i)">
+                          delete</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+            <!-- </div> -->
+          </div>
+          <br>
+          <div *ngIf="base64textString.length > 0">
+            <div>
+
+              <!-- <h3 class="modal-title w-100" id="exampleModalLabel">
+                Attachment View
+              </h3> -->
+              <button style="float:right" mat-icon-button type="button">
+                <mat-icon matTooltip="Delete All Choosen Files" style="color: black ;font-size: 50px;"
+                  aria-label="Edit" (click)="deleteAll()">
+                  delete_forever</mat-icon>
+              </button>
+            </div>
+            <br>
+
+            <div class="row">
+              <div class="col-lg-12 col-sm-12" fxLayoutAlign="space-between"
+                *ngFor="let files of base64textString;let ind=index">
+                <button mat-icon-button type="button">
+                  <mat-icon style="color: black ;font-size: 30px;" aria-label="Edit" matTooltip="Delete Below File"
+                    (click)="deleteUpload(ind)">
+                    delete</mat-icon>
+                </button>
+                <!-- <pdf-viewer *ngIf="filetype_check2(ind) == 1" [src]="files" [original-size]="false"
+                  [render-text]='false' [show-borders]="true" [fit-to-page]="true" [show-all]="true"
+                  style="display: block; height: 400px;" [fit-to-page]="true">
+                </pdf-viewer> -->
+                <embed width="100%" *ngIf="filetype_check2(ind) == 1" height="100%" src="data:application/pdf;base64,files" 
+                type="application/pdf">
+              
+
+                <img *ngIf="filetype_check(ind) == 1" src="{{files}}" class="img-responsive"
+                  style="display: block; height: 400px;border-width: 2px;border-style: solid;">
+
+
+                <br />
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+  <div class="modal-content" style="width:fit-content">
+    <div class="modal-header">
+
+      <h3 class="modal-title w-100" id="exampleModalLabel">
+        <strong> Attachment View</strong>
+      </h3>
+
+
+      <!-- <button *ngIf="toapprover" mat-icon-button type="button">
+    <mat-icon style="color: gray;" aria-label="Edit" (click)="fileDelete()">
+      delete</mat-icon>
+  </button> -->
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">
+          ×
+        </span>
+      </button>
+    </div>
+
+
+    <div class="modal-body" style="width:700px">
+      <div *ngIf='this.fileextension =="pdf"'>
+        <pdf-viewer [src]="jpgUrls" [original-size]="false" [render-text]='false' [show-borders]="true"
+          [fit-to-page]="true" [show-all]="true" style="display: block; height: 400px;" [fit-to-page]="true">
+        </pdf-viewer>
+      </div>
+      <div *ngIf='this.fileextension !="pdf"'>
+        <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+      </div>
+      <!-- <div *ngIf='this.filesystem_error'>
+      <p>This File is Already Downloaded. Please check downloads.</p>
+    </div> -->
+    </div>
+
+    <div class="modal-footer">
+    </div>
+  </div>
+</div>
+</div>
+
+
+<div *ngIf='advancediv'>
+  <div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabels" aria-hidden="true" id="createmodalforpopup">
+    <div class="modal-dialog modal-xl" style="width: 50%;">
+
+      <div class="modal-content1">
+        <div class="modal-header" style="background:#DDEFDD">
+          <h2 class="modal-title" style="color:black ;">Onbehalf Of</h2>
+          <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div style="margin-left: 70px;margin-right: 80%;margin-top: 2%; width: 80%;">
+
+
+          <form [formGroup]="taonbehalfForm">
+            <table>
+              <div>
+
+
+                <mat-radio-group aria-label="Select an option" formControlName="status">
+                  &nbsp;&nbsp;
+
+                  <mat-radio-button *ngFor="let n of radiocheck" [value]="n.value" (click)="dataadvance(n,$event)"
+                    style="margin-left: 10px;">
+                    {{n.display}}
+                  </mat-radio-button>
+                </mat-radio-group>
+                <tr *ngIf="showradiobtn">
+                  <td>
+
+                    <mat-form-field style="width: 250px;">
+                      <mat-label>Branch<label style="color:red">*</label></mat-label>
+                      <input #branchInput matInput formControlName="branch" autocomplete="off" (keypress)="omit_special_char($event)"
+                        placeholder=" Select Branch" [matAutocomplete]="conoffice">
+                      <mat-autocomplete #conoffice="matAutocomplete" [displayWith]="displayfnbranch"
+                        (opened)="branchScroll() ">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                        </mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let branches of branchdata" [value]="branches"
+                            (click)="branchclick(branches.id)">
+                            ({{branches.code}}) {{branches.name}}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+
+                  </td>&nbsp;&nbsp;
+                  <td>
+                    <mat-form-field style="width: 175px;margin-left: 50px;">
+                      <mat-label>Employee</mat-label>
+                      <input type="text" placeholder="Select Employee" matInput [matAutocomplete]="empc"
+                        formControlName="employee" (keypress)="omit_special_char($event)">
+                      <mat-autocomplete #empc="matAutocomplete" [displayWith]="displayFn1">
+                        <mat-option *ngFor="let emp of empList" [value]="emp"
+                          (click)="clickemp(emp.employeegid,emp.employee_name,emp)">
+                          ({{emp.employee_code}}) {{emp.employee_name}}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <button type="submit" style="border-radius: 40px;margin-left: 50px;" class="btn btn-outline-primary"
+                    (click)="advanceForm()" data-dismiss="modal" [disabled]="showdisabled">Submit</button>
+                  </td>
+
+                </tr>
+
+              </div>
+            </table>
+            <!-- <tr>
+              <div style="margin-bottom: 5%;">
+                <button type="submit" style="border-radius: 40px;margin-left: 80px;" class="btn btn-outline-primary"
+                  (click)="advanceForm()" data-dismiss="modal" [disabled]="showdisabled">Submit</button>
+
+              </div>
+            </tr> -->
+          </form>
+
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf='advancecanceldiv'>
+  <div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabels" aria-hidden="true" id="createmodalforpopup">
+    <div class="modal-dialog modal-xl" style="width: 50%;">
+
+      <div class="modal-content1">
+        <div class="modal-header" style="background:#DDEFDD">
+          <h2 class="modal-title" style="color:black ;">Onbehalf Of</h2>
+          <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div style="margin-left: 70px;margin-right: 80%;margin-top: 2%; width: 80%;">
+
+
+          <form [formGroup]="taonbehalfForm">
+            <table>
+              <div>
+
+
+                <mat-radio-group aria-label="Select an option" formControlName="status">
+                  &nbsp;&nbsp;
+
+                  <mat-radio-button *ngFor="let n of radiocheck" [value]="n.value" (click)="canceldata(n)"
+                    style="margin-left: 10px;">
+                    {{n.display}}
+                  </mat-radio-button>
+                </mat-radio-group>
+                <tr *ngIf="showradiobtn">
+                  <td>
+
+                    <mat-form-field style="width: 250px;">
+                      <mat-label>Branch<label style="color:red">*</label></mat-label>
+                      <input #branchInput matInput formControlName="branch" autocomplete="off" (keypress)="omit_special_char($event)"
+                        placeholder=" select branch" [matAutocomplete]="conoffice">
+                      <mat-autocomplete #conoffice="matAutocomplete" [displayWith]="displayfnbranch"
+                        (opened)="branchScroll() ">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                        </mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let branches of branchdata" [value]="branches"
+                            (click)="branchclick(branches.id)">
+                            ({{branches.code}}) {{branches.name}}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+
+                  </td>&nbsp;&nbsp;
+                  <td>
+                    <mat-form-field style="width: 175px;margin-left: 50px;">
+                      <mat-label>Employee</mat-label>
+                      <input type="text" placeholder="Select Employee" matInput [matAutocomplete]="empc"
+                        formControlName="employee">
+                      <mat-autocomplete #empc="matAutocomplete" [displayWith]="displayFn">
+                        <mat-option *ngFor="let emp of empList" [value]="emp"
+                          (click)="clickemp(emp.employeegid,emp.employee_name,emp)">
+                          ({{emp.employee_code}}) {{emp.employee_name}}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <button type="submit" style="border-radius: 40px;margin-left: 50px;" class="btn btn-outline-primary"
+                  (click)="submitcancel()" data-dismiss="modal" [disabled]="showdisabled">Submit</button>
+                  </td>
+
+                </tr>
+
+              </div>
+            </table>
+            <!-- <tr>
+              <div style="margin-bottom: 5%;">
+                <button type="submit" style="border-radius: 40px;margin-left: 80px;" class="btn btn-outline-primary"
+                  (click)="submitcancel()" data-dismiss="modal" [disabled]="showdisabled">Submit</button>
+
+              </div>
+            </tr> -->
+          </form>
+
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<button #selfpopup data-toggle="modal" data-target="#createmodalforpopup"></button>
+
+<!-- <pre>{{advanceform.value | json}}</pre> -->

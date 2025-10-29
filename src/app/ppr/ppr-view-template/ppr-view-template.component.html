@@ -1,0 +1,281 @@
+<div class="container"><br>
+    <h2>PPR View Template</h2>
+    <div>
+        <form [formGroup]="ppr_view">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field (click)="namedropdown()" style="width: 220px;">
+                            <mat-label>Name</mat-label>
+                            <input #pprnameInput placeholder="Name" matInput formControlName="ppr_name"
+                                [matAutocomplete]="nameAutoComplete">
+                            <mat-autocomplete #nameAutoComplete="matAutocomplete" [displayWith]="displayname"
+                                (opened)="namescroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let name of pprname" [value]="name">
+                                        {{name.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field (click)="bsccDropdown()" style="width: 220px;">
+                            <mat-label>Allocation From</mat-label>
+                            <input #bsccInput placeholder="Business" matInput formControlName="bscc"
+                                [matAutocomplete]="bsccAutoComplete">
+                            <mat-autocomplete #bsccAutoComplete="matAutocomplete" [displayWith]="displaybsccppr"
+                                (opened)="bsccscroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let bscc of Bscccode" [value]="bscc">
+                                        {{bscc.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-4">
+                        <mat-form-field (click)="bsDropdown()" style="width: 220px;">
+                            <mat-label>BS</mat-label>
+                            <input #bsInput placeholder="BS" matInput formControlName="bs"
+                                [matAutocomplete]="bsAutoComplete">
+                            <mat-autocomplete #bsAutoComplete="matAutocomplete" [displayWith]="displaybsfrom"
+                                (opened)="bsscroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let bs of Bscode" [value]="bs">
+                                        {{bs.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-4">
+                        <mat-form-field (click)="ccDropdown()" style="width: 220px;">
+                            <mat-label>CC</mat-label>
+                            <input #ccInput placeholder="CC" matInput formControlName="cc"
+                                [matAutocomplete]="ccAutoComplete">
+                            <mat-autocomplete #ccAutoComplete="matAutocomplete" [displayWith]="displaycc"
+                                (opened)="ccscroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let cc of cccode" [value]="cc">
+                                        {{cc.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+          
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-primary" (click)="searchpprview()"
+                            style="border-radius:40px;height: 44px; margin-top: 12px;"><i class="fa fa-search"
+                                aria-hidden="true">Search</i>
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-primary" (click)="searchpprviewclear()"
+                            style="border-radius:40px;height: 44px; margin-top: 12px;">Clear
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button data-toggle="modal" data-target=".bd-uploaddata-modal-lg"
+                            class="btn btn-outline-primary" (click)="create(0)"
+                            style="border-radius: 132px; margin-right: 103px; margin-top: 12px;height: 44px;"><span
+                                class="fa fa-plus">Add</span></button> <br> <br>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive" class="tablescroll" style="margin-top: 2%;width: 95%;margin-left: 10px;">
+        <table class="table table scrolltable table-bordered">
+            <thead class="table_header" style="text-align: center;">
+                <th>S.No</th>
+                <th>Name</th>
+                <th>BSCC</th>
+                <th>BS</th>
+                <th>CC</th>
+                <th>View</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let summary of summaryview;index as i">
+                    <!--  -->
+                    <td>{{(presentpage - 1)*identificationSize +i+1 }}</td>
+                    <td>
+                        {{summary?.name}}
+                    </td>
+                    <td>
+                        <div *ngIf="summary?.corebs?.length==0">--</div>
+                        <div *ngIf="summary?.corebs?.length!=0">{{summary?.corebs?.name}}</div>
+                    </td>
+                    <td>
+                        <div *ngIf="summary?.bs_data?.length==0">--</div>
+                        <div *ngIf="summary?.bs_data?.length!=0">{{summary?.bs_data?.name}}</div>
+                    </td>
+                    <td>
+                        <div *ngIf="summary?.cc_data?.length==0">--</div>
+                        <div *ngIf="summary?.cc_data?.length!=0">{{summary?.cc_data?.name}}</div>
+                    </td>
+                    <td class="text-center">
+                        <a style="color: green;cursor: pointer;" matTooltip="View" data-toggle="modal" data-target=".bd-uploaddata-modal-lg" (click)='view_tem(summary.id,summary,1)'>
+                            <mat-icon>visibility</mat-icon>
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a style="color: green;cursor: pointer;" [hidden]="summary.status==0" matTooltip="Edit" data-toggle="modal" data-target=".bd-uploaddata-modal-lg" (click)='view_tem(summary.id,summary,2)'>
+                            <mat-icon>edit</mat-icon>
+                        </a>	&nbsp;	&nbsp;	&nbsp;
+
+                        <a (click) = "status(summary)" >
+                        
+                            <i *ngIf="summary.status==1" style="font-size:24px;color: green;" matTooltip="Delete" class="fa">&#xf014;</i>&nbsp;&nbsp;
+                                               
+                            <i *ngIf="summary.status==0" style="font-size:24px;color: black;" matTooltip="Delete" class="fa">&#xf014;</i>
+                                            </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-uploaddata-modal-lg" data-toggle="modal" data-backdrop="static" data-keyboard="false"
+    tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabels">
+    <div class="modal-dialog modal-lg" style="padding-top: 7%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ddefdd">
+                <h2 class="modal-title">PPR-View</h2>
+                <button type="button" class="close" (click)="closepop_ppr()" #closepop data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="white-space: nowrap;">
+
+
+
+                <div class="card">
+                    <div class="card-body" style="margin-top: 2%;margin-bottom: 2%;">
+
+                        <div class="input-group mb-3">
+                            <form [formGroup]="pprentry">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Name</mat-label>
+                                                    <input  matInput formControlName="viewname" 
+                                                        placeholder="Name"  autocomplete="off" [required]="view_edit==2||view_edit==0" [readonly]="view_edit==1">
+                                            </mat-form-field>    
+                                        </div>
+                                        <div class="col-md-6" >
+                                            <!-- <mat-form-field (click)="bsccentryDropdown()" appearance="outline" style="width: 220px;">
+                                                <mat-label>Business</mat-label>
+                                                <input #bsccentryInput placeholder="Business" matInput
+                                                    formControlName="bsccentry"
+                                                    [matAutocomplete]="bsccentryAutoComplete" [readonly]="view_edit==1">
+                                                <mat-autocomplete #bsccentryAutoComplete="matAutocomplete"
+                                                    [displayWith]="bsccentrydisplay" (opened)="bsccrntryscroll()">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let bscc of Bscc" [value]="bscc">
+                                                            {{bscc.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field> -->
+
+                                            <mat-form-field style="width: 100%;" (click)="bsccentryDropdown()" appearance="outline" style="width: 220px; white-space: break-spaces;">
+                                                <mat-label>Business</mat-label>
+                                                <mat-chip-list #chipbusiness>
+                                                    <mat-chip *ngFor="let business of businesschip" [selectable]=true [removable]=true
+                                                        (removed)="removedbusiness(business)"> {{business.name}}
+                                                        <mat-icon matChipRemove>cancel</mat-icon>
+                                                    </mat-chip>
+                                                    <input #businessInput formControlName="bsccentry" [matAutocomplete]="business"
+                                                        [matChipInputFor]="chipbusiness" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                                        [matChipInputAddOnBlur]=true>
+                                                </mat-chip-list>
+                                                <mat-autocomplete #business="matAutocomplete" (optionSelected)="businessSelected($event)"
+                                                    (opened)="bsccrntryscroll()">
+                                                    <mat-option *ngFor="let bscc of Bscc" [value]="bscc"> {{bscc.name}} </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <mat-form-field (click)="bsentryDropdown()" appearance="outline" style="width: 220px;">
+                                                <mat-label>BS</mat-label>
+                                                <input #bsentryInput placeholder="BS" matInput formControlName="bsentry"
+                                                    [matAutocomplete]="bsentryAutoComplete" [readonly]="view_edit==1">
+                                                <mat-autocomplete #bsentryAutoComplete="matAutocomplete"
+                                                    [displayWith]="displaybsentry" (opened)="bsentryscroll()">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let bs of Bs_entry" [value]="bs">
+                                                            {{bs.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <mat-form-field (click)="ccentryDropdown()" appearance="outline" style="width: 220px;">
+                                                <mat-label>CC</mat-label>
+                                                <input #ccentryInput placeholder="CC" matInput formControlName="ccentry"
+                                                    [matAutocomplete]="ccentryAutoComplete" [readonly]="view_edit==1">
+                                                <mat-autocomplete #ccentryAutoComplete="matAutocomplete"
+                                                    [displayWith]="displayccentry" (opened)="ccentryscroll()">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let cc of cc_entry" [value]="cc">
+                                                            {{cc.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </div>
+                                      
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal-footer">
+                <button class="btn btn-outline-primary" type="button" style="float: right;"  [hidden]="view_edit==1"
+                    (click)="pprtem_entry(pprentry.value)">
+                    Submit
+                </button>
+                <button class="btn btn-outline-secondary" type="button" data-dismiss="modal" style="float: right ;"
+                (click)="closepop_ppr()">
+                    Close
+                </button>
+            </div> 
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,157 @@
+<br>
+
+<h2 style="margin-left: 40px; ">
+    Vehicle Trip Details
+</h2>
+<div style="margin-left: 100px;margin-right: 80%;margin-top: 1%; width: 100%;">
+
+    <div>
+        <form [formGroup]="tripdetailForm">
+            <table>
+                <div>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 250px;">
+                                <mat-label>Driver </mat-label>
+                                <input matInput placeholder="Driver" formControlName="driver" autocomplete="off"
+                                    required>
+                            </mat-form-field>
+                        </td>
+                        
+                        <td>
+                            <mat-form-field style="width:250px;margin-left: 60px;">
+                                <mat-label>Start Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker1" placeholder="Start Date"
+                                    formControlName="start_date"  (dateChange)="fromdateSelection($event.value)" required>
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width:250px;margin-left: 60px;">
+                                    <mat-label>End Date</mat-label>
+                                    <input matInput readonly [matDatepicker]="picker2" placeholder="End Date"
+                                        formControlName="end_date" [min]="select" required>
+                                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <mat-form-field style="width: 250px;">
+                                    <mat-label>From Place </mat-label>
+                                    <input matInput placeholder="From Place" formControlName="from_place" autocomplete="off"
+                                        required>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 250px;margin-left: 60px;">
+                                    <mat-label>To Place </mat-label>
+                                    <input matInput placeholder="To Place" formControlName="to_place" autocomplete="off"
+                                        required>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 250px;margin-left: 60px;">
+                                    <mat-label>Fuel Filled(Liters)</mat-label>
+                                    <input matInput placeholder="Fuel Filled" type="number" formControlName="fuel_filled" autocomplete="off"
+                                        required>
+                                </mat-form-field>
+                            </td>
+                        
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 250px;">
+                                <mat-label>Start ODO(kms) </mat-label>
+                                <input matInput placeholder="Start ODO " type="number"  (keypress)="numberOnly($event)" maxlength="9" (focusout)="startodo($event)" formControlName="start_odo" autocomplete="off"
+                                     required>
+                            </mat-form-field> 
+                        </td>
+
+                        <td>
+                            <mat-form-field style="width: 250px;margin-left: 60px;">
+                                <mat-label>End ODO(kms)</mat-label>
+                                <input matInput placeholder="End ODO" type="number" (focusout)="endodo($event)"  (keypress)="numberOnly($event)" formControlName="end_odo" autocomplete="off"
+                                    required>
+                            </mat-form-field>
+                        </td>  
+                        <fieldset [disabled]="isDisabled">
+                        <td>
+                            <mat-form-field style="width: 250px;margin-left: 60px;">
+                                <mat-label>Mileage Run </mat-label>
+                                <input matInput placeholder="Mileage Run" [value]="fuel" [disabled]="true" formControlName="mileage_run" autocomplete="off"
+                                    required>
+                            </mat-form-field>
+                        </td>
+                        </fieldset>
+                        </tr>
+                        <tr>
+                        <td>
+                            <mat-form-field style="width: 250px;">
+                                <mat-label>Booked By</mat-label>
+                                <input type="text" #permitinputassetid placeholder="Booking By" matInput [matAutocomplete]="permitassetid"
+                            formControlName="booked_by" required>
+                          <mat-autocomplete #permitassetid ="matAutocomplete" (opened)="permitautocompleteid()">
+                            <mat-option *ngFor="let permit of permittedlist" (click)="incharge(permit.id)" [value]="permit.full_name">
+                              {{permit.full_name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 250px;margin-left: 60px;">
+                                <mat-label>Booked For Type</mat-label>
+                                <mat-select formControlName="booked_for_type" required>
+                                    <mat-option *ngFor="let usage of bookedtype" (click)="bookType(usage.id)" [value]="usage.text">
+                                        {{usage.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td *ngIf="isbranch">
+                            <mat-form-field style="width: 250px;margin-left: 60px;">
+                                <mat-label>Booked For</mat-label>
+                                <input type="text" #inputassetid placeholder="Booked For" matInput
+                                [matAutocomplete]="assetid" formControlName="booked_for">
+                            <mat-autocomplete #assetid ="matAutocomplete" (opened)="autocompleteid()">
+                                <mat-option *ngFor="let branch of branchlist" (click)="branchname(branch.id)"
+                                    [value]="'('+(branch.code)+') '+(branch.name)">
+                                    ({{branch.code}})-{{branch.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        
+                       
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 250px;">
+                                <mat-label>Fuel Bill Amount</mat-label>
+                                <input matInput placeholder="Fuel Bill Amount" (keypress)="numberOnly($event)" formControlName="fuel_amount" autocomplete="off"
+                                    required>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 250px;margin-left: 60px;">
+                                <mat-label>Reason </mat-label>
+                                <input matInput placeholder="Reason" maxlength="250" formControlName="reason" autocomplete="off" required
+                                   >
+                            </mat-form-field>   
+                        </td>
+                    </tr>
+                </div>
+            </table>
+            <div class="btn-bottom" *ngIf="issubmitbtn">
+                <button type="submit" class="btn btn-outline-primary" (click)="submitForm()">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-outline-primary" (click)="back()">Cancel</button>
+            </div>
+            <div class="btn-bottom" *ngIf="iseditbtn">
+                <button type="submit" class="btn btn-outline-primary" (click)="Editform()">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-outline-primary" (click)="back()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

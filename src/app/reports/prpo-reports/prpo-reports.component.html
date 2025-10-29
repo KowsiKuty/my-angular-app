@@ -1,0 +1,802 @@
+<div>
+  <div *ngIf="isPODetReportform" class="container">
+    <form [formGroup]="frmPODetRpt" id='show'>
+      <h2 style="text-align: center; margin-top: 3%;">PO Detail Report</h2>
+
+      <div class="filter-aling">
+        <lib-vs-search-cmp id="matInput-size" [SearchArr]="PODetailSrch" [Outputtype]="searchvar"
+          (dataoutput)="po_details_report($event)" [ButtonArr]="PODetRptButtons"></lib-vs-search-cmp>
+      </div>
+      <!-- <lib-vs-cbox-summary  [SummaryDetails]="PODetRptSumData"
+              [SummaryApiObj]="PODetRptSumAPI"></lib-vs-cbox-summary> -->
+
+
+
+      <table class="table table-bordered" fixed-header>
+        <thead class="table_header">
+          <tr>
+            <th>S.No</th>
+            <th>PO No</th>
+            <th>PO Date</th>
+            <th>PO Amount</th>
+            <th>PO Status</th>
+            <th>Supplier Branch</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dept of po_detail_summary  index as i">
+            <td> {{i+1}}</td>
+            <!-- <td>{{dept.po_no}}</td> -->
+            <td style="cursor: pointer;color: #3684BF;" (click)="GRNPopupOpen(dept)"> {{dept?.po_no}}</td>
+            <td>{{dept.po_date | date:'dd-MMM-yyyy'}}</td>
+            <td>{{dept.po_amount}}</td>
+            <td>{{dept.status}}</td>
+            <td>{{dept.supplierbranch}}</td>
+
+
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination" *ngIf="po_detail_summary?.length == 0">
+        <h3>Sorry Data not found!.. </h3>
+      </div>
+    </form>
+
+
+  </div>
+
+
+  <div *ngIf="isPOAssetReportform" class="container">
+    <form [formGroup]="frmPOAssetRpt" id='show'>
+      <h2 style="text-align: center; margin-top: 3%;">PO Asset Report</h2>
+      <mat-form-field>
+        <mat-label>Serial No</mat-label>
+        <div class="input-wrapper">
+          <input placeholder="Serial No" matInput formControlName="serial_no">
+        </div>
+      </mat-form-field>
+       <mat-form-field  style="width:240px;margin-left: 10px;" (click)="getAssetlists()">
+             <mat-label>Asset Id</mat-label>
+            <input matInput #assetInput placeholder="Select Asset Id" formControlName="asset_id"
+              [matAutocomplete]="assetd" (input)="getasset_autocomplete()" />
+            <mat-autocomplete [panelWidth]="400" #assetd="matAutocomplete" [displayWith]="displayFnasset"
+              (opened)="autocompleteassetScroll_asset()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let asset of AssetsList" [value]="asset">
+                  {{ asset.assetid }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+            <!-- <div class="input-wrapper"> -->
+              <!-- <input placeholder="Enter PO No" matInput formControlName="asset_id">\ -->
+            <!-- </div> -->
+            <!-- <mat-select placeholder="Asset" formControlName="asset_id">
+              <mat-option *ngFor="let data of grnAssetsList" [value]="data">
+                {{data.asset_id}}
+              </mat-option>
+            </mat-select> -->
+          </mat-form-field>
+
+      <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+        (click)="getPOAssetSummary()" color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+      <button class="btn btn-outline-primary" (click)="POAssetReset()" type="button"
+        style="border-radius:40px;margin-left: 15px;" color="primary">Clear</button>
+      <button style="margin-left: 10px;border-radius: 40px;" type="button" (click)="POAssetDownload()"
+        class="btn btn-outline-success"><span></span>Download </button>
+      <!-- <lib-vs-cbox-summary  [SummaryDetails]="POAssetRptSumData"
+              [SummaryApiObj]="POAssetRptSumAPI"></lib-vs-cbox-summary> -->
+
+    </form>
+
+
+    <table class="table table-bordered" fixed-header>
+      <thead class="table_header">
+        <tr>
+          <th>S.No</th>
+          <th>Asset ID</th>
+          <th>Serial No</th>
+          <th>Product Name</th>
+          <th>Branch</th>
+          <th>Component PR Nos</th>
+          <th>Service PR Nos</th>
+          <th>Other Attribute </th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of POAssetData ; index as i">
+          <td> {{i+1}}</td>
+          <td>{{data?.asset_details[0]?.assetid }}</td>
+          <td>{{data?.asset_details[0]?.serial_no}}</td>
+          <td>{{data?.asset_details[0]?.product_name }}</td>
+          <td>{{data?.asset_details[0]?.branch_name }}</td>
+          <td>{{data?.components_details[0]?.all_pr_no_s}}</td>
+          <td>{{data?.service_details[0]?.all_pr_no_s}}</td>
+          <td>{{data?.otherattribute_details}}</td>
+
+        </tr>
+      </tbody>
+    </table>
+    <div style="align-items: center;margin-top: 10px;display: flex;justify-content: center;" *ngIf="POAssetData.length ===0">
+  No records Found 
+</div>
+  </div>
+
+  <!-- ////GRN ASSET DETAIL REPORT -->
+  <div *ngIf="isGRNDETAILReportform" class="container">
+    <h2 style="text-align: center; margin-top: 3%;">GRN ASSET DETAIL REPORT</h2>
+
+    <form [formGroup]="grnAssetform">
+
+      <!-- <div class="form-col-04">
+        <div id="matInput-v17" class="matField-fluid">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Serial No</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter Serial No" matInput formControlName="serial_no">
+            </div>
+          </mat-form-field>
+
+        </div>
+      </div> -->
+      <div class="row">
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Serial No</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter Serial No" matInput formControlName="serial_no">
+            </div>
+          </mat-form-field>
+
+        </div>
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%" (click)="getgrnAssetlists()">
+             <mat-label>Asset Id</mat-label>
+            <input matInput #assetInput placeholder="Select Asset Id" formControlName="asset_id"
+              [matAutocomplete]="assetd" (input)="input_getgrnAssetlists()" />
+            <mat-autocomplete [panelWidth]="400" #assetd="matAutocomplete" [displayWith]="displayFngrnasset"
+              (opened)="autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let asset of grnAssetsList" [value]="asset">
+                  {{ asset.asset_id }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+            <!-- <div class="input-wrapper"> -->
+              <!-- <input placeholder="Enter PO No" matInput formControlName="asset_id">\ -->
+            <!-- </div> -->
+            <!-- <mat-select placeholder="Asset" formControlName="asset_id">
+              <mat-option *ngFor="let data of grnAssetsList" [value]="data">
+                {{data.asset_id}}
+              </mat-option>
+            </mat-select> -->
+          </mat-form-field>
+        </div>
+        <div class="col-md-3">
+          <mat-form-field (click)="getbranchFK()" appearance="outline" style="width:100%">
+            <mat-label>CCBS Branch</mat-label>
+            <input #branchInput placeholder="Select Branch Code" matInput formControlName="branchname"
+              [matAutocomplete]="branch" (input)="input_getbranchFK()"/>
+            <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+              (opened)="autocompletebranchScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                  {{ branch.code }}-{{ branch.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col-md-3">
+           <mat-form-field (click)="getProductTypes()" appearance="outline" style="width:100%">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+          <!-- <mat-form-field appearance="outline" style="width:100%" (click)="getProductTypes()">
+            <mat-label>Product Type</mat-label>
+            <mat-select formControlName="product_type">
+              <mat-option *ngFor="let types of prdTypes" [value]="types.id">
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+        </div>
+
+
+      </div>
+      <div class="row">
+
+        <div class="col-md-3">
+
+          <!-- <mat-form-field  appearance="outline" style="width:100%" (click)="getproductName()">
+            <mat-label>Product Name</mat-label>
+         
+            <mat-select formControlName="product_id">
+              <mat-option *ngFor="let types of prdNames" [value]="types">
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field> -->
+          <mat-form-field (click)="getproductName()" appearance="outline" style="width:100%">
+            <mat-label>Product Name</mat-label>
+            <input #productInput_type placeholder="select product name" matInput formControlName="product_id"
+              [matAutocomplete]="productauto_type" (input)="input_getproductName()"/>
+            <mat-autocomplete #productauto_type="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="proname_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let types of prdNames" [value]="types">
+                {{ types.name }}
+              </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+
+        </div>
+        <div class="col-md-3">
+          <mat-form-field (click)="getprappsupplier()" appearance="outline" style="width:100%">
+            <mat-label>Vendor</mat-label>
+            <input matInput #supplierInput placeholder="Select vendor" formControlName="supplier_id"
+              [matAutocomplete]="supplier" />
+            <mat-autocomplete [panelWidth]="400" #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+              (opened)="autocompletesupplierScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                  {{ supplier.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>PO No</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter PO No" matInput formControlName="po_no">
+            </div>
+          </mat-form-field>
+
+        </div>
+
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Invoice No</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter Invoice No" matInput formControlName="invoice_no">
+            </div>
+          </mat-form-field>
+
+        </div>
+      </div>
+      <div style="display: flex;gap: 10px;flex-wrap: wrap;align-items: center;margin-bottom: 10px;">
+         <div style="margin-top: -10px;">
+                 <mat-button-toggle-group
+            [value]="selectedTypeQ"
+            (change)="price_Quot($event)"
+          >
+            <mat-button-toggle [value]="'DateOfCreation'">Date Of Creation</mat-button-toggle>
+            <mat-button-toggle [value]="'ReceivedDate'">Received Date</mat-button-toggle>
+          </mat-button-toggle-group>
+            </div>
+            <div *ngIf="selectedTypeQ !==''">
+                <mat-form-field appearance="outline">
+                                <mat-label>From Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker1" 
+                                    formControlName="fromdate">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+            </div>
+             <div *ngIf="selectedTypeQ !==''">
+                <mat-form-field appearance="outline">
+                                <mat-label>To Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker2" 
+                                    formControlName="todate">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                            </mat-form-field>
+            </div>
+             <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-top:-15px;"
+          color="primary" (click)="searchSummary()"><i class="fa fa-search" aria-hidden="true"></i></button>
+        <button (click)="refreshPage()" class="btn btn-outline-primary" type="button" style="border-radius:40px;margin-top:-15px;"
+          color="primary"><i class="fa fa-refresh" aria-hidden="true" ></i></button>
+        <button style="border-radius: 40px;margin-top:-15px;" type="button" class="btn btn-outline-success" (click)="downloadReport()"><i
+            class="fa fa-download" aria-hidden="true"></i> </button>
+      </div>
+      <!-- <div class="row" style="margin-bottom: 5px;">
+        <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+          color="primary" (click)="searchSummary()"><i class="fa fa-search" aria-hidden="true"></i></button>
+        <button (click)="refreshPage()" class="btn btn-outline-primary" type="button" style="border-radius:40px;margin-left: 15px;"
+          color="primary"><i class="fa fa-refresh" aria-hidden="true" ></i></button>
+        <button style="margin-left: 10px;border-radius: 40px;" type="button" class="btn btn-outline-success" (click)="downloadReport()"><i
+            class="fa fa-download" aria-hidden="true"></i> </button>
+      </div> -->
+    </form>
+
+    <div class="comp-table t-resposive t-bdr-line">
+  <table>
+    <thead>
+      <tr class="th-nowrap">
+        <th>S No</th>
+        <th>Delivery Location</th>
+        <th>IBR Code</th>
+        <th>BS</th>
+        <th>CS</th>
+        <th>Raiser Branch Name</th>
+        <th>Product Type</th>
+        <th>Product Name</th>
+        <th>Asset ID</th>
+        <th>Buyback Asset ID</th>
+        <th>Buyback Asset Serial Number</th>
+        <th>PR No</th>
+        <th>PO No</th>
+        <th>PO Date</th>
+        <th>Price</th>
+        <th>Vendor</th>
+        <th>Product Make</th>
+        <th>Product Model</th>
+        <th>Date Of Creation</th>
+        <th>Received Date</th>
+        <th>Invoice NO</th>
+        <th>GRN No</th>
+        <th>Serial Number</th>
+        <th>View Attributes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let d of table_data;let i =index;index as listIndex">
+      <td>{{ (grn_summary_crt-1)*pageSize+listIndex+1 }}</td>
+        <td>{{ d.DeliveryLocation }}</td>
+      <td>{{ d.IBR }}</td>
+      <td>{{ d.BS }}</td>
+      <td>{{ d.CS }}</td>
+      <td>{{ d.Raiser_Branch_Name }}</td>
+      <td>{{ d.Product_Type }}</td>
+      <td>{{ d.Product_Name }}</td>
+      <td>{{ d.Asset_Id }}</td>
+      <td>
+        <!-- Buyback Asset IDs -->
+        <ul>
+          <li *ngFor="let b of d.Buyback_Details">{{ b["Buyback Asset ID"] }}</li>
+        </ul>
+      </td>
+      <td>
+        <!-- Buyback Asset Serial Numbers -->
+        <ul>
+          <li *ngFor="let b of d.Buyback_Details">{{ b["Buyback Asset Serial Number"] || 'N/A' }}</li>
+        </ul>
+      </td>
+      <td>{{ d.PR_NO }}</td>
+      <td>{{ d.Po_No }}</td>
+      <td>{{ d.Po_Date || 'N/A' }}</td>
+      <td>{{ d.Price }}</td>
+      <td>{{ d.Vendor }}</td>
+      <td>{{ d.Product_Make }}</td>
+      <td>{{ d.Product_Model }}</td>
+      <td>{{ d.Date_Of_Creation }}</td>
+      <td>{{ d?.Received_Date }}</td>
+      <td>{{ d?.Invoice_NO }}</td>
+      <td>{{ d.Grn_No }}</td>
+      <td>{{ d.Serial_Number}}</td>
+      <td>
+         <!-- <button class="btn btn-sm btn-primary" (click)="openAttributes(d.Other_Attributes)">
+          View
+        </button> -->
+             <button mat-icon-button matTooltip="view" class="iconbutton" color="primary" (click)="openAttributes(d.Other_Attributes)">
+                                <mat-icon >visibility</mat-icon>
+                        </button>
+        </td>
+      </tr>  
+    </tbody>
+  </table>
+</div>
+<div style="align-items: center;margin-top: 10px;display: flex;justify-content: center;" *ngIf="table_data.length ===0">
+  No records Found 
+</div>
+ <div class="paginationDiv" style="text-align: end;margin-top: 5px;">
+            <button mat-icon-button [disabled]="grn_summary_hasprevious === false" color="primary" (click)="grn_previousclick()">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <b style="align-items: center;margin-top: 9px;">{{ grn_summary_crt }}</b>
+            <button mat-icon-button [disabled]="grn_summary_hasnext === false" color="primary" (click)="grn_nextclick()">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+
+    <!-- <div>
+                    <lib-vs-search-cmp id="matInput-v17" class="npm-mat-edit" [SearchArr]="searchGRNarray"  Tooltip="true"
+                        (dataoutput)="searchGRNevent($event)" [ButtonArr]="GRNbtn"></lib-vs-search-cmp>
+                </div>
+                <div>
+                    <lib-vs-cbox-summary [SummaryApiObj]="GRNSummaryAPI"
+                        [SummaryDetails]="GRNSummaryDetails"></lib-vs-cbox-summary>
+                </div> -->
+
+
+    <!-- <form [formGroup]="grndetailform" >
+        <h2 style="text-align: center; margin-top: 3%;">GRN ASSET DETAIL REPORT</h2>
+
+
+<div class="row">
+  <div class="col-md-3">
+    <mat-form-field >
+                        <mat-select placeholder="Asset" formControlName="asset_id">
+                                            <mat-option *ngFor="let data of AssetsList" [value]="data">
+                                                {{data.assetid}}
+                                            </mat-option>
+                                        </mat-select>
+                    </mat-form-field>
+
+  </div>
+
+  <div class="col-md-3">
+                        <mat-form-field >
+                          <mat-label>Serial No</mat-label>
+                          <div class="input-wrapper">
+                            <input
+                              placeholder="Enter Serial No"
+                              matInput
+                              formControlName="serial_no">
+                            </div>
+                        </mat-form-field>
+                        
+  </div>
+
+  <div class="col-md-3">
+
+           
+            <mat-form-field
+           
+              (click)="getbranchFK()"
+            >
+              <mat-label>Branch Code</mat-label>
+              <input
+                #branchInput
+                placeholder="Select Branch Code"
+                matInput
+                formControlName="branchname"
+                [matAutocomplete]="branch"
+              />
+              <mat-autocomplete
+                #branch="matAutocomplete"
+                [displayWith]="displayFnbranch"
+                (opened)="autocompletebranchScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let branch of branchList"
+                    [value]="branch"
+                  >
+                    {{ branch.code }}-{{ branch.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+  </div>
+
+
+         <div class="col-md-3">
+          <mat-form-field >
+            <mat-label>Product Type</mat-label>
+            <mat-select formControlName="product_type">
+              <mat-option
+                *ngFor="let types of Lists"
+                [value]="types.id"
+                (click)="product_type = types.id"
+              >
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+   
+</div>
+
+<div class="row">
+
+    
+        <div class="col-md-3">
+          <mat-form-field
+            (click)="getbrproduct()"
+          >
+            <mat-label>Product Name</mat-label>
+            <input
+              #itemInput
+              placeholder="Select Product"
+              matInput
+              formControlName="product_id"
+              [matAutocomplete]="item"
+            />
+            <mat-autocomplete
+              #item="matAutocomplete"
+              [displayWith]="displayFnitem"
+              (opened)="autocompleteitemScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let item of productList"
+                  [value]="item"
+                  (click)="productclick(item)"
+                >
+                  {{ item.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+         
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+          <mat-form-field
+          
+          (click)="getprappsupplier()"
+        >
+          <mat-label>Supplier Name</mat-label>
+          <input
+            matInput
+            #supplierInput 
+            placeholder="Select supplier"
+            formControlName="supplier_id"
+            [matAutocomplete]="supplier"
+          />
+          <mat-autocomplete
+            [panelWidth]="400"
+            #supplier="matAutocomplete"
+            [displayWith]="displayFnsupplier"
+            (opened)="autocompletesupplierScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let supplier of supplierList"
+                [value]="supplier"
+              >
+                {{ supplier.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+        </div>
+  
+<div class="col-md-3">
+                        <mat-form-field >
+                          <mat-label>PO No</mat-label>
+                          <div class="input-wrapper">
+                            <input
+                              placeholder="Enter PO No"
+                              matInput
+                              formControlName="po_no">
+                            </div>
+                        </mat-form-field>
+                        
+  </div>
+
+
+  <div class="col-md-3">
+                        <mat-form-field>
+                          <mat-label>Invoice No</mat-label>
+                          <div class="input-wrapper">
+                            <input
+                              placeholder="Enter Invoice No"
+                              matInput
+                              formControlName="invoice_no">
+                            </div>
+                        </mat-form-field>
+                        
+   </div>
+</div>
+
+
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                     (click)="getPOAssetSummary()"  
+                    color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-primary" (click)="POAssetReset()" type="button"
+                        style="border-radius:40px;margin-left: 15px;" color="primary">Clear</button>
+                <button style="margin-left: 10px;border-radius: 40px;" type="button"
+                 (click)="POAssetDownload()"
+                    class="btn btn-outline-success"><span></span>Download </button>            
+    </form>
+                <table class="table table-responsive table-bordered" fixed-header>
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Delivery Location</th>
+                            <th>IBR Code</th>
+                            <th>BS</th>
+                            <th>CC</th>
+                            <th>Raiser Branch Name</th>
+                            <th>Host Name / Asset Tag</th>
+                            <th>Product Type</th>
+                            <th>Product Name</th>
+                            <th>AssetID</th>
+                            <th>Buyback Asset ID</th>
+                            <th>Buyback Asset Serial Number</th>
+                            <th>PR No</th>
+                            <th>PO Raiser Details</th>
+                            <th>PO No</th>
+                            <th>PO Date</th>
+                            <th>Owner</th>
+                            <th>Price</th>
+                            <th>Vendor</th>
+                            <th>Serial No</th>
+                            <th>Product Make</th>
+                            <th>Product Model</th>
+                            <th>Date Of Creation</th>
+                            <th>GRN No</th>
+                            <th>Serial Number</th>               
+            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let data of grnAssetrecords ; index as i">
+                            <td> {{i+1}}</td>
+                            <td>{{data?.DeliveryLocation }}</td>
+                            <td>{{data?.IBR }}</td>
+                            <td>{{data?.BS }}</td>
+                            <td>{{data?.CS }}</td>
+                            <td>{{data?.Raiser_Branch_Name }}</td>
+                            <td></td>
+                            <td>{{data?.Product_Type}}</td>
+                            <td>{{data?.Product_Name}}</td>
+                            <td>{{data?.Asset_Id}}</td>
+                            <td *ngIf="data?.Buyback_Details?.length">{{ getBuybackAssetId(data?.Buyback_Details[i]) }}</td>
+                            <td *ngIf="data?.Buyback_Details?.length">{{ getBuybackAssetSerialNo(data?.Buyback_Details[i]) }}</td>
+                            <td>{{data?.PR_NO}}</td>
+                            <td></td>
+                            <td>{{data?.Po_No}}</td>
+                            <td>{{data?.Po_Date}}</td>
+                            <td>{{data?.Owner}}</td>
+                            <td>{{data?.Price}}</td>
+                            <td>{{data?.Vendor}}</td>
+                            <td>{{data?.Serial_Number}}</td>
+                            <td>{{data?.Product_Make}}</td>
+                            <td>{{data?.Product_Model}}</td>
+                            <td>{{data?.Date_Of_Creation}}</td>
+                            <td>{{data?.Grn_No}}</td>
+                            <td>{{data?.Serial_Number}}</td>
+                            
+                           
+
+
+                        </tr>
+                    </tbody>
+                </table> -->
+  </div>
+  <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+    data-keyboard="false" data-backdrop="static" id="grnPopup">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #DDFFDD;color:rgb(17, 15, 15);">
+          <h2 class="modal-title">
+            PRPO GRN Details
+          </h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" style="text-align: center;">
+              <thead class="table_header">
+                <tr>
+                  <th style="text-align: center;color: black;">S.No</th>
+                  <th style="text-align: center;color: black;">GRN Code</th>
+                  <th style="text-align: center;color: black;">GRN Date</th>
+                  <th style="text-align: center;color: black;">DC Note</th>
+                  <th style="text-align: center;color: black;">Invoice No</th>
+                  <th style="text-align: center;color: black;">GRN Status</th>
+                  <th style="text-align: center;color: black;">AP Reference No</th>
+                  <th style="text-align: center;color: black;">Branch</th>
+                  <th style="text-align: center;color: black;">Created By</th>
+                  <th style="text-align: center;color: black;">Paid PO Payment</th>
+                  <th style="text-align: center;color: black;">Payment Date</th>
+                  <th style="text-align: center;color: black;">Payment Remaining</th>
+                  <th style="text-align: center;color: black;">Quantity</th>
+                </tr>
+              </thead>
+              <tr *ngFor="let dt of GRNDetails;let i=index">
+                <td style="height: 28px;">{{i+1}}</td>
+                <td style="height: 28px;">{{dt.code}}</td>
+                <td style="height: 28px;">{{dt.date | date:'dd-MM-yyyy'}}</td>
+                <td style="height: 28px;">{{dt.dcnote}}</td>
+                <td style="height: 28px;">{{dt.invoiceno}}</td>
+                <td style="height: 28px;">{{dt.grn_status}}</td>
+                <td style="height: 28px;">{{dt.apreferences_no}}</td>
+
+                <td style="height: 28px;">{{dt.branch}}</td>
+                <td style="height: 28px;">{{dt.created_by}}</td>
+                <td style="height: 28px;">{{dt.paid_popayment}}</td>
+                <td style="height: 28px;">{{dt.payment_date | date:'dd-MM-yyyy'}}</td>
+                <td style="height: 28px;">{{dt.payment_remaining}}</td>
+                <td style="height: 28px;">{{dt.quantity}}</td>
+              </tr>
+            </table>
+          </div>
+          <div *ngIf="GRNDetails?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry Data not found!.. </h3>
+          </div>
+          <div class="paginationDiv" style="text-align: end;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousclick()">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <b style="align-items: center;margin-top: 9px;">{{ CurrentPage }}</b>
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextclick()">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-primary" data-dismiss="modal">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+<div class="modal fade" id="attributesModal" tabindex="-1" aria-labelledby="attributesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="attributesModalLabel">Other Attributes</h3>
+        <!-- <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">x</button> -->
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close" 
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Dynamic Table -->
+       <table class="table table-bordered table-striped" *ngIf="selectedAttributes?.length">
+  <!-- <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Value</th>
+    </tr>
+  </thead> -->
+  <tbody>
+    <tr *ngFor="let row of selectedAttributes">
+      <td>{{ getKeys(row)[0] }}</td>
+      <td>{{ row[getKeys(row)[0]] || '-' }}</td>
+    </tr>
+  </tbody>
+</table>
+
+        <p *ngIf="!selectedAttributes?.length">No attributes available</p>
+      </div>
+    </div>
+  </div>
+</div>

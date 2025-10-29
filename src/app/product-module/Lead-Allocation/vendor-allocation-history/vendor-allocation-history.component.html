@@ -1,0 +1,205 @@
+<div class="container mt-1">
+    <mat-card>
+        <nav>
+            <div class="nav nav-tabs">
+                <span #myDiv [ngClass]="selectedNav == link.name ? 'selectedDesign': '' " id="subname"
+                    style="padding: 0px 20px 2px; cursor: pointer; " data-toggle="tab" role="tab"
+                    (click)="getMenus(link)" *ngFor="let link of CRM_Allocation_Menu_List; index as i">
+                    {{link.name}}
+                </span>
+            </div>
+        </nav>
+        <div class="row ml-2">
+
+            <div class="col-sm-12 col-md-12 col-lg-12" *ngIf="Objs['Vendor Allocation History']">
+                <h2>Vendor Allocation History</h2>
+
+
+                <form [formGroup]="VendorAllocationHistorySummarySearch">
+                    <table>
+                        <tr>
+                            <td>
+                           
+                                <mat-form-field>
+                                    <input type="text" matInput autocomplete="off" placeholder="Vendor Code / Name"
+                                        formControlName="codename">
+                                </mat-form-field>
+                            </td>
+                            <!-- <td>
+                                <mat-label class="ml-2"> Status </mat-label> <br>
+                                <mat-form-field class="ml-2">
+                                    <mat-select formControlName="status" placeholder="Status"> 
+                                        <mat-option value="2">Completed</mat-option>
+                                        <mat-option value="3">Active Count</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td> -->
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsSubmit"
+                                    aria-label="Search" (click)="VendorAllocationHistorySearch('')">
+                                    <mat-icon>search</mat-icon>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsWhite"
+                                    (click)="resetVendorAllocationHistory()">Clear</button>
+
+                            </td>
+                    </table>
+                </form>
+
+
+                <table class="table table-bordered" id="tableGlobal">
+                    <thead class="table_header">
+                        <tr>
+                            <th>Sl.no</th>
+                            <th>Campaign</th>
+                            <!-- <th>Source</th> -->
+                            <th>Allocated Date & Time</th>
+                            <th>Vendor Name</th>
+                            <th>Lead Count</th>
+                            <!-- <th>Allocated By</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let type of VendorAllocationHistoryObjects.VendorAllocationHistoryList; let proindex = index">
+                            <td>{{(VendorAllocationHistoryObjects?.presentpageVendorAllocationHistory -
+                                1)*10+proindex+1}}</td>
+                            <td>
+                                ({{type.campaign_id?.code}} ) {{type.campaign_id?.name}}
+                            </td>
+                            
+                            <td> {{type?.created_date | date:'medium'}}</td>
+                            <td> ({{type?.vendor_id?.code}}) {{type?.vendor_id?.name}} </td>
+                            <td> {{type?.count}} </td>
+                            <!-- <td>{{type?.created_by?.code}} - {{type.created_by?.full_name}}</td> -->
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="VendorAllocationHistoryObjects.VendorAllocationHistoryList?.length==0 || VendorAllocationHistoryObjects.VendorAllocationHistoryList == undefined || VendorAllocationHistoryObjects.VendorAllocationHistoryList == '' ; else paginationpro"
+                    class="NodataAlign text-center"> No Records Found </div>
+                <ng-template #paginationpro>
+                    <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                        <button type="button" mat-icon-button
+                            [disabled]="VendorAllocationHistoryObjects.has_previousVendorAllocationHistory == false"
+                            color="primary" (click)="VendorAllocationHistorySearch('previous')">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{VendorAllocationHistoryObjects?.presentpageVendorAllocationHistory}}
+                        <button type="button" mat-icon-button
+                            [disabled]="VendorAllocationHistoryObjects.has_nextVendorAllocationHistory === false"
+                            color="primary" (click)="VendorAllocationHistorySearch('next')">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </div>
+
+
+            <div class="col-sm-12 col-md-12 col-lg-12" *ngIf="Objs['Allocation']">
+                <h2>Allocation</h2>
+                <form [formGroup]="VendorAllocationSearch">
+                    <table>
+                        <tr>
+                            <td>
+                               
+                                <mat-form-field>
+                                    <input type="text" matInput autocomplete="off" placeholder="Vendor Code / Name"
+                                        formControlName="codename">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsSubmit"
+                                    aria-label="Search" (click)="VendorAllocationSummarySearch('')">
+                                    <mat-icon>search</mat-icon>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsWhite"
+                                    (click)="resetVendorAllocation()">Clear</button>
+
+                            </td>
+                    </table>
+                </form>
+
+                <table class="table table-bordered" id="tableGlobal">
+                    <thead class="table_header">
+                        <tr>
+                            <th>Sl.No</th>
+                            <th>Vendor Name</th>
+                            <!-- <th>Agent Group</th> -->
+                            <!-- <th>Lead Count</th> -->
+                            <th>Allocated Lead</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let limit of VendorAllocationHistoryObjects.VendorAllocationList; let index = index">
+                            <td>{{index + 1}}</td>
+                            <td> ({{limit.code }}) {{limit.name }} </td>
+                            <!-- <td>{{limit?.agent_group_name}}</td> -->
+                            <!-- <td> {{limit?.limit }} </td> -->
+                            <td>
+                                <!-- <div class="progress">
+                                        <div class="progress-bar" [ngStyle]="{'width': limit?.active_count+'%'}" role="progressbar"
+                                        aria-valuemin="0" aria-valuemax=limit?.limit>
+                                            <span style="color: black">{{limit?.active_count}}/{{limit?.limit}} </span></div>
+                                    </div> -->
+                                <progress value={{limit?.active_count}} max={{limit?.limit}}> </progress>
+                                <span>{{limit?.active_count | number}}/{{limit?.limit | number}}</span>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div *ngIf="VendorAllocationHistoryObjects.VendorAllocationList?.length==0 || VendorAllocationHistoryObjects.VendorAllocationList == undefined || VendorAllocationHistoryObjects.VendorAllocationHistoryList == '' ; else paginationalloc"
+                    class="NodataAlign text-center"> No Records Found </div>
+                <ng-template #paginationalloc>
+                    <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                        <button type="button" mat-icon-button
+                            [disabled]="VendorAllocationHistoryObjects.has_previousVendorAllocation == false"
+                            color="primary" (click)="VendorAllocationSummarySearch('previous')">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{VendorAllocationHistoryObjects?.presentpageVendorAllocation}}
+                        <button type="button" mat-icon-button
+                            [disabled]="VendorAllocationHistoryObjects.has_nextVendorAllocation === false"
+                            color="primary" (click)="VendorAllocationSummarySearch('next')">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+
+
+
+
+
+
+
+
+
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-12" *ngIf="Objs['Unassigned Leads']">
+                <app-lead-allocation></app-lead-allocation>
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+    </mat-card>
+
+</div>

@@ -1,0 +1,164 @@
+<div class="container">
+    <form [formGroup]="Exceptionsummary" id='show'>
+        <h2 style="margin-left: 39%; margin-top: 3%;">Exception Schedule</h2>
+        <div>
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field (click)="Exception_Finyear_dd()">
+                        <mat-label>Fin Year</mat-label>
+                        <input matInput formControlName="Exception_Fyear" [matAutocomplete]="Finyear"
+                            #FinyearContactInput>
+                        <mat-autocomplete #Finyear="matAutocomplete" [displayWith]="display_Exc_finyear">
+                            <mat-option *ngFor="let Years of Finyear_data" [value]="Years">{{Years.finyer}}</mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="" formControlName="Exception_name" autocomplete="off">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field (click)="Exception_schedule_dd()">
+                        <mat-label>Schedule Master</mat-label>
+                        <input #Sche_data matInput formControlName="Exception_schedule"
+                            [matAutocomplete]="schedule_excep" #ScheduleContactInput (keyup)="Exception_schedule_dd()">
+                        <mat-autocomplete #schedule_excep="matAutocomplete" [displayWith]="display_Exc_schedule"
+                            (opened)="autocompleteschedule_excep_Scroll()">
+                            <mat-option *ngFor="let Schedule of Schdularmaster_Exception"
+                                [value]="Schedule">{{Schedule.name}}</mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <!-- <div class="col-md-3">
+                    <mat-form-field>
+                        <mat-label>Amount</mat-label>
+                        <input matInput type="number" placeholder="" formControlName="Exception_amount"
+                            autocomplete="off">
+                    </mat-form-field>
+                </div> -->
+                <div class="col-md-1">
+                    <button type="button" style="border-radius: 30px; margin-top: 20px;" class="btn btn-outline-primary"
+                        (click)="Exception_search(Exceptionsummary.value)"><span class="fa fa-search"></span></button>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" style="border-radius: 30px; margin-top: 20px;" class="btn btn-outline-primary"
+                        data-toggle="modal" (click)="Exception_add('Add')" data-target="#exampleModalexception"><span
+                            class="fa fa-plus"></span></button>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" style="border-radius: 30px; margin-top: 20px;" class="btn btn-outline-primary"
+                        (click)="Exception_clear()">Clear</button>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 5%;" class="tableFixHead">
+            <table class="table table-bordered" fixed-header>
+                <thead style="background-color: #00800021;">
+                    <tr>
+                        <th>S:No</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Fin Year</th>
+                        <th>Schedule Master</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let Exception of Exception_summary_data;  let i = index">
+                        <td>{{ (presentpage-1)*10+i+1 }}</td>
+                        <td>{{ Exception.name }}</td>
+                        <td>{{ Exception.code }}</td>
+                        <td>{{ Exception.finyear }}</td>
+                        <td>{{ Exception.parent_id.name }}</td>
+                        <td>{{ Exception.value | number:'1.0-0':'en-IN' }}</td>
+                        <td>
+                            <div style="display: flex;">
+                                <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                    data-target="#exampleModalexception" class="iconbutton" color="primary"
+                                    style="color: green;" (click)="Exception_edit(Exception,'edit')">
+                                    <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="View" data-toggle="modal"
+                                    data-target="#exampleModalexception" class="iconbutton" color="primary"
+                                    style="color: green;" (click)="Exception_view(Exception,'view')">
+                                    <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="delete"
+                                class="material-icons app-toolbar-menu delete-button" style="color: green;"
+                                (click)="Exception_deletes(Exception)">
+                                <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                            </button>
+                            </div>
+                        </td>
+                    </tr>  
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_scdhele_found" style="text-align: center;">Data Not Found</p>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="hasprevious === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>{{presentpage}}
+                <button mat-icon-button [disabled]="hasnext === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal fade" id="exampleModalexception" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 180%; margin-left: -17%;">
+            <div class="modal-header" style="width: 100%;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Exception
+                        Schedule</b></h5>
+                <button type="button" class="close" aria-hidden="true" (click)="Exception_close()" data-dismiss="modal" #Exception_sum_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="ExceptionModal">
+                    <div class="row">
+                        <mat-form-field  style="width: 20%;margin-left: 4%; " (click)="Exception_Finyear_modal_dd()">
+                            <mat-label>Fin Year*</mat-label>
+                            <input matInput formControlName="Exception_modal_Fyear" [matAutocomplete]="Finyearmodal"
+                                #FinyearModalContactInput  [readonly]="Exce_mas_view">
+                            <mat-autocomplete #Finyearmodal="matAutocomplete" [displayWith]="display_Exc_modal_finyear">
+                                <mat-option *ngFor="let Findata of Finyear_modal_data" [value]="Findata">{{Findata.finyer}}</mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field style="width: 20%;margin-left: 4%; " (click)="Exception_schedule_modal_dd()">
+                            <mat-label>Schedule Master*</mat-label>
+                            <input #Sche_modal_data matInput formControlName="Exception_modal_schedule"
+                                [matAutocomplete]="schedule_modal_excep" #ScheduleModalContactInput (keyup)="Exception_schedule_modal_dd()" [readonly]="Exce_mas_view">
+                            <mat-autocomplete #schedule_modal_excep="matAutocomplete" [displayWith]="display_modal_Exc_schedule"
+                                (opened)="autocompleteschedule_modal_excep_Scroll()">
+                                <mat-option *ngFor="let ScheduleModal of Schdularmaster_modal_Exception"
+                                    [value]="ScheduleModal">{{ScheduleModal.name}}</mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                           
+                        <mat-form-field style="width: 20%;margin-left: 4%; ">
+                            <mat-label>Name</mat-label>
+                            <input matInput formControlName="Exception_modal_name" autocomplete="off" [readonly]="Exce_mas_view">
+                        </mat-form-field>
+                        
+                        <mat-form-field style="width: 20%;margin-left: 4%; ">
+                            <mat-label>Amount*</mat-label>
+                            <input matInput type="number" formControlName="Exception_modal_amount" autocomplete="off" [readonly]="Exce_mas_view">
+                        </mat-form-field> 
+                    </div>
+                    <button type="submit" style="border-radius: 40px; margin-left: 2%;"
+                        *ngIf="Exception_schedule_submit_btn" class="btn btn-outline-primary"
+                        (click)="Expence_createdata(ExceptionModal.value)">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,285 @@
+<h2 style="margin-left:2%;margin-top: 30px;color: rgb(0, 0, 0);font-size: 22px; font-weight:500;
+">
+    Employee Mapping Summary
+</h2>
+<div class="row">
+    <div style="margin-left:2%" class="col-12">
+        <form [formGroup]="employeemappingSearchForm">
+            <mat-form-field style="width:250px;">
+                <mat-label>Grade</mat-label>
+                <input matInput placeholder="Grade Search" formControlName="grade">
+            </mat-form-field>
+            <mat-form-field  style="margin-left:15px;width:200px">
+                <mat-label>Designation</mat-label>
+                <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="designationauto" #designationInput formControlName="designation"  (click)="get_search_designation()"/>
+               
+                <mat-autocomplete #designationauto="matAutocomplete" #designationInput [displayWith]="sdesignationinterface" (opened)="autocompletesearchdesignation()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option title="{{d.name}}"*ngFor="let d of searchdesignationList" [value]="d" >
+                        {{d.name}}
+                    </mat-option>
+                </ng-container> 
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <button class="btn btn-outline-success" type="submit" style="border-radius:40px;margin-left: 15px;"
+                color="success"><i class="fa fa-search" (click)="getemployeemappingsummary(1)" aria-hidden="true"></i></button>
+            <button class="btn btn-outline-success" type="clear" (click)="resetform()" style="border-radius:40px;margin-left: 15px;"
+                color="success">Clear</button>
+            <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                data-target="#employeemappingcreate" style="border-radius:40px;margin-left:15px"><span
+                    class="fa fa-plus"></span>
+            </button>
+
+
+        </form>
+    </div>
+</div>
+
+
+<!--table-->
+<div class="Container" style="margin-left: 20px;">
+    <div class="table-responsive" style="margin-top: 1%;width: 90%; -ms-overflow-style: none;">
+
+
+        <!-- <div class="container">
+      <div class="row">
+        <div class="table-responsive" >
+            <table class="table table-bordered" fixed-header
+            style="width: 95%;margin-top: 10px;margin-left:30px;overflow-x: hidden;">
+        <thead class="table_header" style="text-align: left;">  -->
+        <div class="container">
+
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table table-bordered" fixed-header
+                        style="width: 95%;margin-top: 10px;overflow-x: hidden;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th style="text-align: center;">S.No</th>
+                                <th style="text-align: center;">Grade</th>
+                                <th style="text-align: center;">Designation</th>
+                                <th style="text-align: center;">Order No</th>
+                                <th style="text-align: center;">Edit</th>
+                                <!-- <th style="text-align: center;">Action</th> -->
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let grade of getemployeemappingList; index as i">
+                                <td style="text-align: center;">{{(currentpage - 1)*pagesize +i+1 }}</td>
+                                <td style="text-align: center;">{{grade.grade}}</td>
+                                <td style="text-align: center;">{{grade.designation}}</td>
+                                <td style="text-align: center;">{{grade.orderno}}</td>
+                                <td>
+                                    <button type="button" mat-icon-button  data-toggle="modal" (click)="editgrade(grade)"
+                                        data-target="#editemployeemapping">
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
+                                    
+                                </td>
+
+                                <!-- <td style="text-align: center;"><button mat-icon-button matTooltip="Delete"
+                                        class="iconbutton" (click)="deletegrade(grade.id)" color="primary">
+                                        <mat-icon style="color: gray;" aria-label="Delete">delete</mat-icon>
+                                    </button>
+                                </td> -->
+                            </tr>
+                            <tr *ngIf="getemployeemappingList?.length==0; else gstpagination" class="NodataAlign"><td colspan="19" style="text-align: center;">No Records Found...</td></tr>
+                            <ng-template #gstpagination>
+                           <tr>
+                            <td colspan="4">Total Count:{{this.totalcount}}</td>
+                           <td colspan="15">
+                           <div style="text-align:right;">
+                               <button mat-icon-button [disabled]="has_previous=== false" color="primary" (click)="previousClick()">
+                                   <mat-icon>arrow_back
+                                   </mat-icon>
+                               </button>  {{currentpage}}
+                               <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                                   <mat-icon>arrow_forward
+                                   </mat-icon>
+                               </button>
+                           </div>
+                           </td>
+                           </tr>
+                           </ng-template>
+                        </tbody>
+                    </table>
+                    <!-- <div *ngIf="getemployeemappingList?.length==0; else paginationsummary"
+                        class="NodataAlign text-center">No Records
+                        Found...
+                    </div>
+                    <ng-template #paginationsummary>
+                        <div class="cursor"
+                            style="font-size: small;text-align:right; margin-bottom:100px;float: right;">
+                            <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                                (click)="previousClick()">
+                                <mat-icon>arrow_back
+                                </mat-icon>
+                            </button> {{currentpage}}
+                            <button mat-icon-button [disabled]="has_next === false" color="primary"
+                                (click)="nextClick()">
+                                <mat-icon>arrow_forward
+                                </mat-icon>
+                            </button>
+                        </div>
+                    </ng-template> -->
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editemployeemapping" tabindex="-1" role="dialog" 
+        >
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">Edit Grade Eligibility</h2>
+                    <button type="button" #closebuttons class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-top: 2%;">
+
+                    <form [formGroup]="employeemapping_editform">
+                        <div class="row">
+                            <div class="col-md-4">
+                                
+                                    <mat-form-field style="width: 250px; margin-left: 15px;">
+                                        <mat-label>Grade</mat-label>
+                                        <input matInput placeholder="Grade" formControlName="grade" #gradeInput autocomplete="off"  />
+                
+                                    </mat-form-field>
+                               
+                            </div>
+                       
+                            <div class="col-md-4">
+                               
+                                    <mat-form-field  style="margin-left:15px;width:250px">
+                                        <mat-label>Designation</mat-label>
+                                        <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="designationauto2" #designationInput2 formControlName="designation" (click)="edit_search_designation()" />
+                                       
+                                        <mat-autocomplete #designationauto2="matAutocomplete" #designationInput2 [displayWith]="editdesignationinterface" (opened)="autocomplete_edit_designation()">
+                                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option title="{{d.name}}"*ngFor="let d of editdesignationList" [value]="d" >
+                                                {{d.name}}
+                                            </mat-option>
+                                        </ng-container> 
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                
+                            </div>
+                            <div class="col-md-4">   
+                                    <mat-form-field  style="margin-left:15px;width: 250px;">
+                                        <mat-label>Orderno</mat-label>
+                                        <input   type="text" matInput autocomplete="off" #ordernoInput formControlName="orderno" />                             
+                                    </mat-form-field>   
+                            </div>
+
+                        </div>
+                         <div>
+                            <div class="col-md-5" style="text-align: right;"> 
+
+                            <button type="button" class="btn btn-outline-primary" (click)="updateForm()"   style="border-radius: 40px;font-size: 20px;height: 50px;" >Submit</button>  
+                            <!-- <button class="btn-outline-primary" (click)="updateForm()" >Submit</button> -->
+                            </div>
+                         </div>
+                            
+                            <!-- <div class="col-md">   
+                                <mat-form-field class="example-full-width" style="width: 300px;">
+                                    <mat-label>Status</mat-label>
+                                    <input   type="text" matInput autocomplete="off" #statusInput formControlName="status" style="width: 250px;"/>                             
+                                </mat-form-field>   
+                        </div> -->
+                           
+                        <!-- <div class="row"> -->
+                                      
+                        <!-- <button  matTooltip="view" class="material-icons" 
+                                (click)="updateForm()" style="color: green;margin-top: -60%;" -->
+                               
+                            <!-- <mat-icon>visibility</mat-icon> -->
+                                    <!-- <mat-icon>library_books</mat-icon> -->
+                                <!-- </button> -->
+                        <!-- </div> -->
+                        
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+        id="employeemappingcreate">
+        
+        <div class="modal-dialog modal-xl" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">Employee Mapping Create Form</h2>
+                    <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div>
+
+                    <form class="container" [formGroup]="employeemapcreate" (ngSubmit)="createsms()">
+                        <div class="row">
+                            <div class="col-md-3"> 
+                                    <mat-form-field style="width: 200px; margin-left: 15px;">
+                                        <mat-label>Grade</mat-label>
+                                        <input matInput placeholder="Grade" formControlName="grade" #assetidInput autocomplete="off"  />
+                
+                                    </mat-form-field>    
+                            </div>
+                            <div class="col-md-3">
+                               
+                                    <mat-form-field  style="margin-left:15px;width:200px">
+                                        <mat-label>Designation</mat-label>
+                                        <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="designationauto1" #designationInput1 formControlName="designation"  (click)="get_designation()"/>
+                                       
+                                        <mat-autocomplete #designationauto1="matAutocomplete" #designationInput1 [displayWith]="designationinterface" (opened)="autocompletedesignation()">
+                                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option title="{{d.name}}"*ngFor="let d of designationList" [value]="d" >
+                                                {{d.name}}
+                                            </mat-option>
+                                        </ng-container> 
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                
+                            </div>
+                            <div class="col-md-3">   
+                                    <mat-form-field  style="width: 200px;margin-left:15px;">
+                                        <mat-label>Orderno</mat-label>
+                                        <input   type="text" matInput autocomplete="off" #ordernoInput formControlName="orderno" />                             
+                                    </mat-form-field>   
+                            </div>
+                            <!-- <div class="col-md">   
+                                <mat-form-field class="example-full-width" style="width: 300px;">
+                                    <mat-label>Status</mat-label>
+                                    <input   type="text" matInput autocomplete="off" #statusInput formControlName="status" style="width: 250px;"/>                             
+                                </mat-form-field>   
+                        </div> -->
+                           
+                    </div>       
+                        <div  > 
+                            <div class="col-md-5" style="text-align: right;"> 
+                            
+                            <button type="button" class="btn btn-outline-primary" (click)="submitForm()"   style="border-radius: 40px;font-size: 20px;height: 50px;" >Submit</button>          
+                        <!-- <button class="btn-outline-primary" (click)="submitForm()">Submit</button> -->
+                                <!-- data-target="#tranpopups" data-toggle="modal"> -->
+                            <!-- <mat-icon>visibility</mat-icon> -->
+                                    <!-- <mat-icon>library_books</mat-icon> -->
+                                <!-- </button> -->
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+    </div>
+    
+   
+</div>

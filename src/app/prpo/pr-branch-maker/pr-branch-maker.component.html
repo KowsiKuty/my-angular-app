@@ -1,0 +1,2550 @@
+<div class="mb-5">
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <h3>Branch Indent Approved Details</h3>
+        </mat-panel-title>
+        <!-- <mat-panel-description>
+            Type your name and age
+          </mat-panel-description> -->
+      </mat-expansion-panel-header>
+
+<div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+  <button mat-raised-button color="primary" data-toggle="modal" data-target="#productview" (click)="Addbranchpr(2)">Add Branch PR</button>
+</div>
+      <form [formGroup]="SearchForm" (ngSubmit)="Search()" class="cus-aSearch">
+        <div style="margin-left: 25px">
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="Draftstatus">
+              <mat-option
+                *ngFor="let types of Statuslist"
+                [value]="types.name"
+                (click)="Search();resetField()"
+              >
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          &nbsp; &nbsp;
+          <!-- <button
+        class="btn btn-outline-primary"
+        type="submit"
+        style="border-radius: 40px;"
+        color="primary"
+        matTooltip="Search Data"
+        (click)="Search()"
+      >
+        <i class="fa fa-search" aria-hidden="true"></i>
+      </button> -->
+          <!-- &nbsp;&nbsp; -->
+          <button
+            class="btn btn-outline-secondary"
+            (click)="reset()"
+            type="submit"
+            style="border-radius: 40px"
+            color="primary"
+            matTooltip="Reset"
+          >
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div *ngIf="!showdraft" class="fluid table-responsive tableStylee">
+          <table class="table table-bordered table-hover">
+            <!-- <thead class="table_header"> -->
+            <!-- Column Headers -->
+            <!-- <tr fixed-header>
+                <th>S.No</th>
+                <th>BIR No</th>
+                <th>Branch Code</th>
+                <th>Commodity Name</th>
+                <th>Product Type</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Select</th>
+              </tr> -->
+            <!-- </thead> -->
+            <!-- Search Filters Row -->
+            <tr class="table_header">
+              <th>S.No</th>
+              <!-- <th>BR No</th> -->
+              <th>
+                <mat-form-field appearance="outline" class="qty">
+                  <mat-label>BIR No</mat-label>
+                  <input
+                    matInput
+                    placeholder="BIR No"
+                    formControlName="no"
+                    (keydown.enter)="onEnterKey($event)"
+                  />
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline">
+                  <mat-label>Branch Code</mat-label>
+                  <input
+                    #branchInput
+                    placeholder="Select Branch Code"
+                    matInput
+                    formControlName="branch_id"
+                    [matAutocomplete]="branch"
+                  />
+                  <mat-autocomplete
+                    #branch="matAutocomplete"
+                    [displayWith]="displayFnbranch"
+                    (opened)="autocompletebranchScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let branch of branchList"
+                        [value]="branch"
+                        (click)="Search()"
+                      >
+                        {{ branch.code }}-{{ branch.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    [disabled]="branchreadonly"
+                    (click)="resetAfterCommodityChange('branch')"
+                  >
+                    x
+                  </button>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline">
+                  <mat-label>Commodity Name</mat-label>
+                  <input
+                    placeholder="Select commodity"
+                    matInput
+                    formControlName="commodity_id"
+                    [matAutocomplete]="commodity"
+                  />
+                  <mat-autocomplete
+                    #commodity="matAutocomplete"
+                    [displayWith]="displayFncommodity"
+                    (opened)="autocompletecommodityScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let commodity of commodityList"
+                        [value]="commodity"
+                        (click)="Search()"
+                      >
+                        {{ commodity.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    [disabled]="comreadonly"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterCommodityChange('com')"
+                  >
+                    x
+                  </button>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline">
+                  <mat-label>Request Type</mat-label>
+                  <mat-select formControlName="pr_for">
+                    <mat-option
+                      *ngFor="let t of type"
+                      [value]="t.id"
+                      (click)="selectedType = t.id; Search()"
+                    >
+                      {{ t.text }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </th>
+              <th>
+                <!-- <mat-form-field appearance="outline">
+                  <mat-label>Product Type</mat-label>
+                  <mat-select formControlName="product_type">
+                    <mat-option
+                      *ngFor="let types of Lists"
+                      [value]="types.id"
+                      (click)="Search()"
+                    >
+                      {{ types.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field> -->
+                 <mat-form-field (click)="getProductTypes()" appearance="outline">
+            <mat-label>Product Type</mat-label>
+            <input #productInputtype placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types" (click)="Search()">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline" (click)="getproductFK()">
+                  <mat-label>Product Name</mat-label>
+                  <input
+                    #productInput
+                    placeholder="Select Product"
+                    matInput
+                    formControlName="product_id"
+                    [matAutocomplete]="productcat"
+                  />
+                  <mat-autocomplete
+                    #productcat="matAutocomplete"
+                    [displayWith]="displayFnproduct"
+                    (opened)="autocompleteproductScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let product of productList"
+                        [value]="product"
+                        (click)="Search()"
+                      >
+                        {{ product.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterCommodityChange('product_id')"
+                  >
+                    x
+                  </button>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline" class="qty">
+                  <mat-label>Quantity</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    placeholder="Quantity"
+                    formControlName="qty"
+                    (keydown.enter)="onEnterKey($event)"
+                  />
+                </mat-form-field>
+              </th>
+              <th>
+                Select
+                <!-- <mat-checkbox title="Select All" 
+                  (change)="selectAll($event.checked, approvedList)">
+                  </mat-checkbox> -->
+              </th>
+              <!-- <th>
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    type="submit"
+                    color="primary"
+                    matTooltip="Search Data"
+                  >
+                    <span class="fa fa-search"></span>
+                  </button>
+                  &nbsp; &nbsp;
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    color="primary"
+                    (click)="Reset()"
+                    matTooltip="Reset Filters"
+                  >
+                    <span class="fa fa-refresh"></span>
+                  </button>
+                </th> -->
+            </tr>
+            <tbody>
+              <tr *ngFor="let prsummary of approvedList; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ prsummary?.no }}</td>
+                <td>{{ prsummary?.branch_id?.fullname }}</td>
+                <td>{{ prsummary?.commodity_id?.name }}</td>
+                <td>
+                  <mat-button-toggle-group class="pr_for">
+                    <mat-button-toggle
+                      value="1"
+                      [checked]="prsummary.pr_request == 1"
+                      [disabled]="prsummary?.pr_request != 1 ? true : false"
+                    >
+                      New</mat-button-toggle
+                    >
+                    <mat-button-toggle
+                      value="2"
+                      [checked]="prsummary?.pr_request == 2"
+                      [disabled]="prsummary?.pr_request != 2 ? true : false"
+                      (click)="assetDetails(prsummary)"
+                      data-target="#assetDetails"
+                      data-toggle="modal"
+                      >Replace</mat-button-toggle
+                    >
+                  </mat-button-toggle-group>
+                </td>
+                <td>{{ prsummary?.product_type?.name }}</td>
+                <td>{{ prsummary?.product_id?.name }}</td>
+                <td>{{ prsummary?.qty }}</td>
+                <td>
+                              <input
+      type="checkbox" 
+      class="check"
+      [checked]="isSelected(prsummary)"
+      (change)="onCheckboxChange($event, i, prsummary)"
+    />
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="showdraft" class="fluid table-responsive tableStylee">
+          <table class="table table-bordered">
+            <!-- <thead class="table_header"> -->
+            <!-- Column Headers -->
+            <!-- <tr fixed-header>
+                <th>S.No</th>
+                <th>BIR No</th>
+                <th>Branch Code</th>
+                <th>Commodity Name</th>
+                <th>Product Type</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Select</th>
+              </tr> -->
+            <!-- </thead> -->
+            <!-- Search Filters Row -->
+            <tr class="table_header">
+              <th>S.No</th>
+              <th>Draft No</th>
+              <th>
+                <mat-form-field appearance="outline" class="qty">
+                  <mat-label>BIR No</mat-label>
+                  <input
+                    matInput
+                    placeholder="BIR No"
+                    (keydown.enter)="onEnterKey($event)"
+                    formControlName="no"
+                  />
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline">
+                  <mat-label>Branch Code</mat-label>
+                  <input
+                    #branchInput
+                    placeholder="Select Branch Code"
+                    matInput
+                    formControlName="branch_id"
+                    [matAutocomplete]="branch"
+                  />
+                  <mat-autocomplete
+                    #branch="matAutocomplete"
+                    [displayWith]="displayFnbranch"
+                    (opened)="autocompletebranchScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let branch of branchList"
+                        [value]="branch"
+                        (click)="Search()"
+                      >
+                        {{ branch.code }}-{{ branch.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    [disabled]="branchreadonly"
+                    (click)="resetAfterCommodityChange('branch')"
+                  >
+                    x
+                  </button>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline">
+                  <mat-label>Commodity Name</mat-label>
+                  <input
+                    placeholder="Select commodity"
+                    matInput
+                    formControlName="commodity_id"
+                    [matAutocomplete]="commodity"
+                  />
+                  <mat-autocomplete
+                    #commodity="matAutocomplete"
+                    [displayWith]="displayFncommodity"
+                    (opened)="autocompletecommodityScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let commodity of commodityList"
+                        [value]="commodity"
+                        (click)="Search()"
+                      >
+                        {{ commodity.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    [disabled]="comreadonly"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterCommodityChange('com')"
+                  >
+                    x
+                  </button>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline">
+                  <mat-label>Request Type</mat-label>
+                  <mat-select formControlName="pr_for">
+                    <mat-option
+                      *ngFor="let t of type"
+                      [value]="t.id"
+                      (click)="selectedType = t.id; Search()"
+                    >
+                      {{ t.text }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline">
+                  <mat-label>Product Type</mat-label>
+                  <mat-select formControlName="product_type">
+                    <mat-option
+                      *ngFor="let types of Lists"
+                      [value]="types.id"
+                      (click)="Search()"
+                    >
+                      {{ types.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline" (click)="getproductFK()">
+                  <mat-label>Product Name</mat-label>
+                  <input
+                    #productInput
+                    placeholder="Select Product"
+                    matInput
+                    formControlName="product_id"
+                    [matAutocomplete]="productcat"
+                  />
+                  <mat-autocomplete
+                    #productcat="matAutocomplete"
+                    [displayWith]="displayFnproduct"
+                    (opened)="autocompleteproductScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let product of productList"
+                        [value]="product"
+                        (click)="Search()"
+                      >
+                        {{ product.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    (click)="resetAfterCommodityChange('product_id')"
+                  >
+                    x
+                  </button>
+                </mat-form-field>
+              </th>
+              <th>
+                <mat-form-field appearance="outline" class="qty">
+                  <mat-label>Quantity</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    placeholder="Quantity"
+                    formControlName="qty"
+                    (keydown.enter)="Search()"
+                  />
+                </mat-form-field>
+              </th>
+              <!-- <th>
+                  Select -->
+              <!-- <mat-checkbox title="Select All" 
+                  (change)="selectAll($event.checked, approvedList)">
+                  </mat-checkbox> -->
+              <!-- </th> -->
+              <th>Action</th>
+              <!-- <th>
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    type="submit"
+                    color="primary"
+                    matTooltip="Search Data"
+                  >
+                    <span class="fa fa-search"></span>
+                  </button>
+                  &nbsp; &nbsp;
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    color="primary"
+                    (click)="Reset()"
+                    matTooltip="Reset Filters"
+                  >
+                    <span class="fa fa-refresh"></span>
+                  </button>
+                </th> -->
+            </tr>
+            <tbody>
+              <ng-container *ngFor="let qr of draftList; index as i">
+                <ng-container
+                  *ngIf="qr?.data?.sub_array?.length > 0; else noData"
+                >
+                  <tr *ngFor="let q of qr?.data?.sub_array; index as j">
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="qr?.data?.sub_array?.length"
+                    >
+                      {{ i + 1 }}
+                    </td>
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="qr?.data?.sub_array?.length"
+                    >
+                      {{ qr?.no }}
+                    </td>
+                    <td>
+                      {{ q?.no }}
+                    </td>
+                    <td>
+                      {{ q?.branch_id?.fullname }}
+                    </td>
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="qr?.data?.sub_array?.length"
+                    >
+                      {{ qr?.data?.commodity_id?.name }}
+                    </td>
+                    <!-- <td>{{ q?.data?.pr_request }}</td> -->
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="qr?.data?.sub_array?.length"
+                    >
+                      <mat-button-toggle-group class="pr_for">
+                        <mat-button-toggle
+                          value="1"
+                          [checked]="qr?.data?.pr_request == 1"
+                          [disabled]="qr?.data?.pr_request != 1"
+                        >
+                          New
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                          value="2"
+                          [checked]="qr?.data?.pr_request == 2"
+                          [disabled]="qr?.data?.pr_request != 2"
+                          (click)="assetDetails(qr?.data?.prdetail_id)"
+                        >
+                          Replace
+                        </mat-button-toggle>
+                      </mat-button-toggle-group>
+                    </td>
+
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="qr?.data?.sub_array?.length"
+                    >
+                      {{ qr?.data?.product_type?.name }}
+                    </td>
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="qr?.data?.sub_array?.length"
+                    >
+                      {{ qr?.data?.product_id?.name }}
+                    </td>
+                    <td>{{ q?.qty }}</td>
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="qr?.data?.sub_array?.length"
+                    >
+                      <mat-icon
+                        (click)="getdraftData(qr)"
+                        role="button"
+                        matTooltip="Edit"
+                        >edit</mat-icon
+                      >
+                    </td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+
+              <ng-template #noData>
+                <tr>
+                  <td colspan="16" class="text-center">No Data Found!</td>
+                </tr>
+              </ng-template>
+            </tbody>
+
+            <tbody>
+              <tr *ngFor="let prsummary of draftList?.data; let i = index">
+                <ng-container
+                  *ngFor="let sub of prsummary?.data?.sub_array; let j = index"
+                >
+                  <tr>
+                    <!-- Row Number with rowspan -->
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="prsummary?.data?.sub_array?.length"
+                    >
+                      {{ i + 1 }}
+                    </td>
+
+                    <!-- Sub details -->
+                    <td>{{ sub?.no }}</td>
+                    <td>{{ sub?.branch_id?.fullname }}</td>
+
+                    <!-- Commodity ID with rowspan -->
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="prsummary?.data?.sub_array?.length"
+                    >
+                      {{ prsummary?.data?.commodity_id?.name }}
+                    </td>
+
+                    <!-- PR Request toggle group with rowspan -->
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="prsummary?.data?.sub_array?.length"
+                    >
+                      <mat-button-toggle-group class="pr_for">
+                        <mat-button-toggle
+                          value="1"
+                          [checked]="prsummary?.data?.pr_request == 1"
+                          [disabled]="prsummary?.data?.pr_request != 1"
+                        >
+                          New
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                          value="2"
+                          [checked]="prsummary?.data?.pr_request == 2"
+                          [disabled]="prsummary?.data?.pr_request != 2"
+                          (click)="assetDetails(prsummary?.data?.prdetail_id)"
+                        >
+                          Replace
+                        </mat-button-toggle>
+                      </mat-button-toggle-group>
+                    </td>
+
+                    <!-- Product Type with rowspan -->
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="prsummary?.data?.sub_array?.length"
+                    >
+                      {{ prsummary?.data?.product_type?.name }}
+                    </td>
+
+                    <!-- Product ID with rowspan -->
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="prsummary?.data?.sub_array?.length"
+                    >
+                      {{ prsummary?.data?.product_id?.name }}
+                    </td>
+
+                    <!-- Sub quantity -->
+                    <td>{{ sub?.qty }}</td>
+
+                    <!-- Edit Icon with rowspan -->
+                    <td
+                      *ngIf="j === 0"
+                      [attr.rowspan]="prsummary?.data?.sub_array?.length"
+                    >
+                      <mat-icon
+                        (click)="getdraftData(prsummary)"
+                        matTooltip="Edit"
+                        >edit</mat-icon
+                      >
+                    </td>
+                  </tr>
+                </ng-container>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- <br> -->
+      </form>
+      <div class="row" *ngIf="!showdraft">
+        <div class="col-md-12 text-right mt-2">
+          <!-- <form [formGroup]="branchForm"> -->
+          <mat-button-toggle-group
+            [value]="selectedTypeQ"
+            (change)="price_Quot($event)"
+          >
+            <mat-button-toggle [value]="1">Price List</mat-button-toggle>
+            <mat-button-toggle [value]="2">Quotation</mat-button-toggle>
+          </mat-button-toggle-group>
+          <!-- <mat-button-toggle-group
+  [value]="this.price === 'pricelist' ? 1 : 2"
+  (change)="price_Quot($event)"
+>
+  <mat-button-toggle 
+    [value]="1"
+    [disabled]="this.price !== 'pricelist'"
+  >
+    Price List
+  </mat-button-toggle>
+
+  <mat-button-toggle 
+    [value]="2"
+    [disabled]="this.price !== 'quotation'"
+  >
+    Quotation
+  </mat-button-toggle>
+</mat-button-toggle-group> -->
+
+          <!-- </form> -->
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <br />
+
+  <div class="mb-5" *ngIf="selectedTypeQ">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h3 *ngIf="selectedTypeQ == 1">Create PR Details</h3>
+            <h3 *ngIf="selectedTypeQ == 2">Create Quotation Request</h3>
+          </mat-panel-title>
+          <!-- <mat-panel-description>
+            Type your name and age
+          </mat-panel-description> -->
+        </mat-expansion-panel-header>
+        <div *ngIf="quotation">
+          <app-pr-branch-quotation
+            [selectedRows]="selected"
+            [branchForm]="branchForm"
+          ></app-pr-branch-quotation>
+        </div>
+        <form *ngIf="!quotation" [formGroup]="branchForm">
+          <!-- <h3 class="row mt-4">Enter Details :</h3> -->
+
+          <div class="row pr-5 pl-5 mt-2">
+            <!-- <div class="col-md-3">
+            <mat-form-field style="width: 210px">
+              <mat-label>Branch Code</mat-label>
+              <input
+                #branchInput
+                placeholder="Branch Code"
+                matInput
+                readonly
+                [matAutocomplete]="branch"
+                formControlName="branch"
+              />
+              <mat-autocomplete
+                #branch="matAutocomplete"
+                [displayWith]="displayFnbranch"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let branch of branchList"
+                    [value]="branch"
+                  >
+                    {{ branch.code }}-{{ branch.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field style="width: 210px">
+              <mat-label>Catalog/Non Catalog</mat-label>
+              <mat-select formControlName="type">
+                <mat-option
+                  *ngFor="let types of getCatlog_NonCatlogList"
+                  [value]="types.id"
+                  (click)="chooseType(types)"
+                >
+                  {{ types.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div *ngIf="catalog" class="col-md-3 mt-3">
+            <mat-radio-group formControlName="dts">
+              <mat-label> Is DTS</mat-label>&nbsp;
+              <mat-radio-button
+                *ngFor="let n of yesorno"
+                [value]="n.value"
+                (change)="dtsValidation(n.value)"
+                style="margin-left: 8px"
+              >
+                {{ n.display }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="col-md-3 mt-2">
+            <input
+              type="file"
+              multiple
+              #takeInput
+              (change)="onFileSelectedHeader($event)"
+              style="width: 200px"
+            />
+            <mat-icon
+              style="color: gray"
+              (click)="HeaderFilesDelete()"
+              aria-label="Delete"
+              >delete
+            </mat-icon>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div> -->
+            <!-- <div
+            class="modal fade bd notepad"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-xl" style="margin-left: 550px">
+              <div class="modal-content">
+                <div class="modal-header" style="background: #ddefdd">
+                  <h2 class="modal-title" id="exampleModalLongTitle">
+                    NotePad
+                  </h2>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <br />
+                <div style="margin-left: 50px; width: 90%; height: 70%">
+                  <div>
+                    <div
+                      [ngxSummernote]="config"
+                      [ngxSummernoteDisabled]="editorDisabled"
+                      (blur)="onBlur()"
+                      (mediaDelete)="onDelete($event)"
+                      (summernoteInit)="summernoteInit($event)"
+                      formControlName="notepad"
+                    ></div>
+                  </div>
+                </div>
+                <br />
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    style="border-radius: 40px; margin-left: 10px"
+                    class="btn btn-outline-primary"
+                    data-dismiss="modal"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div> -->
+            <!-- </div>
+        <div class="row pr-5 pl-5"> -->
+            <!-- <div class="col">
+                <mat-form-field style="width: 210px;" (click)="getbranchFK()">
+                  <mat-label>Branch Code</mat-label>
+                  <input #branchInput placeholder="Select Branch Code" matInput formControlName="branch"
+                       [matAutocomplete]="branch">
+                  <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+                      (opened)="autocompletebranchScroll()">
+                      <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                      <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let branch of branchList" [value]="branch"  (onSelectionChange)="getSummary($event.source.value)">
+                              {{branch.code}}-{{branch.name}}
+                          </mat-option>
+                      </ng-container>
+                  </mat-autocomplete>
+                  <button type="button" matSuffix class="close" [disabled]="branchreadonly"
+                      (click)="resetAfterCommodityChange('branch')">X</button>
+              </mat-form-field>
+              </div> -->
+
+            <!-- <div class="col-md-3">
+            <mat-form-field
+              (click)="getmakerpca()"
+              style="width: 210px"
+              title="{{ mep_name ? mep_name : '' }}"
+            >
+              <mat-label>PCA Number</mat-label>
+              <input
+                #mepinput
+                placeholder="PCA Number"
+                matInput
+                formControlName="pca"
+                [matAutocomplete]="mepname"
+              />
+              <mat-autocomplete
+                #mepname="matAutocomplete"
+                [displayWith]="displayFnMep.bind(this)"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let mep of MEPList"
+                    [value]="mep.no"
+                    title="{{ mep.mepno }}"
+                    (click)="pcaId(mep)"
+                  >
+                     {{ mep.mepno }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+              <button
+                type="button"
+                matSuffix
+                class="close"
+                (click)="resetAfterCommodityChange('pca')"
+              >
+                x
+              </button>
+            </mat-form-field>
+          </div> -->
+            <!-- (onSelectionChange)="getSummary($event.source.value.id)" -->
+
+            <!-- <div class="col-md-3">
+            <mat-form-field style="width: 210px" (click)="getmakercommodity()">
+              <mat-label>Commodity</mat-label>
+              <input
+                #commodityInputt
+                placeholder="Select commodity"
+                matInput
+                formControlName="commodity"
+                [matAutocomplete]="commodityy"
+              />
+              <mat-autocomplete
+                #commodityy="matAutocomplete"
+                [displayWith]="displayFncommodity"
+                (opened)="autocompletecomScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let commodity of commodityListt"
+                    [value]="commodity"
+                    (click)="getpcapopup(commodity.id)"
+                  >
+                    {{ commodity.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+              <button
+                type="button"
+                matSuffix
+                class="close"
+                (click)="resetAfterCommodityChange('removecom')"
+              >
+                x
+              </button>
+            </mat-form-field>
+            &nbsp; &nbsp; &nbsp; &nbsp;
+
+            <button
+              *ngIf="ismepdtl"
+              type="button"
+              matTooltip="PCA Details"
+              class="btn btn-default"
+              mat-button
+              data-toggle="modal"
+              data-target="#lableMep"
+            >
+              <span class="material-icons"> feedback </span>
+            </button>
+          </div> -->
+            <!-- </div>
+        <div class="row pr-5 pl-5"> -->
+            <div class="col-md-3">
+              <mat-form-field
+                appearance="outline"
+                class="wrapper"
+                style="width: 200px"
+              >
+                <mat-label>Product Name</mat-label>
+                <!-- <mat-label *ngIf="Services">Service Name</mat-label> -->
+
+                <input
+                  #productInput
+                  [readonly]="true"
+                  placeholder="Select Product"
+                  matInput
+                  formControlName="product"
+                  [matAutocomplete]="productcat"
+                />
+                <mat-autocomplete
+                  #productcat="matAutocomplete"
+                  [displayWith]="displayFnproduct"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let product of productList"
+                      [value]="product"
+                    >
+                      {{ product.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+                <!-- <button
+              type="button"
+              matSuffix
+              class="close"
+              (click)="resetAfterProductChange('', 'removeProd')"
+            >
+              x
+            </button> -->
+              </mat-form-field>
+            </div>
+
+            <!-- <div class="col-md-3">
+              <mat-form-field style="width: 200px"  (click)="getpsupplier()">
+                <mat-label>Supplier Name</mat-label>
+                <input
+                  #supplierInput
+                  [readonly]="supplierreadonly"
+                  placeholder="Select supplier"
+                  matInput
+                  formControlName="supplier"
+                  [matAutocomplete]="supplierr"
+                />
+                <mat-autocomplete
+                  #supplierr="matAutocomplete"
+                  [displayWith]="displayFnsupplier"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let supplier of supplierList"
+                      [value]="supplier"
+                      title="{{ supplier.name }}"
+                    >
+                      {{ supplier.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+               
+              </mat-form-field>
+            </div> -->
+
+            <!-- <div *ngIf="selectedTypeQ == 1 && catalog" class="col-md-3">
+              <mat-form-field style="width: 200px" (click)="getitem()">
+                <mat-label>Make</mat-label>
+                <input
+                  #itemInput
+                  placeholder="Select Make"
+                  matInput
+                  formControlName="items"
+                  [matAutocomplete]="item"
+                />
+                <mat-autocomplete
+                  #item="matAutocomplete"
+                  [displayWith]="displayFnitem"
+                  (opened)="autocompleteitemScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let item of itemList"
+                      [value]="item"
+                      (click)="makeCheckk(item)"
+                    >
+                      {{ item?.make?.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete> -->
+            <!-- <button
+                  type="button"
+                  matSuffix
+                  class="close"
+                  (click)="resetAfterItemChange()"
+                >
+                  x
+                </button> -->
+            <!-- </mat-form-field>
+            </div>
+            <div *ngIf="selectedTypeQ == 2 && catalog" class="col-md-3"> -->
+            <!-- <mat-form-field style="width: 200px">
+                <mat-label>Model</mat-label>
+                <input
+                  matInput
+                  autocomplete="off"
+                  readonly
+                  formControlName="models"
+                />
+              </mat-form-field> -->
+            <!-- <mat-form-field style="width: 200px">
+                <mat-label>Model</mat-label>
+                <input
+                  #modelInput
+                  placeholder="Select Model"
+                  matInput
+                  readonly
+                  formControlName="models"
+                  [matAutocomplete]="model"
+                />
+                <mat-autocomplete
+                  #model="matAutocomplete"
+                  [displayWith]="displayFnmodell"
+                  (opened)="autocompletemodelScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let model of modelList"
+                      [value]="model"
+                      (click)="patchunitprice(model)"
+                    >
+                      {{ model?.model?.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete> -->
+            <!-- <button
+                  type="button"
+                  matSuffix
+                  class="close"
+                  (click)="resetAfterModelChange()"
+                >
+                  x
+                </button> -->
+            <!-- </mat-form-field> -->
+            <!-- </div> -->
+            <!-- <div class="col-md-3" *ngIf="selectedTypeQ == 1 && catalog">
+              <mat-form-field style="width: 200px" (click)="getmodal()">
+                <mat-label>Model</mat-label>
+                <input
+                  #modelInput
+                  placeholder="Select Model"
+                  matInput
+                  formControlName="models"
+                  [matAutocomplete]="model"
+                />
+                <mat-autocomplete
+                  #model="matAutocomplete"
+                  [displayWith]="displayFnmodel"
+                  (opened)="autocompletemodelScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let model of modelList"
+                      [value]="model"
+                      (click)="patchunitprice(model)"
+                    >
+                      {{ model?.model?.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete> -->
+            <!-- <button
+                  type="button"
+                  matSuffix
+                  class="close"
+                  (click)="resetAfterModelChange()"
+                >
+                  x
+                </button> -->
+            <!-- </mat-form-field>
+            </div>
+            <div *ngIf="selectedTypeQ == 2 && catalog" class="col-md-3"> -->
+            <!-- <mat-form-field style="width: 200px">
+                <mat-label>Specification & Configuration</mat-label>
+                <input
+                  matInput
+                  autocomplete="off"
+                  readonly
+                  formControlName="specs"
+                />
+              </mat-form-field> -->
+            <!-- <mat-form-field style="width: 200px" (click)="getspecss()">
+                <mat-label> Specification & Configuration</mat-label>
+                <input
+                  #specsInput
+                  placeholder="Select Configuration"
+                  matInput
+                  readonly
+                  formControlName="specs"
+                  [matAutocomplete]="spec"
+                />
+                <mat-autocomplete
+                  #spec="matAutocomplete"
+                  [displayWith]="displayFnspecss"
+                  (opened)="autocompletespecsScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let spec of specsList"
+                      [value]="spec"
+                      (click)="patchunitprice(spec)"
+                      >
+                      {{ spec.configuration }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete> -->
+            <!-- <button
+                  type="button"
+                  matSuffix
+                  class="close"
+                  (click)="resetAfterSpecsChange()"
+                >
+                x
+                </button> -->
+            <!-- </mat-form-field> -->
+            <!-- </div> -->
+            <div class="col-md-3" *ngIf="!prod_val">
+              <mat-form-field (click)="getitemFK()" appearance="outline">
+                <mat-label>Make</mat-label>
+                <input
+                  #itemInput
+                  placeholder="Select Make"
+                  matInput
+                  [readonly]="View"
+                  formControlName="items"
+                  [matAutocomplete]="item"
+                />
+                <mat-autocomplete
+                  #item="matAutocomplete"
+                  [displayWith]="displayFnitem"
+                  (opened)="autocompleteitemScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let item of itemList"
+                      [value]="item"
+                      (onSelectionChange)="makeCheck(item)"
+                    >
+                      {{ item.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+                <!-- <button
+      type="button"
+      matSuffix
+      class="close"
+      (click)="resetAfterItemChange()"
+    >
+    x
+    </button> -->
+              </mat-form-field>
+            </div>
+            <div class="col-md-3" *ngIf="!prod_val">
+              <mat-form-field appearance="outline" (click)="getmodall()">
+                <mat-label>Model</mat-label>
+                <input
+                  #modelInput
+                  [readonly]="View"
+                  placeholder="Select Model"
+                  matInput
+                  formControlName="models"
+                  [matAutocomplete]="model"
+                />
+                <mat-autocomplete
+                  #model="matAutocomplete"
+                  [displayWith]="displayFnmodell"
+                  (opened)="autocompletemodelScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let model of modelList" [value]="model">
+                      {{ model.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+                <!-- <button
+      type="button"
+      matSuffix
+      class="close"
+      (click)="resetAfterModelChange()"
+    >
+    x
+    </button> -->
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row mt-2 text-center" *ngIf="specList?.length > 0">
+            <div class="card ml-4 mr-4 w-100">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6" *ngFor="let spec of specList">
+                    <div class="chip-container">
+                      <mat-chip-list
+                        formControlName="spec_config"
+                        class="chip-list"
+                      >
+                        <mat-chip>{{ spec?.specification }}</mat-chip>
+                        <mat-form-field class="conf-field">
+                          <input
+                            matInput
+                            [readonly]="View"
+                            [matAutocomplete]="auto"
+                            (focus)="getConf(spec?.specification)"
+                          />
+                          <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option
+                              *ngFor="let conf of specsList"
+                              [value]="conf.configuration"
+                              (onSelectionChange)="
+                                addSpecConfig(
+                                  spec.id,
+                                  spec.specification,
+                                  conf.configuration,
+                                  branchForm
+                                )
+                              "
+                            >
+                              {{ conf.configuration }}
+                            </mat-option>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </mat-chip-list>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="row mt-2 text-center">
+  <div class="card ml-4 mr-4 w-100">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <div class="scroll-container">
+            <div class="chip-container">
+              <mat-chip-list *ngFor="let spec of specList" class="chip-list">
+                <mat-chip>{{ spec?.specification }}</mat-chip>
+
+                <mat-form-field class="conf-field">
+                  <input
+                    matInput
+                    placeholder="Select Configuration"
+                    [value]="branchForm.get('spec_config')?.value[spec.specification] || ''"
+                    (focus)="getConf(spec.specification)"
+                  />
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option
+                      *ngFor="let conf of specsList"
+                      [value]="conf"
+                      (click)="addSpecConfig(spec.id, spec.specification, conf.configuration, branchForm)"
+                    >
+                      {{ conf.configuration }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </mat-chip-list>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+          <!-- <div class="col-md-3" *ngIf="selectedTypeQ == 1 && catalog">
+
+            <mat-form-field style="width: 200px" (click)="getspecss()">
+              <mat-label> Specification & Configuration</mat-label>
+              <input
+                #specsInput
+                placeholder="Select Configuration"
+                matInput
+                formControlName="specs"
+                [matAutocomplete]="spec"
+              />
+              <mat-autocomplete
+                #spec="matAutocomplete"
+                [displayWith]="displayFnspecs"
+                (opened)="autocompletespecsScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let spec of specsList"
+                    [value]="spec"
+                    (click)="patchunitprice(spec)"
+                    >
+                    {{ spec.configuration }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+
+            </mat-form-field>
+</div> -->
+
+          <!-- </div>
+
+        <div class="row pr-5 pl-5"> -->
+          <div class="row">
+            <div class="col-md-3 mt-2 pl-4">
+              <mat-form-field appearance="outline" class="wrapper">
+                <mat-label>Required Quantity</mat-label>
+                <input
+                  matInput
+                  readonly
+                  formControlName="qty"
+                  autocomplete="off"
+                  type="number"
+                />
+                <mat-placeholder>Quantity</mat-placeholder>
+              </mat-form-field>
+            </div>
+            <div class="col-md-9 mt-3 text-right">
+              <button
+                type="button"
+                class="buttonsize btn btn-outline-success"
+                (click)="searchProduct()"
+                style="border-radius: 40px"
+              >
+                <span class="fa fa-arrow-down"></span> Show Live Catalog
+              </button>
+            </div>
+          </div>
+          <!-- </form>
+<form [formGroup]="branchForm"> -->
+          <div class="mt-4" *ngIf="showData">
+            <div class="mt-4">
+              <div class="fluid table-responsive tableStyle">
+                <!-- <div class="table-responsive"> -->
+                <table class="table table-bordered">
+                  <thead class="table_header">
+                    <th>S.No</th>
+                    <!-- <th>Rasier Branch</th> -->
+                    <!-- <th>Commodity</th> -->
+                    <th>QR ID</th>
+                    <th>Catalog ID</th>
+                    <th>Product Type</th>
+                    <th>Product</th>
+                    <!-- <th>PR For</th> -->
+                    <th class="sticky-col">Vendor/ Supplier</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th *ngFor="let spec of specList">
+                      <mat-form-field class="conf-field">
+                        <mat-label>
+                          <b>
+                            {{ spec.specification }}
+                          </b>
+                        </mat-label>
+                        <input
+                          matInput
+                          [readonly]="View"
+                          [matAutocomplete]="auto"
+                          (focus)="getConf(spec?.specification)"
+                        />
+                        <mat-autocomplete #auto="matAutocomplete">
+                          <mat-option
+                            *ngFor="let conf of specsList"
+                            [value]="conf.configuration"
+                            (onSelectionChange)="
+                              addSpecConfigg(
+                                spec.id,
+                                spec.specification,
+                                conf.configuration,
+                                branchForm
+                              )
+                            "
+                          >
+                            {{ conf.configuration }}
+                          </mat-option>
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </th>
+
+                    <!-- <th *ngIf="catalog">Configuration</th> -->
+                    <!-- <th>Quotation</th> -->
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Unit Price</th>
+                    <th>UOM</th>
+                    <th>Details</th>
+                    <th>Allocated Quantity</th>
+                    <th>Amount</th>
+                    <th>CCBS</th>
+                    <th>Clear</th>
+                    <!-- <th>Description</th> -->
+                    <!-- <th>Installation Required</th> -->
+                    <!-- <th>Capitalize Required</th> -->
+                    <!-- <th>CCBS</th> -->
+                    <!-- <th>Select</th> -->
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let a of SupplierArray; index as i">
+                      <td class="sticky-col">{{ i + 1 }}</td>
+                      <td
+                        class="sticky-col btn-link"
+                        data-toggle="modal"
+                        data-target=".ViewQuotation"
+                        role="button"
+                        (click)="viewQ(a)"
+                      >
+                        {{ a?.quotation[0]?.supplier_quot }}
+                      </td>
+                      <td class="sticky-col">{{ a?.code }}</td>
+                      <td class="sticky-col">{{ prodType }}</td>
+                      <td class="sticky-col">{{ product }}</td>
+                      <td class="sticky-col">{{ a?.supplierbranch?.name }}</td>
+                      <td>{{ a?.make?.name }}</td>
+                      <td>{{ a?.model?.name }}</td>
+                      <!-- <td> {{ a?. }}</td> -->
+                      <td *ngFor="let spec of specList">
+                        {{ a?.configuration[spec?.specification] || "-" }}
+                      </td>
+                      <td>{{ a?.fromdate }}</td>
+                      <td>{{ a?.todate }}</td>
+
+                      <td>{{ a?.unitprice| amountPipeCustom }}</td>
+                      <td>{{ a?.uom?.name }}</td>
+                      <td>
+                        <mat-icon
+                          class="btn-link btn-sm"
+                          role="button"
+                          data-toggle="modal"
+                          data-target="#p_details"
+                          [matTooltip]="a?.full_name"
+                          (click)="productDetails = a?.full_name"
+                          >visibility</mat-icon
+                        >
+                      </td>
+                      <td>
+                        <mat-form-field appearance="outline" class="qty">
+                          <mat-label>Quantity</mat-label>
+                          <input
+                            matInput
+                            type="number"
+                            placeholder="Quantity"
+                            [formControl]="qty?.controls[i]"
+                            (focusout)="
+                              selectSupp($event, a, qty?.controls[i]?.value, i)
+                            "
+                          />
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <mat-form-field appearance="outline" class="qty">
+                          <mat-label>Amount</mat-label>
+                          <input
+                            matInput
+                           [value]="( (qty?.controls[i]?.value * a?.unitprice)  | number:'1.2-2') || '' "
+                            readonly
+                          />
+                        </mat-form-field>
+                      </td>
+                                                 <!-- [value]="( (qty?.controls[i]?.value * a?.unitprice) | amountPipeCustom) || '' " -->
+                      <td>
+                        <button
+                          class="btn btn-outline-secondary"
+                          data-toggle="modal"
+                          [attr.data-target]="'#' + this.popuname"
+                          (click)="addccbcBranch(i, qty?.controls[i]?.value, a)"
+                        >
+                          <span class="fa fa-plus"></span>
+                        </button>
+                        <!-- <button class="btn btn-outline-secondary" data-toggle="modal" data-target="#ccbs"><span class="fa fa-plus"></span></button> -->
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger"
+                          matTooltip="Clear Row Values"
+                          (click)="deleteRow(i, a)"
+                        >
+                          <span class="fa fa-trash"></span>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <!-- <tr>
+                            <th class="totaldisplay" colspan="8">Total Amount :</th>
+                            <td class="rightaligntotal">{{total_amount | amountPipeCustom }}</td>
+                        </tr> -->
+                  <!-- <div class="row">
+                          <div class="col-md-11 text-right">
+                            <b>Total Amount :</b>
+                            <span>{{total_amount | amountPipeCustom }}</span>                           
+                          </div>
+                        </div> -->
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="row p-3 mt-2">
+          <div class="col-md-3">
+            <mat-form-field
+              style="width: 210px"
+              (click)="getemployeeForApprover()"
+            >
+              <mat-label>Approver Name with Limit</mat-label>
+              <input
+                #empInput
+                placeholder="Select Approver"
+                matInput
+                formControlName="employee_id"
+                [matAutocomplete]="emp"
+              />
+              <mat-autocomplete
+                #emp="matAutocomplete"
+                [displayWith]="displayFnemp"
+                (opened)="autocompleteempScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let emp of employeeList"
+                    (click)="empValues(emp)"
+                    [value]="emp"
+                  >
+                    {{ emp.full_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field style="width: 210px">
+              <mat-label>Code</mat-label>
+              <input readonly matInput value="{{ employeeCode }}" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field style="width: 210px">
+              <mat-label>Limit</mat-label>
+              <input readonly matInput value="{{ employeeLimit }}" />
+            </mat-form-field>
+          </div>
+        </div> -->
+          <div class="row p-4" *ngIf="showData">
+            <span class="col-md-11 text-right">
+              <button disabled="true" class="border-none"  data-toggle="modal"
+                data-target="#exampleModal">
+<span
+                class="material-icons"
+             
+                >description</span
+              >
+              </button>
+              
+              &nbsp; &nbsp;
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                (click)="backtoSummary()"
+              >
+                Cancel
+              </button>
+              &nbsp; &nbsp;
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="Draftsub()"
+              >
+                Draft
+              </button>
+              &nbsp; &nbsp;
+
+              <button
+                class="btn btn-outline-success"
+                type="button"
+                (click)="submitData()"
+              >
+                Submit
+              </button>
+            </span>
+          </div>
+
+          <!-- </div> -->
+        </form>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <!-- </div> -->
+
+  <div
+    class="modal fade bd-example-modal-xl"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    id="lableMep"
+  >
+    <div class="modal-dialog modal-xl" style="margin-left: 550px">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" id="exampleModalLongTitle">PCA Details</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div
+          class="table-responsive"
+          style="margin-top: 2%; width: 95%; margin-left: 10px"
+        >
+          <table class="table scrolltable table-bordered">
+            <thead>
+              <tr class="table_header">
+                <th>S.No</th>
+                <th>PCA Number</th>
+                <th>PCA Amount</th>
+                <th>PR Approved Amount</th>
+                <th>PR Pending Amount</th>
+                <th>Balance In PCA</th>
+                <th>PCA Justification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let UtilAmt of MEPUtilizationAmountList; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ UtilAmt?.mep_no }}</td>
+                <td>{{ UtilAmt?.mep_amount | amountPipeCustom }}</td>
+                <td>{{ UtilAmt?.pr_approvedamount | amountPipeCustom }}</td>
+                <td>{{ UtilAmt?.pr_pendingamount | amountPipeCustom }}</td>
+                <td>{{ UtilAmt?.unutilized_amount | amountPipeCustom }}</td>
+                <td>{{ UtilAmt?.justification }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    [id]="this.popuname"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    *ngIf="showpopup"
+    [ngClass]="{ 'show d-block': showpopup, 'd-none': !showpopup }"
+    data-backdrop="static"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" id="exampleModalLongTitle">Split CCBS</h2>
+          <button
+            type="button"
+            class="close"
+            aria-label="Close"
+            #closebutton
+            (click)="addCCBSave(currentRowIndex, 1, 'closebtn')"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12 ml-5">
+            <h4>
+              <b> Vendor/ Supplier : </b>
+              {{ this.SupplierArray[currentRowIndex]?.supplierbranch?.name }}
+            </h4>
+          </div>
+          <div class="col-md-5 ml-5">
+            <h4>
+              <b> Allocated Quantity : </b>
+              {{ alloc_qty }}
+              <!-- {{ this.selectedRows[currentRowIndex]?.qty }} -->
+            </h4>
+          </div>
+          <!-- <div class="col-md-6 text-right">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="addCCBSRow(currentRowIndex)"
+          >
+            Add
+          </button>
+        </div> -->
+        </div>
+        <div class="table-responsive p-5">
+          <form [formGroup]="branchForm">
+            <div formArrayName="rows">
+              <div [formGroupName]="currentRowIndex">
+                <table class="table table-bordered table-hover">
+                  <thead class="table_header">
+                    <th>S.No</th>
+                    <th>Location</th>
+                    <th>BS</th>
+                    <th>CC</th>
+                    <th>Requested Quantity</th>
+                    <th>Allocated Quantity</th>
+                    <th>UnAllocated Quantity</th>
+                    <th>Quantity</th>
+                    <!-- <th>Action</th> -->
+                  </thead>
+                  <tbody formArrayName="prccbs">
+                    <ng-container
+                      *ngFor="
+                        let ccbs of getCCBSArray(currentRowIndex)?.controls;
+                        let j = index
+                      "
+                      [formGroupName]="j"
+                    >
+                      <tr>
+                        <td>
+                          {{ j + 1 }}
+                        </td>
+                        <td>
+                          <mat-form-field
+                            style="width: 210px"
+                            appearance="outline"
+                            (click)="getbranchFK()"
+                          >
+                            <mat-label>Location</mat-label>
+                            <input
+                              #branchInput
+                              placeholder="Select Branch Code"
+                              matInput
+                              readonly
+                              formControlName="branch_id"
+                              [matAutocomplete]="branch"
+                            />
+                            <mat-autocomplete
+                              #branch="matAutocomplete"
+                              [displayWith]="displayFnbranch"
+                              (opened)="autocompletebranchScroll()"
+                            >
+                              <mat-option *ngIf="isLoading" class="is-loading"
+                                >Loading...</mat-option
+                              >
+                              <ng-container *ngIf="!isLoading">
+                                <mat-option
+                                  *ngFor="let branch of branchList"
+                                  [value]="branch"
+                                >
+                                  {{ branch.fullname }}
+                                </mat-option>
+                              </ng-container>
+                            </mat-autocomplete>
+                            <!-- <button type="button" matSuffix class="close" [disabled]="branchreadonly"
+                            (click)="resetAfterCommodityChange('branch')">X</button> -->
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field appearance="outline">
+                            <!-- (click)="getbsdd(currentRowIndex, j)" -->
+
+                            <mat-label> Select BS Name</mat-label>
+                            <input
+                              #bsInput
+                              placeholder="Select BS"
+                              matInput
+                              readonly="true"
+                              formControlName="bs"
+                              [matAutocomplete]="bs"
+                            />
+                            <mat-autocomplete
+                              #bs="matAutocomplete"
+                              [displayWith]="displayFnbs.bind(this)"
+                              (opened)="autocompletebsScroll()"
+                            >
+                              <mat-option *ngIf="isLoading" class="is-loading">
+                                Loading...
+                              </mat-option>
+                              <ng-container *ngIf="!isLoading">
+                                <mat-option
+                                  *ngFor="let bs of bslist"
+                                  [value]="bs"
+                                  title="Description: {{ bs.description }}"
+                                >
+                                  {{ bs.name }}
+                                </mat-option>
+                              </ng-container>
+                            </mat-autocomplete>
+                            <!-- <button type="button" matSuffix class="close"
+                        (click)="resetAfterbsccbsChange(prdetailsIndex,j)">X</button> -->
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field appearance="outline">
+                            <!-- (click)="getccValue(currentRowIndex, j)" -->
+                            <mat-label>Select CC Name</mat-label>
+                            <input
+                              #ccInput
+                              placeholder="Select CC"
+                              matInput
+                              readonly="true"
+                              formControlName="cc"
+                              [matAutocomplete]="cc"
+                            />
+                            <mat-autocomplete
+                              #cc="matAutocomplete"
+                              [displayWith]="displayFncc.bind(this)"
+                              (opened)="autocompleteccScroll()"
+                            >
+                              <mat-option *ngIf="isLoading" class="is-loading">
+                                Loading...
+                              </mat-option>
+                              <ng-container *ngIf="!isLoading">
+                                <mat-option
+                                  *ngFor="let cc of cclist"
+                                  [value]="cc"
+                                  title="Description: {{ cc.description }}"
+                                >
+                                  {{ cc.name }}
+                                </mat-option>
+                              </ng-container>
+                            </mat-autocomplete>
+                            <!-- <button type="button" matSuffix class="close"
+                        (click)="resetAfterSccccbsChange(prdetailsIndex,j)">X</button> -->
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field appearance="outline">
+                            <mat-label>Requested Quantity</mat-label>
+                            <input
+                              matInput
+                              formControlName="req_qty"
+                              autocomplete="off"
+                              type="number"
+                              readonly
+                            />
+                            <!-- <mat-placeholder>Requested Quantity</mat-placeholder> -->
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field appearance="outline">
+                            <mat-label>Allocated Quantity</mat-label>
+                            <input
+                              matInput
+                              formControlName="allc_blc_qty"
+                              autocomplete="off"
+                              type="number"
+                              readonly
+                            />
+                            <!-- <mat-placeholder>Requested Quantity</mat-placeholder> -->
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field appearance="outline">
+                            <mat-label>UnAllocated Quantity</mat-label>
+                            <input
+                              matInput
+                              formControlName="blc_qty"
+                              autocomplete="off"
+                              type="number"
+                              readonly
+                            />
+                            <!-- <mat-placeholder>Requested Quantity</mat-placeholder> -->
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field appearance="outline">
+                            <mat-label>Quantity</mat-label>
+                            <input
+                              matInput
+                              formControlName="qty"
+                              autocomplete="off"
+                              type="number"
+                              (input)="updateBalanceQuantity()"
+                            />
+                            <mat-placeholder>Enter Quantity</mat-placeholder>
+                          </mat-form-field>
+                        </td>
+
+                        <!-- <td>
+                        <mat-icon (click)="removeCCBSRow(currentRowIndex, j)"
+                          >delete</mat-icon
+                        >
+                      </td> -->
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </form>
+        </div>
+        <br />
+        <div class="modal-footer">
+          <button
+            type="button"
+            style="border-radius: 40px; margin-left: 10px"
+            class="btn btn-outline-primary"
+            (click)="addCCBSave(currentRowIndex, 2, 'save')"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="chooseSupplier"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="DeactivateModalLabel"
+    aria-hidden="true"
+    data-backdrop="static"
+    data-keyboard="false"
+  >
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <h3
+            class="modal-title w-100 font-weight-bold"
+            id="DeactivateModalLabel"
+          >
+            Choose Supplier
+          </h3>
+          <button
+            type="button"
+            #closebtn
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row p-3">
+            <div class="col">
+              <h4><b>Product Type : </b> {{ prodType }}</h4>
+            </div>
+            <div class="col">
+              <h4><b>Product : </b> {{ product }}</h4>
+            </div>
+            <div class="col">
+              <h4><b>Total Quantity : </b> {{ totalQty }}</h4>
+            </div>
+          </div>
+          <div class="table-responsive tableStyle">
+            <table class="table table-hover">
+              <thead class="table_header">
+                <tr>
+                  <td>S.No</td>
+                  <td>
+                    <mat-form-field
+                      style="width: 200px"
+                      (click)="getpsupplier()"
+                    >
+                      <mat-label>Supplier Name</mat-label>
+                      <input
+                        #supplierInput
+                        [readonly]="supplierreadonly"
+                        placeholder="Select supplier"
+                        matInput
+                        formControlName="supplier"
+                        [matAutocomplete]="supplierr"
+                      />
+                      <mat-autocomplete
+                        #supplierr="matAutocomplete"
+                        [displayWith]="displayFnsupplier"
+                      >
+                        <mat-option *ngIf="isLoading" class="is-loading"
+                          >Loading...</mat-option
+                        >
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option
+                            *ngFor="let supplier of supplierList"
+                            [value]="supplier"
+                            title="{{ supplier.name }}"
+                            (click)="searchProduct()"
+                          >
+                            {{ supplier.name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td>Make</td>
+                  <td>Model</td>
+                  <td>Allocated Quantity</td>
+                  <!-- <td>Select</td> -->
+                  <!-- <td>Specification</td> -->
+                  <!-- <td>Action</td> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let a of SupplierArray; index as i">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ a?.supplierbranch?.name }}</td>
+                  <td>{{ a?.make?.name }}</td>
+                  <td>{{ a?.model?.name }}</td>
+                  <td>
+                    <!-- <form [formGroup]="qty"> -->
+                    <mat-form-field appearance="outline" class="qty">
+                      <mat-label>Quantity</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        placeholder="Quantity"
+                        [formControl]="qty.controls[i]"
+                        (focusout)="
+                          selectSupp($event, a, qty.controls[i].value, i)
+                        "
+                      />
+                    </mat-form-field>
+                    <!-- </form> -->
+                  </td>
+                  <!-- <td>
+                  <mat-checkbox 
+                  (change)="selectSupp($event.checked, a, qty.controls[i].value, i)">
+                </mat-checkbox>
+                </td> -->
+                  <!-- <td>{{ a.item_name }}</td>
+                <td>{{ a.model_name }}</td> -->
+
+                  <!-- <td>
+                  <mat-icon role="button" class="gray" (click)="deleteAsset(a, i)"
+                    >delete</mat-icon
+                  >
+                </td> -->
+                </tr>
+                <button
+                  type="button"
+                  style="border-radius: 40px; margin-left: 10px"
+                  class="btn btn-outline-info"
+                  (click)="addProduct()"
+                >
+                  Save
+                </button>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="margin-left: 10px">
+          <!-- <button
+          type="button"
+          style="border-radius: 40px; margin-left: 10px"
+          class="btn btn-outline-primary"
+          data-dismiss="modal"
+        >
+          Cancel
+        </button> -->
+
+          <button
+            type="button"
+            class="d-none"
+            id="closemodal"
+            data-dismiss="modal"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="assetDetails"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="DeactivateModalLabel"
+    aria-hidden="true"
+    data-backdrop="static"
+    data-keyboard="false"
+  >
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <h3
+            class="modal-title w-100 font-weight-bold"
+            id="DeactivateModalLabel"
+          >
+            Asset History Details
+          </h3>
+          <button
+            type="button"
+            #closebtn
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive tableStyle">
+            <table class="table table-hover">
+              <thead class="table_header">
+                <tr>
+                  <td>S.No</td>
+                  <td>Asset ID</td>
+                  <td>Serial No</td>
+                  <td>Product</td>
+                  <td>Make</td>
+                  <td>Model</td>
+                  <td>Specification</td>
+                  <!-- <td>Action</td> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let a of assetArray; index as i">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ a.asset_id }}</td>
+                  <td>{{ a.serial_no }}</td>
+                  <td>{{ a.product_name }}</td>
+                  <td>{{ a.item_name }}</td>
+                  <td>{{ a.model_name }}</td>
+                  <td>
+                    <ng-container
+                      *ngIf="
+                        a.specification && a.specification !== '--';
+                        else showEmpty
+                      "
+                    >
+                      <ng-container
+                        *ngFor="
+                          let specKey of getSpecificationKeys(a.specification)
+                        "
+                      >
+                        {{ specKey }}: {{ a.specification[specKey] }}<br />
+                      </ng-container>
+                    </ng-container>
+                    <!-- Template to display "--" if specification is empty -->
+                    <ng-template #showEmpty>{{ a.specification }}</ng-template>
+                  </td>
+                  <!-- <td>
+                  <mat-icon role="button" class="gray" (click)="deleteAsset(a, i)"
+                    >delete</mat-icon
+                  >
+                </td> -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="margin-left: 10px">
+          <button
+            type="button"
+            style="border-radius: 40px; margin-left: 10px"
+            class="btn btn-sm btn-outline-primary"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+
+          <!-- <button
+          type="button"
+          style="border-radius: 40px; margin-left: 10px"
+          class="btn btn-outline-info"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          class="d-none"
+          id="assetmodal"
+          data-dismiss="modal"
+        >
+          Save
+        </button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="p_details"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="DeactivateModalLabel"
+    aria-hidden="true"
+    data-backdrop="static"
+    data-keyboard="false"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <h3
+            class="modal-title w-100 font-weight-bold"
+            id="DeactivateModalLabel"
+          >
+            Product Details
+          </h3>
+          <button
+            type="button"
+            #closebtn
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li>{{ productDetails }}</li>
+          </ul>
+        </div>
+
+        <div class="modal-footer" style="margin-left: 10px">
+          <button
+            type="button"
+            style="border-radius: 40px; margin-left: 10px"
+            class="btn btn-sm btn-outline-primary"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+
+          <!-- <button
+          type="button"
+          style="border-radius: 40px; margin-left: 10px"
+          class="btn btn-outline-info"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          class="d-none"
+          id="assetmodal"
+          data-dismiss="modal"
+        >
+          Save
+        </button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade ViewQuotation"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" id="exampleModalLongTitle">
+            Quotation Details
+          </h2>
+
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <br />
+        <div class="modal-body">
+          <mat-tab-group
+            [(selectedIndex)]="selectedVersion"
+            [(ngModel)]="selectedVersion"
+            (selectedIndexChange)="changeTab($event)"
+          >
+            <mat-tab label="Version"></mat-tab>
+            <mat-tab label="History"></mat-tab>
+          </mat-tab-group>
+          <br />
+
+          <div class="table-responsive tableStyle">
+            <table class="table table-hover">
+              <thead class="table_header">
+                <tr>
+                  <th>S.No</th>
+                  <th>Quotation ID</th>
+                  <!-- <th>Quotation For</th>  -->
+                  <!-- <th>Quotation Number</th> -->
+                  <th>Vendor/ Supplier Name</th>
+                  <th>Quotation Reference</th>
+                  <th>Quotation Date</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Product</th>
+                  <th>Make</th>
+                  <th>Model</th>
+                  <th>Configuration</th>
+                  <th>Unit Type</th>
+                  <th>Unit Price</th>
+                  <th>Quantity</th>
+                  <!-- <th>Purpose</th> -->
+                  <th>Quotation Version</th>
+                  <!-- <th>Active</th> -->
+                  <!-- <td>Make</td> -->
+                </tr>
+              </thead>
+              <tbody *ngFor="let q of quotaionList; index as i">
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ q?.quotation_no }}</td>
+                  <td>{{ q?.supplier_name }}</td>
+                  <td>{{ q?.supplier_quot_reference }}</td>
+                  <td>{{ q?.quot_date }}</td>
+                  <td>{{ q?.start_date }}</td>
+                  <td>{{ q?.end_date }}</td>
+
+                  <td>{{ q?.product?.name }}</td>
+                  <td>{{ q?.make?.name }}</td>
+                  <td>{{ q?.model?.name }}</td>
+                  <td>{{ q?.spec_config?.specification }}</td>
+                  <td>{{ q?.uom }}</td>
+                  <td>{{ q?.price }}</td>
+                  <td>{{ q?.qty }}</td>
+                  <td>{{ q?.version }}</td>
+
+                  <!-- <td class="btn-link" data-toggle="modal" data-target="#addQuotation" (click)="ViewQuotation(q)">
+        <mat-icon>visibility</mat-icon>
+      </td> -->
+                  <!-- <td>{{ asset.model_name }}</td> -->
+                  <!-- <td>{{ asset.specification }}</td> -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <br />
+    </div>
+  </div>
+  <div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLabel">Notepad</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="margin-left: 50px; width: 90%; height: 70%">
+            <div>
+              <div
+                [ngxSummernote]="config"
+                [ngxSummernoteDisabled]="editorDisabled"
+                (blur)="onBlur()"
+                (mediaDelete)="onDelete($event)"
+                (summernoteInit)="summernoteInit($event)"
+                formControlName="notepad"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ <div class="modal fade" id="productview" data-backdrop="false" data-keyboard="false">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" style="font-size: x-large;font-weight: bold;">Branch Maker</h4>
+                        <button type="button"  class="close" #closepopupbranch
+                            data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="container">
+                    <app-branchrequest-maker
+                    (onSubmit)="BRCreateSubmit()"
+                    (onCancel)="BRCreateCancel()"
+                    (close)="openpopup()"
+                    ></app-branchrequest-maker>
+                    </div>
+                    <!-- <div class="modal-footer">
+                        <button  type="button" class="btn btn-secondary" #closepopupbranch (click)="branchcancel()"
+                            data-dismiss="modal">Close</button>
+                    </div> -->
+                </div>
+            </div>
+    </div>

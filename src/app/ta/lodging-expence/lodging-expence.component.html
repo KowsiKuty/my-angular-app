@@ -1,0 +1,569 @@
+<div id="tamain">
+
+  <h2 style="margin-left: 44px;margin-top: 30px; font-size: 22px;font-weight: 500;">
+    eClaim Lodging Expense
+  </h2>
+  <div *ngIf="isonbehalf">
+    <h3 style="margin-left: 44px;color:rgb(0, 0, 0);font-size: 18px; font-weight: 400;">
+      On Behalf Employee - {{onbehalf_empName}}
+    </h3>
+  </div>
+  <hr>
+
+  <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 100%;">
+    <h3 style="color:rgb(0, 0, 0);font-size: 18px; font-weight: 500;">
+      Tour Details
+    </h3>
+    <div>
+      <form [formGroup]="lodgingform">
+        <table>
+          <tr>
+            <td>
+              <mat-form-field>
+                <mat-label>Tour No</mat-label>
+                <input matInput placeholder="Tour No" [disabled]="true" [value]="tourreq_no" autocomplete="off" required>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label>Employee Name</mat-label>
+                <input matInput placeholder="Employee Name" [disabled]="true" [value]="employeename" autocomplete="off"
+                  required>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label>Designation</mat-label>
+                <input matInput placeholder="Designation" [disabled]="true" [value]="employeedesignation"
+                  autocomplete="off" required>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label>Employee Grade</mat-label>
+                <input matInput placeholder="Emp grade" [disabled]="true" [value]="employeegrade" autocomplete="off"
+                  required>
+              </mat-form-field>
+            </td>
+          <td>
+              <mat-form-field style="margin-left: 20px;">
+                <mat-label>Gender</mat-label>
+                <input matInput placeholder="Gender" [disabled]="true" [value]="gender" autocomplete="off" required>
+              </mat-form-field>
+            </td>
+            <td>
+
+              <button type="button" class="btn btn-outline-success" (click)="addSection()" *ngIf="!approver && !enb_all_exbdetails"
+                style="border-radius:40px;margin-left: 50px"><span class="fa fa-plus"></span>
+                </button>
+
+            </td>
+          </tr>
+        </table>
+
+        <div formArrayName='data' class="table-responsive" style="width:98%;margin-top: 1%;">
+          <table class="table table-bordered" fixed-header style="margin-top: 10px;margin-right: 30px;">
+            <thead class="table_header" style="text-align: center;">
+              <tr>
+                <th>S.No</th>
+                <th>City<label style="color: red;">*</label></th>
+                <th>Center Classification<label style="color: red;">*</label></th>
+                <th>Place of Actual stay<label style="color: red;">*</label></th>
+                <th>Checkin Date<label style="color: red;">*</label></th>
+                <th>Checkin Time<label style="color: red;">*</label> </th>
+                <!-- <th>Checkin Date and Time (DD-MM-YYYY HH-MM)</th> -->
+                <th>Checkout Date<label style="color: red;">*</label></th>
+                <th>Checkout Time<label style="color: red;">*</label> </th>
+                <!-- <th>Checkout Date and Time (DD-MM-YYYY HH-MM)</th> -->
+                <th>Lodge Checkout Date </th>
+                <th>Lodge Checkout Time</th>
+                <!-- <th>Lodge Checkout Date and Time (DD-MM-YYYY HH-MM)</th> -->
+                <th>No of Days<label style="color: red;">*</label></th>
+                <th>Accommodation provided by Bank</th>
+                <!-- <th>Accommodation Ref No</th> -->
+                <th>Bill Available<label style="color: red;">*</label></th>
+                <th>Total Bill Amount<label style="color: red;">*</label></th>
+                <th>Claim Amount (Excluding Tax)<label style="color: red;">*</label></th>
+                <th>Eligible Amount (Excluding Tax)</th>
+                <th>Tax Only(Luxury & Service)<label style="color: red;">*</label></th>
+                <th >Invoice Date</th>
+                <th >Invoice No</th>
+                <th>Bank GST No</th>
+                <th>Lodge GST No</th>
+                <th>Vendor Name</th>
+                <th>Vendor Code</th>
+                <th>Address</th>
+                <th>HSN Code</th>
+                <th>Taxable Amount</th>
+                <th>CGST</th>
+                <th>SGST</th>
+                <th>IGST</th>
+                <th>Invoice Amount</th>
+                <!-- <th *ngIf="gstshow">GST Percentage</th> -->
+                <th *ngIf="approver && applevel == 2">Approved Amount(Including Tax)<label style="color: red;">*</label></th>
+                <!-- <th >GST No</th> -->
+                <!-- <th *ngIf="enb_all_exbdetails">GST No</th> -->
+                <!-- <th *ngIf="enb_all_exbdetails">Invoice Date</th> -->
+                <!-- <th *ngIf="enb_all_exbdetails">Invoice No</th> -->
+                <th *ngIf="!approver">Delete</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let dtl of lodgingform.controls.data['controls']|paginate: { itemsPerPage: pageSize, currentPage: p }; index as ind"
+                [formGroupName]="ind">
+                <td scope="row" style="vertical-align: middle;"> {{((p-1)*pageSize)+ind+1}} </td>
+
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never">
+
+                      <mat-label>City</mat-label>
+                      <input (keypress)="citysearch(((p-1)*pageSize)+ind)" type="text" #inputassetid
+                        placeholder="Select City" matInput (keypress)="omit_special_char($event)"
+                        [matAutocomplete]="conoffice" formControlName="city">
+                      <mat-autocomplete #assetid #conoffice="matAutocomplete" (opened)="autocompleteid()"
+                        (optionSelected)="calc_eligble(((p-1)*pageSize)+ind)">
+                        <mat-option *ngFor="let city of citylist" [value]="city.city">
+                          {{city.city}}
+
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+
+                <td>
+                  <mat-form-field style="width: 120px;">
+
+                    <mat-select formControlName="centreclassification" [disabled]="approver || enb_all_exbdetails">
+                      <mat-option placeholder="Center Classification" *ngFor="let centreclassification of centerlist"
+                        [value]="centreclassification.value">
+                        {{centreclassification.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input (keypress)="omit_special_char($event)" matInput placeholder="Place of Actual stay"
+                        formControlName="placeofactualstay" autocomplete="off" required>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <!-- <mat-form-field floatLabel="never" style="width: 260px;">
+                      <input matInput type='datetime-local' placeholder="From Date" formControlName="fromdate"
+                        [min]="minselect(((p-1)*pageSize)+ind)" [max]="maximum" [value]='fromdate'
+                        (click)="toDateNull(((p-1)*pageSize)+ind)" (change)="calc_eligble(((p-1)*pageSize)+ind)"
+                        (change)="invaliddatestart(((p-1)*pageSize)+ind)" autocomplete="off" required>
+
+                    </mat-form-field> -->
+                    <mat-form-field style="width: 120px;">
+                      <input matInput formControlName="fromdate"  [matDatepicker]="picker1"
+                      [min]="minselect(((p-1)*pageSize)+ind)" [max]="maximum"  [value]='fromdate'
+                      (click)="toDateNull(((p-1)*pageSize)+ind)" (change)="calc_eligble(((p-1)*pageSize)+ind)"
+                        (change)="invaliddatestart(((p-1)*pageSize)+ind)" autocomplete="off">
+                      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                      <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field matSuffix id="tatime" style="margin-left:15px; width:120px;">
+                      <span matSuffix class="material-icons">watch_later</span>
+                      <input matInput (keypress)="numberOnlywithcolon($event)" formControlName="fromtime" 
+                       (keyup)="timefilter($event)" #time (blur)="timedropdowncheck(time,ind)" (input)="formatInput($event)"
+                        required  placeholder="Time" [matAutocomplete]="timefile">
+                      <mat-autocomplete #timefile="matAutocomplete">
+                        <mat-option (click)="calc_eligble(ind)" *ngFor="let time of timeclone" [value]="time.name">
+                          {{time.name}}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <!-- <mat-form-field floatLabel="never" style="width: 260px;">
+                      <input matInput type='datetime-local' placeholder="To Date" [value]='todate'
+                        formControlName="todate" [min]="maxselect(((p-1)*pageSize)+ind)" [max]="maximum"
+                        (change)="calc_eligble(((p-1)*pageSize)+ind)" (change)="datechange(((p-1)*pageSize)+ind)"
+                        autocomplete="off" required>
+
+                    </mat-form-field> [min]="startdate" [max]="maximum" -->
+                    <mat-form-field style="width: 120px;">
+                      <input matInput formControlName="todate"  [matDatepicker]="picker2"  [value]='todate'
+                      [min]="startdate" [max]="maximum" (dateChange)="datechange(ind)">
+                      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                      <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+                    
+                  </fieldset>
+
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                  <mat-form-field id="tatime" style="margin-left:15px; width:120px;" >
+                    <span matSuffix class="material-icons">watch_later</span>
+                    <input matInput  #totime (keypress)="numberOnlywithcolon($event)" (change)="totimechange(ind,totime);timedropdowncheck(totime,ind)" 
+                      type="text" placeholder="Time" (input)="formatInput($event)" required [matAutocomplete]="timeto" formControlName="totime">
+                    <mat-autocomplete #timeto="matAutocomplete">
+                      <mat-option (click)="calc_eligble(ind);totimes(ind,totime)" *ngFor="let time of totimes(ind,totime)" [value]="time.name" (focusout)="onfocuscheckdate(ind)">
+                        {{time.name}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </fieldset>
+                 </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <!-- <mat-form-field floatLabel="never" style="width: 260px;">
+
+                      <input matInput type='datetime-local' placeholder="Checkout Date"
+                        [min]="selectcheck(((p-1)*pageSize)+ind)" [max]="select2check(((p-1)*pageSize)+ind)"
+                        [value]='lodgcheckoutdate' formControlName="lodgcheckoutdate" autocomplete="off" required>
+
+                    </mat-form-field> -->
+                    <mat-form-field style="width: 120px;">
+                      <input matInput formControlName="lodgcheckoutdate"  [matDatepicker]="picker3" 
+                      [min]="selectcheck(((p-1)*pageSize)+ind)" [max]="select2check(((p-1)*pageSize)+ind)" [value]='lodgcheckoutdate'>
+                      <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                      <mat-datepicker #picker3></mat-datepicker>
+                    </mat-form-field>
+
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field id="tatime" style="margin-left:15px; width:120px;">
+                    
+                      <span matSuffix class="material-icons">watch_later</span>
+                      <input matInput #ldgtotime (keypress)="numberOnlywithcolon($event)"(change)="totimechange(ind,totime);timedropdowncheck(totime,ind)"
+                         type="text" formControlName="lodgcheckouttime" placeholder="Time" required (input)="formatInput($event)"
+                        [matAutocomplete]="ldgtimeto">
+                      <mat-autocomplete #ldgtimeto="matAutocomplete">
+                        <mat-option (click)="geteligibleamount_datechanges(ind)" *ngFor="let time of timeclone" [value]="time.name">
+                          {{time.name}}
+                    
+                        </mat-option>
+                      </mat-autocomplete>
+                    
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput placeholder="No of Days" (keypress)="numberOnly($event)"
+                        formControlName="noofdays" [value]="noofday" autocomplete="off" required>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset>
+                  <mat-form-field floatLabel="never" style="width: 120px;">
+                    <mat-select formControlName="accbybank" [disabled]="approver || enb_all_exbdetails"
+                      (selectionChange)='calc_eligble(((p-1)*pageSize)+ind)'>
+                      <mat-option *ngFor="let yesno of yesnoList" [value]="yesno.value"
+                        (blur)="calc_eligble(((p-1)*pageSize)+ind)">
+                        {{yesno.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <div *ngIf="acfcheck(((p-1)*pageSize)+ind)" style="border-style: outset;">
+                    <input placeholder="Accommodation RefNo" matInput formControlName="acrefno" (focusout)="onfocusinno(ind)"
+                      (keypress)="omit_special_char($event)" [value]='billnumber' autocomplete="off" required>
+                  </div>
+                </fieldset>
+                </td>
+                <!-- <td>
+                  <fieldset [disabled]="accbybankcheck(((p-1)*pageSize)+ind) || enb_all_exbdetails">
+                    <fieldset [disabled]="approver || enb_all_exbdetails">
+                      <mat-form-field floatLabel="never">
+                        <input matInput placeholder="Accommodation RefNo" (keypress)="omit_special_char($event)"
+                          formControlName="acrefno" [value]='acrefno' autocomplete="off">
+                   <mat-select formControlName="acrefno" [disabled]="approver || enb_all_exbdetails">
+                      <mat-option *ngFor="let yesno of billchecklist" [value]="yesno.value">
+                        {{yesno.name}}
+                      </mat-option>
+                    </mat-select>
+                    </mat-form-field>
+                    </fieldset>
+                  </fieldset>
+                </td> -->
+                <!-- <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never">
+                      <mat-select formControlName="acrefnoavailable" [disabled]="approver || enb_all_exbdetails">
+                        <mat-option *ngFor="let yesno of billchecklist" [value]="yesno.value">
+                          {{yesno.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <div *ngIf="acfcheck(((p-1)*pageSize)+ind)" style="border-style: outset;">
+                      <input placeholder="Bill No" matInput formControlName="acrefno" (focusout)="onfocusinno(ind)"
+                        (keypress)="omit_special_char($event)" [value]='billnumber' autocomplete="off" required>
+                    </div>
+                  </fieldset>
+
+                </td> -->
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <mat-select formControlName="billavailable" [disabled]="approver || enb_all_exbdetails">
+                        <mat-option *ngFor="let yesno of billchecklist" [value]="yesno.value">
+                          {{yesno.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <div *ngIf="billcheck(((p-1)*pageSize)+ind)" style="border-style: outset;">
+                      <input placeholder="Bill No" matInput formControlName="billnumber" (focusout)="onfocusinno(ind)"
+                        (keypress)="omit_special_char($event)" [value]='billnumber' autocomplete="off" required>
+                    </div>
+                  </fieldset>
+
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput placeholder="Total Bill Amount" appNumberOnly formControlName="totalbillamount" (keydown)="onKeyDown($event)"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 125px;">
+                      <input matInput placeholder="Claim Amount" formControlName="claimedamount" appNumberOnly (keydown)="onKeyDown($event)"
+                          autocomplete="off" required>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+
+                <td>
+                  <fieldset [disabled]="true">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput placeholder="Eligible Amount" formControlName="eligibleamount" autocomplete="off"
+                        required>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput placeholder="Tax Only" appNumberOnly formControlName="taxonly" autocomplete="off"
+                        required>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <!-- <td *ngIf="enb_all_exbdetails"> -->
+                    <fieldset [disabled]='this.applevel === 1'>
+                    <mat-form-field style="width: 125px;">
+                      <mat-label>Invoice Date</mat-label>
+                      <input matInput [matDatepicker]="picker_n"  formControlName="invoicedate">
+                      
+                      <mat-datepicker-toggle matSuffix [for]="picker_n"></mat-datepicker-toggle>
+                      <mat-datepicker #picker_n></mat-datepicker>
+                    </mat-form-field>
+                  </fieldset>
+                  </td>
+                  <td>
+                  <!-- <td *ngIf="enb_all_exbdetails"> -->
+                    <fieldset [disabled]='this.applevel === 1'>
+                    <mat-form-field  style="width: 125px;">
+                      <input matInput placeholder="Invoice No"  (keydown)="kyenbdata($event)" 
+                         formControlName="invoiceno">
+                    </mat-form-field>
+                    </fieldset>
+                  </td>
+                  <td>
+                    <fieldset [disabled]='true'>
+                      <mat-form-field floatLabel="never" style="width: 165px;">
+                        <input matInput placeholder="Bank Gst No"
+                          formControlName="bankgstno" autocomplete="off">
+                      </mat-form-field>
+                    </fieldset>
+                  </td>
+                  <td>
+                    <fieldset [disabled]="this.applevel === 1">
+                      <mat-form-field floatLabel="never" style="width: 165px;">
+                        <input matInput placeholder="Lodge GSTNo" (keypress)="omit_special_char($event)" 
+                          (blur)="gst_calc(((p-1)*pageSize)+ind)" formControlName="vendorgstno" [value]='vendorgstno' (focusout)="onfocusgst(ind)"
+                          autocomplete="off">
+                      </mat-form-field>
+                    </fieldset>
+                    <button  (click)="gst_validate(ind)" class="btn btn-outline-success" style="border-radius: 40px;">validate</button>
+                  </td>
+                <td>
+                  <fieldset [disabled]="lodgingform.value.data[ind].vendorgstno !== '' || applevel == 1">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput placeholder="Vendor Name"  matTooltip="{{lodgingform.value.data[ind].vendorname}}"
+                        formControlName="vendorname" [value]="vendorname" autocomplete="off">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="lodgingform.value.data[ind].vendorgstno !== '' || applevel == 1">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput placeholder="Vendor Code"
+                        formControlName="vendorcode" autocomplete="off">
+                    </mat-form-field>
+                  </fieldset>
+                  
+                </td>
+                <td>
+                  <fieldset [disabled]="lodgingform.value.data[ind].vendorgstno !== '' || applevel == 1">
+                    <mat-form-field floatLabel="never">
+                      <input matInput placeholder="Address" matTooltip="{{lodgingform.value.data[ind].address}}"
+                        formControlName="address" autocomplete="off">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="this.applevel === 1">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+
+                      <mat-label>HSN Code</mat-label>
+                      <input (keypress)="hsnsearch(((p-1)*pageSize)+ind)" type="text" #hsncodeid 
+                        placeholder="Select HSN" matInput (blur)="gst_calc(((p-1)*pageSize)+ind)"
+                        [matAutocomplete]="hsnn" formControlName="hsncode">
+                      <mat-autocomplete #hsnid #hsnn="matAutocomplete" [displayWith]="hsnshow"
+                        (opened)="autocompletehsnid()">
+                        <mat-option *ngFor="let hsn of hsnList" [value]="hsn">
+                          {{hsn.code}}-{{hsn.igstrate}}
+
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+
+							<td>
+								<fieldset [disabled]="this.applevel === 1">
+									<mat-form-field floatLabel="never" style="width: 120px;">
+										<input matInput (blur)="gst_calc(ind)" placeholder="Taxable Amount" formControlName="taxableamount"
+											appNumberOnly autocomplete="off">
+									</mat-form-field>
+								</fieldset>
+							</td>
+							<td>
+								<fieldset [disabled]='true'>
+									<mat-form-field floatLabel="never" style="width: 100px;">
+										<input matInput placeholder="CGST" formControlName="cgst"
+											appNumberOnly autocomplete="off">
+									</mat-form-field>
+								</fieldset>
+							</td>
+							<td>
+								<fieldset [disabled]='true'>
+									<mat-form-field floatLabel="never" style="width: 100px;">
+										<input matInput placeholder="SGST" formControlName="sgst"
+											appNumberOnly autocomplete="off">
+									</mat-form-field>
+								</fieldset>
+							</td>
+							<td>
+								<fieldset [disabled]='true'>
+									<mat-form-field floatLabel="never" style="width: 100px;">
+										<input matInput placeholder="IGST" formControlName="igst"
+											appNumberOnly autocomplete="off">
+									</mat-form-field>
+								</fieldset>
+							</td>
+							<td>
+								<fieldset [disabled]='true'>
+									<mat-form-field floatLabel="never" style="width: 120px;">
+										<input matInput placeholder="Invoice Amount" formControlName="invoiceamount"
+											appNumberOnly autocomplete="off">
+									</mat-form-field>
+								</fieldset>
+							</td>
+
+                <!-- <td *ngIf="gstshow && checkscgst(((p-1)*pageSize)+ind)">
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never">
+
+                      <input readonly="true" style="border-style: outset; font-weight: 500;"
+                        (keypress)="numberOnly($event)" matInput placeholder="CGST Percentage" formControlName="cgstp"
+                        [value]='cgst' autocomplete="off" required>
+
+                      <input readonly="true" style="margin-top: 4px;border-style: outset; font-weight: 500;" matInput
+                        placeholder="SGST Percentage" formControlName="sgstp" [value]='sgst' autocomplete="off" required>
+
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td
+                  *ngIf="gstshow && checkscgst(((p-1)*pageSize)+ind)==false && checkigst(((p-1)*pageSize)+ind) == false">
+
+                </td>
+                <td *ngIf="gstshow && checkigst(((p-1)*pageSize)+ind)">
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never">
+                      <input readonly="true" style="border-style: outset; font-weight: 500;" matInput
+                        placeholder="IGST Percentage" formControlName="igstp" [value]='igst' autocomplete="off" required>
+                    </mat-form-field>
+                  </fieldset>
+                </td> -->
+
+                <td *ngIf="approver && applevel == 2">
+                  <fieldset [disabled]="statusid > 2">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput placeholder="Approved Amount" formControlName="approvedamount" appNumberOnly (input)="amount_validate($event, ind)"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+
+
+                <!-- <td> -->
+                <!-- <td *ngIf="enb_all_exbdetails"> -->
+                  <!-- <mat-form-field  style="width: 250px;">
+                    <input matInput placeholder="GST No"  (keydown)="kyenbdata($event)" [readonly]="approver || statusid==1 || statusid == -1"
+                       formControlName="gstno" > 
+                  </mat-form-field>
+                </td> -->
+                <td *ngIf="!approver && !enb_all_exbdetails"><button mat-icon-button matTooltip="Delete"
+                   class="iconbutton"
+                  (click)="removeSection(ind)" color="primary">
+                  <mat-icon style="color:red;" aria-label="Delete">delete</mat-icon>
+                </button>
+              </td>
+              </tr>
+              <tr>
+                <th colspan="7">
+                  <div class="pagination" style="text-align: center;">
+                    <pagination-controls responsive="true" (pageChange)="p = $event"></pagination-controls>
+                  </div>
+                </th>
+              </tr>
+            </tbody>
+
+
+
+
+          </table>
+        </div>
+        <div class="col-md-12 text-center" style="margin-top: 3%;margin-bottom: 3%;">
+          <button *ngIf='applevel == 2 && statusid == 2' type="submit" style="border-radius: 40px;margin-left: 10px;"
+            class="btn btn-outline-success" (click)="ApproveForm()">Approve</button>
+          <button *ngIf='!approver' type="submit" [disabled]="lodgingform.get('data')['controls'].length== 0" 
+          style="border-radius: 40px;margin-left: 10px;"
+            class="btn btn-outline-success" (click)="submitForm()">Submit</button>
+
+          <button type="button" class="btn btn-outline-primary" (click)="back()"
+            style="border-radius: 40px;margin-left: 10px;">Back</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>

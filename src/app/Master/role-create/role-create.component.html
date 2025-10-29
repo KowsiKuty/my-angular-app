@@ -1,0 +1,156 @@
+<div class="Container" style="margin-left: 10px;">
+    <form [formGroup]="rolesummary" >
+        <div  style="margin-top:2%">
+          <mat-form-field style="width:200px; margin-left:10px;">
+            <mat-label>Role Group</mat-label>
+            <input formControlName="role_id" type="text" matInput #roleinput autocomplete="off" [matAutocomplete]="roleint"  [readonly]="readonly">
+            <mat-autocomplete #role #roleint="matAutocomplete" [displayWith]="getroleinterface">
+              <!-- (opened)="autocompltescrollroleGroup()" -->
+                <mat-option *ngFor="let role of roleList" [value]="role">{{role.operation_name}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        <mat-form-field  style="width:200px; margin-left:50px;">
+            <mat-label>Role Name</mat-label>
+            <input matInput type="text" formControlName="name" [readonly]="readonly"> 
+        </mat-form-field>
+        <mat-form-field  style="width:200px; margin-left:50px;">
+            <mat-label>Role Code</mat-label>
+            <input matInput type="text" [maxlength]="8" formControlName="code" [readonly]="readonly">
+        </mat-form-field>
+        <button *ngIf="submit_button"  (click)="submit(modules_data,employee_data,1)" class="btn btn-outline-success" style="margin-top:10px;border-radius:40px;margin-left:15px;">Submit</button>
+        <button *ngIf="!submit_button" (click)="submit(modules_data,employee_data,2)" class="btn btn-outline-success" style="margin-top:10px;border-radius:40px;margin-left:15px;">Update</button>
+        <button (click)="cancel()" class="btn btn-outline-danger" style=" margin-top:10px;margin-left:15px;border-radius:40px">Cancel</button>
+        </div>
+    </form>
+    <div class="col-md-12 row" style="margin-top:2%;">
+        <div class="col-md-5">
+            <mat-card class="matcard">
+                <mat-card-header>
+                <mat-card-title class="mattitle">Module</mat-card-title>
+                <div style="text-align: right;margin-left: 50px;">
+                  <form>
+                    <mat-form-field>
+                      <mat-label>Search Module</mat-label>
+                      <input matInput type="text" #empinput [formControl]="mod_form"> 
+                    </mat-form-field>
+                    <button style="margin-left:15px;font-size: 30px;" mat-icon-button>
+                      <mat-icon (click)="filter_mod()">search</mat-icon></button>
+                    
+                  </form>
+                
+                </div>
+                </mat-card-header>
+                <mat-divider></mat-divider>
+                <mat-card-content class="matcontent">
+                    <!-- <ul class="list-group"> -->
+                        <!-- <li class="list-group-item"> -->
+              
+                          <!-- <span (click)="selectUnselectAll(data)">
+                            <span *ngIf="data.isAllSelected;else noneSelected">Unselect All </span>
+                            <ng-template #noneSelected>Select All </ng-template>
+                          </span> -->
+              
+                          <!--Master Expand/ Collapse Arrow  -->
+                          <!-- <span (click)="expandCollapseAll(modules_data)">
+                            <i class="fas fa-angle-up" *ngIf="true;else isCollapsed"></i>
+                            <ng-template #isCollapsed><i class="fas fa-angle-down"></i></ng-template>
+                          </span> -->
+              
+                        <!-- </li> -->
+                      <!-- </ul> -->
+              
+                      <ul class="list-group">
+              
+                        <!-- Parent Item -->
+                        <li class="list-group-item" *ngFor="let item of modules_data; index as i">
+              
+                          <!-- Parent Checkbox -->
+                          <input type="checkbox" [(ngModel)]="item.isSelected" name="list_name" (change)="onCheckboxChange_module($event)" value="{{item.id}}"
+                            (ngModelChange)="parentCheck(item)" />
+                          {{item.value}}
+                          <!-- Parent Arrow -->
+                          <span (click)="expandCollapseAll(item)">
+                            <i class="fa fa-angle-down" *ngIf="item.isClosed;else isCollapsed"></i>
+                            <ng-template #isCollapsed>
+                              <i class="fa fa-angle-up"></i>
+                            </ng-template>
+                          </span>
+                          <div class="child-list" [hidden]="item.isClosed">
+              
+                            <ul class="list-group level-two">
+                              <!-- Child Item -->
+                              <li class="list-group-item level-two"  *ngFor="let itemChild of item.sub_module; index as j">
+                                <!-- Child Checkbox -->
+                                <input type="checkbox" [(ngModel)]="itemChild.isSelected" name="list_name_child"
+                                  value="{{itemChild.id}}" (change)="onCheckboxChange_module($event)" (ngModelChange)="childCheck(item,itemChild,i,j)" />
+                                {{itemChild.value}}
+                              </li>
+              
+                            </ul>
+              
+                          </div>
+                        </li>
+                      </ul>
+                    <!-- <div *ngFor="let item of modules_data; index as i">
+                    <mat-radio-group class="example-radio-group">
+                        <mat-radio-button color="primary" *ngFor="let sub of item.sub_module; index as j"></mat-radio-button>
+                    </mat-radio-group>  
+                    </div> -->
+                </mat-card-content>
+            </mat-card>
+        </div>
+        <div class="col-md-5">
+            <mat-card class="matcard">
+                <mat-card-header class="row">
+                <mat-card-title class="mattitle">Employee</mat-card-title>
+                <div style="text-align: right;margin-left: 50px;">
+                  <form>
+                    <mat-form-field>
+                      <mat-label>Search Employee</mat-label>
+                      <input matInput type="text" #empinput [formControl]="empname"> 
+                    </mat-form-field>
+                    <button style="margin-left:15px;font-size: 30px;" mat-icon-button>
+                      <mat-icon (click)="filter_emp()">search</mat-icon></button>
+                    
+                  </form>
+                
+                </div>
+                </mat-card-header>
+                <mat-divider></mat-divider>
+                <mat-card-content class="matcontent">
+                    <ul class="list-group">
+              
+                        <!-- Parent Item -->
+                        <li class="list-group-item" *ngFor="let item of employee_data; index as i">
+              
+                          <!-- Parent Checkbox -->
+                          <input type="checkbox" [(ngModel)]="item.isSelected" name="list_name" value="{{item.id}}" (change)="store_emp_list(item);onCheckboxChange($event)"
+                             />
+                          {{item.code}} - {{item.name}}
+                          <!-- Parent Arrow -->
+                          <!-- <span (click)="expandCollapseAll(item)">
+                            <i class="fas fa-angle-up" *ngIf="item.isClosed;else isCollapsed"></i>
+                            <ng-template #isCollapsed>
+                              <i class="fas fa-angle-down"></i>
+                            </ng-template>
+                          </span> -->
+                        </li>
+                    </ul>   
+                </mat-card-content>
+            </mat-card>
+        </div>
+        
+
+    </div>
+     
+    <!-- <div class="col-md-8">
+      {{stringify(modules_data)}}
+      --------------------------------------
+      {{stringify(employee_data)}}
+    </div> -->
+    <!-- <div *ngFor="let item of modules_data; index as i">
+        <mat-radio-group class="example-radio-group">
+            <mat-radio-button color="primary" *ngFor="let sub of item.sub_module; index as j"></mat-radio-button>
+        </mat-radio-group>  
+        </div>  -->
+</div> 

@@ -1,0 +1,286 @@
+<div *ngIf="!tb_views" class="field_rows">
+    <h2> DRS Documents</h2>
+    <div>
+        <from [formGroup]="aws_summary" style="margin-top: 2%;">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>Status</mat-label>
+                            <input matInput formControlName="status" [matAutocomplete]="aws_status">
+                            <mat-autocomplete #aws_status="matAutocomplete" [displayWith]="displayStatus">
+                                <mat-option *ngFor="let status of status_list" [value]="status">
+                                    {{status.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>File Name</mat-label>
+                            <input matInput formControlName="file_name" placeholder="File Name" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>Created Date</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="create_date" [max]="current_date">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <button type="submit" (click)="aws_search(aws_summary.value)" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Search</button>
+                    </div>                    
+                     <div class="col-md-3">
+                        <mat-form-field >
+                            <mat-label>Upload Type</mat-label>
+                            <input matInput formControlName="upload_type" [matAutocomplete]="drs_type">
+                            <mat-autocomplete #drs_type="matAutocomplete" [displayWith]="displaytype">
+                                <mat-option *ngFor="let type of upload_type_value" [value]="type">
+                                    {{type.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3" style="padding-top: 1%;">
+                         <input type="file" (change)="fileupload($event)"  formControlName="documentfile">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" (click)="fil_upload(1)" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Submit</button>
+                    </div>  
+                    <div class="col-md-1" style="cursor: pointer;">
+						<button class="btn btn-outline-primary" type="submit" style="border-radius: 40px;" (click)="fil_upload(2)" color="primary">
+							<i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+						</button>
+					</div>    
+                    <div class="col-md-3">
+                        <button type="button" (click)="clear_aws()" style="border-radius: 40px;"
+                            class="btn btn-outline-primary">Clear</button>
+                    </div>         
+                </div>
+            </div>
+        </from>
+    </div>
+    <div style="    padding-top: 2%;">
+        <div class="tableFixHead">
+
+            <table class="table table-bordered" fixed-header>
+                <thead style="    background-color: #00800021;">
+                    <tr>
+                        <th>S.No</th>
+                        <th>File Name</th>
+                        <th>File Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Download</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let aws of aws_data;index as ind">
+                        <td>{{(presentpage-1)*10+ind+1 }}</td>
+                        <td>{{aws.file_name}}</td>
+                        <td>{{(aws.type==1?'Report':aws.type==3?"TB":aws.type==4?"Audit":aws.type ==8?'Master Upload':aws.type ==9?'Summary Download':'TB unmatched sortorder')}}</td>
+                        <td>{{aws.created_date | date:'yyyy-MMM-dd'}}</td>
+                        <td>{{ getStatusLabel(aws) }}</td>
+                        <td>
+                            <mat-icon
+                                [ngStyle]="{'color':(aws.set_status == 4) ? 'green' : 'gray','cursor': (aws.set_status == 4) ? 'pointer':'default'}"
+                                [matTooltip]="(aws.set_status == 4) ? 'Download' : ''" aria-label="Download"
+                                (click)="(aws.set_status == 4)?aws_file(aws):''">
+                                download
+                            </mat-icon>
+                        </td>
+                        <td style="text-align: center;">
+                            <!-- <mat-icon
+                                [ngStyle]="{'color':(aws.set_status == 4 && aws.type == 3) ? 'green' : 'gray','cursor': (aws.set_status == 4 && aws.type == 3) ? 'pointer':'default'}"
+                                [matTooltip]="(aws.set_status == 4 && aws.type == 3) ? 'View' : ''" aria-label="view"  (click)="(aws.set_status == 4 && aws.type == 3)?tb_view():''">
+                                visibility
+                            </mat-icon> -->
+                            <ng-container *ngIf="aws.set_status == 4 && aws.type == 3; else noIcon">
+                                <mat-icon style="color: green; cursor: pointer;" [matTooltip]="'View'" aria-label="view" (click)="tb_view(aws)">
+                                    visibility
+                                </mat-icon>
+                            </ng-container>
+                            <ng-template #noIcon>
+                                <span>--</span>
+                            </ng-template>
+                           
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_found" style="text-align: center;">Data Not Found</p>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="tb_views">
+    <h2 style="margin-left: 5%; margin-top: 2%">TB Summary</h2>
+    <form [formGroup]="TB_summary">
+        <div class="field_rows">
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field >
+                        <mat-label>Created Date</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="create_dates" [max]="current_date">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field class="fields" (click)="Branch_fun_sum()">
+                        <mat-label>Branch Code</mat-label>
+                        <input #branchsumInput matInput placeholder="Branch Code" formControlName="tb_branch"
+                            autocomplete="off" #branchSumContactInput [matAutocomplete]="branchsum">
+                        <mat-autocomplete #branchsum="matAutocomplete" [displayWith]="displayfnbranchsum"
+                            (opened)="autocompletebranchsumScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <!-- <mat-option *ngFor="let branchsums of brasum_list_sum" (click)="branch_clear()"
+                                    [value]="branchsums">{{branchsums.code}}-{{branchsums.name}} </mat-option> -->
+                                <mat-option *ngFor="let branchsums of brasum_list_sum"
+                                    [value]="branchsums">{{branchsums.code}}-{{branchsums.name}} </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field class="fields" (click)="GL_fun_sum()">
+                        <mat-label>GL Number</mat-label>
+                        <input #GlsumInput matInput placeholder="GL Number" formControlName="tb_Gl"
+                            autocomplete="off" #GLsumContactInput [matAutocomplete]="GLNumbersum">
+                        <mat-autocomplete #GLNumbersum="matAutocomplete" [displayWith]="displayGLsum"
+                            (opened)="autocompleteGLsumScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let GLsum of glsum_list1"
+                                    [value]="GLsum">{{GLsum.glno}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field class="fields">
+                        <mat-label>Description</mat-label>
+                        <input matInput placeholder="Description" formControlName="tb_desc"
+                            autocomplete="off">
+                    </mat-form-field>
+                </div>
+                <div class="mr-4 ml-3">
+                    <i data-toggle="modal" data-target="#exampleModalcurrency"  matTooltip="Delete" style="font-size:24px;color: #007bff;cursor: pointer; margin-top: 105%;" (click)="tb_deletess()"
+                                    class="fa" >&#xf014;</i>
+                 
+               </div>
+                <div class="mt-3 mr-3">
+                    <button type="button" style="border-radius: 40px;"
+                        class="btn btn-outline-primary" (click)="tb_search(TB_summary.value)"><span
+                            class="fa fa-search"></span></button>
+                </div>
+                <div class="mr-3 mt-3">
+                    <button type="button" style="border-radius: 40px;"
+                        class="btn btn-outline-primary" (click)="tb_clear()">Clear</button>
+                </div>
+                
+                <div >
+                     <button type="button" style="border-radius: 30px; margin-top: 15px;" class="btn btn-outline-primary"
+                        (click)="back()">
+                        Back
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div *ngIf="table_view">
+            <div class="tableFixHead">
+                <table class="table table-bordered" style="width: 95%; margin-left: 3%; margin-top: 2%;" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Branch Code</th>
+                            <th>GL No</th>
+                            <th>GL Description</th>
+                            <th>Sort Order</th>
+                            <th>Currency</th>                            
+                            <th>Date</th> 
+                            <th>Amount</th>                           
+                                                 
+           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let tb of TB_data;index as ind">
+                            <td>{{(presentpages-1)*10+ind+1 }}</td>
+                            <td>{{tb.branch_code}}</td>
+                            <td>{{tb.glno}}</td>
+                            <td>{{tb.gl_description}}</td>                            
+                            <td>{{tb.sort_order}}</td>
+                            <td>{{tb.glccy_code}}</td>
+                            <td>{{tb.fis_mis_date | date: 'yyyy-MM-dd'}}</td>  
+                            <td style="text-align: right;">{{tb.amount |number:'1.2-2'}}</td> 
+                         
+                                                   
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_found" style="text-align: center;">Data Not Found</p>
+                </div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="has_previouss === false" color="primary" (click)="previousClicks()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpages}}
+                    <button mat-icon-button [disabled]="has_nexts === false" color="primary" (click)="nextClicks()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<div class="modal fade" id="exampleModalcurrency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog custom-modal-position" role="document" style="width: 23%;">
+        <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="deleteclose()" #Currency_sum_close aria-label="Close">
+                    &times;
+                </button>
+            <div class="modal-body">
+                <form [formGroup]="DeleteModal">
+                    <div class="row" style="display: flex; justify-content: space-between;">
+                        <div class="col-md-3">
+                            <mat-form-field >
+                                <mat-label>Created Date</mat-label>
+                                <input matInput [matDatepicker]="picker" formControlName="delete_date" [max]="current_date">
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                        </div>  
+                        <div class="col-md-1" style="margin-top: 6%; margin-right: 8%;">
+                            <!-- <mat-icon class="tick_style" aria-hidden="false" aria-label="Example home icon" fontIcon="done" (click)="delete_tb(DeleteModal.value)"></mat-icon> -->
+                            <i class="fa fa-check-square tick_style" (click)="delete_tb(DeleteModal.value)"></i>
+                        </div>                     
+                    </div>                   
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

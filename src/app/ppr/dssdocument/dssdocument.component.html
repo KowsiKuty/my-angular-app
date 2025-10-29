@@ -1,0 +1,147 @@
+<div>
+    <form [formGroup]="dcs_document">
+        <div class="row">
+            <div class="col-md-3">
+                <mat-form-field style="width: 180px;margin-left: 10%;">
+                    <mat-label>Name</mat-label>
+                    <input matInput placeholder="" formControlName="name" autocomplete="off" >
+                </mat-form-field>
+            </div>
+            <div class="col-md-2">
+                <div>
+                    <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                        #takeInput accept=".xlsx" formControlName="file" multiple
+                        hidden />
+                    <label class="filedata" style="background-color: #686fc5;border-radius: 40px; margin-top: 10%;" for="upload">Choose
+                        file</label>
+                    <div *ngFor="let files of file_data; let index = index">
+                        {{index+1}}.{{files?.name}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">           
+                <mat-form-field>
+                    <mat-label>Date</mat-label>
+                    <input matInput [matDatepicker]="create_date" formControlName="fulldate">
+                    <mat-datepicker-toggle matSuffix [for]="create_date"></mat-datepicker-toggle>
+                    <mat-datepicker #create_date startView="multi-year"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field class="example-full-width" style="margin-left: 10px;">
+                    <mat-label>Month And Year</mat-label>
+                    <input matInput [matDatepicker]="picker1" #from_date formControlName="date" readonly >
+                    <mat-datepicker-toggle matSuffix [for]="picker1">
+                        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker1 startView="multi-year"
+                        (monthSelected)="chosen_MonthHandler($event,picker1,from_date)"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3" style="margin-left: 2%;">
+            <mat-form-field appearance="standard">
+                <mat-label>File Type</mat-label>
+                <mat-select formControlName="file_type">
+                  <mat-option *ngFor="let types of file_types" [value]="types.id">
+                    {{types.type}}
+                  </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-md-2" style="margin-left: 2%;">
+            <mat-form-field appearance="standard">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="Status">
+                  <mat-option *ngFor="let status of active_types" [value]="status.id">
+                    {{status.type}}
+                  </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary" type="submit" (click)="dcs_summary(dcs_document.value)"
+                    style="border-radius:40px;margin-top: 10%; margin-left: 30%;" color="primary"><i
+                        class="fa fa-search" aria-hidden="true"></i></button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" style="border-radius: 40px; margin-top: 20px;" class="btn btn-outline-primary"
+                    (click)="dcs_process()">DCS</button>
+            </div>
+
+            <div class="col-md-2">
+                <button type="button" style="border-radius: 40px; margin-top: 20px;" class="btn btn-outline-primary"
+                    (click)="dcs_submit()">Submit</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" style="border-radius: 40px; margin-top: 20px;margin-left: 10%;" class="btn btn-outline-primary"
+                    (click)="dcs_reset()">Reset</button>
+            </div>
+        </div>
+    </form>
+    <div class="tableFixHead">
+        <table class="table table-bordered" fixed-header>
+            <thead style="background-color: #00800021;">
+                <tr>
+                    <th>S.No</th>                    
+                    <th>File Name</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Download</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let summary of summary_list;let i=index">
+                    <td>{{(presentspage-1)*10+i + 1 }}</td>                   
+                    <td>{{summary.file_name !=null ? summary.file_name : '--'}}</td>
+                    <td>{{summary.created_date | date:'yyyy-MMM-dd'}}</td>
+                    <td>{{((summary.status == 1 &&  summary.type== 35)?'Upload' : (summary.status == 2 &&  summary.type== 35) ? 'Processing' : (summary.status == 4 &&  summary.type== 35)?'Download':(summary.status == 1 &&  summary.type== 40) ? 'Active' :'InActive')}}</td>                    
+                    <td>
+                        <div>
+                            <button mat-icon-button 
+                                
+                                [ngStyle]="{  'color':summary.status == 4 ? 'green' : 'gray','cursor':  summary.status == 4 ? 'pointer':'default'}"
+                                [matTooltip]=" summary.status == 4 ? 'Download' : ''" aria-label="Download"
+                                (click)=" summary.status == 4?documents(summary):''">
+                                <mat-icon class="enabled_icon">download</mat-icon>
+                            </button>
+                            <!-- <mat-icon 
+                            matTooltip="Download" class="iconbutton" data-toggle="modal"
+                            data-target="#exampleModal1" style="color: green;" (click)="documents(summary)"
+
+                                [ngStyle]="{  'color':summary.status == 4 ? 'green' : 'gray','cursor':  summary.status == 4 ? 'pointer':'default'}"
+                                [matTooltip]=" summary.status == 4 ? 'Download' : ''" aria-label="Download"
+                                (click)=" summary.status == 4?documents(summary):''">
+                                download
+                            </mat-icon> -->
+                            <button mat-icon-button matTooltip="delete" *ngIf="summary.type==35" style="color: green;"  class="iconbutton"  (click)="delete_document(summary)" >
+                                <mat-icon class="enabled_icon">delete</mat-icon>
+                            </button> 
+                           <!-- <button mat-icon-button matTooltip="delete" *ngIf="(summary.type==40 ?summary.status==0 :'' )" style="color: rgb(2, 14, 2);"  class="iconbutton"  (click)="delete_document(summary)" >
+                                <mat-icon class="enabled_icon">delete</mat-icon>
+                            </button>  -->
+                            <a (click) = "delete_document(summary)" *ngIf="summary.type==40" >
+                            
+                                <i *ngIf="summary.status==1" style="font-size:24px;color: green;" matTooltip="Delete" class="fa">&#xf014;</i>&nbsp;&nbsp;
+                                                   
+                                <i *ngIf="summary.status==0" style="font-size:24px;color: black;" matTooltip="Delete" class="fa">&#xf014;</i>
+                                                </a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <p *ngIf="!data_found" style="text-align: center;">Data Not Found</p>
+        </div>
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="hass_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentspage}}
+            <button mat-icon-button [disabled]="hass_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+    
+</div>

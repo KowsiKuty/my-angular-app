@@ -1,0 +1,1161 @@
+
+<mat-tab-group style="margin-left: 2%;"  (selectedTabChange)="tabClick($event)">
+    <mat-tab label="Asset Query - AQ"> <div >
+        <div class="row col-md-12">
+    
+            <div class="panel panel-default">
+                <!-- <div class="panel-body">Asset Query - AQ
+                </div> -->
+            </div>
+            <!-- <mat-divider></mat-divider> -->
+            <form class="example-form" [formGroup]="fasearchform" (ngSubmit)="fasearch('search','e')">
+                <div class="row col-md-12">
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label> Asset ID</mat-label>
+                            <input matInput placeholder="Asset" formControlName="assetdetails_id">
+                        </mat-form-field>
+    
+    
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Apcategory</mat-label>
+                            <input placeholder="Select Apcategory" matInput (click)="getcat()" formControlName="cat"
+                                [matAutocomplete]="apcattype">
+                            <mat-autocomplete #apcattype="matAutocomplete" [displayWith]="displayapsscat">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let apcategory of apcategoryList" [value]="apcategory">
+                                        {{apcategory.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+    
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Branch</mat-label>
+                            <input type="text" placeholder="Branch" (click)="branchget()" aria-label="Number" matInput
+                                formControlName='branch' [matAutocomplete]="autob">
+                            <mat-autocomplete #autob="matAutocomplete" [displayWith]="displayFnbranch">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+    
+                                    <mat-option *ngFor="let p of branchdata " [value]="p">
+                                        {{p.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+    
+    
+                    <ng-container>
+                        <div class="col-md-3">
+    
+    
+    
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Filter</mat-label>
+                                <mat-select [formControl]="myControl" multiple>
+                                    <mat-option *ngFor="let topping of filter_options"
+                                        (onSelectionChange)="selectionChange($event)"
+                                        (focusout)="filter_flags($event,topping)" [value]="topping">{{topping.title}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+    
+    
+    
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Total Count</mat-label>
+                                <mat-select [formControl]="myControl" multiple>
+                                    <mat-option *ngFor="let topping of Datas"
+                                        (onSelectionChange)="totalcount($event,'count_flag')" [value]="topping">
+                                        {{topping.title}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                        <h1>FV-4.34</h1>
+                        </div>
+                        <div class="col-md-3">
+                        <h1>{{version}}</h1>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>CR No</mat-label>
+                                <input type="text" matInput formControlName="crnum">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Bucket Name</mat-label>
+                                <input type="text" matInput formControlName="bucname" [matAutocomplete]="auto">
+                                <mat-autocomplete #auto="matAutocomplete" [displayWith]="tobucketinterface">
+                                    <mat-option *ngFor="let d of fromBucketList " [value]="d" >
+                                      {{d.name}}
+                                    </mat-option>
+                                  </mat-autocomplete>
+                                
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Asset Make</mat-label>
+                                <input type="text" matInput formControlName="make">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Asset Model</mat-label>
+                                <input type="text" matInput formControlName="model">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Asset Serial No</mat-label>
+                                <input type="text" matInput formControlName="serialno">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Asset Specifications</mat-label>
+                                <input type="text" matInput formControlName="specifications">
+                            </mat-form-field>
+                        </div>
+                        <!--cap-->
+                        <div class="col-md-3" *ngIf="cp_date">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Cap From </mat-label>
+                                <input matInput [matDatepicker]="picker" formControlName="capstart_date">
+                                <mat-datepicker-toggle matSuffix [for]="picker">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div>
+                        <div class="col-md-3" *ngIf="cp_date">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Cap To </mat-label>
+                                <input matInput [matDatepicker]="picker2" formControlName="capend_date">
+                                <mat-datepicker-toggle matSuffix [for]="picker2">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div>
+                        <!--capend-->
+    
+                        <!--Transfer branch-->
+                        <div class="col-md-3" *ngIf="transfer_branch">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Transfer From Branch</mat-label>
+                                <input type="text" placeholder="Branch" (click)="branchget()" aria-label="Number" matInput
+                                    formControlName='branchfrom' [matAutocomplete]="auto11">
+                                <mat-autocomplete #auto11="matAutocomplete" [displayWith]="displayFnbranchfrom">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+    
+                                        <mat-option *ngFor="let p of branchdata " [value]="p">
+                                            {{p.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3" *ngIf="transfer_branch">
+                            <mat-form-field class="example-full-width" *ngIf="transfer_branch">
+                                <mat-label> Transfer To Branch</mat-label>
+                                <input type="text" placeholder="Branch" (click)="branchget()" aria-label="Number" matInput
+                                    formControlName='branchto' [matAutocomplete]="auto12">
+                                <mat-autocomplete #auto12="matAutocomplete" [displayWith]="displayFnbranchto">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+    
+                                        <mat-option *ngFor="let p of branchdata " [value]="p">
+                                            {{p.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+    
+    
+                        <!--t end-->
+    
+                        <!--Asset from to date-->
+                        <div class="col-md-3" *ngIf="asset_enddate">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Asset End From </mat-label>
+                                <input matInput [matDatepicker]="picker4" formControlName='enddatefrom'>
+                                <mat-datepicker-toggle matSuffix [for]="picker4">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker4></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div>
+                        <div class="col-md-3" *ngIf="asset_enddate">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Asset End To </mat-label>
+                                <input matInput [matDatepicker]="picker3" formControlName='enddateto'>
+                                <mat-datepicker-toggle matSuffix [for]="picker3">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker3></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div>
+                        <!--asswt date ends-->
+    
+                        <!--invoice date-->
+    
+                        <!-- <div class="col-md-3" *ngIf="ins_date">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>invoice Date </mat-label>
+                                <input matInput [matDatepicker]="picker11" formControlName='invoicedate'>
+                                <mat-datepicker-toggle matSuffix [for]="picker11">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker11></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div> -->
+    
+    
+                        <!--invoice end-->
+    
+                        <!--Asset lease from to date-->
+                        <div class="col-md-3" *ngIf="asset_leasedate">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Asset Lease From </mat-label>
+                                <input matInput [matDatepicker]="picker" formControlName='lease_startdate'>
+                                <mat-datepicker-toggle matSuffix [for]="picker">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div>
+                        <div class="col-md-3" *ngIf="asset_leasedate">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Asset Lease To </mat-label>
+                                <input matInput [matDatepicker]="picker" formControlName='lease_enddate'>
+                                <mat-datepicker-toggle matSuffix [for]="picker">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div>
+                        <!--asswt date ends-->
+                        <!--asset value from to-->
+    
+                        <div class="col-md-3" *ngIf="asset_value">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Asset From Value</mat-label>
+                                <input matInput placeholder="Asset" formControlName="assetfrom_value">
+                            </mat-form-field>
+    
+    
+                        </div>
+                        <div class="col-md-3" *ngIf="asset_value">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Asset To value</mat-label>
+                                <input matInput placeholder="Asset" formControlName="assetto_value">
+                            </mat-form-field>
+    
+    
+                        </div>
+                        <!--asset value-->
+                        <!--vendor-->
+                        <div class="col-md-3" *ngIf="vendor_name_enter">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Vendor name</mat-label>
+                                <input matInput placeholder="Number" formControlName="vendorname">
+                            </mat-form-field>
+    
+    
+                        </div>
+                        <!--v-->
+                        <!--po-->
+                        <div class="col-md-3" *ngIf="po_no_enter">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> PO Number</mat-label>
+                                <input matInput placeholder="Number" formControlName="ponum">
+                            </mat-form-field>
+    
+    
+                        </div>
+                        <!--v-->
+                        <!--mep-->
+                        <div class="col-md-3" *ngIf="mep_no_enter">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Mep Number</mat-label>
+                                <input matInput placeholder="Number" formControlName="mepno">
+                            </mat-form-field>
+    
+    
+                        </div>
+                        <!--v-->
+                        <!--crnum-->
+                        <div class="col-md-3" *ngIf="invoice_no_enter">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Invoice Number</mat-label>
+                                <input matInput placeholder="Number" formControlName="invoiceno">
+                            </mat-form-field>
+    
+    
+                        </div>
+                        
+                        <!--v-->
+                        <!-- invoice -->
+                        <div class="col-md-3" *ngIf="invoice_amt_enter">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Taxable Amount</mat-label>
+                                <input matInput placeholder="Number" formControlName="amount">
+                            </mat-form-field>
+    
+    
+                        </div>
+                        <!-- end -->
+                         <!-- dep_hold_enter -->
+                         <div class="col-md-3" *ngIf="dep_hold_enter">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Depreciation Hold</mat-label>
+                                <mat-select formControlName="deponhold" multiple>
+                                    <mat-option *ngFor="let data of depreciation_options"
+                                        (onSelectionChange)="selectionChange($event)"
+                                        (click)="edit(data.value)" [value]="data.value">{{data.title}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3" *ngIf="asset_source">
+                            <mat-form-field class="example-full-width">
+                                <mat-label> Asset Source</mat-label>
+                                <mat-select formControlName="asstsrc" multiple>
+                                    <mat-option *ngFor="let data of assetsource"
+                                        (onSelectionChange)="sourceget($event,data.value)" [value]="data.key">{{data.key}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <!-- dep_hold_enter -->
+                        <!-- invoice Date -->
+                        <div class="col-md-3" *ngIf="ins_date">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Invoice Date </mat-label>
+                                <input matInput [matDatepicker]="picker41" formControlName="invoicedate">
+                                <mat-datepicker-toggle matSuffix [for]="picker41">
+                                    <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker41></mat-datepicker>
+                            </mat-form-field>
+    
+                        </div>
+                        <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Product</mat-label>
+                            <input type="text" placeholder="Select the Product"  matInput 
+                                formControlName='product' [matAutocomplete]="product" #productInput>
+                            <mat-autocomplete #productinfo #product="matAutocomplete" [displayWith]="displayFnproduct" (opened)="autocompleteScrollProduct()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                    
+                                    <mat-option *ngFor="let product of productlist " [value]="product">
+                                        {{product.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        </div>
+                        <!-- end -->
+                        <!-- <button type="button" class="btn btn-primary" mat-raised-button (click)="download_file()" style="border-radius: 40px;height: 40px;">Download 
+                        <mat-icon inline=true style="color:black">download</mat-icon></button><br>
+                        <button class="btn btn-primary" type="button" style="width:200px;height:40px">
+                            Download
+                            <span *ngIf="first" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <i *ngIf="!first" class="bi bi-download"></i>
+                          </button> -->
+                        <div style="display: flex;gap: 10px;"> 
+                            <button mat-raised-button type="button" class="btn btn-primary" color="primary" (click)="download_file()"
+                                style="border-radius: 40px;height: 40px;">
+                                Prepare Excel For Download
+                                <mat-icon *ngIf="first"><mat-spinner color="accent" diameter="20">
+                                    </mat-spinner></mat-icon>
+                                <mat-icon *ngIf="!first" inline=true style="color:black">download</mat-icon>
+                            </button>
+                            <button mat-raised-button type="button" class="btn btn-primary" color="primary" (click)="download_file_prepare()"
+                                style="border-radius: 40px;height: 40px;">
+                                Download
+                            </button>
+                            <!-- <button class="btn btn-outline-primary querysearch" (click)="reset()" type="button" matTooltip="clear"
+                            color="primary">Reset</button> -->
+                        </div>
+                        
+                       
+                        <div class="col-md-12 text-right">
+                            <button *ngIf="count_search=='count_flag'" class="btn btn-outline-primary" type="button"
+                                (click)="FA_Countarray()" style="border-radius:40px;margin-left: 15px;" color="primary"><i
+                                    class="fa fa-search" aria-hidden="true"></i></button>
+    
+                            <button *ngIf="count_search=='1'" class="btn btn-outline-primary" type="submit"
+                                style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                                    aria-hidden="true"></i></button>
+    
+                        </div>
+                    </ng-container>
+    
+                </div>
+            </form>
+    
+            <!--GRID-->
+        <div class="table-responsive table-bordered" style="width: 99%;">
+            <table *ngIf="count_search=='1'" class="table " style="font-size:15px;">
+                <thead class="table_header">
+                    <tr>
+                        <th style="position: sticky;">S.No</th>
+                        <th>Asset Barcode</th>
+                        <th>Host Barcode</th>
+                        <th>Asset Transaction ID</th>
+                        <th>CR No.</th>
+                        <th>Status</th>
+                        <th>Asset Grp ID </th>
+                        <th>Asset Category</th>
+                        <th>Asset SubCategory</th>
+                        <th>Expense GL </th>
+                        <th>Product Name</th>
+                        <th> Capitalisation Date</th>
+                        <th>Asset Value</th>
+                        <th>PO Number </th>
+                        <th>Invoice No.</th>
+                        <th>Invoice Date</th>
+                        <th>Vendor Name</th>
+                        <th>Branch Name </th>
+                        <th>BS Name</th>
+                        <th>CC Name</th>
+                        <th>Asset EndDate </th>
+                        
+                        <th>Asset Total Value</th>
+                        <th>Asset Total Cost</th>
+                        <th>Asset Source</th>
+                        <th>Requestfor</th>
+                        <th>Asset Make</th>
+                        <th>Asset Model</th>
+                        <th>Asset Specifications</th>
+                        <th>Asset Serial No</th>
+                        <th>Reason</th>
+                        <th>Approval History</th>
+    
+    
+                    </tr>
+                </thead>
+                <tbody>
+    
+                    <tr *ngFor="let i of faquerygrid; index as j">
+                        
+                        <td scope="row" style="position: sticky;">{{ (presentpageloc-1)*pagesize+j+1 }}</td>
+                        <td>{{ i.barcode}}</td>
+                        <td>{{i?.host_id}}</td>
+                        <td>{{ i.assetdetails_id}}</td>
+                        <td>{{ i.crnum}}</td>
+                        <td>{{i.assetdetails_status}}</td>
+                        <td>{{ i.assetgroup_id}}</td>
+                        <td>{{ i.cat.name}}</td>
+                        <td>{{ i.subcat.name}}</td>
+                        <td>{{ i.subcat.glno}}</td>
+                        <td>{{ i.product_id.name}}</td>
+                        <td>{{ i.capdate |date: 'dd-MMM-yyyy'}}</td>
+                        <td data-target="#Accountdetails" data-toggle="modal" (click)="Accountdetails(i)">
+                           <b> {{ i.assetdetails_value}} </b></td>
+                        <td>{{ i.ponum}}</td>
+                        <td>{{ i.invoice_id.invoiceno }}</td>
+                        <td>{{ i.invoice_id.invoicedate |date: 'dd-MMM-yyyy' }}</td>
+                        <td>{{ i.vendorname}}</td>
+                        <td>{{ i.branch_id.name}}</td>
+                        <td>{{ i.bs ? i.bs :''}}</td>
+                        <td>{{i.cc ? i.cc :''}}</td>
+                        <td>{{ i.enddate|date: 'dd-MMM-yyyy'}}</td>
+                        
+                        <td>{{ i.valuetot}}</td>
+                        <td>{{ i.costtot}}</td>
+                        <td>{{ i.source}}</td>
+                        <td>{{ i.requestfor}}</td>
+                        <td>{{i?.make}}</td>
+                        <td>{{i?.model}}</td>
+                        <td>{{i?.product_spec}}</td>
+                        <td>{{i?.serial_no}}</td>
+                        <td>{{i?.reason}}</td>
+                        <td data-target="#Approvalhistory" data-toggle="modal" (click)="approval_history(i)">
+                            <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                            </td>
+    
+    
+    
+                    </tr>
+    
+                    <tr *ngIf="faquerygrid ?.length == 0">
+                        <td colspan="17">
+                            No records
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan='13'></td>
+                        <td colspan='3'>Page Count:
+                            <select name="selectedQuantity" [(ngModel)]="selectedQuantityData" id="data_new_fa" class="form-control"
+                                (change)="fasearch('count',$event.target.value)">
+                                <option *ngFor="let option of options" [value]="option">
+                                    {{option}}</option>
+                            </select>
+    
+    
+                        </td>
+                        <td colspan='2'>Total Count:{{count}}
+                            <br />
+                            <button mat-icon-button [disabled]="has_previousloc === false" color="primary"
+                                (click)=" locpreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentpageloc}}
+                            <button mat-icon-button [disabled]="has_nextloc === false" color="primary"
+                                (click)=" locnextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+    
+                        </td>
+    
+    
+                    </tr>
+    
+    
+    
+                </tbody>
+    
+            </table>
+            <!---->
+        </div>
+            <table *ngIf="count_search=='count_flag'" class="table table-bordered">
+    
+    
+                <span *ngFor="let i of findcount; let k = index">
+                    <thead class="table_header">
+    
+                        <th *ngIf="i==1">Cap date</th>
+                        <th *ngIf="i==2">WriteOff</th>
+                        <th *ngIf="i==3">Impairment</th>
+                        <th *ngIf="i==4">Value Change</th>
+                        <th *ngIf="i==5">Merge/th>
+                        <th *ngIf="i==6">Split</th>
+                        <th *ngIf="i==7">Transfer</th>
+                        <th *ngIf="i==8">Category</th>
+                        <th *ngIf="i==9">Sale</th>
+                    </thead>
+                    <tr>
+    
+                        <td *ngIf="i==1">{{countdata.cap_count}}</td>
+                        <td *ngIf="i==2">{{countdata.writeoff_count}}</td>
+                        <td *ngIf="i==3">{{countdata.impair_count}}</td>
+                        <td *ngIf="i==4">{{countdata.assetvalue_count}}</td>
+                        <td *ngIf="i==5">{{countdata.merge_count}}</td>
+                        <td *ngIf="i==6">{{countdata.split_count}}</td>
+                        <td *ngIf="i==7">{{countdata.transfer_count}}</td>
+                        <td *ngIf="i==8">{{countdata.cat_count}}</td>
+                        <td *ngIf="i==9">{{countdata.sale_count}}</td>
+                    </tr>
+                </span>
+            </table>
+    
+            <!--Acconting Details-->
+            
+            
+            <!--A end-->
+        </div>
+        
+       
+    
+    </div> </mat-tab>
+    <mat-tab label="Expense Query - EQ"> 
+
+
+        <form [formGroup]="checkersum" (ngSubmit)="getexpencecheckersummary()">
+            <br>
+            <div class="row">
+                
+                
+                
+                    <!-- <div class="com-md-2">
+                        <mat-form-field >
+                            <mat-label>Cap Date</mat-label>
+                            <input matInput   [matDatepicker]="picker" formControlName="date" style="width: 250px;"  placeholder="Choose Date"  autocomplete="off">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                          </mat-form-field>
+                        </div> 
+                        <div class="col-md-3">
+                        <mat-form-field  style="margin-left: 5%;">
+                            <input  type="text" matInput autocomplete="off" matInput [matAutocomplete]="checkerassetcat" formControlName="assetcat" #inputassetcatcheck style="width:250px">
+                            <mat-autocomplete #checkerassetcat="matAutocomplete" #assetcat >
+                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let d of checker_assetcat" [value]="d.subcatname" (focusout)="checket_asset(d)">{{d.subcatname}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                            <mat-placeholder>Category</mat-placeholder>
+                        </mat-form-field>
+                        </div> -->
+                        <div class="col-md-3">
+                        <mat-form-field class="example-full-width" style="width:250px">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off" matInput [matAutocomplete]="checkerbranch" #inputbranch formControlName="branch" style="width:250px">
+                            <mat-placeholder>Branch</mat-placeholder>
+                            <mat-autocomplete #checkerbranch="matAutocomplete" #branch >
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container>
+                                    <mat-option *ngFor="let d of checker_branch" [value]="d.name" (focusout)="checker_branchs(d)">
+                                        {{d.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                        <mat-form-field class="example-full-width" style="width:250px">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off" matInput formControlName="crno" style="width:250px">
+                            <mat-placeholder>CR No</mat-placeholder>
+                        </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="width:250px">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off" matInput formControlName="expense_code" style="width:250px">
+                                <mat-placeholder>Expense Code</mat-placeholder>
+                            </mat-form-field>
+                            </div>
+                        <div class="col-sm-2">
+                        <button type="submit" class="btn btn-outline-primary"
+                            style="border-radius:40px;margin-left: 5px; width:40px;height: 40px;" >
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                        <button class="btn btn-primary" style="border-radius:40px;margin-left:5%;width:80px;height: 40px;" (click)="resets()">Reset</button>
+                    </div>
+                       
+                
+            </div>
+        </form>
+
+
+
+
+
+
+        <br>
+        <div class="table-responsive">
+            <table class="table table-bordered" style="width: 98%;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.No</th>
+                        <th>View</th>
+                        <th>Invoice Category</th>
+                        <th>Invoice subcategory</th>
+                        <th>Expense GL</th>
+                        <th>CR No.</th>
+                        <th>Expense Amount</th>
+                        <th>Expense Code</th>
+                        <th>Maker Name</th>
+                        <th>Approver Name</th>
+                        <th>Stauts</th>
+    
+                    </tr>
+                </thead>
+                <tbody *ngFor="let dta of expdatalist;let i=index">
+                    <tr >
+                        <td>{{i+1}}</td>
+                        <td><button mat-icon-button color="primary" (click)="enbexpensedata(i)"><mat-icon *ngIf="dta.sub_enb==false">arrow_drop_down_circle</mat-icon> <mat-icon *ngIf="dta.sub_enb==true">arrow_drop_up</mat-icon></button></td>
+                        <td style="text-align: center;">{{dta?.cat?.name}}</td>
+                        <td style="text-align: center;">{{dta?.subcat?.name}}</td>
+                        <td style="text-align: center;">{{dta?.glno}}</td>
+                        <td style="text-align: center;">{{dta?.crnum}}</td>
+                        <td style="text-align: right;">{{dta?.amount | number:'1.2-2'}}</td>
+                        <td style="text-align: center;">{{dta?.exp_code}}</td>
+                        <td style="text-align: center;">{{dta?.makernmae}}</td>
+                        <td style="text-align: center;">{{dta?.checkername}}</td>
+                        <td>
+                            {{dta?.exp_status}}
+                            <!-- <input type="checkbox" [checked]="dta.enb" (change)="enbleexpense($event,i)"> -->
+                        </td>
+                    </tr>
+                    <tr *ngIf="dta.sub_enb">
+    
+                        <td colspan="11">
+                            <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;">Expense Data List:</h2>
+                            <table class="table table-bordered" style="width:90%">
+                                <thead class="table_header">
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>HSN RATE</th>
+                                        <th>Amount</th>
+                                        <th>BS Name</th>
+                                        <th>CC Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let subdta of dta.expense_bsccdata;let j=index">
+                                        <td style="text-align: center;">{{subdta?.product?.name}}</td>
+                                        <td style="text-align: right;">{{subdta?.product?.hsn?.igstrate |  number:'1.2-2'}}</td>
+                                        <td style="text-align: right;">{{subdta?.amount | number:'1.2-2'}}</td>
+                                        <td style="text-align: center;">{{subdta?.bsdata?.name}}</td>
+                                        <td style="text-align: center;">{{subdta?.ccdata?.name}}</td>
+                                    </tr>
+                                    <tr *ngIf="dta.expense_bsccdata.length==0">
+                                        <td colspan="5">No Records Found..</td>
+                                    </tr>
+    
+                                </tbody>
+                            </table>
+                        </td>
+    
+                       
+                       
+                    </tr>
+                    <tr  *ngIf="dta.sub_enb">
+                        <td colspan="11">
+                            <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;">Expense Entry List:</h2>
+                            <table class="table table-bordered" style="width:90%">
+                                <thead class="table_header">
+                                    <tr>
+                                        
+                                        <th>Type</th>
+                                        <th>ENtry GL</th>
+                                        <th>Entry Amount</th>
+                                        <th>Entry Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let subdta of dta.entry_data;let j=index">
+                                        
+                                        <td style="text-align: center;">{{subdta.type}}</td>
+                                        <td style="text-align: center;">{{subdta.gl}}</td>
+                                        <td style="text-align: center;">{{subdta.amount  | number:'1.2-2'}}</td>
+                                        <td style="text-align: center;">{{subdta.status}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+                <tr *ngIf="expdatalist.length==0">
+                    <td colspan="11">
+                        No Records Found..
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        
+                    </td>
+                    <td colspan="3">
+                        <button mat-icon-button [disabled]="!exp_previouspage" color="primary"
+                    (click)=" exp_page('pre')">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{exp_presentpage}}
+                <button mat-icon-button [disabled]="!exp_nextpage" color="primary" (click)=" exp_page('next')">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+                    </td>
+                </tr>
+            </table>
+    
+        </div>
+    <div style="width:300px">
+
+    </div>
+    </mat-tab>
+    <mat-tab label="Asset Query - PRPO">
+        <form [formGroup]="prpoqueryform" (ngSubmit)="getprpofaquerysummary(1)">
+            <br>
+            <div class="row">
+
+                    <div class="col-md-12">
+                        <mat-form-field class="example-full-width" style="width:250px">
+                            <mat-label> Asset ID</mat-label>
+                            <input matInput placeholder="Asset" formControlName="asset_id">
+                        </mat-form-field>
+                    <!-- </div> 
+                    <div class="col-md-3"> -->
+                        <mat-form-field class="example-full-width" style="width:250px;margin-left:25px">
+                            <mat-label>Branch</mat-label>
+                            <input type="text" placeholder="Branch" (click)="branchget()" aria-label="Number" matInput
+                                formControlName='branch' [matAutocomplete]="autob">
+                            <mat-autocomplete #autob="matAutocomplete" [displayWith]="displayFnbranch">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+    
+                                    <mat-option *ngFor="let p of branchdata " [value]="p">
+                                        {{p.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    <!-- </div>
+                    <div class="col-md-3"> -->
+                        <mat-form-field class="example-full-width"  style="width:250px;margin-left:25px">
+                            <mat-label>Product</mat-label>
+                            <input type="text" placeholder="Select the Product"  matInput 
+                                formControlName='product' [matAutocomplete]="product" #productInput>
+                            <mat-autocomplete #productinfo #product="matAutocomplete" [displayWith]="displayFnproduct" (opened)="autocompleteScrollProduct()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                    
+                                    <mat-option *ngFor="let product of productlist " [value]="product">
+                                        {{product.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    <!-- </div>
+                    <div class="col-sm-2"> -->
+                        <button type="submit" class="btn btn-outline-primary"
+                            style="border-radius:40px;margin-left: 15px; width:40px;height: 40px;" >
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                        <button class="btn btn-outline-primary" style="border-radius:40px;margin-left:15px;width:80px;height: 40px;" (click)="resetpprquery()">Reset</button>
+                    </div>
+                       
+                
+            </div>
+        </form>
+        <br>
+        <div class="table-responsive">
+            <table class="table table-bordered" style="width: 90%;">
+                <thead class="table_header">
+                    <tr>
+                        <th>S.No</th>
+                        <th>View</th>
+                         <th>Asset ID</th>
+                         <th>Branch</th>
+                         <th>Product Name</th>
+                        
+    
+                    </tr>
+                </thead>
+                <tbody *ngFor="let dta of prpoquerysummarylist;let i=index">
+                    <tr >
+                        <td>{{i+1}}</td>
+                        <td> 
+                            <button mat-icon-button (click)="toggleExpand(i)">
+                              <mat-icon>{{ expandedRow === i ? 'arrow_drop_down_circle' : 'arrow_drop_up' }}</mat-icon>
+                            </button>
+                          </td>
+                        <!-- <td><button mat-icon-button color="primary" (click)="enbexpensedata(i)"><mat-icon *ngIf="dta.sub_enb==false">arrow_drop_down_circle</mat-icon> <mat-icon *ngIf="dta.sub_enb==true">arrow_drop_up</mat-icon></button></td> -->
+                         <td>{{dta.assetid}}</td>
+                         <td>{{dta.branch_name}}</td>
+                         <td>{{dta.product_name}}</td>                        
+                    </tr>
+                    <tr *ngIf="expandedRow === i">
+                        <td colspan="5">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table_header">
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Product Attributes</th>
+                                        </tr>
+                                        
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{dta.product_name}}</td>
+                                            <td>                                               
+                                                    <ul style="list-style-type: none; padding-left: 0;">
+                                                        <li *ngFor="let attribute of dta.product_attribute">
+                                                          
+                                                            <span *ngFor="let key of getAttributeKeys(attribute)">
+                                                                {{ key }}: {{ attribute[key] }}
+                                                              </span>
+                                                                                                               
+                                                        </li>
+                                                      </ul>                                                                                               
+                                            </td>
+                                        </tr>
+
+                                    </tbody>   
+                                </table>
+                            </div>        
+
+
+                        </td>
+                    </tr>
+                    
+                   
+                    
+                </tbody>
+                <tr *ngIf="prpoquerysummarylist?.length==0"><td colspan="5" style="text-align: center;">No Records Found...</td></tr>
+                <tr>
+                    <td colspan="5" style="text-align:right">
+                        <button mat-icon-button [disabled]="!pprqueryprev" color="primary"
+                    (click)=" prpoquery_pagination('pre')">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{pprquerypage}}
+                <button mat-icon-button [disabled]="!pprquerynext" color="primary" (click)=" prpoquery_pagination('next')">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+                    </td>
+                </tr>
+            </table>
+    
+        </div>
+    </mat-tab>
+    
+  </mat-tab-group>
+  <div class="modal" role="dialog" id="Accountdetails" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:rgb(160, 211, 160) ;">
+                <h2 class="modal-title" style="margin-left: 32%;font-family:'Times New Roman', Times, serif;color:blue">Accounting Details</h2>
+
+                <button #refclose type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="height: 500px;overflow-y: auto;font-size: 16px;">
+                    <table class="table table-bordered" >
+                        <thead class="table_header">
+                            <th>S.No</th>
+                            <th>Asset Barcode</th>
+                            <th>Entry Financial Year</th>
+                            <th>Entry Screen</th>
+                            <th>WiseFin GL</th>
+                            <th>Entry Gl</th>
+                            <th>GL Description</th>
+                            <th> C/D Amount</th>
+                            <th>Amount</th>
+
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let d of accountDetailslist;index as i">
+                                <td class="text-center">{{i+1}}</td>
+                                <td>{{d.refno}}</td>
+                                <td class="text-center">{{d.transactiondate | date:'yyyy'}}</td>
+                                <td class="text-left">{{d.screen}}</td>
+                                <td class="text-right">{{d.wisefinmap}}</td>
+                                <td class="text-right">{{d.gl}}</td>
+                                <td>{{d.glremarks}}</td>
+                                <td class="text-center">{{d.type}}</td>
+                                <td class="text-right">{{d.amount}}</td>
+                            </tr>
+                            <tr *ngIf="accountDetailslist.length==0">
+                                <td colspan="9">No Records Found..</td>
+                            </tr>
+                            <tr >
+                                <td  colspan="7" class="text-right">
+                                    <b>Sum Of Debits:</b>
+                                </td>
+                                <td colspan="2">
+                                    &#8377;{{sumofdebit}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="7" class="text-right">
+                                    <b>Sum Of Credits:</b>
+                                </td>
+                                <td colspan="2">
+                                    &#8377;{{sumofcredit}}
+                                </td>
+                            </tr>
+                            <tr >
+                                <td colspan="9">
+                                    <div class="text-right">
+                                        <button (click)="has_previousdata()" mat-icon-button [disabled]="!has_accnext"><mat-icon>arrow_back</mat-icon></button>
+                                        {{has_accpage}}
+                                        <button (click)="has_nextdata()" [disabled]="!has_accprevious" mat-icon-button><mat-icon>arrow_forward</mat-icon></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <!-- <div class="text-right" style="font-family:'Times New Roman', Times, serif">
+                        <tr>
+                            <td style="width: 200px;">
+                                Sum Of Debits:
+                            </td>
+                            <td>&#8377;</td>
+                        </tr>
+                        <br>
+                        <tr>
+                            <td style="width: 200px;">
+                                Sum Of Credits:
+                            </td>
+                            <td>&#8377;</td>
+                        </tr>
+                    </div> -->
+                </div>
+                <div class="modal-footer">
+                    <button data-target="#AccountdetailsExp" data-toggle="modal" (click)="AccountdetailsExp(detailsdata)" type="submit" class="btn btn-success">Expense</button>
+                    <button type="button" class="btn btn-secondary" (click)="closenewdialog()" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="AccountdetailsExp" >
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:rgb(188, 248, 188) ;">
+                <h2 class="modal-title" style="margin-left: 32%;font-family:'Times New Roman', Times, serif;color:blue">Accounting Details Expence</h2>
+
+                <button #refcloseExp type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="overflow-y: auto;font-size: 16px;overflow-x: auto;">
+                    <table class="table table-bordered" >
+                        <thead class="table_header">
+                            <th>S.No</th>
+                            <th>Asset Barcode</th>
+                            <th>Entry Financial Year</th>
+                            <th>Entry Screen</th>
+                            <th>WiseFin GL</th>
+                            <th>Entry Gl</th>
+                            <th>GL Description</th>
+                            <th> C/D Amount</th>
+                            <th>Amount</th>
+
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let d of accountDetailslistExp;index as i">
+                                <td class="text-center">{{i+1}}</td>
+                                <td>{{d.refno}}</td>
+                                <td class="text-center">{{d.transactiondate | date:'yyyy'}}</td>
+                                <td class="text-left">{{d.screen}}</td>
+                                <td class="text-right">{{d.wisefinmap}}</td>
+                                <td class="text-right">{{d.gl}}</td>
+                                <td>{{d.glremarks}}</td>
+                                <td class="text-center">{{d.type}}</td>
+                                <td class="text-right">{{d.amount}}</td>
+                            </tr>
+                            <tr *ngIf="accountDetailslist.length==0">
+                                <td colspan="9">No Records Found..</td>
+                            </tr>
+                            <tr >
+                                <td  colspan="7" class="text-right">
+                                    <b>Sum Of Debits:</b>
+                                </td>
+                                <td colspan="2">
+                                    &#8377;{{sumofdebitExp}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="7" class="text-right">
+                                    <b>Sum Of Credits:</b>
+                                </td>
+                                <td colspan="2">
+                                    &#8377;{{sumofcreditExp}}
+                                </td>
+                            </tr>
+                            <!-- <tr >
+                                <td colspan="9">
+                                    <div class="text-right">
+                                        <button (click)="has_previousdata()" mat-icon-button [disabled]="!has_accnext"><mat-icon>arrow_back</mat-icon></button>
+                                        {{has_accpage}}
+                                        <button (click)="has_nextdata()" [disabled]="!has_accprevious" mat-icon-button><mat-icon>arrow_forward</mat-icon></button>
+                                    </div>
+                                </td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                    <br>
+                    <!-- <div class="text-right" style="font-family:'Times New Roman', Times, serif">
+                        <tr>
+                            <td style="width: 200px;">
+                                Sum Of Debits:
+                            </td>
+                            <td>&#8377;</td>
+                        </tr>
+                        <br>
+                        <tr>
+                            <td style="width: 200px;">
+                                Sum Of Credits:
+                            </td>
+                            <td>&#8377;</td>
+                        </tr>
+                    </div> -->
+                </div>
+                <div class="modal-footer">
+                    <!-- <button type="submit" class="btn btn-success">Expense</button> -->
+                    <button type="button" class="btn btn-secondary" (click)="closenewdialogExp()" >Close</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="Approvalhistory" data-backdrop="static" data-keyboard="false" >
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:rgb(188, 248, 188) ;">
+                <h2 class="modal-title" style="margin-left: 32%;font-family:'Times New Roman', Times, serif;color:blue">FA Approval History</h2>
+
+                <button #refcloseApvl type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span style="font-size: large;font-weight: bolder;">{{appvl_history['barcode']}}</span>
+                <div style="overflow-y: auto;font-size: 16px;overflow-x: auto;">
+                    <table class="table table-bordered" >
+                        <thead class="table_header">
+                            <th>S.No</th>
+                            <th>Maker Name</th>
+                            <th>Maker Date</th>
+                            <th>Checker Name</th>
+                            <th>Checker Date</th>
+                            <th>Screen</th>
+                            <th>Approved Status</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let d of appvl_history;index as i">
+                                <td class="text-center">{{i+1}}</td>
+                                <td>{{d?.maker_name}}</td>
+                                <td>{{d?.maker_date && d?.maker_date!=='None'?(d?.maker_date | date:'MMM dd, yyyy' ):"-"}}</td>
+                                <td class="text-right">{{d?.checker_name?d?.checker_name:"-"}}</td>
+                                <td>{{d?.checker_date && d?.checker_date!=='None'?(d?.checker_date | date:'MMM dd, yyyy' ):"-"}}</td>
+                                <td class="text-center">{{d?.screen}}</td>
+                                <td class="text-right">{{d?.approved_status}}</td>
+                            </tr>
+                            <tr *ngIf="appvl_history?.length==0">
+                                <td colspan="9">No Records Found..</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closedialogapl_history()" >Close</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+  

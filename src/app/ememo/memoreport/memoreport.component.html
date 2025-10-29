@@ -1,0 +1,294 @@
+<section class="memoReport-sec">
+  <nav mat-tab-nav-bar [backgroundColor]="background">
+    <a
+      mat-tab-link
+      *ngFor="let link of links"
+      (click)="activeLink = link"
+      [active]="activeLink == link"
+      (click)="switchtab(link)"
+    >
+      {{ link }}
+    </a>
+  </nav>
+
+  <div class="memoUserReport-container" *ngIf="staffwise">
+    <h2>StaffWise Report</h2>
+    <div>
+      <form [formGroup]="form_Search_Userwise" class="memoUserReport-form01">
+        <mat-form-field id="repdatefrom" style="width: 120px">
+          <mat-label>Date From</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker1"
+            placeholder="Date From"
+            formControlName="memodatefrom"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker1"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field id="repdateto" style="width: 120px">
+          <mat-label>Date To</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker2"
+            placeholder="Date To"
+            formControlName="memodateto"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker2"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field id="repdrop" style="width: 300px">
+          <input
+            #staffInput
+            matInput
+            formControlName="to_id"
+            placeholder="TO"
+            [matAutocomplete]="autotoid"
+          />
+          <mat-autocomplete
+            #autotoid="matAutocomplete"
+            [displayWith]="displayToName"
+            [panelWidth]="autotoid"
+            (opened)="autocompleteStaffScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let cat of ToList" [value]="cat"
+                >{{ cat.full_name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-radio-group formControlName="reporttype_tat_ageing">
+          <mat-radio-button value="TAT" id="reptat" class="memo-label"
+            >TAT</mat-radio-button
+          >
+          <mat-radio-button value="AGEING" id="repageing" class="memo-label"
+            >AGEING</mat-radio-button
+          >
+        </mat-radio-group>
+
+        <mat-checkbox id="repcheck" formControlName="chk_allparticipants" class="memo-label"
+          >Include all participants</mat-checkbox
+        >
+        <button
+          id="repdownload1"
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="clk_Download()"
+          style="border-radius: 40px"
+        >
+          Download
+        </button>
+        <button
+          id="repreplay"
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="refreshsummary()"
+          style="border-radius: 30px"
+        >
+          <mat-icon>replay</mat-icon>
+        </button>
+      </form>
+    </div>
+    <lib-vs-cbox-summary
+      [SummaryDetails]="staffwisedata"
+      [SummaryApiObj]="staffwiseapi"
+      [unnecessary]="[]"
+    ></lib-vs-cbox-summary>
+  </div>
+
+  <!-- <div>{{ form_Search_Userwise.value | json }}</div> -->
+
+  <div class="memoDepartRepo-container" *ngIf="deparmentwise">
+    <h2>DepartmentWise Report</h2>
+    <div>
+      <form [formGroup]="form_Search_Deptwise" class="memoUserReport-form01">
+        <mat-form-field id="repdatefrom2" style="width: 120px">
+          <mat-label>Date From</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker3"
+            placeholder="Date From"
+            formControlName="deptdatefrom"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker3"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field id="repdateto2" style="width: 120px">
+          <mat-label>Date To</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker4"
+            placeholder="Date To"
+            formControlName="deptdateto"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker4"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker4></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field id="repto" style="width: 300px">
+          <input
+            #departmentInput
+            matInput
+            formControlName="dept_id"
+            placeholder="TO"
+            [matAutocomplete]="autodeptid"
+          />
+          <mat-autocomplete
+            #autodeptid="matAutocomplete"
+            [panelWidth]="autodeptid"
+            [displayWith]="displayDeptName"
+            (opened)="autocompleteDepScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let dept of Department_List" [value]="dept"
+                >{{ dept.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-radio-group formControlName="dept_tat_ageing">
+          <mat-radio-button value="TAT" id="reptat2" class="memo-label"
+            >TAT</mat-radio-button
+          >
+          <mat-radio-button value="AGEING" id="repageing2" class="memo-label"
+            >AGEING</mat-radio-button
+          >
+        </mat-radio-group>
+        <mat-checkbox
+        id="repcheck2"
+          formControlName="chk_deptallparticipants"
+          class="memo-label"
+          >Include all participants</mat-checkbox
+        >
+        <button
+        id="repdownload2"
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="clk_DownloadDept()"
+          style="border-radius: 40px"
+        >
+          Download
+        </button>
+        <button
+        id="repreplay2"
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="refreshsummary()"
+          style="border-radius: 30px"
+        >
+          <mat-icon>replay</mat-icon>
+        </button>
+      </form>
+    </div>
+    <lib-vs-cbox-summary
+      [SummaryDetails]="staffwisedata"
+      [SummaryApiObj]="staffwiseapi"
+      [unnecessary]="[]"
+    ></lib-vs-cbox-summary>
+  </div>
+
+  <div *ngIf="memowise">
+    <h2 style="margin-left: 50px">MemoWise Report</h2>
+    <div>
+      <form [formGroup]="from_Search_Memowise">
+        <mat-form-field id="repdatefrom3" style="width: 8rem; margin-left: 50px">
+          <mat-label>Date From</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker5"
+            placeholder="Date From"
+            formControlName="memowisedatefrom"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker5"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker5></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field id="repdateto3" style="width: 8rem; margin-left: 10px">
+          <mat-label>Date To</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker6"
+            placeholder="Date To"
+            formControlName="memowisedateto"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker6"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker6></mat-datepicker>
+        </mat-form-field>
+
+        <mat-radio-group formControlName="memo_tat_ageing">
+          <mat-radio-button
+          id="reptat3"
+            value="TAT"
+            class="memo-label"
+            style="margin-left: 10px"
+            >TAT</mat-radio-button
+          >
+          <mat-radio-button
+          id="repageing3"
+            value="AGEING"
+            class="memo-label"
+            style="margin-left: 10px"
+            >AGEING</mat-radio-button
+          >
+        </mat-radio-group>
+      </form>
+      <button
+        id="repdownload3"
+        type="button"
+        class="btn btn-outline-primary downloadbtn"
+        (click)="clk_DownloadMemo()"
+      >
+        Download
+      </button>
+      <button
+        id="repreplay2"
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="refreshsummary()"
+          style="border-radius: 30px; margin-top: -110px; margin-left: 20px;"
+        >
+          <mat-icon>replay</mat-icon>
+        </button>
+         <lib-vs-cbox-summary
+      [SummaryDetails]="staffwisedata"
+      [SummaryApiObj]="staffwiseapi"
+      [unnecessary]="[]"
+    ></lib-vs-cbox-summary>
+    </div>
+  </div>
+
+  <!-- <div>{{ from_Search_Memowise.value | json }}</div> -->
+</section>

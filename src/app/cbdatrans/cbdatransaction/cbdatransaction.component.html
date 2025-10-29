@@ -1,0 +1,142 @@
+<main style="padding: 20px">
+
+  <div *ngIf="showcreation === false">
+    <form [formGroup]="transactionForm" *ngIf="showcreation === false">
+      <div class="search-auto-fit">
+        <div id="matInput-size">
+          <mat-form-field appearance="outline" style="width: 170px">
+            <mat-label>Month & Year</mat-label>
+            <input matInput [matDatepicker]="yearlyPicker" [formControl]="MonthYear" [disabled]="disabled" readonly />
+            <mat-datepicker-toggle matSuffix [for]="yearlyPicker"></mat-datepicker-toggle>
+            <mat-datepicker #yearlyPicker startView="multi-year" (yearSelected)="chosenYearHandler($event)"
+              (monthSelected)="chosenMonthHandler($event, yearlyPicker)" panelClass="month-picker-separate">
+            </mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div id="matInput-size">
+          <mat-form-field appearance="outline" style="width: 170px" (click)="statusapi()">
+            <mat-label>Status</mat-label>
+            <input #colinput matInput formControlName="statusinput" [matAutocomplete]="columnvalue" />
+            <mat-autocomplete #columnvalue="matAutocomplete" [displayWith]="displayColumn">
+              <ng-container>
+                <mat-option *ngFor="let des of statuslist" [value]="des">
+                  {{ des.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <button class="btn-fill fill-primary" (click)="searchicon()">
+          <mat-icon class="btn-icon">search</mat-icon>
+        </button>
+        <button class="btn-fill fill-secondary" (click)="reseticon()">
+          <mat-icon class="btn-icon">refresh</mat-icon>
+        </button>
+        <button class="btn-fill fill-primary" (click)="addicon()">
+          <mat-icon class="btn-icon">add</mat-icon>
+        </button>
+      </div>
+    </form>
+
+    <div class="comp-table t-resposive">
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Column</th>
+            <th>Date</th>
+            <th>Include/Exclude</th>
+            <th>Branch/Product</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of fileuploadlist">
+            <td>{{ data.column }}</td>
+            <td>{{ data.date }}</td>
+            <td>{{ data.filename }}</td>
+            <td>{{ data.status }}</td>
+            <td><mat-icon>trash</mat-icon></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="showcreation === true">
+    <form [formGroup]="creationForm">
+      <div class="search-auto-fit">
+        <div id="matInput-size">
+          <mat-form-field appearance="outline" style="width: 170px">
+            <mat-label>Month & Year</mat-label>
+            <input matInput [matDatepicker]="yearlyPicker" [formControl]="MonthYear" [disabled]="disabled" readonly />
+            <mat-datepicker-toggle matSuffix [for]="yearlyPicker"></mat-datepicker-toggle>
+            <mat-datepicker #yearlyPicker startView="multi-year" (yearSelected)="chosenYearHandler($event)"
+              (monthSelected)="chosenMonthHandler($event, yearlyPicker)" panelClass="month-picker-separate">
+            </mat-datepicker>
+          </mat-form-field>
+        </div>
+        <button class="btn-fill fill-primary" (click)="gentratebtn()">
+          Generate
+        </button>
+        <!-- <button class="btn-fill fill-secondary" (click)="nextbtn()">
+          Next
+        </button> -->
+        <button class="btn-fill fill-secondary" (click)="backbtn()">
+          Back
+        </button>
+      </div>
+    </form>
+
+    <div class="comp-table t-resposive">
+      <!-- <table border="1">
+      <thead>
+        <tr class="th-nowrap">
+          <th *ngFor="let head of new_header">
+            {{ head }}
+            <ng-container *ngIf="isColumnEmpty(head)">
+              <span
+                style="color: red; margin-left: 4px; cursor: pointer"
+                (click)="toggleColumn(head)"
+              >
+                ⚠️
+              </span>
+            </ng-container>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of new_body">
+          <td *ngFor="let head of new_header">
+            <ng-container
+              *ngIf="
+                !isColumnEmpty(head) || shownColumns.includes(head);
+                else emptyCell
+              "
+            >
+              {{ safeLower(row[head]) || "-" }}
+            </ng-container>
+            <ng-template #emptyCell>-</ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table> -->
+      <table>
+        <thead>
+          <th>Product Code</th>
+          <th>Product Description</th>
+          <th>Gl No</th>
+          <th>Column1</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of GenerateData">
+            <td>{{data?.prod_code}}</td>
+            <td>{{data?.prod_desc}}</td>
+            <td>{{data?.gl_no}}</td>
+            <td>{{data?.average_amount}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>

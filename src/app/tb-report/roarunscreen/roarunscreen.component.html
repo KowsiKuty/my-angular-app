@@ -1,0 +1,111 @@
+<div class="pl-5 pr-5 pt-3" *ngIf="runscreen">   
+    <h2 style="font-size: x-large;">ROA RUN </h2>    
+    <form [formGroup]="roarun">
+        <div class="row mb-3">
+            <div class="ml-3 mr-3">
+                <mat-form-field (click)="finyear_dropdown()" appearance="outline">
+                    <mat-label>Fin Year</mat-label>
+                    <input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput
+                        [matAutocomplete]="fin_year" >
+                    <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear">                      
+                            <mat-option *ngFor="let finyearname of finyearList" (click)="to_month_fetch()" [value]="finyearname">
+                                {{finyearname.finyer}} </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline" >
+                    <mat-label>From Month</mat-label>
+                    <mat-select formControlName="frommonth" [disabled]="run_disable">
+                        <mat-option *ngFor="let month of from_month" 
+                        [disabled]="tomonthid < month.id" (click)="to_month_patch()" [value]="month">
+                            {{month.month}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>To Month </mat-label>
+                    <!-- <mat-select formControlName="tomonth" [disabled]="true">
+                        <mat-option *ngFor="let month of from_month" [value]="month">
+                            {{month.month}}
+                        </mat-option>
+                    </mat-select> -->
+                    <input matInput formControlName="tomonth" readonly autocomplete="off">
+                </mat-form-field>
+            </div>
+            <div class="ml-3 mr-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Status</mat-label>
+                    <input matInput formControlName="status" [matAutocomplete]="aws_status">
+                    <mat-autocomplete #aws_status="matAutocomplete" [displayWith]="displayStatus">
+                        <mat-option *ngFor="let status of status_list" [value]="status">
+                            {{status.name}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="ml-3 mr-3 mt-3">
+                <button class="btn btn-outline-primary" type="submit" (click)="roa_run_summary(roarun.value)"
+                  style="border-radius:40px; margin-left: 10%;" color="primary"><i class="fa fa-search"
+                    aria-hidden="true"></i></button>
+              </div>             
+              <div class="ml-3 mr-3 mt-2">
+                <button type="button" style="border-radius: 40px;margin-left: 10%;margin-top: 10%;" class="btn btn-outline-primary"
+                  (click)="reset()">Reset</button>
+              </div>
+              <div class="ml-3 mr-3 mt-2">
+                <button matTooltip="Trigger" class="btn btn-outline-primary" style="border-radius: 40px;margin-top: 10%;" [disabled]="run_disable"
+                  (click)="roa_run_trigger()">ROA Run</button>
+              </div>
+              <div class="ml-3 mr-3 mt-2">
+                <!-- <mat-icon style="cursor: pointer;">keyboard_backspace</mat-icon> -->
+                <button type="button" style="border-radius: 40px;margin-left: 10%;margin-top: 10%;" class="btn btn-outline-primary"
+                (click)="roa_summary()">Back</button>
+            </div>
+              
+
+        </div>
+    </form>
+    <div class="tableFixHead">
+        <table class="table table-bordered" fixed-header id="datatable" >
+            <thead style="    background-color: #00800021; top: 0;position: sticky;">
+                <tr>
+                    <th>S.No</th>
+                    <th>Finyear</th>
+                    <th>From Month</th>
+                    <th>To Month</th>
+                    <th>File Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let roa of summary_data;index as ind">
+                    <td >{{(presentpage-1)*10+ind+1}}</td>
+                    <td>{{roa.finyear}}</td>
+                    <td>{{roa.from_month}}</td>
+                    <td>{{roa.to_month}}</td>
+                    <td >{{roa.file_name}}</td>
+                    <td>{{(roa.status == 1 ? "Started" : (roa.status == 2 ? "Processing" : (roa.status == 3 ? "No Data Found" :(roa.status == 4 ? "Success" : "--"))))}}</td>                    
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <p *ngIf="!data_found" style="text-align: center;">Data Not Found ...</p>
+        </div>
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="back_roa">
+    <app-roa-report></app-roa-report>
+</div>

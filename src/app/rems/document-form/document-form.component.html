@@ -1,0 +1,173 @@
+<br>
+
+<h2 style="margin-left: 40px; ">
+    Document
+</h2>
+<div class="main-content">
+
+    <div>
+        <form [formGroup]="documentForm" (ngSubmit)="documentFormCreate()">
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>ID Type</mat-label>
+                            <mat-select formControlName="ref_type" (selectionChange)="getRefIdValue($event)" id="document-form-0006">
+                                <mat-option *ngFor="let refType of refTypeData" [value]="refType.id">
+                                    {{refType.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>ID</mat-label>
+                            <mat-select formControlName="ref_id" id="document-form-0007">
+                                <mat-option *ngFor="let refTypeId of refTypeIdData" [value]="refTypeId.id">
+                                    {{refTypeId.code}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Document Type </mat-label>
+                            <mat-select formControlName="type_id" id="document-form-0008">
+                                <mat-option *ngFor="let preDocu of preDocumentType" [value]="preDocu.id">
+                                    {{preDocu.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Document Reference No</mat-label>
+                            <input matInput placeholder="Document Reference No" maxlength="25" (keypress)="omit_special_char($event)" autocomplete="off"
+                                formControlName="doc_ref" id="document-form-0009">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker" formControlName="date" placeholder="Date"
+                                [max]="tomorrow" id="document-form-0010">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput placeholder="Remarks" autocomplete="off" formControlName="remarks" id="document-form-0011">
+                        </mat-form-field>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td *ngIf="fileData">
+                        <tr *ngFor="let file of fileData;index as i">
+                           
+                            <span  class="btn-link" style="cursor: pointer;"
+                            data-target="#document-form-0003" data-toggle="modal" (click)="docFile(file.file_id,file.file_name)">
+                            {{i+1}}. {{file.file_name}}
+
+                        </span>
+                           
+                            <td>
+                                <mat-icon style="color: gray;cursor: pointer;" (click)="fileDeletes(file,i)">delete</mat-icon>
+                            </td> 
+                           </tr>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- <div *ngIf="fileData">Attachements
+                <span *ngFor="let file of fileData;let index = index" class="btn-link" style="cursor: pointer;"
+                    data-toggle="modal" data-target="#myModal" (click)="removeFile(file.file_id)">
+                    {{index+1}}. {{file.file_name}}
+                </span>
+                <span *ngFor="let file of fileData;let index = index" class="btn-link" style="cursor: pointer;"
+                data-target="#my-modal" data-toggle="modal" (click)="docFile(file.file_id,file.file_name)">
+                {{index+1}}. {{file.file_name}}
+                <mat-icon style="color: gray;cursor: pointer;" (click)="fileDeletes(file,index)">delete</mat-icon>
+            </span>
+            
+                
+         
+            </div> -->
+            <input type="file" #fileInput id="document-form-0001" class="choose-file" formControlName="images"
+                (change)="onFileSelected($event)" name="uploadFile" multiple="multiple" />
+            <div class="btn-bottom">
+                <button type="submit" class="btn btn-outline-primary" [disabled]="DocButton" id="document-form-0012">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary" id="document-form-0013">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <!-- <div *ngIf="showPopupImages" id="document-form-0002" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true"
+        tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+            <div class="modal-content">
+            
+                <div class="modal-body">
+                    <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div *ngIf="showPopupImages" id="document-form-0003" class="modal fade" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog"  role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100" 
+                    id="document-form-0004">
+                  Attachment View
+              </h5>
+              
+                <button type="button"
+                        class="close"
+                        data-dismiss="modal" 
+                        aria-label="Close" id="document-form-0014">
+                    <span aria-hidden="true">
+                      ×
+                  </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}">
+
+            </div>
+            <div class="modal-footer">
+                        
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<!-- Modal HTML -->
+<!-- <div id="document-form-0005" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header flex-column">
+                <div class="icon-box">
+                    <i class="material-icons">&#xE5CD;</i>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="document-form-0015">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete these records? This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="document-form-0016">Cancel</button>
+                <button type="button" class="btn btn-danger" (click)="removeFiles()" id="document-form-0017">Delete</button>
+            </div>
+        </div>
+    </div>
+</div> -->

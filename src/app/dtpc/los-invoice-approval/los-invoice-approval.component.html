@@ -1,0 +1,213 @@
+<div class="container">
+    <br>
+    <h2>LOS Invoice Approval Summary Search</h2>
+    <form [formGroup]="losInvoiceApprovalSummaryForm" class="example-form">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                        <input class="toolbar-search" type="text" matInput autocomplete="off"
+                            formControlName="ecf_number" (keypress)="only_numalpha($event)">
+                        <mat-placeholder>ECF Number</mat-placeholder>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-3">
+                    <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                        <input matInput placeholder="Invoice Number" formControlName="invoice_number" autocomplete="off"
+                            (keypress)="only_numalpha($event)">
+                    </mat-form-field>
+                </div>
+                <!-- <div class="col-md-3">
+                    <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                        <mat-label>Choose Vendor</mat-label>
+                        <input #name placeholder=" Choose Vendor" matInput formControlName="vendor"
+                            [matAutocomplete]="autosupp" (keypress)="only_numalpha($event)">
+                        <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayVendor">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                            </mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let suppliername of supplierNameData" [value]="suppliername">
+                                    {{suppliername.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div> -->
+                <div class="col-md-3">
+                    <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                        <mat-label>Charge Type</mat-label>
+                        <mat-select formControlName="invoice_charge_type">
+                            <mat-option *ngFor="let charge of ApprovalchargeTypeList" [value]="charge.charge_type">
+                                {{charge.charge_type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <!-- <div class="col-md-3">
+                    <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                        <mat-label>From Date</mat-label>
+                        <input matInput [matDatepicker]="from_date" formControlName="from_date"
+                            (keypress)="numberOnly($event)">
+                        <mat-datepicker-toggle matSuffix [for]="from_date"></mat-datepicker-toggle>
+                        <mat-datepicker #from_date></mat-datepicker>
+                    </mat-form-field>
+                </div> -->
+                <!-- color="accent" appearance="fill" -->
+                <div class="col-md-3">
+                    <mat-form-field>
+                        <mat-label>Invoice Date</mat-label>
+                        <input matInput [matDatepicker]="Invoice_Date" formControlName="Invoice_Date"
+                            (keypress)="numberOnly($event)">
+                        <mat-datepicker-toggle matSuffix [for]="Invoice_Date"></mat-datepicker-toggle>
+                        <mat-datepicker #Invoice_Date></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                        <input matInput placeholder="Invoice Total Amount" formControlName="invoice__total_amount"
+                            autocomplete="off" (keypress)="numberOnly($event)">
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-1">
+                    <div style="margin-left: 3%;width: 200px;" class="example-button-container">
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                                aria-hidden="true" (click)="Approvalsearch_loan_data()"></i></button>&nbsp;&nbsp;&nbsp;
+                        <!-- <button mat-mini-fab color="primary" aria-label="Example icon button with a menu icon"
+                            (click)="search_loan_data()" [disableRipple]="true">
+                            <mat-icon>search</mat-icon>
+                        </button> -->
+                    </div>
+                </div>
+
+
+                <div class="col-md-1">
+                    <div class="example-button-container">
+                        <button type="button" style="border-radius:40px;margin-left:7px;"
+                            class="btn btn-outline-primary" (click)="clear_approvalform()">
+                            Reset</button>&nbsp;&nbsp;&nbsp;
+                        <!-- <button mat-mini-fab color="warn" aria-label="Example icon button with a menu icon"
+                            (click)="clear_form()" [disableRipple]="true">
+                            <mat-icon>search</mat-icon>
+                        </button> -->
+                    </div>
+                </div>
+
+                <div class="col-md-1">
+                    <div class="example-button-container">
+                        <!-- <button type="button" style="border-radius:40px;margin-left: 5px;"
+                            class="btn btn-outline-success" (click)="create_los('','Y')">
+                            <span class="fa fa-plus"></span>
+                        </button> -->
+                        <!-- <button mat-mini-fab color="basic" (click)="create_los('','Y')">
+                            <mat-icon>person_add</mat-icon>
+                        </button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+
+        <h2>LOS Invoice Approval Summary</h2>
+
+        <div class="table-responsive" id="styleScroll" style="margin-top: 2%;width: 99%;margin-left: 5px;">
+            <table class="table scrolltable table-bordered" fixed-header>
+                <thead>
+                    <tr class="table_header" fixed-header  style="white-space: nowrap;">
+                        <th>S.No</th>
+                        <th>ECF Number</th>
+                        <th>Invoice No</th>
+                        <!-- <th>Vendor Name</th> -->
+                        <th>Charge Type</th>
+                        <th>BranchCode</th>
+                        <th>Invoice Date</th>
+                        <th>Invoice Amount</th>
+                        <th>Invoice GST Amount</th>
+                        <th>Invoice Total Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let los of los_invoice_approval_summary_data; index as i">
+                        <td align="center"> {{(this.Approvalcurrentpage - 1)*ApprovalpageSize +i+1 }} </td>
+                        <!-- <td (click)="view_los_data(los)" style="cursor: pointer;color:blue;"> {{los.ApplNo}}</td> -->
+                        <td align="center">
+                            <div *ngIf="los.Ecf_No === null || los.Ecf_No === ''">
+                                -
+                            </div>
+                            <div *ngIf="los.Ecf_No !== null">
+                                {{los.Ecf_No}}
+                            </div>
+                        </td>
+                        <td align="center">{{ los.Invoice_No}}</td>
+                        <!-- <td align="center">{{ los.Vendor.name}}</td> -->
+                        <td align="center">{{ los.Invoice_Charge_type}}</td>
+                        <td>-</td>
+                        <td style="white-space: nowrap;overflow:hidden;margin: 15px; padding: 15px;" align="center">
+                            {{ los.Invoice_Date}}</td>
+                        <td align="right">{{ los.Invoice_Amt | number:'1.2-2'}}</td>
+                        <td align="right">{{ los.Gst_Amt | number:'1.2-2'}}</td>
+                        <td align="right">{{ los.Invoice_Total_Amt | number:'1.2-2'}}</td>
+                        <td align="center">{{ los.Status}}</td>
+                        <td align="center">
+
+                            <div class="example-button-row">
+                                <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39" (click)="Approverejectviewdata(los)">
+                                    <mat-icon>visibility</mat-icon>
+                                </button>
+                                <!-- <button mat-icon-button color="primary">
+                                    <mat-icon class="mat-18">visibility
+                                    </mat-icon>
+                                </button> -->
+                                <!-- (click)="edit_los(los,'N')" -->
+
+                                <!-- <button mat-icon-button matTooltip="Edit" class="material-icons" color="#39ac39"
+                                    *ngIf="los.Status === 'Draft'">
+                                    <mat-icon class="mat-18" (click)="edit_los(los,'Y')">update
+                                    </mat-icon>
+                                </button> -->
+
+                                <!-- <button mat-icon-button matTooltip="description" class="material-icons" color="#39ac39"
+                                    *ngIf="los.Status != 'Draft'">
+                                    <mat-icon class="mat-18">description
+                                    </mat-icon>
+                                </button> -->
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="los_invoice_approval_summary_data ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+
+            <!-- <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="Approvalhas_previous === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div> -->
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button type="button" mat-mini-fab color="primary" [disabled]="Approvalhas_previous === false"
+                    style="border-radius:200px;margin-left: 15px;" (click)="ApprovalpreviousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                &nbsp;&nbsp; {{Approvalpresentpage}}
+                <button type="button" mat-mini-fab color="primary" [disabled]="Approvalhas_next === false"
+                    style="border-radius:200px;margin-left: 15px;" (click)="ApprovalnextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+    <p style="color: white">Loading... </p>
+</ngx-spinner>

@@ -1,0 +1,212 @@
+<h2 style="margin-left: 30px;margin-top: 1%;">Provision Report</h2>
+
+<div style=" margin: auto;">
+    <div class="col-md-12">
+        <div>
+            <form [formGroup]="ProvisionSearchForm" (ngSubmit)="ProvisionSearch()">
+                <div class="row col-md-12">
+                    <div class="col-md-2">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Branch Code</mat-label>
+                            <input #brInput placeholder="Branch Code" matInput
+                                formControlName="branchcode" [matAutocomplete]="brcode" id="provision-report-0001">
+                            <mat-autocomplete #brcode="matAutocomplete" [displayWith]="displayFnBr"
+                                (opened)="autocompleteBranchScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let br of BranchCode" [value]="br">
+                                        {{br.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">                 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="premise_name" id="provision-report-0002">
+                            <mat-placeholder>Premises Name</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">                 
+                        <mat-form-field class="input-style2">
+                            <mat-label>Premise Type</mat-label>
+                            <mat-select formControlName="premise_type" id="provision-report-0003">
+                                <mat-option *ngFor="let premise of premisesTypeData" [value]="premise.id">
+                                    {{premise.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="rnt_no" id="provision-report-0004">
+                            <mat-placeholder>RNT No</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                         <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="ro_no" id="provision-report-0005">
+                            <mat-placeholder>RO No</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="row col-md-12">
+                    <div class="col-md-2">
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="controlling_office" id="provision-report-0006">
+                            <mat-placeholder>Controlling Office</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="occupancy_name" id="provision-report-0007">
+                            <mat-placeholder>Occupancy Name</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style2">
+                            <mat-label>Occupancy Type</mat-label>
+                                <mat-select formControlName="occupancy_usagetype" id="provision-report-0008">
+                                <mat-option *ngFor="let usage of usageType" [value]="usage.id">
+                                    {{usage.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="gl_number" id="provision-report-0009">
+                            <mat-placeholder>GL Number</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="terminal_id" id="provision-report-0010">
+                            <mat-placeholder>Terminal ID</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="row col-md-12">
+                    <div class="col-md-2">
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="landlord_name" id="provision-report-0011">
+                            <mat-placeholder>Landlord Name</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style2">
+                            <mat-label>Landlord Type</mat-label>
+                            <mat-select formControlName="landlord_type" id="provision-report-0012">
+                                <mat-option *ngFor="let landlord of landlordTypeData" [value]="landlord.id">
+                                    {{landlord.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                         <mat-form-field class="input-style">
+                            <input class="toolbar-search" matInput [matDatepicker]="picker1" formControlName="provision_start_date" autocomplete="off"  [max]="today"  id="provision-report-0013" />
+                            <mat-placeholder>Provision Start Date</mat-placeholder>
+                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" matInput [matDatepicker]="picker2" formControlName="provision_end_date" autocomplete="off"  [max]="today"  id="provision-report-0014"/>
+                            <mat-placeholder>Provision End Date</mat-placeholder>
+                            <mat-datepicker-toggle matSuffix [for]="picker2">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="schedule_status" id="provision-report-0015">
+                            <mat-placeholder>Schedule Status</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                </div>
+                    <button class="btn btn-outline-primary" style="height: 60px;" style="border-radius:40px;float:right;margin-right: 10px;"
+                    (click)="fileDownload()" [disabled]="downloadDisable" type="button" id="provision-report-0016">Download</button>
+                    <button class="btn btn-outline-primary" style="height: 60px;" style="border-radius:40px;float:right;margin-right: 10px;"
+                    (click)="backToRemsSummary()" id="provision-report-0017">Back</button>
+                    <button class="btn btn-outline-primary" (click)="reset()" type="button"
+                    style="border-radius:40px;float:right;margin-right: 15px;" color="primary" id="provision-report-0018">Reset</button>
+                    <button class="btn btn-outline-primary" type="submit"
+                    style="border-radius:40px;float:right;margin-right: 15px;" color="primary" id="provision-report-0019"><i class="fa fa-search"
+                        aria-hidden="true"></i>
+                    </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="table-responsive" style="margin-top: 20px;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>Branch Code</th>
+                    <th>Premises Name</th>
+                    <th>Occupancy Type</th>
+                    <th>Controlling Office</th>
+                    <th>Terminal ID</th>
+                    <th>Landlord Name</th>
+                    <th>Rent Amount</th>
+                    <th>Landlord Share Amount</th>
+                    <th>Debit GL Number</th>
+                    <th>Rent for Month</th>
+                    <th>Vendor Type</th>
+                    <th>RNT Number</th>
+                    <th>Payment Status  </th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let provision of ProvisionList; index as i">
+                    <td> {{(presentpage - 1)*pagesize +i+1 }} </td>
+                    <td>{{ provision.Branch_Code }}</td>
+                    <td>{{ provision.premise_name }}</td>
+                    <td></td>
+                    <td>{{ provision.controlling_Office }}</td>
+                    <td>{{ provision.Terminal_ID }}</td>
+                    <td>{{ provision.landlord_name}}</td>
+                    <td>{{ provision.Rent_Amount}}</td>
+                    <td>{{ provision.Landlord_Share_Amount}}</td>
+                    <td>{{ provision.Debit_GL_Number}}</td>
+                    <td>{{ provision.Rent_or_Month}}</td>
+                    <td>{{ provision.Vendor_Type}}</td>
+                    <td>{{ provision.RNT_Number }}</td>
+                    <td>{{ provision.Payment_Status }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="ProvisionList ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isProvisionList">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                (click)="pro_previousClick()" id="provision-report-0020">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="pro_nextClick()" id="provision-report-0021">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

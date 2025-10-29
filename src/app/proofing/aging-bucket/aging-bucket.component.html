@@ -1,0 +1,471 @@
+<div    style="
+display: grid;
+grid-template-columns: 16fr 50px -1fr;
+gap: 20px;
+margin-top: 25px;
+"> 
+
+<section class="dif-cards">
+  <div *ngIf="showform">
+    <h2 *ngIf="!bucketid">Ageing Bucket Form</h2>
+    <h2 *ngIf="bucketid">Ageing Bucket Update Form</h2>
+    <form [formGroup]="bucketform">
+      <!-- <div class="row"> -->
+      <div >
+        <div class="form-container">
+          <div class="npm-mat-edit">
+            <mat-form-field appearance="outline">
+              <mat-label> Bucket Name * </mat-label>
+              <input [formControlName]="'name'" matInput />
+            </mat-form-field>
+          </div>
+
+          <div class="npm-mat-edit">
+            <mat-form-field appearance="outline">
+              <mat-label>Description</mat-label>
+              <input [formControlName]="'description'" matInput />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <h2>Timelines in Days</h2>
+        <div class="form-container">
+        <div formArrayName="timeline">
+          <div
+            *ngFor="
+              let value of bucketform.controls.timeline['controls'];
+              index as ind
+            "
+            formGroupName="{{ ind }}"
+          >
+            <div class="formArray-group">
+              <div class="npm-mat-edit">
+                <mat-form-field appearance="outline">
+                  <mat-label>From</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    placeholder="0"
+                    numberOnly="value[ind-1]"
+                    (change)="day1changed(ind, $event)"
+                    formControlName="day1"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="npm-mat-edit">
+                <fieldset [disabled]="!bucketform.value.timeline[ind].day1">
+                  <mat-form-field appearance="outline">
+                    <mat-label>To</mat-label>
+                    <input
+                      placeholder="5"
+                      (change)="day2changed(ind, $event)"
+                      required
+                      matInput
+                      numberOnly
+                      formControlName="day2"
+                    />
+                  </mat-form-field>
+                </fieldset>
+              </div>
+
+              <div style="display: flex;">
+                <span [matTooltip]="addtooltiptext">
+                  <button
+                    [disabled]="!bucketform.value.timeline[ind].day2"
+                    *ngIf="timelinelength - 1 == ind; else space"
+                    (click)="addtimeline()"
+                  >
+                    <mat-icon> add_circle_outline </mat-icon>
+                  </button>
+                </span>
+
+                <ng-template #space>
+                  <button mat-icon-button></button>
+                </ng-template>
+
+                <button
+                  *ngIf="timelinelength != 1"
+                  (click)="removetimeline(ind)"
+                >
+                  <mat-icon> clear </mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="footer-btns">
+        <button
+          type="submit"
+           style="border-radius: 40px"
+          (click)="submit()"
+          class="btn btn-outline-success"
+        >
+          Submit
+        </button>
+        <button
+          (click)="onCancelClick()"
+          class="btn btn-outline-dark"
+          style="border-radius: 40px"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <!-- <button type="button"  class="btn btn-light" (click)="onCancelClick()" skipLocationChange
+                    style="border-radius: 7px;margin-left: 10px;
+                    border-color: black;
+                    background-color: white;">Cancel</button>
+                    <button type="submit" style="border-radius: 10px;margin-left: 10px;
+                    border-color: #01A85A;
+                    background-color: #01A85A;"
+                        class="btn btn-light" (click)="editVendorForm()" >Submit</button>    -->
+    </form>
+
+    <!-- <pre>{{bucketform.value | json}}</pre> -->
+    <!-- </mat-card> -->
+  </div>
+
+  <section *ngIf="showmap">
+    <div class="flex-start-start">
+      <button
+        (click)="onCancelClick()"
+        style="border: none; background-color: transparent"
+      >
+        <i class="fa fa-arrow-left back-button" aria-hidden="true"></i>
+      </button>
+      <p style="margin: 0">Ageing Bucket Mapper</p>
+      <mat-radio-group [(ngModel)]="selectedType" class="flex-start">
+        <mat-radio-button
+          *ngFor="let n of typelist"
+          [value]="n.id"
+          (change)="maptype(n)"
+        >
+          {{ n.name }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: 1fr 50px 1fr;
+        gap: 20px;
+        margin-top: 10px;
+      "
+    >
+      <section class="dif-cards">
+        <div class="flex-btwn">
+          <label>Buckets</label>
+          <mat-form-field>
+            <mat-label>Enter Bucket Name</mat-label>
+            <input
+              [(ngModel)]="bucketname"
+              matInput
+              placeholder="bucket1 30days"
+            />
+            <button
+              (click)="getbucketlist(page, account_type)"
+              matSuffix
+              mat-icon-button
+              style="font-size: 15px"
+              aria-label="Search"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+            <button
+              (click)="getbucketlistcancel()"
+              matSuffix
+              mat-icon-button
+              style="font-size: 15px"
+              aria-label="Cancel"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <!-- <lib-vs-cbox-summary
+                    [SummaryDetails]="SummaryagingbucketData"
+                    [SummaryApiObj]="SummaryApiagingbucketObjNew"
+                  ></lib-vs-cbox-summary> -->
+        <div
+          (scroll)="tablescrolled($event, 'bucket')"
+          id="scrollstyle"
+          id="scrollable-table"
+        >
+          <table class="table table-bordered">
+            <thead class="table_header">
+              <tr>
+                <th>Name</th>
+                <th>Timelines</th>
+                <th>Mapped Accounts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- <tr [ngStyle]="{'background-color':(bucket?.selected) ? 'powderblue':''}"
+                                    (click)="selectbucket(i)" *ngFor="let bucket of bucketlist;index as i">
+                                    <td>{{bucket.name}}</td>
+                                    <td>{{bucket.timeline}}</td>
+                                    <td>
+                                        <label *ngFor="let account of bucket?.account_details;index as i1">
+                                            {{account?.account_no}}
+
+                                            <button [matTooltip]="'Click to Remove Account'"
+                                                [matTooltipPosition]="'right'" matTooltipClass="custom-tooltip"
+                                                mat-icon-button (click)="removeaccount(account,1)">
+                                                <mat-icon class="icnwithname" style="color:red">delete_forever
+                                                </mat-icon>
+                                            </button>
+                                        </label>
+                                    </td>
+                                </tr> -->
+              <tr
+                [ngStyle]="{
+                  'background-color': bucket?.selected ? 'powderblue' : ''
+                }"
+                (click)="selectbucket(i)"
+                *ngFor="let bucket of bucketlist; index as i"
+              >
+                <td>{{ bucket.name }}</td>
+                <td>{{ bucket.timeline }}</td>
+                <td>
+                  <button mat-icon-button>
+                    <mat-icon
+                      (click)="openAccounts(bucket?.account_details)"
+                      data-toggle="modald"
+                      
+                      >visibility</mat-icon
+                    >
+                  </button>
+                  <!-- <ng-container *ngIf="bucket.account_details">
+                  <div *ngFor="let account of bucket.account_details">     
+                <div>{{ account.account_number }}</div> -->
+                  <!-- <button [matTooltip]="'Click to Remove Account'"
+                    [matTooltipPosition]="'right'" matTooltipClass="custom-tooltip"
+                    mat-icon-button (click)="removeaccount(account,1)">
+                    <mat-icon class="icnwithname" style="color:red">delete_forever
+                    </mat-icon>
+                </button> -->
+                  <!-- </div>
+                 </ng-container> -->
+                </td>
+              </tr>
+              <tr *ngIf="bucketlist?.length == 0">
+                <td colspan="4" style="text-align: center">No Records Found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="flex-column-center" (click)="accounttobucketmapping()">
+        <i class="fa fa-arrows-h" aria-hidden="true" style="color: #01a85a"></i>
+        <button class="remove-btn-style" style="color: #01a85a">Mapping</button>
+      </div>
+
+      <section class="dif-cards">
+        <div class="flex-btwn">
+          <label>Accounts</label>
+          <mat-form-field>
+            <mat-label>Enter Account No</mat-label>
+            <input matInput placeholder="GL-272727" [(ngModel)]="account_no" />
+            <button
+              matSuffix
+              mat-icon-button
+              style="font-size: 15px"
+              aria-label="Search"
+              (click)="getaccounmap(page, account_type)"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+            <button
+              matSuffix
+              mat-icon-button
+              style="font-size: 15px"
+              aria-label="Cancel"
+              (click)="getaccounmapcancel()"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div style="height: 400px; overflow-y: scroll">
+          <!-- <div style="width:80% ; height:50%;"> -->
+          <!-- <lib-vs-cbox-summary
+                [SummaryDetails]="SummaryagingaccounttmapData"
+                [SummaryApiObj]="SummaryApiagingaccountmapObjNew"
+              ></lib-vs-cbox-summary> -->
+          <!-- </div> -->
+
+          <table class="table table-bordered">
+            <thead class="table_header">
+              <tr>
+                <th>Number</th>
+                <th>Name</th>
+                <th>Mapped buckets</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                [ngStyle]="{
+                  'background-color': account?.selected ? 'powderblue' : ''
+                }"
+                (click)="selectaccount(i)"
+                *ngFor="let account of accountlist; index as i"
+              >
+                <td>{{ account.account_number }}</td>
+                <td>{{ account.name }}</td>
+                <td>
+                  <mat-label *ngFor="let bucket of account?.bucket_details">
+                    {{ bucket.name }}
+                  </mat-label>
+                </td>
+              </tr>
+              <tr *ngIf="accountlist?.length == 0">
+                <td colspan="4" style="text-align: center">No Records Found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- </mat-card> -->
+  </section>
+  <div
+  class="modal fade"
+  id="myModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+  >
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" >
+      <div class="modal-header">
+        <p class="modal-title mb-0" id="exampleModalLabel" style="font-weight: 600;">Mapped Accounts</p>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          #closeaddpopup
+          aria-label="Close"
+          (click)="closepopup()"
+        >
+          <i aria-hidden="true">&times;</i>
+        </button>
+      </div>
+  
+      <div class="modal-body">
+        <div style="margin-left: 10px">
+          <table class="table table-bordered" id="boxlevel">
+            <thead class="table_header">
+              <th>S.No</th>
+              <th>Account Name code</th>
+              <th>Account Number</th>
+              <th>Action</th>
+            </thead>
+            <tbody *ngFor="let lists of historyLists; index as ind">
+              <td>{{ (pagination.index - 1) * limit + ind + 1 }}</td>
+              <td>{{ lists.account_name }}</td>
+
+              <td>{{ lists.account_number }}</td>
+              <td>
+                <button
+                  [matTooltip]="'Click to Remove Account'"
+                  [matTooltipPosition]="'right'"
+                  matTooltipClass="custom-tooltip"
+                  mat-icon-button
+                  (click)="removeaccount(lists, ind)"
+                >
+                  <mat-icon class="icnwithname" style="color: red"
+                    >delete_forever
+                  </mat-icon>
+                </button>
+              </td>
+            </tbody>
+          </table>
+
+          <div *ngIf="!historyLists?.length" style="margin-left: 42%">
+            <h3>Sorry no data found!...</h3>
+          </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <!-- <div class="modal" id="myModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Mapped Accounts</h4>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+            #closeaddpopup
+            (click)="closepopup()"
+          >
+            ×
+          </button>
+        </div>
+        <div class="container"></div>
+        <div class="modal-body">
+          <div style="margin-left: 10px">
+            <table class="table table-bordered" id="boxlevel">
+              <thead class="table_header">
+                <th>S.No</th>
+                <th>Account Name code</th>
+                <th>Account Number</th>
+                <th>Action</th>
+              </thead>
+              <tbody *ngFor="let lists of historyLists; index as ind">
+                <td>{{ (pagination.index - 1) * limit + ind + 1 }}</td>
+                <td>{{ lists.account_name }}</td>
+
+                <td>{{ lists.account_number }}</td>
+                <td>
+                  <button
+                    [matTooltip]="'Click to Remove Account'"
+                    [matTooltipPosition]="'right'"
+                    matTooltipClass="custom-tooltip"
+                    mat-icon-button
+                    (click)="removeaccount(lists, ind)"
+                  >
+                    <mat-icon class="icnwithname" style="color: red"
+                      >delete_forever
+                    </mat-icon>
+                  </button>
+                </td>
+              </tbody>
+            </table>
+
+            <div *ngIf="!historyLists?.length" style="margin-left: 42%">
+              <h3>Sorry no data found!...</h3>
+            </div> -->
+
+            <!-- </div> -->
+            <!-- <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                        <button (click)="prevpages()" mat-icon-button [disabled]="pagination.has_previous === false"
+                            color="primary">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{pagination.index}}
+                        <button (click)="nextpages()" mat-icon-button [disabled]="pagination.has_next === false"
+                            color="primary">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+
+                    </div> -->
+          <!-- </div> -->
+          <!-- <div class="modal-footer">
+                    <a href="#" data-dismiss="modal" class="btn">Close</a>
+                </div> -->
+        <!-- </div>
+      </div>
+    </div>
+  </div> -->
+</section>
+</div>

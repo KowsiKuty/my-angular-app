@@ -1,0 +1,322 @@
+<nav>
+  <div class="nav nav-tabs">
+    <a class="nav-item nav-link" data-toggle="tab" role="tab" (click)="assetBtn()">Mobile Update</a>
+    <a class="nav-item nav-link" data-toggle="tab" role="tab" (click)="syncreportBtn()">Mono Sync Report</a>
+    <a class="nav-item nav-link" data-toggle="tab" role="tab" (click)="postmanBtn()">API Explorer</a>
+    <a class="nav-item nav-link" data-toggle="tab" role="tab" (click)="microsynctab()">Micro Sync</a>
+
+  </div>
+</nav>
+<div *ngIf="mobileupdate">
+  <div class="container">
+    <div class="row col-md-12">
+
+      <div class="panel panel-default">
+        <div class="panel-body" style="margin: 24px;">EMPLOYEE PERSONAL INFO
+        </div>
+      </div>
+
+    </div>
+    <div class=" row col-md-12">
+      <form [formGroup]="mobileupdationform" autocomplete="off">
+        <div class="col-md-12 row">
+          <div class="col-md-4">
+
+            <mat-form-field appearance="legacy">
+              <mat-label> Name</mat-label>
+              <input matInput [readonly]="true" formControlName="name">
+
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-4">
+
+            <mat-form-field appearance="legacy">
+              <mat-label>Code</mat-label>
+              <input matInput [readonly]="true" formControlName="code">
+
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-4">
+
+            <mat-form-field appearance="legacy">
+              <mat-label>Mobile</mat-label>
+              <input type="text" matInput formControlName="mobile_number" maxlength="10" (keypress)="empmonochange();numberOnly($event)" >
+
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-8" class="point" *ngIf="otpflag">
+            <p *ngIf="otpflag">Please enter the 8-digit verification <br />
+              code we sent via SMS:(we want to make sure it's you before update)</p>
+
+
+          </div>
+
+          <div class="col-md-4" *ngIf="otpflag">
+
+            <mat-form-field appearance="legacy">
+              <mat-label>OTP</mat-label>
+              <input type="text" autocomplete="off" numbersOnly matInput formControlName="otp">
+
+            </mat-form-field>
+            <p class="count">Did not Recieve in {{count}}s? </p>
+            <p class="count" *ngIf="count==0" style="text-align: right; color: blue;" (click)="submitForm()">
+              <a>Resend OTP</a></p>
+
+          </div>
+
+
+
+
+        </div>
+
+        <div class="text-right">
+          <button class="btn btn-outline-success" type="button" routerLink="/utilities/mobileupdate" skipLocationChange >
+            Cancel </button> &nbsp;&nbsp;
+          <button *ngIf="!otpflag" class="btn btn-outline-primary" type="submit" [disabled]="changedmobno" (click)="submitForm()">
+            Update</button>
+          <button *ngIf="otpflag" class="btn btn-outline-primary" type="submit" (click)="updatemobile()">
+            Verify</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+<!-- mobile updation starts-->
+<div class="modal fade" id="mobileupdation" tabindex="-1" role="dialog" aria-labelledby="Employee" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="width:150%;">
+      <div class="modal-header text-center" style="background: #ddefdd;
+          ">
+        <!-- <h4 class="modal-title  w-100 font-weight-bold" id="Employee">Employee Personal Info</h4> -->
+        <h4>
+          <p>EMPLOYEE PERSONAL INFO</p>
+        </h4>
+        <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- mobile updation ends -->
+
+<div *ngIf="monosync" style="margin-top:1%;">
+  <div style="margin-left: 40px;">
+    <h1 style="font-family: 'Times New Roman', Times, serif; color: blue;">Master Sync Report</h1>
+    <div class="row col-md-12">
+      <form [formGroup]="syncform">
+        <mat-form-field>
+          <mat-label>Master List</mat-label>
+          <mat-select formControlName="masterid">
+            <mat-option value="product">Product</mat-option>
+            <mat-option value="product">BSCC</mat-option>
+            <mat-option value="product">category</mat-option>
+            <mat-option value="product">Sub Category</mat-option>
+            <mat-option value="product">Branch</mat-option>
+            <mat-option value="product">Paymode</mat-option>
+          </mat-select> 
+        </mat-form-field>
+      </form>
+        <section class="example-section" style="margin-left:30px;margin-top:2%;">
+          <mat-checkbox [(ngModel)]="checked" class="example-margin">All Masters</mat-checkbox>
+        </section>
+        <button mat-raised-button type="button"  class="btn btn-success" style="border-radius: 40px;height:40px;margin-left:30px" (click)="mstsync_reportdownload()" >Download
+          <mat-icon *ngIf="first"><mat-spinner color="green" diameter="20">
+          </mat-spinner></mat-icon>
+          <mat-icon *ngIf="!first" inline=true style="color:rgb(245, 245, 245)">download</mat-icon></button>
+      
+    </div>
+  </div>
+</div>
+
+<div *ngIf="apiexp_page" style="margin-top:1%">
+  <div style="margin-left:40px">
+    <h1 style="font-family: 'Times New Roman', Times, serif; color: blue;">API Explorer</h1> 
+    <mat-card class="example-card">
+      
+      <form [formGroup]="apiexp_form">  
+        <div class="col-md-12">
+          <mat-form-field style="width:100px">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="GET" >GET</mat-option>
+              <mat-option value="POST">POST</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <span style="margin: 0 10px; border-left: 3px solid #ccc; height: 20px;"></span>
+          <mat-form-field style="width:600px;">
+            <mat-label>URL</mat-label>
+            <input type="text" required matInput formControlName="url">
+            <!-- <mat-error class="point" *ngIf="apiexp_form.get('url')?.errors?.pattern">URL cannot start with a "/"</mat-error> -->
+          </mat-form-field>
+          <mat-checkbox [(ngModel)]="download_checked" style="margin-left:10px" (change)="checkboxchange($event)">Excel Download</mat-checkbox>
+          
+          <button type="button" mat-raised-button class="btn btn-primary" style="height:40px;margin-left:15px;border-radius:10px" (click)="submit_apiexp()">Send</button>
+        </div>  
+        <nav>
+          <div class="nav nav-tabs">
+            <a class="nav-item nav-link " data-toggle="tab" role="tab" (click)="Authorization_content()">Authorization</a>
+            <a class="nav-item nav-link " data-toggle="tab" role="tab" (click)="header_content()">headers</a>
+            <a class="nav-item nav-link " data-toggle="tab" role="tab" (click)="body_content()">Body</a>
+
+          </div>
+        </nav>
+        <div *ngIf="body_dict" class="col-md-12">
+          <label id="example-radio-group-label">Body</label>
+          <br>
+          <mat-radio-group aia-labelledby="example-radio-group-label" class="example-radio-group">
+            <mat-radio-button *ngFor="let type of postman_type" class="example-radio-button" [value]="type" (change)="radiochange($event,type)">{{type}}</mat-radio-button>
+          </mat-radio-group>
+          <br>
+          <mat-form-field *ngIf="raw_section" appearance="outline" style="width:800px;">
+            <mat-label>raw query</mat-label>
+             <input type="text-area" formControlName="raw_data" matInput  style="height:200px;">
+          </mat-form-field>
+          <div *ngIf="urlencoded_section">
+            <table class="table table-bordered">
+              <thead  class="table_header">
+                <tr>
+                  <th>S.No</th>
+                  <th>Key</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody >
+                <tr>
+                  <td>1</td>
+                  <td>
+                    <mat-form-field style="width:300px">
+                      <input type="text" matInput formControlName="urlencoded_key">
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width:300px">
+                      <input type="text" matInput formControlName="urlencoded_value">
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+          <div class="table-responsive" *ngIf="formdata_section">
+
+            <button (click)="addRow()" matTooltip="Add" style="margin-left: 95%;margin-bottom:10px" mat-mini-fab color="primary"><mat-icon>add</mat-icon></button>
+
+            <table class="table table-bordered">
+              <thead  class="table_header">
+                <tr>
+                  <th>S.No</th>
+                  <th>key</th>
+                  <th>value</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="key_list">
+                <tr   *ngFor="let f of apiexp_form.controls.key_list['controls'];index as i" >
+                  <td>{{i+1}}</td>
+                  <td [formGroupName]="i" style="display: flex;align-items: center;">
+                    <mat-form-field style="width:250px">
+                      <mat-label>key</mat-label>
+                      <input type="text" matInput formControlName="key">
+                    </mat-form-field>
+
+                    <mat-form-field style="width:100px;">
+                      <mat-label>TYPE</mat-label>
+                      <mat-select formControlName="file_text" (selectionChange)="text_or_dropdown($event, i)">
+                        <mat-option value="text">Text</mat-option>
+                        <mat-option value="file">File</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                  </td>
+                  <td [formGroupName]="i">
+                    <mat-form-field *ngIf="text_field[i]" style="width:250px">
+                      <mat-label>Value</mat-label>
+                      <input type="text" matInput formControlName="value">
+                    </mat-form-field>
+                    <input *ngIf="file_field[i]" type="file" formControlName="uploadfile" multiple accept="xlxs" (change)="onFilechange($event,i)"  style="width:250px;">
+                    <mat-icon style="color: red; font-size: 25px;" (click)="remove(i)">delete</mat-icon>
+                  </td>
+                </tr>
+              </tbody>
+
+            </table>
+
+          </div>
+          
+        </div>
+        <div *ngIf="Authorization_dict" style="margin-top: 15px;">
+          <div class="form_align">
+            <mat-label class="label-inline">UserName</mat-label>
+            <input matInput type="text" formControlName="name" class="input-inline">
+          </div>
+          <div class="form_align">
+            <mat-label class="label-inline">Password</mat-label>
+            <input matInput  [type]="showPassword ? 'text' : 'password'" formControlName="password" class="input-inline">
+          </div>
+          <div class="form_align">
+            <mat-checkbox [(ngModel)]="showPassword" class="checkbox-inline" (change)="password_view($event)">Show Password</mat-checkbox>
+          </div>
+        </div>
+
+        <div *ngIf="header_dict" style="margin-top: 15px;" class="table table-responsive">
+          <table class="table table-bordered">
+            <thead  class="table_header">
+              <tr>
+                <th>S.No</th>
+                <th>Key</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>
+                  <mat-form-field style="width:300px">
+                    <input type="text" matInput formControlName="header_key">
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field style="width:300px">
+                    <input type="text" matInput formControlName="header_value">
+                  </mat-form-field>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+        <div>
+          <div *ngIf="this.response_data"   [ngClass]="{ 'highlight': shouldHighlight }">
+            <div class="response-header">
+              <h3>RESPONSE</h3>
+              <button *ngIf="excel_dwn_btn" style="border-radius:10px;margin-left:60%;height:40px;" class="btn btn-primary" (click)="excel_download()">Download Excel</button>
+            </div>
+            
+            <pre>{{ this.response_data | json }}</pre>
+          </div>   
+        </div>  
+        
+      </form>
+    </mat-card>   
+  </div>
+</div>
+<div *ngIf="micro_sync_page" style="margin-top:1%">
+  <div style="margin-left:40px">
+    <h1 style="font-family: 'Times New Roman', Times, serif; color: blue;">Micro Sync </h1>
+    <button mat-raised-button type="button"  class="btn btn-primary" style="border-radius: 40px;height:40px;margin-top:15px" (click)="branchsync_micro()" >Branch Sync</button>
+    <button mat-raised-button type="button"  class="btn btn-primary" style="border-radius: 40px;height:40px;margin-top:15px;margin-left:30px" (click)="empsync_micro()" >Employee Sync</button>
+
+  </div>
+
+</div>
+

@@ -1,0 +1,222 @@
+<div *ngIf="showapplpush">
+    <h2 style="margin-left: 20px;">LOS Application Create</h2>
+     <form [formGroup]="losdetailsform">
+    <div class="row col-md-12">
+        <div>
+            <mat-form-field style="width: 200px !important;margin-left: 25px;">
+                                    <input #appInput placeholder="Choose Application" matInput
+                                        formControlName="ApplNo">
+                                        <!-- [matAutocomplete]="appdata" -->
+                                    <!-- <mat-autocomplete #appdata="matAutocomplete" [displayWith]="displayFn"
+                                    (opened)="autocompleteappScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let app of LoanAp" [value]="app" matTooltip="{{app.ApplNo}}-{{app.DrAcctName}}"
+                                                (click)="get_application_loan_balance(app)">
+                                                {{app.ApplNo}}-{{app.DrAcctName}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete> -->
+                                </mat-form-field>
+        </div>
+         <div *ngIf="onbehalfoff==true">
+                        <mat-form-field style="width: 200px;margin-left: 25px;" (click)="branchnames()">
+                            <mat-label>Behalfof Branch</mat-label>
+                            <input #brnchInput  placeholder="Behalfof Branch" matInput 
+                            formControlName="branch" [matAutocomplete]="brnch">
+                            <mat-autocomplete [panelWidth]="400" #brnch="matAutocomplete" (opened)="autocompletebranchScroll()"
+                            [displayWith]="displayFnBranch">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let branch of BranchesList" (click)="getbranchid(branch)"
+                            [value]="branch">{{branch.full_name}}
+                        </mat-option>
+                     </ng-container>
+                         </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <div  *ngIf="onbehalfoff==false">
+                         <mat-form-field style="width:200px;margin-left: 25px;">
+                            <mat-label>Branch</mat-label>
+                            <input matInput placeholder="Branch" [readonly]="true" [value]="branchnamecode" formControlName="branch">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field style="width:200px;margin-left: 25px;">
+                            <mat-label>Customer ID</mat-label>
+                            <input matInput placeholder="Customer ID" formControlName="CustomerID">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field style="width:200px;margin-left: 25px;">
+                            <mat-label>Debit Account No</mat-label>
+                            <input matInput placeholder="Debit Account No" formControlName="DrAcctNo">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field style="width:200px;margin-left: 25px;">
+                            <mat-label>Debit Account Name</mat-label>
+                            <input matInput placeholder="Debit Account Name" formControlName="DrAcctName">
+                        </mat-form-field>
+                    </div>
+    </div>
+    <div class="row col-md-12">
+        <div>
+            <mat-form-field style="width:200px;margin-left: 25px;">
+                <mat-label>Narration</mat-label>
+                <input matInput placeholder="Narration" formControlName="Narration">
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field style="width:200px;margin-left: 25px;">
+                     <mat-label>Transaction Date</mat-label>
+                                <input matInput [matDatepicker]="from_date" formControlName="TxnDate" readonly
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="from_date"></mat-datepicker-toggle>
+                                <mat-datepicker #from_date></mat-datepicker>
+                            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field style="width:200px;margin-left: 25px;">
+                <mat-label>Transaction Ref No</mat-label>
+                <input matInput placeholder="Transaction Ref No" formControlName="TranRefNo">
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field style="width:200px;margin-left: 25px;">
+                <mat-label>Business Unit</mat-label>
+                <input matInput placeholder="Business Unit" formControlName="BusinessUnit">
+            </mat-form-field>
+        </div>
+    </div>
+    </form>
+    <br>
+    <div>
+        <h2 style="margin-left: 20px;">Loan Charges</h2>
+        <div style="margin-left:200px">
+            <button type="button" class="btn btn-outline-success" matTooltip="Add Loan Charges" matTooltipClass="custom-tooltipnew"
+                            style="border-radius:40px;font-size:medium;margin-top: -30px;margin-bottom: 15px;" 
+                            (click)="addloanchargesSection()" id="invoice-detail-0070">
+                            <span class="fa fa-plus"></span>
+                    </button>
+        </div>
+        <form [formGroup]="losdetailsform">
+            <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                <table class="table table-bordered" fixed-header style="width: 80%;margin-top: 10px;margin-left: 25px;">
+                    <thead class="table_header" style="text-align: center;">
+                        <tr>
+                        <th>S.No</th>
+                        <th>Charge Type</th>
+                        <th>Amount</th>
+                        <th>GST Amount</th>
+                        </tr>
+                    </thead>
+                    <ng-container formArrayName="loancharges"
+                        *ngFor="let section of getloancharges(losdetailsform); let i = index">
+                        <tr [formGroupName]="i">
+                            <td>{{i+1}}</td>
+                            <td>
+                                <mat-form-field style="width:200px;margin-left:25px">
+                                        <mat-select placeholder="Charge Type" formControlName="chargetype">
+                                            <mat-option *ngFor="let type of chargeTypelist" [value]="type.name"
+                                                (click)="getecf(type.id)">
+                                                {{type.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 200px;margin-left:25px">
+                                        <mat-label>Amount</mat-label>
+                                        <input type="text" matInput formControlName="amount" 
+                                            autocomplete="off" style="text-align:right"
+                                            (keypress)="getCharCode($event);numberOnlyandDot($event)" 
+                                            required id="create-ecf-0031">
+                                    </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 200px;margin-left:25px">
+                                        <mat-label>GST Amount</mat-label>
+                                        <input type="text" matInput formControlName="gstamount" 
+                                            autocomplete="off" style="text-align:right"
+                                            (keypress)="getCharCode($event);numberOnlyandDot($event)" 
+                                           required id="create-ecf-0031">
+                                    </mat-form-field>
+                            </td>
+                        </tr>
+                        </ng-container>
+                </table>
+            </div>
+        </form>
+    </div>
+    <br>
+     <div>
+        <h2 style="margin-left: 20px;">Loan Collaterals</h2>
+        <div style="margin-left:200px">
+            <button type="button" class="btn btn-outline-success" matTooltip="Add Loan Collaterals" matTooltipClass="custom-tooltipnew"
+                            style="border-radius:40px;font-size:medium;margin-top: -30px;margin-bottom: 15px;" 
+                            (click)="adddloancollateralsSection()" id="invoice-detail-0070">
+                            <span class="fa fa-plus"></span>
+                    </button>
+        </div>
+        <form [formGroup]="losdetailsform">
+            <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                <table class="table table-bordered" fixed-header style="width: 80%;margin-top: 10px;margin-left: 25px;">
+                    <thead class="table_header" style="text-align: center;">
+                        <tr>
+                        <th>S.No</th>
+                        <th>Is New</th>
+                        <th>Collateral ID</th>
+                        <th>Collateral Name</th>
+                        <th>Collateral Value</th>
+                        </tr>
+                    </thead>
+                    <ng-container formArrayName="loancollaterals"
+                        *ngFor="let section of getloancollaterals(losdetailsform); let i = index">
+                        <tr [formGroupName]="i">
+                            <td>{{i+1}}</td>
+                            <td style="text-align:center">
+                                <mat-form-field style="width:200px">
+                                        <mat-select placeholder="Charge Type" formControlName="type">
+                                            <mat-option *ngFor="let type of Typelist" [value]="type.id"
+                                                (click)="gettype(type.id)">
+                                                {{type.value}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                            </td>
+                            <td>
+                                 <mat-form-field style="width:200px;margin-left: 25px;">
+                                    <mat-label>Collateral ID</mat-label>
+                                    <input matInput placeholder="Collateral ID" formControlName="Collateral_ID">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                 <mat-form-field style="width:200px;margin-left: 25px;">
+                                    <mat-label>Collateral Name</mat-label>
+                                    <input matInput placeholder="Collateral Name" formControlName="Collateral_Name">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                 <mat-form-field style="width:200px;margin-left: 25px;">
+                                    <mat-label>Collateral Value</mat-label>
+                                    <input matInput placeholder="Collateral Value" formControlName="Collateral_Value">
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        </ng-container>
+                </table>
+            </div>
+        </form>
+    </div>
+ <br>
+<button type="button" style="border-radius:40px;margin-left: 600px;margin-bottom: 20px;"
+class="btn btn-outline-success" (click)="loanappcreate()" id="invoice-detail-0101">Save
+</button>
+<button type="button" style="border-radius:40px;margin-left: 10px;margin-bottom: 20px;"
+class="btn btn-outline-success" (click)="loanappcreateback()" id="invoice-detail-0101">Back
+</button>
+
+</div>

@@ -1,0 +1,366 @@
+<div class="Container" style="margin-left: 20px;">
+    <nav>
+       
+        <div class="nav nav-tabs" style="margin-top: 1%;">
+            <span class="nav-item nav-link " data-toggle="tab" role="tab" *ngFor="let sub of docList" (click)="subModuleData(sub)"  
+               >
+               {{sub.name}}
+            </span>
+        </div>
+    </nav>
+
+</div>
+
+<div *ngIf="isDocUploadTab">
+
+    <h2 style="margin-left: 30px;margin-top: 1%;">Document Upload Search</h2>
+    <form [formGroup]="documentSearchForm">
+      <table>
+        <tr>
+            <td>
+                <mat-form-field style="width: 150px;margin-left: 50px;">
+                    <mat-label>Document Title</mat-label>
+                    <input class="toolbar-search" type="text" matInput autocomplete="off"
+                    formControlName="remarks">
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field
+                    style="width: 150px;margin-left: 50px;">
+                    <mat-label>From Date</mat-label>
+                    <input matInput [matDatepicker]="picker1" placeholder="From Date"
+                        formControlName="fromdate">
+                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field
+                    style="width: 150px;margin-left: 50px;">
+                    <mat-label>To Date</mat-label>
+                    <input matInput [matDatepicker]="picker2" placeholder="To Date"
+                        formControlName="todate">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field style="width: 150px;margin-left: 50px;" (click)="employeename()">
+                    <mat-label>Uploaded By</mat-label>
+                    <input #empInput  placeholder="Employee" matInput 
+                    formControlName="created_by" [matAutocomplete]="emp" >
+                    <mat-autocomplete [panelWidth]="400" #emp="matAutocomplete" (opened)="autocompleteemployeeScroll()"
+                    [displayWith]="displayFnEmployee">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let employee of employeeList"
+                    [value]="employee">{{employee.full_name}}
+                </mat-option>
+             </ng-container>
+                 </mat-autocomplete>
+                </mat-form-field>
+            </td>
+            <td>
+               <button class="btn btn-outline-primary" type="submit"
+               style="border-radius:40px;margin-left: 50px;" color="primary"
+            (click)="uploadsearch()"><i matTooltip="Search" class="fa fa-search"
+            aria-hidden="true"></i></button>
+            </td>
+            <td>
+                <button class="btn btn-outline-primary" (click)="resetsearch()" type="button"
+                style="border-radius:40px;margin-left: 25px;" color="primary">Reset</button>
+    
+            </td>
+        </tr>
+      </table>
+    </form>
+
+
+
+
+
+    <h2 style="margin-left: 30px;margin-top: 1%;">Document Upload</h2>
+<form [formGroup]="documentForm">
+    <table>
+        <tr>
+           
+            <td>
+                <mat-form-field style="width: 175px;margin-left: 50px;">
+                    <mat-label>Document Title</mat-label>
+                    <input class="toolbar-search" type="text" matInput autocomplete="off"
+                    formControlName="remarks" required>
+                    <!-- <mat-select formControlName="module_id">
+                        <mat-option *ngFor="let module of moduleList" [value]="module.id">
+                            {{module.name}}
+                        </mat-option>
+                    </mat-select> -->
+                </mat-form-field>
+               
+
+              
+            </td>
+            <td>
+              
+                <input #fileInputs id="uploadFile" type="file" multiple
+                style="width: 250px;margin-left: 50px;" (change)="fileupload($event)">
+                
+                <button type="button" class="btn btn-outline-success" (click)="uploaduserManual()"
+                style="border-radius:40px;margin-left: 50px;" [disabled]="documentForm?.value?.file_data?.length == 0 || disableupload == true">
+                <span class="fa fa-upload"  matTooltip="Upload">
+                </span>
+            </button>
+
+            <button class="btn btn-outline-primary" (click)="reset()" type="button"
+            style="border-radius:40px;margin-left: 50px;" color="primary">Reset</button>
+
+            <div *ngFor="let upload of uploadLists;index as i"  style="margin-left:50px">
+                
+                {{ upload}}
+                <button mat-icon-button type="button">
+                    <mat-icon style="color: gray;" aria-label="Edit" (click)="deleteUpload(upload, i)">
+                        delete</mat-icon>
+                </button>
+
+                
+
+            </div>
+           
+         
+            
+           
+            </td>
+        </tr>
+    </table>
+</form>
+
+<h2 style="margin-left: 30px;margin-top: 1%;">Document Upload Summary</h2>
+
+<div class="table-responsive" style="margin-top: 2%;width: 84%;margin-left: 50px;">
+    <table class="table scrolltable table-bordered" fixed-header>
+        <thead>
+            <tr class="table_header" fixed-header style="text-align:center;">
+                <th>S.No</th>
+                <th>Document Uploaded Date</th>
+                <th>Document Title</th>
+                <th>File Name</th>
+                <th>Uploaded By</th>
+                <th>Download</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+           
+           
+            <tr  *ngFor = "let doc of doctlist;index as i"  style="text-align:center ;">
+                <td> {{(presentpagedoc - 1)*pagesize +i+1 }}</td>
+                <td> {{ (doc?.created_date !== "None") ? (doc?.created_date | date: 'dd/MM/yyyy') : "-" }}</td>
+                <td>{{doc?.remarks}}</td>
+                <td>{{doc?.file_name}}</td>
+                <td>{{doc?.created_by?.name}}</td>
+                <td style="text-align: center;">
+                    <button type="button" class="btn btn-outline-success" (click)="downloadfiledocument(doc?.file_id,doc?.file_name)"
+                    style="border-radius:40px;" 
+                   >
+                    <span class="fa fa-download"  matTooltip="Download">
+                    </span>
+                </button>
+                </td> 
+                <td style="text-align: center;">
+                    <button mat-icon-button type="button">
+                    <mat-icon style="color: green;" aria-label="Edit" (click)="deletedocUpload(doc,i)" matTooltip="Delete">
+                        delete</mat-icon>
+                </button>
+
+                </td>
+              
+            </tr>
+        </tbody>
+    </table>
+    <div *ngIf="doctlist ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isdocList">
+        <button mat-icon-button [disabled]="has_previousdoc === false" color="primary"
+            (click)="doc_previousClick()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        {{presentpagedoc}}
+        <button mat-icon-button [disabled]="has_nextdoc === false" color="primary" (click)="doc_nextClick()">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    </div>
+</div>
+</div>
+
+<div *ngIf="isDocViewTab">
+
+    <h2 style="margin-left: 30px;margin-top: 1%;">Document View Search</h2>
+    <form [formGroup]="documentviewsearchForm">
+      <table>
+        <tr>
+            <td>
+                <mat-form-field style="width: 150px;margin-left: 50px;">
+                    <mat-label>Document Title</mat-label>
+                    <input class="toolbar-search" type="text" matInput autocomplete="off"
+                    formControlName="remarks">
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field
+                    style="width: 150px;margin-left: 50px;">
+                    <mat-label>From Date</mat-label>
+                    <input matInput [matDatepicker]="picker1" placeholder="From Date"
+                        formControlName="fromdate">
+                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field
+                    style="width: 150px;margin-left: 50px;">
+                    <mat-label>To Date</mat-label>
+                    <input matInput [matDatepicker]="picker2" placeholder="To Date"
+                        formControlName="todate">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+
+                </mat-form-field>
+            </td>
+            <td>
+               
+                    <mat-form-field style="width: 150px;margin-left: 50px;" (click)="employeeViewname()">
+                        <mat-label>Uploaded By</mat-label>
+                        <input #empInput  placeholder="Employee" matInput 
+                        formControlName="created_by" [matAutocomplete]="emp" >
+                        <mat-autocomplete [panelWidth]="400" #emp="matAutocomplete" (opened)="autocompleteemployeeScroll()"
+                        [displayWith]="displayFnEmployeeView">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let employee of employeeList"
+                        [value]="employee">{{employee.full_name}}
+                    </mat-option>
+                 </ng-container>
+                     </mat-autocomplete>
+                    </mat-form-field>
+                
+            </td>
+            <td>
+               <button class="btn btn-outline-primary" type="submit"
+               style="border-radius:40px;margin-left: 50px;" color="primary"
+            (click)="uploadviewsearch()"><i matTooltip="Search" class="fa fa-search"
+            aria-hidden="true"></i></button>
+            </td>
+            <td>
+                <button class="btn btn-outline-primary" (click)="resetviewsearch()" type="button"
+                style="border-radius:40px;margin-left: 25px;" color="primary">Reset</button>
+    
+            </td>
+        </tr>
+      </table>
+    </form>
+
+
+
+
+
+   
+<h2 style="margin-left: 30px;margin-top: 1%;">Document View Summary</h2>
+
+<div class="table-responsive" style="margin-top: 2%;width: 84%;margin-left: 50px;">
+    <table class="table scrolltable table-bordered" fixed-header>
+        <thead>
+            <tr class="table_header" fixed-header style="text-align:center;">
+                <th>S.No</th>
+                <th>Document Uploaded Date</th>
+                <th>Document Title</th>
+                <th>File Name</th>
+                <th>Uploaded By</th>
+                <th>Download</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+           
+            <tr  *ngFor = "let docs of doctviewlist;index as i" style="text-align:center ;">
+                <td> {{(presentpagedocview - 1)*pagesize +i+1 }}</td>
+                <td> {{ (docs?.created_date !== "None") ? (docs?.created_date | date: 'dd/MM/yyyy') : "-" }}</td>
+                <td>{{docs?.remarks}}</td>
+                <td>{{docs?.file_name}}</td>
+                <td>{{docs?.created_by?.name}}</td>
+                <td style="text-align: center;">
+                    <button type="button" class="btn btn-outline-success" (click)="downloadfiledocument(docs?.file_id,docs?.file_name)"
+                    style="border-radius:40px;" 
+                   >
+                    <span class="fa fa-download"  matTooltip="Download">
+                    </span>
+                </button>
+                </td> 
+                
+            </tr>
+        </tbody>
+    </table>
+    <div *ngIf="doctviewlist ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isdocviewList">
+        <button mat-icon-button [disabled]="has_previousdocview === false" color="primary"
+            (click)="docview_previousClick()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        {{presentpagedocview}}
+        <button mat-icon-button [disabled]="has_nextdocview === false" color="primary" (click)="docview_nextClick()">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    </div>
+</div>
+</div>
+
+
+
+
+
+<!-- <div *ngIf="isSGTab">
+    <h2 style="margin-left: 50px;">Security Guard User Manual</h2>
+
+    <button type="button" class="btn btn-outline-success" (click)="downloadSGuserManual()"
+        style="border-radius:40px;margin-left: 500px;" tooltipClass="Add-tooltip" ngbTooltip="Download"
+        placement="top">
+        <span class="fa fa-download">
+        </span>
+    </button>
+
+
+</div> -->
+
+<!-- <div *ngIf="isLOSTab">
+    <h2 style="margin-left: 50px;">LOS User Manual</h2>
+
+    <input #fileInputs id="uploadFile" type="file" multiple
+     style="width: 250px;margin-left: 50px;" (change)="fileupload($event)">
+
+    <button type="button" class="btn btn-outline-success" (click)="uploadLOSuserManual()"
+        style="border-radius:40px;margin-left: 200px;" 
+       >
+        <span class="fa fa-upload"  matTooltip="Upload">
+        </span>
+    </button>
+
+
+    <button type="button" class="btn btn-outline-success" (click)="downloadLOSuserManual()"
+        style="border-radius:40px;margin-left: 200px;" 
+       >
+        <span class="fa fa-download"  matTooltip="Download">
+        </span>
+    </button>
+
+
+</div> -->
+
+<!-- <pre>{{documentForm.value|json}}</pre> -->
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner>

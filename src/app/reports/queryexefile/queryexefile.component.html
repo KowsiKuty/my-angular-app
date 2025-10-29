@@ -1,0 +1,263 @@
+<div>
+
+    <h2 style="margin-left: 30px;margin-top: 1%;">Query Execute File</h2>
+    <div>
+        <form [formGroup]="qryExecFileFrm">
+            <table>
+                <div>
+                <tr>
+                    <td>
+                        <mat-form-field style="margin-left: 30px;">
+                            <mat-label>Request Code</mat-label>
+                            <input placeholder="Request Code" matInput style="width:150px"
+                                formControlName="request_code"/>
+                        </mat-form-field>
+                    </td>
+                <td>
+                    <mat-form-field style="margin-left: 30px;">
+                    <mat-label>Request Raised By</mat-label>
+                    <input #raiserInput placeholder="Request Raised By" matInput style="width:150px"
+                        formControlName="request_raised_by" [matAutocomplete]="raisedbytype" >
+                    <mat-autocomplete [panelWidth]="400" #raisedbytype="matAutocomplete"
+                        [displayWith]="displayFnraisedby" (opened)="raisedByScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let rr of RaisedByList" [value]="rr"   matTooltip="{{rr.full_name}}">
+                                {{rr.full_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field style="margin-left: 30px;">
+                    <mat-label>Status</mat-label>
+                    <mat-select placeholder="Status" formControlName="status" >
+                        <mat-option *ngFor="let sta of statuslist"  matTooltip="{{sta.text}}"
+                         [value]="sta.id">{{sta.text}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </td>
+        <td>
+            <button class="btn btn-outline-primary" type="submit"
+            style="border-radius:40px;margin-left: 30px;" color="primary"
+            (click)="getqueryexec(1)"><i matTooltip="Search" class="fa fa-search"
+                aria-hidden="true"></i></button>     
+            <button class="btn btn-outline-primary" type="button"
+            style="border-radius:40px;margin-left: 10px;"
+           color="primary" (click)="resetqueryexec()">Reset</button>  
+           <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;" *ngIf="this.queryexecMaker"
+           matTooltip="Add " data-toggle="modal" data-target="#addqry" (click)="addQryExecFile()">
+            <span
+                class="fa fa-plus"></span>&nbsp;Query Execute File</button>
+
+        </td>
+                </tr>
+                </div>
+            </table>
+        </form>
+    </div>
+        
+    
+    <div   style="margin-top: 1%;margin-left: 30px; width: 95%;">
+        <table class="table table-bordered scrolltable"  style="text-align:center;" >	        
+            <thead fixed-header>
+                <tr class="table_header " fixed-header style="text-align: center;margin-left: 3%;">
+                    <th>S No</th>
+                    <th>Request Code</th>
+                    <th>Request By</th>
+                    <th>Request Approved By</th>
+                    <th>Raised By</th>
+                    <!-- <th>Purpose</th> -->
+                    <th>Status</th>
+                    <th>View Details</th>
+                    <th *ngIf="queryexecApprover">Action</th>
+
+                </tr>
+            </thead>
+            <tbody style="text-align: center;">
+                <tr *ngFor="let data of qryExeclist; index as i">
+                    <td>{{(presentpageQryExec - 1)*10 +i+1 }} </td>
+                    <td>{{data?.code}}</td>
+                    <td>{{data?.request_by}}</td>
+                    <td>{{data?.approve_by}}</td>
+                    <td>{{data?.created_by}}</td>
+                    <!-- <td>{{data?.purpose}}</td> -->
+                    <td>{{data?.status}}</td>
+                    <td>
+                 <span matTooltip="View" class=" fa fa-eye create " data-toggle="modal" data-target="#viewdetails"
+                    style="color: green;cursor: pointer;padding:10px;margin-top: 10px;" (click)="showview(data)"></span>
+                </td>   
+                    <td *ngIf="queryexecApprover"> 
+                        
+                        <span *ngIf ="data.status =='INITIATED'" aria-hidden="true" matTooltip="Reject" style="margin-left:10px;color: red;font-size: 30px" (click)="reject(data.id)">&times;</span>
+                        <!-- <button type="button"  class="small-icon"
+                            >
+                        </button>  -->
+                        <span *ngIf ="data.status =='INITIATED'" class="fa fa-check"  matTooltip="Approve"
+                        style="margin-left:15px;color: green;font-size: 25px;" (click)="approve(data.id)"></span>
+                        <!-- <button type="button" class="small-icon">
+                           
+                        </button> -->
+                       
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="!isQryExecpage" class="NodataAlign" style="margin-left: 42%;">No Records Found...</div>
+               
+    </div>
+    <tr style="margin-left: 30px;" *ngIf="isQryExecpage">
+        <td style="width: 30px;"></td>
+         <td style="margin-bottom: 0%;font-size: small;font-weight:bold;margin-top: 30px;width: 600px;text-align: left;">
+             Page: {{presentpageQryExec}}
+         </td>
+          <td style="margin-bottom: 0%;font-size: small;width: 900px;margin-left: 600px;">
+            
+             <mat-paginator  
+                                         (page)="handleqryexecPageEvent($event)"
+                                         [length]="length_qryexec"
+                                         [pageSize]="pageSize_qryexec"
+                                         [showFirstLastButtons]="showFirstLastButtons"
+                                         [pageSizeOptions]="pageSizeOptions"
+                                         [pageIndex]="pageIndex"
+                                         [hidePageSize]="true"
+                                         aria-label="Select page">
+                                     </mat-paginator>
+                                    
+                                 </td>
+         </tr>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+    id="addqry">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center; height: 55px;">
+                <h2 class="modal-title" style="text-align:center;">Query Execution Request</h2>
+                <button class="close" type="button" data-dismiss="modal"  #closedbuttons>x</button>
+            </div>
+            <form [formGroup]="createqryExecFrm">
+                <div class="row col-md-12" style="margin-top: 20px;margin-left: 20px;" >
+                    <div class="col-md-3">
+                        <mat-form-field style="width: 200px;">
+                            <mat-label>Schema</mat-label>
+                            <input type="text" matInput formControlName="schema" [matAutocomplete]="schemaref">
+                            <mat-autocomplete #schemaref="matAutocomplete" >
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of schemalist" [value]="d.db">
+                                        {{d.db}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div> 
+                    <div class="col-md-3">
+                        <mat-form-field appearance="legacy" style="width:200px;">
+                            <mat-select placeholder="Type" formControlName="type" >
+                                <mat-option *ngFor="let ss of typelist"  matTooltip="{{ss.text}}"
+                                 [value]="ss">{{ss.text}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div> 
+                    <div class="col-md-3">
+                        <mat-form-field
+                                    style="width: 200px;">
+                                    <input #raisedByInput placeholder="Request Raised By" matInput
+                                        formControlName="request_by" [matAutocomplete]="rqstraisedtype" >
+                                    <mat-autocomplete [panelWidth]="400" #rqstraisedtype="matAutocomplete"
+                                        [displayWith]="displayFnrqstraised" (opened)="rqstraisedScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let rr of rqstraisedlist" [value]="rr"  matTooltip="{{rr.full_name}}" >
+                                                {{rr.full_name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+
+                                </mat-form-field>   
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field
+                                    style="width: 200px;">
+                                    <input #aproveByInput placeholder="Request Approved By" matInput
+                                        formControlName="approve_by" [matAutocomplete]="rqstapprovedtype" >
+                                    <mat-autocomplete [panelWidth]="400" #rqstapprovedtype="matAutocomplete"
+                                        [displayWith]="displayFnrqstapproved" (opened)="rqstapprovedScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let rr of rqstapprovedlist" [value]="rr"  matTooltip="{{rr.full_name}}" >
+                                                {{rr.full_name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+
+                                </mat-form-field>   
+                    </div>
+
+                </div>
+                <div class="row col-md-12" style="margin-top: 20px;margin-left: 20px;" >
+                    <div class="col-md-8">
+                        <mat-form-field appearance="legacy" style="width: 700px;">
+                            <input type="text" placeholder="Purpose" matInput formControlName="purpose" autocomplete="off" >
+                        </mat-form-field>
+                    </div> 
+                    <div class="col-md-1">
+                        <input #fileInput id="uploadFile" type="file" style="width: 108px;" hidden (change)="uploaddata($event);">
+        
+                        <i (click)="fileInput.click()"  class="fa fa-cloud-upload" matTooltip="Upload file" aria-hidden="true" style="font-size: 28px;color: blue;" ></i>   
+                        <!-- <span matTooltip="view" class=" fa fa-eye create " *ngIf="filearr?.length > 0 "
+                       data-target="#showattachmentpopup" data-toggle="modal"
+                       style="cursor: pointer;color:blue;margin-left: 30px;"></span> -->
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" style="border-radius: 40px;margin-left: 20px;margin-bottom: 30px;" 
+                         (click)="createqryexec()" class="btn btn-outline-primary">Submit</button>
+
+                        
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal" (click)="backcreateform()"
+                        style="border-radius: 40px;margin-left: 10px;margin-bottom: 30px;" >Cancel</button>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+    id="viewdetails">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <table class="table table-bordered scrolltable"  style="text-align:center;" >	        
+                <thead fixed-header>
+                    <tr class="table_header " fixed-header style="text-align: center;margin-left: 3%;">
+                        <!-- <th>Initiated Date</th> -->
+                        <th>Initiated By</th>
+                        <th>Purpose</th>
+                        <th>Executed Date</th>
+                        <th>Executed By</th>
+                        <th>Uploaded File</th>
+                        <th>Download Result</th>
+                        <th>Exception</th>
+                    </tr>
+                </thead>
+                <tbody style="text-align: center;">
+                    <tr>                 
+                        <!-- <td>{{view_data?.created_date | date:'dd-MMM-yyyy'}}</td> -->
+                        <td>{{view_data?.request_by}}</td>
+                        <td>{{view_data?.purpose}}</td>
+                        <td>{{view_data?.updated_date}}</td>
+                        <td>{{view_data?.updated_by}}</td>
+                        <td><p matTooltip="Download File" style="cursor: pointer;color: #3684BF;" (click)="filedownload(view_data?.file_name)">{{view_data?.file_name}}</p></td>
+                        <td><p matTooltip="Download File" style="cursor: pointer;color: #3684BF;" (click)="filedownload(view_data?.file_path)">{{view_data?.file_path}}</p></td>
+                        <td>{{view_data?.exception}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="col-md-3">             
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal" 
+                style="border-radius: 40px;margin-left: 450px;margin-bottom: 30px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,905 @@
+<!-- <div style="background-color: #f6f6f6;"> -->
+    <!-- <mat-card style="margin:20px 12px 20px 20px;" class="mat-elevation-z0"> -->
+        <div style="margin:20px 12px 20px 20px;" >
+            <div style="margin-left: 15px;">
+    
+                <div>
+    
+                    <div style="float:right;margin:20px">
+    
+                        <!-- <button class="btn btn-success" data-target="#history1" data-toggle="modal" (click)="historyclick()"
+                            style="border-radius: 10px;margin-left:10px" type="button">
+                            History</button> -->
+    
+    
+                        <!-- <button type="button" class="btn btn-light" [routerLink]='"/atma/vendorView"' skipLocationChange
+                            style="border-radius: 7px;margin-left: 10px;
+                                                    border-color: black;
+                                                    background-color: white;">Back</button> -->
+    
+                                                    <button type="button" routerLink="/login" class="btn btn-outline-primary text-center"
+                                                    style="border-radius: 40px;margin-left: 10px;" >
+                                                        Back
+                                                    </button> 
+                    </div>
+                    <!-- <nav>
+                        <div class="nav nav-tabs">
+    
+                            <a class="nav-item nav-link" [ngClass]="(tab.index == a)? 'active': '' "
+                                (click)="activitychangeindex(a)" *ngFor="let tab of questiondata;let a=index"
+                                data-toggle="tab">{{tab.activity.name}}
+    
+                            </a>
+    
+                        </div>
+                    </nav> -->
+
+                    <td>
+                     <!-- <div> -->
+                        <!-- <mat-form-field  class="inputwidth"> -->
+                            <mat-form-field style="width: 200px; margin-left: 10px;">
+                            <mat-label>Activity</mat-label>
+                            <mat-select [(ngModel)]="activity">
+                                <mat-option  (click)="activitychangeindex(a);"
+                                    *ngFor="let acttab of questiondata;let a=index" [value]="acttab.service_branch?.name">
+                                    {{acttab.service_branch?.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    <!-- </div> -->
+                </td>
+
+                <td>
+                    <mat-form-field style="width: 280px; margin-left: 40px;">
+                     <mat-label>Vendor Name</mat-label>
+                 <input  readonly [value]="this.vendor_name" matInput>
+                    </mat-form-field>
+         </td>
+
+         <td>
+                 <mat-form-field style="width: 280px; margin-left: 40px;">
+                     <mat-label>PAN No</mat-label>
+                 <input class="toolbar-search" readonly [value]="this.pan_no" matInput>
+                 </mat-form-field>
+         </td>
+                
+               </div>
+                
+
+                <!-- <div *ngIf="td.input_type?.name == 'TEXT'"> -->
+                    
+    
+                <div>
+    
+    
+    
+                    <div *ngFor="let tabs of questiondata;let b=index">
+    
+                        <nav *ngIf=" b == tabs.index"> 
+                            <div class="nav nav-tabs">
+    
+                                <!-- <a class="nav-item nav-link" [ngStyle]="getnavbarcolor(tab)"
+                                    [ngClass]="(tab.index == i)? 'active': '' "
+                                    *ngFor="let tab of tabs.type_data;let i=index" data-toggle="tab"
+                                    (click)="changeindex(b,i);currenttypeselected=tab">{{tab.type_id.name}} - {{tab?.description_id?.name}} -->
+                                    <!-- BUG ID:9332 -->
+                                    <a class="nav-item nav-link" [ngStyle]="getnavbarcolor(tab)"
+                                    [ngClass]="(tab.index == i)? 'active': '' "
+                                    *ngFor="let tab of tabs.type_data;let i=index" data-toggle="tab"
+                                    (click)="changeindex(b,i);currenttypeselected=tab">{{tab.type_id.name}} - Questions
+                                    <!-- <div *ngIf="tab?.mapping[0]?.type_status?.id == 3"  class="returnicon
+                                "> &#11148; </div>
+                                <div *ngIf="tab?.mapping[0]?.type_status?.id == 2"  class="tickicon
+                                ">&#10004;</div> -->
+    
+                                </a>
+    
+                            </div>
+                        </nav>
+                    </div>
+                    <br>
+    
+    
+                    <div>
+    
+    
+                        <div *ngFor="let tab of questiondata; let c= index; ">
+                            <div *ngIf="tab.index == c">
+    
+    
+                                <div class="table-responsive" *ngFor="let question of tab.type_data; let i = index; "
+                                    style="width: 98%;overflow-x: hidden;">
+                                    <div *ngIf="i == question.index">
+    
+    
+                                        <table #table class="table" id="commonstyle">
+                                            <tr class="head">
+                                                <th *ngFor="let tab of question['question_header'];let j=index;">
+                                                    {{tab.name}}
+    
+                                                </th>
+                                            </tr>
+    
+                                            <tr *ngFor="let tr of question['tablearray'];let k=index">
+    
+                                                <td *ngFor="let td of tr['tdarray'];let l=index">
+                                                    <div *ngIf="td.is_input == false ; else input">
+                                                        <p style="padding:30px 0px">{{td.tdvalue}}</p>
+                                                        <div class="subpadding" *ngFor="let sub of td['sub_question']">
+                                                            <p style="padding: 15px 30px;">{{sub.answer}}</p>
+                                                        </div>
+                                                    </div>
+    
+                                                    <ng-template #input>
+                                                        <!-- <mat-form-field class="inputwidth">
+                                                <input
+                                                  matInput
+                                                  [value]="td.tdvalue"
+                                                  [ngModel]="td.tdvalue"
+                                                  (ngModelChange)="td.tdvalue = $event"
+                                                />
+                                              </mat-form-field> -->
+    
+                                                        <div *ngIf="td.input_type?.name == 'TEXT'">
+                                                            <mat-form-field class="inputwidth" appearance="standard">
+                                                                <input matInput
+                                                                    [readonly]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    placeholder="Enter answer" [value]="td.tdvalue"
+                                                                    [ngModel]="td.tdvalue"
+                                                                    (ngModelChange)="td.tdvalue = $event">
+                                                            </mat-form-field>
+                                                        </div>
+                                                        <div *ngIf="td.input_type?.name == 'TEXT_AREA'">
+                                                            <mat-form-field class="inputwidth" appearance="standard">
+                                                                <textarea matInput
+                                                                    [readonly]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    [value]="td.tdvalue" [ngModel]="td.tdvalue"
+                                                                    (ngModelChange)="td.tdvalue = $event"
+                                                                    placeholder="Enter answer"></textarea>
+                                                            </mat-form-field>
+                                                        </div>
+    
+                                                        <div *ngIf="td.input_type?.name == 'NUMBER'">
+                                                            <mat-form-field class="inputwidth" appearance="standard">
+                                                                <input matInput type="number"
+                                                                    [readonly]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    [value]="td.tdvalue" [ngModel]="td.tdvalue"
+                                                                    (ngModelChange)="td.tdvalue = $event"
+                                                                    placeholder="Enter answer">
+                                                            </mat-form-field>
+                                                        </div>
+    
+                                                        <div *ngIf="td.input_type?.name == 'CHECK_BOX'">
+                                                            <!-- <input type="checkbox" > -->
+                                                            <div *ngFor="let option of td.input_value">
+                                                                <mat-checkbox
+                                                                    [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    (change)="getcheckboxchecked($event.checked,option,i,l,k)">
+                                                                    {{option.options}}</mat-checkbox>
+                                                            </div>
+                                                        </div>
+    
+                                                        <div *ngIf="td.input_type?.name == 'RADIO_BUTTON'">
+                                                            <!-- <input type="radio" [value]="td.tdvalue"
+                                              [ngModel]="td.tdvalue"
+                                              (ngModelChange)="td.tdvalue = $event" > -->
+    
+                                                            <mat-radio-group
+                                                                [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                [(ngModel)]="td.tdvalue" aria-label="Select an option">
+                                                                <mat-radio-button *ngFor="let opt of td.input_value"
+                                                                    [value]="opt.id">{{opt.options}}</mat-radio-button>
+    
+                                                            </mat-radio-group>
+    
+                                                        </div>
+    
+                                                        <div *ngIf="td.input_type?.name == 'DROP_DOWN'">
+                                                            <mat-form-field class="inputwidth">
+                                                                <mat-select
+                                                                    [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    [(ngModel)]="td.tdvalue">
+                                                                    <mat-option *ngFor="let opt of td.input_value"
+                                                                        [value]="opt.id">
+                                                                        {{opt.options}}</mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field>
+                                                        </div>
+    
+                                                        <!-- <div *ngIf="td.input_type?.name == 'YES/NO'">
+                                                            <mat-form-field class="inputwidth">
+                                                                <mat-select class="{{(question['tablearray']?.length-1 == k )? (td.tdvalue == '1')? 'yes':'no' : ''}}" [disabled]="(question?.mappinghtml?.type_status?.id  == 1 || question?.mappinghtml?.type_status?.id  == 2 || question?.mappinghtml?.type_status?.id == 3 )? true:false"
+                                                                    [(ngModel)]="td.tdvalue">
+                                                                    <mat-option [ngStyle]="(question['tablearray']?.length-1 == k  )? {'color':opt.color}:''"  *ngFor="let opt of yesornodropdown" [value]="opt.id">
+                                                                        {{opt.options}}</mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field>
+                                                        </div> -->
+                                                        <div *ngIf="td.input_type?.name == 'YES/NO'">
+                                                            <mat-form-field class="inputwidth">
+                                                              <mat-select class="{{(question['tablearray']?.length-1 == k )? (td.tdvalue == '1')? 'yes':'no' : ''}}" 
+                                                                [disabled]="(question?.mappinghtml?.type_status?.id  == 1 || question?.mappinghtml?.type_status?.id  == 2 || question?.mappinghtml?.type_status?.id == 3 )? true:false"
+                                                                [(ngModel)]="td.tdvalue">
+                                                                <mat-option [ngStyle]="(question['tablearray']?.length-1 == k  )? {'color':opt.color}:''"  *ngFor="let opt of yesornodropdown" [value]="opt.id">
+                                                                  {{opt.options}}
+                                                                </mat-option>
+                                                              </mat-select>
+                                                            </mat-form-field>
+                                                          </div>
+    
+                                                        <div *ngIf="td.input_type?.name == 'FILE'">
+    
+                                                            <mat-form-field class="inputwidth" appearance="standard">
+                                                                <input matInput
+                                                                    [readonly]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    placeholder="Enter answer" [value]="td.tdvalue"
+                                                                    [ngModel]="td.tdvalue"
+                                                                    (ngModelChange)="td.tdvalue = $event">
+                                                            </mat-form-field>
+    
+                                                            <input type="file"
+                                                                [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                (change)="fileuploadquestionnaire($event.target.files,td,i,k,l)"
+                                                                multiple>
+                                                            <br>
+    
+                                                            <table id="another">
+                                                                <tr *ngFor="let upload of td.filedata;index as f"
+                                                                    class="btn-link">
+                                                                    <td style="color: blue;" data-target="#imagepreview"
+                                                                        data-toggle="modal" (click)="getfileview(i,k,l,f)">
+                                                                        {{f+1}}.
+                                                                        {{upload.name}}</td>
+                                                                    <td>
+                                                                        <button mat-icon-button
+                                                                            (click)="getdownload(i,k,l,f)">
+                                                                            <mat-icon style="color: gray;"
+                                                                                aria-label="Edit">
+                                                                                download</mat-icon>
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
+    
+                                                                        <button mat-icon-button
+                                                                            (click)="getfiledelete(i,k,l,f)">
+                                                                            <mat-icon style="color: gray;"
+                                                                                aria-label="Edit">
+                                                                                delete</mat-icon>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+    
+    
+    
+                                                        </div>
+    
+                                                        <div *ngFor="let sub of td['sub_question'];let m=index">
+                                                            <!-- <mat-form-field class="inputwidth">
+                                                  <input
+                                                    matInput
+                                                    [value]="sub.answer"
+                                                    [ngModel]="sub.answer"
+                                                    (ngModelChange)="sub.answer = $event"
+                                                  />
+                                                </mat-form-field> -->
+                                                            <div *ngIf="sub?.input_type?.name == 'TEXT'">
+                                                                <mat-form-field class="inputwidth" appearance="standard">
+                                                                    <input matInput
+                                                                        [readonly]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                        placeholder="Enter answer" [value]="sub.answer"
+                                                                        [ngModel]="sub.answer"
+                                                                        (ngModelChange)="sub.answer = $event">
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div *ngIf="sub?.input_type?.name == 'TEXT_AREA'">
+                                                                <mat-form-field class="inputwidth" appearance="standard">
+                                                                    <textarea
+                                                                        [readonly]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                        matInput [value]="sub.answer" [ngModel]="sub.answer"
+                                                                        (ngModelChange)="sub.answer = $event"
+                                                                        placeholder="Enter answer"></textarea>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div *ngIf="sub?.input_type?.name == 'NUMBER'">
+                                                                <mat-form-field class="inputwidth" appearance="standard">
+                                                                    <input
+                                                                        [readonly]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                        matInput type="number" [value]="sub.answer"
+                                                                        [ngModel]="sub.answer"
+                                                                        (ngModelChange)="sub.answer = $event"
+                                                                        placeholder="Enter answer">
+                                                                </mat-form-field>
+                                                            </div>
+    
+                                                            <div *ngIf="sub?.input_type?.name == 'CHECK_BOX'">
+                                                                <!-- <input type="checkbox" > -->
+                                                                <mat-checkbox
+                                                                    [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    *ngFor="let option of sub.input_value"
+                                                                    [(ngModel)]="sub.answer">option.options</mat-checkbox>
+                                                            </div>
+    
+                                                            <div *ngIf="sub?.input_type?.name == 'RADIO_BUTTON'">
+                                                                <!-- <input type="radio" [value]="sub.answer"
+                                                  [ngModel]="sub.answer"
+                                                  (ngModelChange)="sub.answer = $event" > -->
+    
+                                                                <mat-radio-group
+                                                                    [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    [(ngModel)]="sub.answer" aria-label="Select an option">
+                                                                    <mat-radio-button *ngFor="let opt of sub.input_value"
+                                                                        [value]="opt.id">{{opt.options}}</mat-radio-button>
+    
+                                                                </mat-radio-group>
+    
+                                                            </div>
+    
+                                                            <div *ngIf="sub?.input_type?.name == 'DROP_DOWN'">
+                                                                <mat-form-field class="inputwidth">
+                                                                    <mat-select
+                                                                        [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                        [(ngModel)]="sub.answer">
+                                                                        <mat-option *ngFor="let opt of sub.input_value"
+                                                                            [value]="opt.id">{{opt.options}}</mat-option>
+                                                                    </mat-select>
+                                                                </mat-form-field>
+                                                            </div>
+    
+                                                            <div *ngIf="sub?.input_type?.name == 'FILE'">
+                                                                <input
+                                                                    [disabled]="question?.mappinghtml?.type_status?.id  == 1"
+                                                                    type="file">
+                                                            </div>
+                                                        </div>
+                                                    </ng-template>
+                                                </td>
+    
+                                            </tr>
+                                        </table>
+    
+    
+                                        <!-- <div>
+                                    <mat-form-field class="inputwidth" id="normalformfieldsize" appearance="fill" (click)="getdepartment('',dep_currentpage=1)">
+                                        <mat-label>Department</mat-label>
+                                        <input type="text" #deptinput matInput autocomplete="off"
+                                            [matAutocomplete]="deptauto"
+                                            (keyup)="getdepartment($event.target.value,dep_currentpage=1)">
+                                        <mat-autocomplete [panelWidth]="300" #deptauto="matAutocomplete"
+                                            [displayWith]="getdeptlist" (opened)="departmentscroll()">
+                                            <mat-option *ngFor="let dept of deptlist" [value]="dept">{{dept.name}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div> -->
+                                        <!-- <form [formGroup]="mapform" > -->
+                                        <!-- <tr>
+                                            <td>
+                                                <mat-form-field style="width: 250px;">
+                                                    <mat-label>Period</mat-label>
+                                            
+                                                    <input type="text" [(ngModel)]="question.mappinghtml.period.name"
+                                                        matInput readonly>
+                                                </mat-form-field>
+                                            </td>
+                                            <td class="tdpadding">
+                                                
+                                            </td>
+                                            <td>
+    
+    
+                                                <mat-form-field>
+                                                    <mat-label>Start Month</mat-label>
+                                                    <input matInput [matDatepicker]="excemfrom" readonly
+                                                        [(ngModel)]="question.mappinghtml.period_start">
+    
+                                                    <mat-datepicker-toggle matSuffix [for]="excemfrom">
+                                                    </mat-datepicker-toggle>
+                                                    <mat-datepicker #excemfrom startView="multi-year"
+                                                        (monthSelected)="setMonthAndYear($event, excemfrom,c,i)"
+                                                        panelClass="example-month-picker">
+                                                    </mat-datepicker>
+                                                </mat-form-field>
+                                            </td>
+                                            <td class="tdpadding">
+                                                <mat-form-field>
+                                                    <mat-label>End Month</mat-label>
+                                                    <input matInput [matDatepicker]="enddate" readonly
+                                                        [(ngModel)]="question.mappinghtml.period_end">
+    
+                                                    <mat-datepicker-toggle matSuffix [for]="enddate">
+                                                    </mat-datepicker-toggle>
+                                                    <mat-datepicker #enddate startView="multi-year"
+                                                        (monthSelected)="setMonthAndYearend($event, enddate,c,i)"
+                                                        panelClass="example-month-picker">
+                                                    </mat-datepicker>
+                                                </mat-form-field>
+                                            </td>
+                                            <td class="tdpadding">
+                                                <mat-form-field>
+                                                    <mat-label>Remarks</mat-label>
+    
+                                                    <input type="text" [(ngModel)]="question.mappinghtml.remarks"
+                                                        placeholder="Remarks" matInput>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr> -->
+                                        <!-- </form> -->
+    
+    
+    
+                                        <div class="row"  style="margin-bottom: 25px; margin-top: 30px;">
+    
+                                            <!-- <button type="button" class="btn btn-light" [routerLink]='"/atma/vendorView"'
+                                                skipLocationChange style="border-radius: 7px;margin-left: 10px;
+                                                    border-color: black;
+                                                    background-color: white;">Back</button> -->
+    
+                                            <!-- <button type="submit" style="border-radius: 10px;margin-left: 10px;
+                                                border-color: #f5c68b;
+                                                background-color: #f5c68b;" (click)="questionsubmit(c,i,question,1)"
+                                                class="btn btn-light">Draft</button> -->
+    
+                                            <!-- <button type="submit" style="border-radius: 10px;margin-left: 10px;
+                                                border-color: #f5c68b;
+                                                background-color: #f5c68b;" (click)="questionsubmit(c,i,question,2)"
+                                                class="btn btn-light">Submit</button> -->
+    
+                                                <!-- <button type="button" *ngIf="question?.mappinghtml?.type_status?.id  != 1 " [disabled]="(question?.mappinghtml?.type_status?.id  ==  2 || question?.mappinghtml?.type_status?.id  ==  3 || question?.mappinghtml?.type_status?.id  ==  -1)? true:false"
+                                                   class="btn btn-outline-primary text-center" (click)="rejectquestionnaire(c,i,question,1);submitQuestionnaire(c, i, question)"
+                                                style="border-radius: 40px;margin-left: 10px;" data-target="#rejectpopup" data-toggle="modal" >
+                                                <p class="bottommargin" style="color:green"  *ngIf="question?.mappinghtml?.type_status?.id  ==  2" >Renewed</p>
+                                              bottommargin  <p class="bottommargin" style="color:#ff0000b5" *ngIf="question?.mappinghtml?.type_status?.id  ==  3" >Rejected</p>
+                                                <p class=""  *ngIf="question?.mappinghtml?.type_status?.id  !=  3 && question?.mappinghtml?.type_status?.id  !=  2" >Submit</p>
+                                                </button> -->
+    
+                                                <!-- <button type="button" *ngIf="question?.mappinghtml?.type_status?.id  != 1 " [disabled]="(question?.mappinghtml?.type_status?.id  ==  2 || question?.mappinghtml?.type_status?.id  ==  3 || question?.mappinghtml?.type_status?.id  ==  -1)? true:false"
+                                                   class="btn btn-outline-primary text-center" (click)="rejectquestionnaire(c,i,question,1)"
+                                                style="border-radius: 40px;margin-left: 10px;" data-target="#rejectpopup" data-toggle="modal" >
+                                                <p class="bottommargin" style="color:green"  *ngIf="question?.mappinghtml?.type_status?.id  ==  2" >Renewed</p>
+                                                <p class="bottommargin" style="color:#ff0000b5" *ngIf="question?.mappinghtml?.type_status?.id  ==  3" >Rejected</p>
+                                                <p class="bottommargin"  *ngIf="question?.mappinghtml?.type_status?.id  !=  3 && question?.mappinghtml?.type_status?.id  !=  2" >Submit</p>
+                                                </button> -->
+                                                <!-- //bug id:8724 -->
+                                                <div class="col-4" *ngIf="(question?.mappinghtml?.type_status?.id  ==  2 || question?.mappinghtml?.type_status?.id  ==  3 || question?.mappinghtml?.type_status?.id  ==  1 && this.Remarks != null)">
+                                                        <mat-form-field style="width: 200px;">
+                                                            <mat-label>Remarks</mat-label>
+                                                            <input matInput type="text" [(ngModel)]="Remarks" name="remarks" readonly>
+                                                          </mat-form-field>
+                                                 </div>
+
+                                                <div class="col-4">
+                                                <button type="button" *ngIf="question?.mappinghtml?.type_status?.id  != 1 " [disabled]="(question?.mappinghtml?.type_status?.id  ==  2 || question?.mappinghtml?.type_status?.id  ==  3 || question?.mappinghtml?.type_status?.id  ==  -1)? true:false"
+                                                   class="btn btn-outline-primary text-center" (click)="rejectquestionnaire(c,i,question,1);rejectsubmit(1)"
+                                                style="border-radius: 40px;margin-left: 10px;" data-target="#rejectpopup" data-toggle="modal" >
+                                                <span class="bottommargin" style="color:green"  *ngIf="question?.mappinghtml?.type_status?.id  ==  2" >Renewed</span>
+                                                <span class="bottommargin" style="color:#ff0000b5" *ngIf="question?.mappinghtml?.type_status?.id  ==  3" >Rejected</span>
+                                                <span class="bottommargin"  *ngIf="question?.mappinghtml?.type_status?.id  !=  3 && question?.mappinghtml?.type_status?.id  !=  2" >Submit</span>
+                                                </button>
+
+
+    
+                                                <!-- <button type="submit" style="border-radius: 10px;margin-left: 10px;
+                                                border-color: #f5c68b;
+                                                background-color: #f5c68b;" (click)="questionsubmit(c,i,question,1)"
+                                                class="btn btn-light">Draft</button> -->
+    
+                                                <button type="button" [disabled]="question?.mappinghtml?.type_status?.id  == 2" *ngIf="question?.mappinghtml?.type_status?.id  == 1" (click)="rejectquestionnaire(c,i,question,2)" class="btn btn-outline-success text-center"
+                                                style="border-radius: 40px;margin-left: 10px;" data-target="#rejectpopup" data-toggle="modal" >
+                                                    Renew
+                                                </button>
+    
+                                                <button type="button" [disabled]="question?.mappinghtml?.type_status?.id  == 2"  data-target="#rejectpopup" data-toggle="modal" *ngIf="question?.mappinghtml?.type_status?.id  == 1" (click)="rejectquestionnaire(c,i,question,3)" class="btn btn-outline-danger text-center"
+                                                style="border-radius: 40px;margin-left: 10px;" >
+                                                    Reject
+                                                </button>
+                                                <!-- BUG <ID:7112> -->
+                                                <!-- <button type="button" [disabled]="question?.mappinghtml?.type_status?.id  == 2"  data-target="#rejectpopup" data-toggle="modal" *ngIf="question?.mappinghtml?.type_status?.id  == 1" (click)="rejectquestionnaire(c,i,question,3)" class="btn btn-outline-danger text-center"
+                                                style="border-radius: 40px;margin-left: 10px;" >
+                                                    Return
+                                                </button> -->
+    
+                                                <!-- <button type="button" [routerLink]='"/atma/vendorView"' class="btn btn-outline-primary text-center"
+                                                style="border-radius: 40px;margin-left: 10px;" >
+                                                    Back
+                                                </button> -->
+                                                <button type="button" routerLink="/login" class="btn btn-outline-primary text-center"
+                                                  style="border-radius: 40px; margin-left: 10px;">Back</button>
+                                                </div>
+                                                <div class="col-4"></div>
+    
+                                        </div>
+                                    </div>
+    
+                                </div>
+                            </div>
+                        </div>
+    
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- </mat-card>
+    </div> -->
+    
+    <!-- <div id="imagepreview" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true" tabindex="-1"
+        role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" >
+                    <h2 class="modal-title">Image/PDF View</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div style="padding:20px" *ngIf="imgviewboolean">
+                    <img src="{{imgprviewurl}}" class="img-responsive" style="width: 100%;">
+    
+                </div>
+                <div style="padding:20px" *ngIf="pdfviewboolean">
+                    <pdf-viewer [src]="pdfpreviewurl" [render-text]="true" [original-size]="false"
+                        style="height: 500px;"></pdf-viewer>
+                </div>
+            </div>
+    
+        </div>
+    </div> -->
+    
+    <div id="history1" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- <h2 class="modal-title">Approve</h2> -->
+                    <button type="button" class="close" #submitclose data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div style="padding:20px;">
+                    <!-- <mat-tab-group>
+                        <mat-tab  (click)="getquestionhistory(vendorid, tab.type_id.id, tab.mappinghtml.expiry_date)"  *ngFor="let tab of questiondata;let i=index" label="{{tab.type_id.name}}" > -->
+    
+                    <!-- <nav mat-tab-nav-bar>
+                        <a mat-tab-link class="fontweight" [active]="i==tab.historyindex"
+                            
+                            *ngFor="let tab of questiondata;let i=index"> {{tab.activity.name}} </a>
+    
+                    </nav> -->
+                    <!-- <div *ngFor="let tab of questiondata;let i=index" >
+                        <nav mat-tab-nav-bar>
+                            <a mat-tab-link class="fontweight" [active]="i==tab.historyindex"
+                                
+                                *ngFor="let tab of tab.questiondata;let i=index"> {{tab.activity.name}} </a>
+        
+                        </nav>
+                    </div> -->
+                    <div>
+                        <!-- <mat-form-field appearance="outline" class="inputwidth">
+                            <mat-label>Activity</mat-label>
+                            <mat-select [(ngModel)]="historyactivity">
+                                <mat-option [ngClass]="(tab.historyindex == a)? 'active': '' "
+                                    (click)="activitychangehistoryindex(a)" *ngFor="let tab of questiondata;let a=index"
+                                    [value]="tab.description_id.name">
+                                    {{tab.description_id.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field> -->
+                    </div>
+    
+                    <div *ngFor="let tabs of questiondata;let b=index">
+    
+                        <!-- <nav *ngIf=" b == tabs.index"> -->
+                        <nav *ngIf=" b == tabs.historyindex" mat-tab-nav-bar>
+                            <a mat-tab-link class="fontweight"
+                                (click)="getactivityhistory(tab.type_id.id,tab.Activity.id);changetypehistoryindex(b,i)"
+                                [active]="i==tab.historyindex" *ngFor="let tab of tabs.type_data;let i=index">
+                                {{tab.type_id.name}} </a>
+    
+                        </nav>
+                        <!-- </nav> -->
+                    </div>
+    
+                    <div *ngIf="historyshowdata.length == 0">
+                        <div class="historymodal">
+                            <p style="text-align:center"> No History </p>
+                        </div>
+                    </div>
+                    <div *ngIf="historyshowdata.length != 0" class="historymodaldatas" >
+                        <mat-tab-group >
+                            <mat-tab class="fontweight" *ngFor="let question of historyshowdata;let i=index"
+                                label="{{question.date}}">
+    
+    
+    
+                                <table class="table" id="commonstyle">
+                                    <tr class="head">
+                                        <th *ngFor="let tab of question['questiondata']['question_header'];let j=index;">
+                                            {{tab.name}}
+    
+                                        </th>
+                                    </tr>
+    
+                                    <tr *ngFor="let tr of question['questiondata']['tablearray'];let k=index">
+    
+                                        <td *ngFor="let td of tr['tdarray'];let l=index">
+                                            <div *ngIf="td.is_input == false ; else input">
+                                                <p style="padding:30px 0px">{{td.tdvalue}}</p>
+                                                <div class="subpadding" *ngFor="let sub of td['sub_question']">
+                                                    <p style="padding: 15px 30px;">{{sub.answer}}</p>
+                                                </div>
+                                            </div>
+    
+                                            <ng-template #input>
+                                                <!-- <mat-form-field class="inputwidth">
+                                                    <input
+                                                      matInput
+                                                      [value]="td.tdvalue"
+                                                      [ngModel]="td.tdvalue"
+                                                      (ngModelChange)="td.tdvalue = $event"
+                                                    />
+                                                  </mat-form-field> -->
+    
+                                                <div *ngIf="td.input_type?.name == 'TEXT'">
+                                                    <mat-form-field class="inputwidth" appearance="standard">
+                                                        <input matInput readonly placeholder="Enter answer"
+                                                            [value]="td.tdvalue" [ngModel]="td.tdvalue"
+                                                            (ngModelChange)="td.tdvalue = $event">
+                                                    </mat-form-field>
+                                                </div>
+                                                <div *ngIf="td.input_type?.name == 'TEXT_AREA'">
+                                                    <mat-form-field class="inputwidth" appearance="standard">
+                                                        <textarea matInput readonly [value]="td.tdvalue"
+                                                            [ngModel]="td.tdvalue" (ngModelChange)="td.tdvalue = $event"
+                                                            placeholder="Enter answer"></textarea>
+                                                    </mat-form-field>
+                                                </div>
+    
+                                                <div *ngIf="td.input_type?.name == 'NUMBER'">
+                                                    <mat-form-field class="inputwidth" appearance="standard">
+                                                        <input matInput type="number" readonly [value]="td.tdvalue"
+                                                            [ngModel]="td.tdvalue" (ngModelChange)="td.tdvalue = $event"
+                                                            placeholder="Enter answer">
+                                                    </mat-form-field>
+                                                </div>
+    
+                                                <div *ngIf="td.input_type?.name == 'CHECK_BOX'">
+                                                    <!-- <input type="checkbox" > -->
+                                                    <div *ngFor="let option of td.input_value">
+                                                        <mat-checkbox disabled
+                                                            (change)="getcheckboxchecked($event.checked,option,i,l,k)">
+                                                            {{option.options}}</mat-checkbox>
+                                                    </div>
+                                                </div>
+    
+                                                <div *ngIf="td.input_type?.name == 'RADIO_BUTTON'">
+                                                    <!-- <input type="radio" [value]="td.tdvalue"
+                                                  [ngModel]="td.tdvalue"
+                                                  (ngModelChange)="td.tdvalue = $event" > -->
+    
+                                                    <mat-radio-group disabled [(ngModel)]="td.tdvalue"
+                                                        aria-label="Select an option">
+                                                        <mat-radio-button *ngFor="let opt of td.input_value"
+                                                            [value]="opt.id">
+                                                            {{opt.options}}</mat-radio-button>
+    
+                                                    </mat-radio-group>
+    
+                                                </div>
+    
+                                                <div *ngIf="td.input_type?.name == 'DROP_DOWN'">
+                                                    <mat-form-field class="inputwidth">
+                                                        <mat-select disabled [(ngModel)]="td.tdvalue">
+                                                            <mat-option *ngFor="let opt of td.input_value" [value]="opt.id">
+                                                                {{opt.options}}</mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+                                                </div>
+    
+                                                <div *ngIf="td.input_type?.name == 'FILE'">
+                                                    <input type="file" disabled
+                                                        (change)="fileuploadquestionnaire($event.target.files,td,1,k,l)"
+                                                        multiple>
+                                                    <br>
+    
+                                                    <table id="another">
+                                                        <tr *ngFor="let upload of td.filedata;index as f" class="btn-link">
+                                                            <td style="color: blue;" data-target="#imagepreview"
+                                                                data-toggle="modal" (click)="getfileview(i,k,l,f)"> {{f+1}}.
+                                                                {{upload.name}}</td>
+                                                            <td>
+                                                                <button mat-icon-button (click)="getdownload(i,k,l,f)">
+                                                                    <mat-icon style="color: gray;" aria-label="Edit">
+                                                                        download</mat-icon>
+                                                                </button>
+                                                            </td>
+                                                            <td>
+    
+                                                                <button mat-icon-button (click)="getfiledelete(i,k,l,f)">
+                                                                    <mat-icon style="color: gray;" aria-label="Edit">
+                                                                        delete</mat-icon>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+    
+    
+    
+                                                </div>
+    
+                                                <div *ngFor="let sub of td['sub_question'];let m=index">
+                                                    <!-- <mat-form-field class="inputwidth">
+                                                      <input
+                                                        matInput
+                                                        [value]="sub.answer"
+                                                        [ngModel]="sub.answer"
+                                                        (ngModelChange)="sub.answer = $event"
+                                                      />
+                                                    </mat-form-field> -->
+                                                    <div *ngIf="sub?.input_type?.name == 'TEXT'">
+                                                        <mat-form-field class="inputwidth" appearance="standard">
+                                                            <input matInput readonly placeholder="Enter answer"
+                                                                [value]="sub.answer" [ngModel]="sub.answer"
+                                                                (ngModelChange)="sub.answer = $event">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div *ngIf="sub?.input_type?.name == 'TEXT_AREA'">
+                                                        <mat-form-field class="inputwidth" appearance="standard">
+                                                            <textarea readonly matInput [value]="sub.answer"
+                                                                [ngModel]="sub.answer" (ngModelChange)="sub.answer = $event"
+                                                                placeholder="Enter answer"></textarea>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div *ngIf="sub?.input_type?.name == 'NUMBER'">
+                                                        <mat-form-field class="inputwidth" appearance="standard">
+                                                            <input readonly matInput type="number" [value]="sub.answer"
+                                                                [ngModel]="sub.answer" (ngModelChange)="sub.answer = $event"
+                                                                placeholder="Enter answer">
+                                                        </mat-form-field>
+                                                    </div>
+    
+                                                    <div *ngIf="sub?.input_type?.name == 'CHECK_BOX'">
+                                                        <!-- <input type="checkbox" > -->
+                                                        <mat-checkbox disabled *ngFor="let option of sub.input_value"
+                                                            [(ngModel)]="sub.answer">
+                                                            option.options</mat-checkbox>
+                                                    </div>
+    
+                                                    <div *ngIf="sub?.input_type?.name == 'RADIO_BUTTON'">
+                                                        <!-- <input type="radio" [value]="sub.answer"
+                                                      [ngModel]="sub.answer"
+                                                      (ngModelChange)="sub.answer = $event" > -->
+    
+                                                        <mat-radio-group disabled [(ngModel)]="sub.answer"
+                                                            aria-label="Select an option">
+                                                            <mat-radio-button *ngFor="let opt of sub.input_value"
+                                                                [value]="opt.id">
+                                                                {{opt.options}}</mat-radio-button>
+    
+                                                        </mat-radio-group>
+    
+                                                    </div>
+    
+                                                    <div *ngIf="sub?.input_type?.name == 'DROP_DOWN'">
+                                                        <mat-form-field class="inputwidth">
+                                                            <mat-select disabled [(ngModel)]="sub.answer">
+                                                                <mat-option *ngFor="let opt of sub.input_value"
+                                                                    [value]="opt.id">
+                                                                    {{opt.options}}</mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                    </div>
+    
+                                                    <div *ngIf="sub?.input_type?.name == 'FILE'">
+                                                        <input disabled type="file">
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </td>
+    
+                                    </tr>
+                                </table>
+    
+    
+                            </mat-tab>
+                        </mat-tab-group>
+                    </div>
+                    <!-- </mat-tab>
+                    </mat-tab-group> -->
+                </div>
+            </div>
+    
+        </div>
+    </div>
+    
+    <button id="expiryopen" type="button" class="btn btn-primary" #closebutton1 data-target="#expirypopup"
+        data-toggle="modal" style="display: none;">
+        Launch demo modal
+    </button>
+    
+    <div id="expirypopup" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- <h2 class="modal-title">Approve</h2> -->
+                    <button type="button" class="close" #expiryclose data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div style="padding:20px;text-align: center;">
+                    <p style="font-weight: bold"> Period going to expiry </p>
+                    <!-- <p style="font-weight: bold" >Are you sure?</p> -->
+                </div>
+                <div>
+                    <div style="margin-bottom: 25px;text-align: center;">
+    
+    
+    
+                        <button type="submit" style="border-radius: 10px;margin-left: 10px;
+                                    border-color: #f5c68b;
+                                    background-color: #f5c68b;font-weight: bold;" (click)="getrenew()"
+                            class="btn btn-light">Renew</button>
+    
+                        <!-- <button type="button" style="border-radius: 10px;margin-left: 10px;
+                            border-color: #f5c68b;
+                            background-color: #f5c68b;font-weight: bold;" 
+                            class="btn btn-light">New</button> -->
+    
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+    </div>
+    <ng-container *ngIf="showmodal">
+    <div id="rejectpopup" class="modal fade" aria-labelledby="my-modalLabel" aria-hidden="true" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">  
+                    <!-- <h2 class="modal-title">Approve</h2> -->
+                    <button type="button" class="close" (click)="closereject()" #rejectclose data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div style="padding:20px;text-align: center;">
+                    <p style="font-weight: bold;text-transform: capitalize" *ngIf="questionnaireactionflag == 3" > Are you sure to Decline the Renewal?</p>
+                    <!-- <p style="font-weight: bold" *ngIf="questionnaireactionflag == 2" > Are you sure to Renew the Renewal?</p> -->
+                    <p style="font-weight: bold;text-transform: capitalize" *ngIf="questionnaireactionflag == 2" > Are you sure to Procced with the Renewal?</p>
+                    <p style="font-weight: bold;text-transform: capitalize" *ngIf="questionnaireactionflag == 1" > Are you sure to Submit the Questionnaire?</p>
+    
+    
+                    <!-- <p style="font-weight: bold" >Are you sure?</p> -->
+                    <textarea style="width: 400px;height: 150px;border: 1px solid #8080808c;" placeholder="Remarks *" 
+                     [(ngModel)]="remarksvariable"></textarea>
+    
+                    <!-- <mat-form-field style="width:400px" appearance="outline"  >
+                        <mat-label>Remarks</mat-label>
+                        
+                        <textarea rows="20" cols="40" [(ngModel)]="temp_questionnairedata?.value.mappinghtml.remarks" matInput></textarea>
+                    </mat-form-field> -->
+                </div>
+                <div>
+                    <div style="margin-bottom: 25px;text-align: center;">
+    
+                        
+    
+                        <!-- <button type="submit" style="margin-left: 10px;
+                                   " (click)="rejectsubmit()"
+                            class="btn btn-outline-success text-center">Yes</button> -->
+                            <!-- bug id: -->
+                            <button type="submit" style="margin-left: 10px;
+                                   " (click)="rejectsubmit(2)"
+                            class="btn btn-outline-success text-center">Yes</button>
+    
+                            <button type="button" data-dismiss="modal" (click)="closereject()" class="btn btn-outline-primary text-center"
+                            style="margin-left: 10px;">
+                                No
+                            </button>
+    
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+    </div>
+    </ng-container>
+    

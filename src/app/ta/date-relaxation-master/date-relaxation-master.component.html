@@ -1,0 +1,564 @@
+<!-- 
+<div style="margin-top: 40px;margin-left: 40px;">
+    <h3>
+        eClaim Tour Date Relaxation Master
+    </h3>
+    <div class="row">
+        <div class="col-12">
+            <form #tadaterelaxForm="ngForm">
+                <mat-form-field style="width:175px;">
+                    <mat-label>Tour No</mat-label>
+                    <input matInput placeholder="Tour No" [(ngModel)]="tadaterelaxmodal.requestno" name="requestno">
+                </mat-form-field>
+               
+                <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                color="primary" ><i class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-outline-primary" type="clear" style="border-radius:40px;margin-left: 15px;"
+                color="primary" (click)="reset()">Clear</button>
+            
+            </form>
+        </div>
+    </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+          <div class="table-responsive" >
+              <table class="table table-bordered" fixed-header
+              style="width: 95%;margin-top: 10px;margin-left:30px;overflow-x: hidden;">
+          <thead class="table_header" style="text-align: left;">
+          <tr>
+          <th style="text-align: center;">S.No</th>
+          <th style="text-align: center;">Tour NO</th>
+          <th style="text-align: center;">Tour Request Date</th>
+          <th style="text-align: center;">From Date</th>
+          <th style="text-align: center;">To Date</th>
+          <th style="text-align: center;">Reason</th>
+          <th style="text-align: center;">Employee</th>
+          <th style="text-align: center;">Action</th>
+         
+          
+          </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let date of getdaterelaxationList; index as i">
+              <td style="text-align: center;">{{i+1}}</td> 
+              <td style="text-align: center;">{{date.tour_id}}</td> 
+              <td style="text-align: center;">{{date.request_date}}</td>
+              <td style="text-align: center;">{{date.from_date}}</td>
+              <td style="text-align: center;">{{date.to_date}}</td>
+              <td style="text-align: center;">{{date.reason}}</td> 
+              <td style="text-align: center;">{{date.employee_name}}</td>
+              <td style="text-align: center;color:blue;" *ngIf='date.status === 1' 
+              matTooltip="click to inactive" (click)="activedata(date)">
+              <span class="fa fa-toggle-on" style="font-size: 24px;" aria-hidden="true" ></span></td>
+              <td style="text-align: center;color:black;" *ngIf='date.status === 0' 
+              matTooltip="click to active" (click)="inactivedata(date)">
+              <span class="fa fa-toggle-off" style="font-size: 24px;" aria-hidden="true" ></span></td>
+
+              
+             
+          </tr>
+          </tbody>
+          </table>
+          
+      </div>
+       <div *ngIf="gettourreportList?.length==0; else paginationreport" class="NodataAlign">No Records Found...</div>
+     <ng-template #paginationreport>
+    <div class="cursor" style="font-size: small;text-align:right; margin-bottom:100px;">
+        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back
+            </mat-icon>
+        </button> {{presentpage}}
+        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward
+            </mat-icon>
+        </button>
+    </div>
+</ng-template>
+
+  </div> 
+  </div>
+</div>
+ 
+   -->
+   <div class="col-md-12">
+    <!-- <div style="margin-left:20px">
+        <h2 style="font-weight: 500;">
+            eClaim Tour Date Relaxation Master
+        </h2>
+    </div> -->
+    <div class="row">
+        <div style="margin-left:30px" class="col-12">
+            <form [formGroup]="tadaterelaxForm">
+                <td>
+                <mat-form-field style="width:175px;">
+                    <mat-label>Tour No</mat-label>
+                    <input matInput placeholder="Tour No" formControlName="requestno"
+                    
+     type="text" #inputRef 
+                    >
+                </mat-form-field>
+            </td>
+                <td>
+                    <mat-form-field style="width:250px; margin-left: 25px;">
+                        <mat-label>Branch Name</mat-label>
+                       
+                        <!-- <input type="text" #inputassetid placeholder="Select Branch" matInput [matAutocomplete]="conoffice"
+                          formControlName="empbranchgid" required  >
+                          <mat-autocomplete #assetid #conoffice="matAutocomplete" (opened)="autocompleteid()">
+                            <mat-option *ngFor="let branch of branchlist" (click)="getbranchs(branch.id)"
+                              [value]="'('+(branch.code)+') '+(branch.name)">
+                              ({{branch.code}}) {{branch.name}}
+                            </mat-option>
+                          </mat-autocomplete> -->
+        
+                          <input type="text" #inputassetid placeholder="Select Branch" matInput [matAutocomplete]="conoffice"
+                          formControlName="empbranchgid">
+                        <button mat-button matSuffix (click)="inputassetid.value = null" mat-icon-button aria-label="Clear">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete #assetid #conoffice="matAutocomplete" (opened)="autocompleteid()"[displayWith]="displayFnbr">
+                          <mat-option *ngFor="let branch of branchlist" (click)="getbranches(branch.id)"
+                            [value]="branch">
+                            {{branch.code +'-'+branch.name}}
+                          </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width:250px; margin-left: 25px;">
+                            <mat-label>Employee Name</mat-label>
+                            <input type="text" #inputempid placeholder="Select Employee" matInput [matAutocomplete]="empc" #empinput
+                          formControlName="approval" >
+                          <button mat-button matSuffix (click)="inputempid.value = null" mat-icon-button aria-label="Clear">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                          <mat-autocomplete  #empid #empc="matAutocomplete" [displayWith]="displayFn" (opened)="empScroll()">
+                            <mat-option *ngFor="let emp of employeelist" [value]="emp"  >
+                              ({{emp.code}}) {{emp.name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                        </td> 
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left: 40px;">
+                                <mat-label>Status Filter</mat-label>
+                                <mat-select  [(value)]="statusselected">
+                                    <mat-option *ngFor="let status of statusList" [value]="status.value">
+                                        {{status.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                <td>
+                <button class="btn btn-outline-success" (click)="billSearch(1)" type="submit"
+                    style="border-radius:40px;margin-left: 15px;" color="success"><i class="fa fa-search"
+                        aria-hidden="true"></i></button>
+                    </td>
+                <td>
+                <button class="btn btn-outline-success" type="clear" style="border-radius:40px;margin-left: 15px;"
+                    color="success" (click)="reset()">Clear</button>
+                </td>
+
+            </form>
+        </div>
+    </div>
+
+
+    <div class="container col-md-12 ">
+        <div  *ngIf="!tableshow" >
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table table-bordered" fixed-header
+                        style="width: 95%;margin-top: 10px;margin-left:30px;overflow-x: hidden;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th style="text-align: center;">S.No</th>
+                                <th style="text-align: center;">Tour No</th>
+                                <th style="text-align: center;">Tour Request Date</th>
+                                <th style="text-align: center;">From Date</th>
+                                <th style="text-align: center;">To Date</th>
+                                <th style="text-align: center;">Reason</th>
+                                <th style="text-align: center;">Employee</th>
+                                <th style="text-align: center;">Action</th>
+                                <th style="text-align: center;">Attachments</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let date of getdaterelaxationList; index as i">
+                                <td style="text-align: center;">{{(currentpage-1)*pageSize+i+1}}</td>
+                                <td style="text-align: center;">{{date.request_no}}</td>
+                                <td style="text-align: center;">{{date.request_date}}</td>
+                                <td style="text-align: center;">{{date.from_date}}</td>
+                                <td style="text-align: center;">{{date.to_date}}</td>
+                                <td style="text-align: center;">{{date.reason}}</td>
+                                <td style="text-align: center;">{{date.employee_name}}</td>
+                                <td style="text-align: center;color:blue;" *ngIf='date.status === 1'
+                                    matTooltip="click to inactive" (click)="activedata(date)">
+                                    <span class="fa fa-toggle-on" style="font-size: 24px;" aria-hidden="true"></span>
+                                </td>
+                                <td style="text-align: center;color:black;" *ngIf='date.status === 0'
+                                    matTooltip="click to active" (click)="inactivedata(date)">
+                                    <span class="fa fa-toggle-off" style="font-size: 24px;" aria-hidden="true"></span>
+                                </td>
+                                <td>
+                                    <button mat-icon-button matTooltip="Upload Attachments" class="iconbutton"
+                                    style="margin-left: 15px;" data-toggle="modal" data-target="#filepopup"
+                                    (click)="attachmentdtl(date)" color="primary">
+                                    <mat-icon style="color: black;" aria-label="Delete">insert_drive_file</mat-icon>
+                                    </button>
+                                </td>
+
+
+
+                            </tr>
+                            <tr *ngIf="getdaterelaxationList?.length==0; else gstpagination" class="NodataAlign"><td colspan="19" style="text-align: center;">No Records Found...</td></tr>
+                            <ng-template #gstpagination>
+                           <tr>
+                            <td colspan="4">Total Count:{{this.totalcount}}</td>
+                           <td colspan="15">
+                           <div style="text-align:right;">
+                               <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                                   <mat-icon>arrow_back
+                                   </mat-icon>
+                               </button> {{currentpage}}
+                               <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                                   <mat-icon>arrow_forward
+                                   </mat-icon>
+                               </button>
+                           </div>
+                           </td>
+                           </tr>
+                           </ng-template>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+            <div>
+                <!-- <div *ngIf="getdaterelaxationList?.length ==0; else paginationpage" class="center col-md-12 "
+                    style="text-align: center;">No Records
+                    Found...</div>
+                <ng-template #paginationpage>
+                    <div *ngIf="(getdaterelaxationList?.length > 9)? 'false':'true'" class="cursor"
+                        style="font-size: small;text-align:right; margin-bottom:100px;">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                            (click)="firstClick()">
+                            <mat-icon>first_page
+                            </mat-icon>
+                        </button>
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                            (click)="previousClick()">
+                            <mat-icon>arrow_back
+                            </mat-icon>
+                        </button>
+                        {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                            <mat-icon>arrow_forward
+                            </mat-icon>
+                        </button>
+                    </div>
+                </ng-template> -->
+            </div>
+        </div>
+
+        <!-- <div *ngIf="gettourreportList?.length==0; else paginationreport" class="NodataAlign">No Records Found...</div>
+     <ng-template #paginationreport>
+     <div class="cursor" style="font-size: small;text-align:right; margin-bottom:100px;">
+        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+            <mat-icon>arrow_back
+            </mat-icon>
+        </button> {{presentpage}}
+        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+            <mat-icon>arrow_forward
+            </mat-icon>
+        </button>
+      </div>
+      </ng-template>
+
+     </div> -->
+        <div *ngIf="tableshow">
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table table-bordered" fixed-header
+                        style="width: 95%;margin-top: 10px;margin-left:30px;overflow-x: hidden;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th style="text-align: center;">S.No</th>
+                                <th style="text-align: center;">Tour NO</th>
+                                <th style="text-align: center;">Tour Request Date</th>
+                                <th style="text-align: center;">From Date</th>
+                                <th style="text-align: center;">To Date</th>
+                                <th style="text-align: center;">Reason</th>
+                                <th style="text-align: center;">Employee</th>
+                                <th style="text-align: center;">Action</th>
+                                <th style="text-align: center;">Attachments</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let date of searchtable_data; index as i">
+                                <td style="text-align: center;">{{(currentpage-1)*pageSize+i+1}}</td>
+                                <td style="text-align: center;">{{date.request_no}}</td>
+                                <td style="text-align: center;">{{date.request_date}}</td>
+                                <td style="text-align: center;">{{date.from_date}}</td>
+                                <td style="text-align: center;">{{date.to_date}}</td>
+                                <td style="text-align: center;">{{date.reason}}</td>
+                                <td style="text-align: center;">{{date.employee_name}}</td>
+                                <td style="text-align: center;color:blue;" *ngIf='date.status === 1'
+                                    matTooltip="click to inactive" (click)="activedata(date)">
+                                    <span class="fa fa-toggle-on" style="font-size: 24px;" aria-hidden="true"></span>
+                                </td>
+                                <td style="text-align: center;color:black;" *ngIf='date.status === 0'
+                                    matTooltip="click to active" (click)="inactivedata(date)">
+                                    <span class="fa fa-toggle-off" style="font-size: 24px;" aria-hidden="true"></span>
+                                </td>
+                                <td>
+                                  <button mat-icon-button matTooltip="Upload Attachments" class="iconbutton"
+                                  style="margin-left: 15px;" data-toggle="modal" data-target="#filepopup"
+                                  (click)="attachmentdtl(date)" color="primary">
+                                  <mat-icon style="color: black;" aria-label="Delete">insert_drive_file</mat-icon>
+                                  </button>
+                              </td>
+
+
+
+                            </tr>
+                            <tr *ngIf="searchtable_data?.length==0; else gstpagination" class="NodataAlign"><td colspan="19" style="text-align: center;">No Records Found...</td></tr>
+            <ng-template #gstpagination>
+           <tr>
+            <td colspan="4">Total Count:{{this.totalcount}}</td>
+           <td colspan="15">
+           <div style="text-align:right;">
+               <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                   <mat-icon>arrow_back
+                   </mat-icon>
+               </button> {{currentpage}}
+               <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                   <mat-icon>arrow_forward
+                   </mat-icon>
+               </button>
+           </div>
+           </td>
+           </tr>
+           </ng-template>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+            <!-- <div>
+            <tr *ngIf="searchtable_data?.length==0; else gstpagination" class="NodataAlign"><td colspan="19" style="text-align: center;">No Records Found...</td></tr>
+            <ng-template #gstpagination>
+           <tr>
+            <td colspan="4">Total Count:{{this.totalcount}}</td>
+           <td colspan="15">
+           <div style="text-align:right;">
+               <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                   <mat-icon>arrow_back
+                   </mat-icon>
+               </button> {{currentpage}}
+               <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                   <mat-icon>arrow_forward
+                   </mat-icon>
+               </button>
+           </div>
+           </td>
+           </tr>
+           </ng-template> -->
+            
+            <!-- <div>
+                <div *ngIf="searchtable_data?.length==0; else paginationpage11" class="center col-md-12 "
+                    style="text-align: center;">No Records
+                    Found...</div>
+                <ng-template #paginationpage11>
+                    <div class="cursor" style="font-size: small;text-align:right; margin-bottom:100px;">
+                        <button mat-icon-button [disabled]="search_has_previous === false" color="primary"
+                            (click)="searchfirstpage()">
+                            <mat-icon>first_page
+                            </mat-icon>
+                        </button>
+                        <button mat-icon-button [disabled]="search_has_previous === false" color="primary"
+                            (click)="searchpreviouspage()">
+                            <mat-icon>arrow_back
+                            </mat-icon>
+                        </button>
+                        {{currentpage}}
+                        <button mat-icon-button [disabled]="search_has_next === false" color="primary"
+                            (click)="searchnextpage()">
+                            <mat-icon>arrow_forward
+                            </mat-icon>
+                        </button>
+                    </div>
+                </ng-template> -->
+            </div>
+
+        </div>
+
+
+
+
+
+    </div> 
+    <div class="modal fade" id="filepopup" tabindex="-1" role="dialog" data-backdrop="static"
+            data-keyboard="false" aria-labelledby="actionpopupTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <p class="modal-title" style="margin-top: 10px;font-size: 18px;font-weight: 100;"
+                    id="exampleModalLongTitle">Attachments of {{ request_no}}</p>
+                  <button (click)="clearfile($event)" type="button" #closefilepopup class="close" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-md-6">
+                    <table *ngIf="base64textString.length >= 1" class="table" style="border:hidden">
+                      <!-- <thead>
+                        <tr>
+                          <th scope="col">S. no</th>
+                          <th scope="col">File name</th>
+                          <th scope="col">View</th>
+                          <th scope="col">Remove</th>
+                        </tr>
+                      </thead> -->
+                      <tbody>
+                        <tr *ngFor="let files of base64textString;let ind=index">
+                          <td>{{list.files[ind].name}}</td>
+                          <td>
+                            <span (click)="fileview(ind)" data-toggle="modal" data-target="#fileview">
+                              <mat-icon matTooltip="View File">visibility
+                              </mat-icon>
+                            </span>
+                          </td>
+                          <td><span (click)="deleteUpload(ind)">
+                              <mat-icon matTooltip="Delete">delete
+                              </mat-icon>
+                            </span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <hr *ngIf="base64textString.length >= 1">
+
+                    <table class="table" style="border:hidden
+                    ">
+                      <!-- <thead>
+                        <tr>
+                          <th scope="col">S. no</th>
+                          <th scope="col">File name</th>
+                          <th scope="col">View</th>
+                          <th scope="col">Remove</th>
+                        </tr>
+                      </thead> -->
+                      <tbody>
+                        <tr *ngFor="let files of attachmentlist;let ind=index">
+                          <td>{{files.file_name}}</td>
+                          <td>
+                            <span (click)="fileeditview(ind)" data-toggle="modal" data-target="#fileview">
+                              <mat-icon matTooltip="View File">visibility
+                              </mat-icon>
+                            </span>
+                          </td>
+                          <td><span (click)="fileDelete(files.id,ind)">
+                              <mat-icon matTooltip="Delete">delete
+                              </mat-icon>
+                            </span></td>
+
+                          <td>
+                            <button class="btn btn-light" type="submit" style="border-radius:40px;margin-left: 15px;"
+                              color="primary" (click)="getimagedownload(ind)">
+                              <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                      </tbody>
+                    </table>
+                    <div class="form-group">
+                      <tr>
+                        <!-- <input type="file" name="file" style="width:250px;" (change)="fileProgress($event)" /> -->
+                        <td>
+                          <input type="file" #fileInput id="uploadFile"
+                            style="width:250px;margin-top: 10px;" (change)="onFileSelected($event)"
+                            multiple="multiple" />
+                        </td>
+
+                        <td style="padding-left: 100px;">
+                          <button type="submit" mat-button (click)="expfileupload($event)"
+                            id="primarybtn" class="btn btn-light">Upload<mat-icon
+                              style="margin-bottom: 5px;margin-left: 5px;">upload
+                            </mat-icon></button>
+                        </td>
+                        <td>
+                          <button type="button" (click)="clearfile($event)" data-dismiss="modal" class="btn btn-light"
+                            id="secondarybtn" style="margin-left: 100px;">Close</button>
+                        </td>
+
+                      </tr>
+
+                    </div>
+
+
+
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+      <div class="modal fade" id="fileview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true" style="background-size: cover">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+
+                  <p id="exampleModalLabel">
+                    Travel Attachment View
+                  </p>
+
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                      ×
+                    </span>
+                  </button>
+
+                </div>
+
+                <div class="modal-body">
+                  <!-- <tr *ngFor="let image of fileData; index as i">       -->
+                  <!-- <div *ngIf='this.fileextension !="pdf"'> -->
+
+                  <div class="row">
+                    <div class="col-lg-12 col-sm-12" fxLayoutAlign="space-between">
+                      <pdf-viewer *ngIf="pdfshow" [src]="filesrc" [original-size]="false" [render-text]='false'
+                        [show-borders]="true" [fit-to-page]="true" [show-all]="true"
+                        style="display: block; height: 500px;" [fit-to-page]="true">
+                      </pdf-viewer>
+                      <br>
+                      <img *ngIf="imgshow" [src]="filesrc" class="img-responsive"
+                        style="display: block; height: 500px;border-width: 2px;border-style: solid;width: 100%;" />
+                    </div>
+
+                    <div class="modal-footer">
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+<!-- </div> -->
+<ngx-spinner bdColor="rgba(0, 0, 0, 1.5)" size="default" type="la-ball-scale-multiple la-3x">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner>

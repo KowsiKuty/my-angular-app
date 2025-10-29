@@ -1,0 +1,219 @@
+<br>
+
+<h2 style="margin-left: 40px;">
+    Add Raise Request 
+</h2>
+
+<div class="main-content">
+    <div>
+        <form [formGroup]="addRaiseReqForm" (ngSubmit)="submitForm()">
+            <table>
+                <div>
+                <tr>
+                    <td>
+                        <mat-form-field style="width: 250px;">
+                            <mat-label>Raise Request</mat-label>
+                            <mat-select formControlName="type" id="add-raiserequest-0002">
+                                <mat-option *ngFor="let raiseReq of raiseReqList" (click)="raiseReqDropDown(raiseReq)"  [value]="raiseReq.id" >
+                                    {{raiseReq.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td> 
+                    <td>
+                        <mat-form-field style="width: 350px;margin-left: 100px;">
+                            <mat-label>Premises Name</mat-label>
+                            <input placeholder="Select Premises Name" matInput
+                                formControlName="premise_id" #primaryContactInput
+                                [matAutocomplete]="autoPrimary" id="add-raiserequest-0003">
+                            <mat-autocomplete #autoPrimary="matAutocomplete"
+                                [displayWith]="displayFn">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                </mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let branch of primaryContactList"
+                                        [value]="branch">
+                                        {{branch.name}}-{{branch.code}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td> 
+                </tr>
+                <tr>
+                    <!-- <div [formGroup]="addRaiseReqForm.controls.ref_type"> -->
+                    <td>
+                        <mat-form-field style="width: 250px;">
+                            <mat-label>Type</mat-label>
+                            <mat-select formControlName="ref_type" (click)="premiseOption()" id="add-raiserequest-0004">
+                                <mat-option (onSelectionChange)="valuechange($event)" *ngFor="let type of typeList"  [value]="type" >
+                                    {{type.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <!-- <td>
+                        <mat-form-field style="width: 250px;margin-left: 100px;">
+                            <mat-label>Sub Type</mat-label>
+                            <mat-select formControlName="ref_id" (click)="subTypeOption()" id="add-raiserequest-0005">
+                                <mat-option *ngFor="let subtype of subtypeList"  [value]="subtype" >
+                                    {{subtype.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>  -->
+                    <td>
+                        <mat-form-field style="width: 350px;margin-left: 100px;" (click)="subTypeOption()">
+                            <mat-label>Sub Type</mat-label>
+                            <mat-chip-list #chipList>
+                                <mat-chip *ngFor="let list of chipSelectedsubType" [selectable]=true
+                                    [removable]=true (removed)="removeSubType(list)">
+                                    {{list.name}}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                                <input #ccbsInput #name [formControl]="sub_type" [matAutocomplete]="autoccbs"
+                                    [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    [matChipInputAddOnBlur]=true id="add-raiserequest-0006">
+                            </mat-chip-list>
+                            <mat-autocomplete #autoccbs="matAutocomplete"
+                             (optionSelected)="subTypeSelected($event)">
+                                <mat-option *ngFor="let subtype of subTypeList" [value]="subtype">
+                                    {{subtype.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <!-- </div> -->
+               
+                    <button type="button" [disabled]="addButton" class="btn btn-outline-success" (click)="addRefId()"
+                    style="border-radius:40px;float: right;" id="add-raiserequest-0007"><span class="fa fa-plus"></span></button>
+               
+                   
+                </tr> 
+                </div>
+
+                <div class="table-responsive" style="width: 30%;margin-top: 1%;overflow-x: hidden;">
+                   
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let details of detailsNameList;index as i">
+                                <td>{{ details.type}}</td>
+                                <!-- <td>{{ details.name}}</td> -->
+                                <td>
+                                    <ol>
+                                        <li *ngFor="let landlord of details.name; index as i">{{landlord.name}}</li>
+                                    </ol>
+                                </td>
+                                <td>
+                                    <mat-icon style="color: gray;cursor: pointer;" (click)="DeleteDetails(i)">delete</mat-icon>
+                                </td> 
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> 
+                <tr>
+                    <td colspan="2"> 
+                        <div>
+                            <mat-label>Note</mat-label>
+                            <div formControlName="description" [ngxSummernote]="config">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <input type="file" #fileInput id="add-raiserequest-0001" class="choose-file"
+                                        (change)="onFileSelectForRaiseReq($event)" name="uploadFile"
+                                        multiple="multiple" />
+
+            </table>
+    
+            <div class="btn-bottom">
+                <button type="submit" style="border-radius: 40px;margin-left: 10px;"  matTooltip="Submit"
+            class="btn btn-outline-primary" [disabled]="AddReqBtn" id="add-raiserequest-0008">Submit</button>
+
+            <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary" matTooltip="Cancel"
+            style="border-radius: 40px;margin-left: 10px;"  id="add-raiserequest-0009">Cancel</button>
+            </div>
+            
+        </form>
+    </div>
+
+</div>
+
+
+
+
+
+<!-- <td>
+                        <mat-form-field class="input-style" (click)="premiseoption()">
+                            <mat-label>Type</mat-label>
+                            <mat-chip-list #chipList>
+                                <mat-chip *ngFor="let list of chipSelectedLandlord" [selectable]=true
+                                    [removable]=true (removed)="removeLandlord(list)">
+                                    {{list.text}}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                                <input #ccbsInput [formControl]="ref_type" [matAutocomplete]="autoccbs"
+                                    [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    [matChipInputAddOnBlur]=true id="add-raiserequest-0010">
+                            </mat-chip-list>
+                            <mat-autocomplete #autoccbs="matAutocomplete"
+                             (optionSelected)="landlordSelected($event)">
+                                <mat-option *ngFor="let landlord of CCBSList" [value]="landlord">
+                                    {{landlord.text}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td> -->
+
+
+                    <!-- public removeLandlord(list: CCBSList): void {
+                        const index = this.chipSelectedLandlord.indexOf(list);
+                    
+                        this.chipRemovedLandlordid.push(list.id)
+                    
+                        this.chipSelectedLandlord.splice(index, 1);
+                        console.log(this.chipSelectedLandlord);
+                        this.chipSelectedLandlordid.splice(index, 1);
+                        console.log(this.chipSelectedLandlordid);
+                        return;
+                      }
+                    
+                      public landlordSelected(event: MatAutocompleteSelectedEvent): void {
+                    
+                        this.selectLandlordByName(event.option.value.text);
+                        this.ccbsInput.nativeElement.value = '';
+                      }
+                    
+                      private selectLandlordByName(employeeName) {
+                        let foundEmployee1 = this.chipSelectedLandlord.filter(list => list.text == employeeName);
+                        if (foundEmployee1.length) {
+                    
+                          return;
+                        }
+                        let foundEmployee = this.CCBSList.filter(list => list.text == employeeName);
+                        if (foundEmployee.length) {
+                    
+                          this.chipSelectedLandlord.push(foundEmployee[0]);
+                          this.chipSelectedLandlordid.push(foundEmployee[0].id)
+                          console.log("select",this.chipSelectedLandlordid)
+                    
+                        }
+                      } -->
+
+<!-- 
+                      public CCBSList: CCBSList[];
+                      public ref_type = new FormControl();
+                      public chipSelectedLandlord: CCBSList[] = [];
+                      public chipSelectedLandlordid = [];
+                      public chipRemovedLandlordid = [];
+                      @ViewChild('ccbsInput') ccbsInput: any;
+                      @ViewChild('autoccbs') matAutocomplete: MatAutocomplete;
+                      readonly separatorKeysCodes: number[] = [ENTER, COMMA]; -->

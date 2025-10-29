@@ -1,0 +1,503 @@
+<br>
+
+<h2 style="margin-left: 40px; ">
+    EB Details
+</h2>
+<div style="margin-left: 50px;margin-top: 1%">
+    <div class="table-responsive" >
+    <!-- <div>
+        <form [formGroup]="ebdetailscreateAddForm" (ngSubmit)="submitForm()">
+            <table>
+                <div>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 250px;">
+                                <mat-label>ID Type</mat-label>
+                                <mat-select formControlName="ref_type">
+                                    <mat-option *ngFor="let ref of refTypeList" [value]="ref.id"
+                                        (focusout)="dependentid(ref.id)">
+                                        {{ref.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 250px;margin-left: 60px;">
+                                <mat-label>ID</mat-label>
+                                <mat-select formControlName="ref_id">
+                                    <mat-option *ngFor="let refid of refidList" [value]="refid.id">
+                                        {{refid.code}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 250px;margin-left: 60px;">
+                                <mat-label>EB Advance Borne By</mat-label>
+                                <mat-select formControlName="borne_by">
+                                    <mat-option *ngFor="let Borne of BorneidList" [value]="Borne.id"
+                                        (click)="DropDown(Borne)">
+                                        {{Borne.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td *ngIf="isECFno">
+                            <mat-form-field style="width: 250px;margin-top: 20px">
+                                <mat-label>ECF Ref No </mat-label>
+                                <input matInput placeholder="ECF Ref No" maxlength="20" formControlName="ecf_no" autocomplete="off"
+                                    (keypress)="omit_special_char($event)">
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>
+                            <mat-form-field style="width: 250px;">
+                                <mat-label>EB Consumer No </mat-label>
+                                <input matInput placeholder="Consumer No" maxlength="16" formControlName="cosumer_number"
+                                    autocomplete="off" (keypress)="omit_special_chars($event)" required>
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 250px;margin-top: 20px;margin-left: 60px;">
+                                <mat-label>EB circle</mat-label>
+                                <input #EBCircle placeholder="Select EB Circle Name" matInput formControlName="EB_circle_id"
+                                    [matAutocomplete]="ebcirclename" (click)="clear()">
+                                <mat-autocomplete #ebcirclename="matAutocomplete" [displayWith]="displayFnebcircle">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let ebcircle of ebdetailsidList" (focusout)="selectEBCircle(ebcircle)" [value]="ebcircle">
+                                            {{ebcircle.circle_name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 250px;margin-top: 20px;margin-left: 60px;">
+                                <mat-label>EB Service Provider</mat-label>
+                                <input #serviceInput placeholder="Select EB Service Provider" matInput formControlName="service_provider"
+                                    [matAutocomplete]="serviceprovider">
+                                <mat-autocomplete #serviceprovider="matAutocomplete" [displayWith]="displayFnserviceprovider">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let service of serviceproviderList" [value]="service">
+                                            {{service.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                </div>
+            </table>
+            <button type="submit" style="border-radius: 40px;margin-left: 10px;"
+                class="btn btn-outline-primary" [disabled]="EBdetailsBtn">Submit</button>
+            <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary"
+                style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+        </form>
+    </div> -->
+
+    <!-- <div> -->
+        <form [formGroup]="addElectricityForm" (ngSubmit)="addElectricitySubmit()">
+            <table>
+                <tr>
+                    <td>
+                        <!-- <mat-form-field class="input-style">
+                            <mat-label>State Name</mat-label>
+                            <input matInput formControlName= "consumer_state" [readonly]="true" autocomplete="off">
+                            
+                        </mat-form-field> -->
+                        <mat-form-field style="width: 250px;" (click)="getstatelist('',state_presentpage=1)">
+                            <mat-label>State</mat-label>
+                            <input type="text" #typeinput [readonly]="!disableform" matInput
+                                formControlName="consumer_state" autocomplete="off"
+                                (keyup)="getstatelist($event.target.value,state_presentpage=1)"
+                                [matAutocomplete]="typeauto" required >
+                            <mat-autocomplete [panelWidth]="300" #typeauto="matAutocomplete"
+                                [displayWith]="displaystate" (opened)="statescroll()">
+
+
+                                <mat-option (click)="stateselection()" *ngFor="let type of statedata" [value]="type">
+                                    {{type.name}}</mat-option>
+
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2"
+                            (click)="getboard('',addElectricityForm.value.consumer_state.id,board_currentpage=1)">
+                            <mat-label>Electricity Board</mat-label>
+                            <!-- <mat-select formControlName="consumer_board">
+                                <mat-option *ngFor="let electricity of electricityBoard" [value]="electricity.name">
+                                    {{electricity.name}}
+                                </mat-option>
+                            </mat-select> -->
+
+                            <input placeholder="Board" [readonly]="!disableform" matInput
+                                formControlName="consumer_board" #boardinput [matAutocomplete]="boardtype"
+                                (keyup)="getboard($event.target.value,addElectricityForm.value.consumer_state.id,board_currentpage=1)" required >
+                            <mat-autocomplete #boardtype="matAutocomplete" [displayWith]="displaywithboard"
+                                (opened)="autoboardscroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option (click)="boardselect()" *ngFor="let board of boarddata" [value]="board">
+                                        <!-- ({{branch.code}}){{branch.name+ " " }} -->
+                                        {{board.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2" (click)="branchname()">
+                            <mat-label>Region</mat-label>
+                            <input placeholder="Region" [readonly]="!disableform" matInput formControlName="region_id"
+                                #branchContactInput [matAutocomplete]="branchtype" required >
+                            <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaydiss2"
+                                (opened)="autocompletebranchnameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let branch of branchlist" [value]="branch">
+                                        <!-- ({{branch.code}}){{branch.name+ " " }} -->
+                                        {{branch.region_name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Contact Person</mat-label>
+                            <input matInput placeholder="Contact Person" [readonly]="!disableform"
+                                formControlName="personname" autocomplete="off" required >
+                        </mat-form-field>
+                    </td>
+
+                    <!-- <td>
+                        <mat-form-field class="input-style2" (click)="premisename()">
+                            <mat-label>Premises Name</mat-label>
+                                <input placeholder="Site" matInput formControlName="premises_id"  #PremiseContactInput
+                                    [matAutocomplete]="producttype">
+                                <mat-autocomplete #producttype="matAutocomplete" [displayWith]="displaydiss1"
+                                (opened)="autocompletePremisenameScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let premise of premiselistt"
+                                        [value]="premise">
+                                        ({{premise.code}}){{premise.name+ " " }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                        </mat-form-field>
+                    </td> -->
+
+                </tr>
+                <tr>
+
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Contact No</mat-label>
+                            <input matInput placeholder="Contact No" [readonly]="!disableform" autocomplete="off"
+                                formControlName="contactno" pattern="\d{10}"
+                                (keypress)="numberOnly($event)"  maxlength="10" required>
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <div class="centerstyle" >
+
+                        <mat-form-field style="margin-left: 60px;width: 170px">
+                            <mat-label>Consumer No</mat-label>
+                            <input matInput placeholder="Consumer No" [readonly]="!disableform"
+                                 formControlName="consumer_no" autocomplete="off" required >
+                        </mat-form-field>
+                        <div  >
+                            <button type="button" (click)="consumervalidation()" class="btn btn-outline-success">Validate</button>
+                        </div>
+                       </div>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Consumer Name</mat-label>
+                            <input matInput placeholder="Consumer Name" [readonly]="true"
+                                formControlName="consumer_name" autocomplete="off">
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Premises Name</mat-label>
+                            <input matInput formControlName="premise_name" [readonly]="true"
+                                autocomplete="off">
+                        </mat-form-field>
+
+                    </td>
+
+                    <!-- <td>
+                        <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                        data-target="#findPremisesModal" style="border-radius:40px;margin-left: 25px;"><span class="fa fa-plus"></span></button>
+                    </td> -->
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style" >
+                            <mat-label>Occupancy</mat-label>
+                            <mat-select formControlName="occupancy_id" [disabled]="!disableform" required >
+                                
+                                    <mat-option *ngFor="let occ of occupancy" (click)="occupancyselect(occ)" [value]="occ.id">
+                                       
+                                        {{occ.occupancy_name}}
+                                    </mat-option>
+                                
+                                </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Occupancy Type</mat-label>
+                            <input matInput placeholder="Occupancy Type"  formControlName="occupancy_name"  [readonly]="true"
+                                autocomplete="off">
+                        </mat-form-field>
+
+                        <!-- <mat-form-field class="input-style" (click)="getoccupancy('',occupancy_currentpage=1)">
+                            <mat-label>Occupancy Type</mat-label>
+                            <input placeholder="Region" [readonly]="!disableform" (keyup)="getoccupancy($event.target.value,occupancy_currentpage=1)" matInput formControlName="occupancy_name"
+                                #occupancyinput [matAutocomplete]="occupancytype">
+                            <mat-autocomplete #occupancytype="matAutocomplete" [displayWith]="displayoccupancy"
+                                (opened)="autocompleteoccupancy()">
+                                
+                                    <mat-option *ngFor="let occ of occupancydata" [value]="occ">
+                                       
+                                        {{occ.text}}
+                                    </mat-option>
+                                
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+
+                        <!-- <mat-form-field class="input-style2" >
+                            <mat-label>Occupancy Type</mat-label>
+                            <mat-select formControlName="occupancy_name" >
+                                <mat-option  *ngFor="let occ of occupancydata" [value]="occ.text" >
+                                    {{occ.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field> -->
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Premises Type</mat-label>
+                            <input matInput placeholder="Premises Type" [readonly]="true" formControlName="premise_type"
+                                autocomplete="off">
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <!-- <mat-form-field class="input-style2" (click)="getlandloarddetails('',1)" >
+                            <mat-label>Supplier Code</mat-label>
+                            <input matInput formControlName="supplier_code" autocomplete="off">
+                        </mat-form-field> -->
+                        <mat-form-field class="input-style2" (click)="getlandloarddetails('',landloard_currentpage=1)">
+                            <mat-label>Supplier Name</mat-label>
+                            <input placeholder="Supplier Code" required [readonly]="!disableform" (keyup)="getlandloarddetails($event.target.value,landloard_currentpage=1)" matInput formControlName="supplier_code"
+                                #occupancyinput [matAutocomplete]="suppliercode" required >
+                            <mat-autocomplete [panelWidth]="400" #suppliercode="matAutocomplete" [displayWith]="displaylandloard"
+                                (opened)="autocompleteoccupancy()">
+                                
+                                    <mat-option *ngFor="let land of landloarddata" (click)="getvendordetails(land.vendor_id,land.id)" [value]="land">
+                                       
+                                        ({{land.code}}) {{land.name}}
+                                    </mat-option>
+                                
+                            </mat-autocomplete>
+                        </mat-form-field> 
+                    </td>
+
+                   
+
+                </tr>
+                <tr>
+
+
+                    <td class="input-style" class="gstdesign" >
+                        <!-- <mat-form-field class="input-style2">
+                            <mat-label>GST</mat-label>
+                            <input matInput  formControlName= "is_gst" autocomplete="off">
+                        </mat-form-field> -->
+
+                        <mat-checkbox [disabled]="addElectricityForm.value.supplier_code?.gstno == '' || !disableform " formControlName="is_gst"> GST </mat-checkbox>
+                        <p style="margin-left: 20px;" *ngIf="addElectricityForm.value.is_gst" >GST NO: {{addElectricityForm.value.supplier_code?.gstno}}</p>
+                    </td>
+
+
+                    <td>
+                        <!-- <mat-form-field class="input-style2">
+                            <mat-label>BS</mat-label>
+                            <input matInput formControlName="bs_id" autocomplete="off">
+                        </mat-form-field> -->
+
+                        <mat-form-field class="input-style2" (click)="getbs('')">
+
+
+                            <mat-label>BS</mat-label>
+
+                            <input #bsInput placeholder="BS" [readonly]="!disableform" (keyup)="getbs($event.target.value)" matInput formControlName="bs_id"
+                                [matAutocomplete]="bstype" required>
+                            <mat-autocomplete #bstype="matAutocomplete"  [displayWith]="displaybsFn"
+                                (opened)="bsScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                </mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option (click)="bsselect()" *ngFor="let bsname of bsNameData" [value]="bsname"
+                                       >
+                                        {{bsname.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+
+
+                        </mat-form-field>
+
+                    </td>
+
+                    <td>
+
+                        <!-- <mat-form-field class="input-style">
+                            <mat-label>CC</mat-label>
+                            <input matInput  formControlName="cc_id" autocomplete="off">
+                        </mat-form-field> -->
+
+                        <mat-form-field class="input-style2" (click)="ccget('',cc_currentpage=1)">
+                            <mat-label>CC</mat-label>
+                            <input #ccinput placeholder="CC" matInput [readonly]="!disableform"
+                                (keyup)="ccget($event.target.value,cc_currentpage=1)" formControlName="cc_id"
+                                [matAutocomplete]="cctype" required>
+                            <mat-autocomplete #cctype="matAutocomplete" [displayWith]="displayccFn"
+                                (opened)="ccScroll()">
+
+                                <mat-option *ngFor="let ccname of ccNameData" [value]="ccname"
+                                    >
+                                    {{ccname.name}}
+                                </mat-option>
+
+                            </mat-autocomplete>
+
+                        </mat-form-field>
+
+                    </td>
+
+                    <td>
+                        <!-- <mat-form-field class="input-style2">
+                            <mat-label>Billing Cycle</mat-label>
+                            <input matInput placeholder="Billing Cycle" [readonly]="!disableform"
+                                formControlName="billingcycle" autocomplete="off">
+                        </mat-form-field> -->
+                        <mat-form-field class="input-style2" >
+                            <mat-label>Billing Cycle</mat-label>
+                            <mat-select formControlName="billingcycle" [disabled]="!disableform" required >
+                                <mat-option *ngFor="let cycle of billcycledropdown" [value]="cycle.id" >{{cycle.text}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Site ID</mat-label>
+                            <input matInput placeholder="Site ID" [readonly]="!disableform" formControlName="siteid"
+                                autocomplete="off">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput placeholder="Remarks" [readonly]="!disableform" formControlName="remarks"
+                                autocomplete="off">
+                        </mat-form-field>
+                    </td>
+
+                    <td *ngIf="!disableform">
+                       
+                            <!-- <mat-slide-toggle (change)="activatetoggle()" formControlName="makerisactive">
+                                {{(addElectricityForm.value.makerisactive)? 'Activated':'Deactivated'}}</mat-slide-toggle> -->
+
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <!-- <div class="btn-bottom" style="text-align: center;" *ngIf="disableform">
+                <button type="submit" *ngIf="addElectricityForm.value.consumer_status?.id == 1"  
+                    class="btn btn-outline-primary">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary">Close</button>
+            </div>
+            <div class="btn-bottom" style="text-align: center;" *ngIf="!disableform  ">
+                <button type="button" *ngIf="addElectricityForm.value.consumer_status?.id ==1 || addElectricityForm.value.consumer_status?.id ==4  "
+                    (click)="approve_reject_consumer(2)" 
+                    class="btn btn-outline-success">Approve</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" *ngIf="addElectricityForm.value.consumer_status?.id == 1 || addElectricityForm.value.consumer_status?.id == 4 "
+                    (click)="approve_reject_consumer(3)"
+                    class="btn btn-outline-danger">Reject</button>&nbsp;&nbsp;&nbsp;
+
+                <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary">Close</button>
+            </div> -->
+            
+
+            <div  class="btn-bottom" *ngIf="disableform">
+                <tr>
+                    <!-- <td>
+                        <button type="submit"  *ngIf="addElectricityForm.value.consumer_status?.id == 1"  
+                        class="btn btn-outline-primary">Submit</button>&nbsp;&nbsp;&nbsp;
+                    </td> -->
+                    <td>
+                        <button type="button"  (click)="onCancelClick()" class="btn btn-outline-primary">Close</button>
+
+                    </td>
+                </tr>
+               
+            </div>
+            <div class="btn-bottom"  *ngIf="!disableform  ">
+                <tr>
+                    <!-- <td>
+                        <button type="button"  *ngIf="addElectricityForm.value.consumer_status?.id ==1 || addElectricityForm.value.consumer_status?.id ==4  "
+                        (click)="approve_reject_consumer(2)" 
+                        class="btn btn-outline-success">Approve</button>
+                    </td>
+                    <td>
+                        <button type="button"  *ngIf="addElectricityForm.value.consumer_status?.id == 1 || addElectricityForm.value.consumer_status?.id == 4 "
+                    (click)="approve_reject_consumer(3)"
+                    class="btn btn-outline-danger">Reject</button>
+                    </td> -->
+                    <td>
+                        <button type="button"  (click)="onCancelClick()" class="btn btn-outline-primary">Close</button>
+
+                    </td>
+              
+
+            </tr>
+            </div>
+
+            
+
+            <!-- </div>
+            <div class="btn-bottom" style="text-align: center;" *ngIf="!disableform  ">
+                <button type="button" *ngIf="addElectricityForm.value.consumer_status?.id ==1 "
+                    (click)="approve_reject_consumer(2)" [disabled]="addElectricityForm.value.consumer_status?.id == 1"
+                    class="btn btn-outline-success">Approve</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" *ngIf="addElectricityForm.value.consumer_status?.id == 1"
+                    (click)="approve_reject_consumer(3)"
+                    class="btn btn-outline-danger">Reject</button>&nbsp;&nbsp;&nbsp;
+
+                <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary">Close</button>
+            </div> -->
+        </form>
+    </div>
+</div>
+
+<!-- <pre>
+    {{addElectricityForm.value | json}}
+</pre> -->

@@ -1,0 +1,173 @@
+<br>
+<h2 style="margin-left: 40px;">
+    Premises Identification 
+</h2>
+<div class="main-content">
+    <div>
+        <form [formGroup]="premiseIdentificationForm" (ngSubmit)="premiseIdentification()">
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Identification Type</mat-label>
+                            <mat-select formControlName="identification_type_id" id="premise-identification-form-0001">
+                                <mat-option *ngFor="let type of identificationTypeList"
+                                (click)="identificationDropDown(type)" [value]="type.id">
+                                    {{type.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Site Type</mat-label>
+                            <mat-select  formControlName="site_type" id="premise-identification-form-0002">
+                                <mat-option *ngFor="let type of sitetypeList" [value]="type.id">
+                                    {{type.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Proposed Location</mat-label>
+                            <input matInput placeholder="Proposed Location" autocomplete="off" formControlName="name"  id="premise-identification-form-0003">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Ownership Type</mat-label>
+                            <mat-select formControlName="ownership_type" id="premise-identification-form-0004">
+                                <mat-option *ngFor="let ower of ownerShipData" [value]="ower.id" (click)="ownership_typeSel(ower)">
+                                    {{ower.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                   
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Occupancy Usage</mat-label>
+                            <mat-select formControlName="usage_code" id="premise-identification-form-0005">
+                                <mat-option *ngFor="let usage of usageList" [value]="usage.id">
+                                    {{usage.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <!-- <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>DO</mat-label>
+                            <input matInput  autocomplete="off" formControlName="branch_id" readonly  id="premise-identification-form-0006">{{code}}-{{name}}
+                        </mat-form-field>
+                    </td> -->
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Do</mat-label>
+                            <input placeholder="Select Do" matInput
+                                formControlName="group_id" #primaryContactInput
+                                [matAutocomplete]="autoPrimary" id="premise-identification-form-0007">
+                            <mat-autocomplete #autoPrimary="matAutocomplete"
+                                (opened)="autocompleteBranchNameScroll()" [displayWith]="displayFn">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                </mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let branch of primaryContactList"
+                                        [value]="branch">
+                                        {{branch.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Area(sq ft)</mat-label>
+                            <input matInput placeholder="Area (sq ft)" autocomplete="off" formControlName="area"
+                            (keypress)="omit_special_char($event)" id="premise-identification-form-0008">
+                        </mat-form-field>
+                    </td>
+                   
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Proposed Rent/Month(Rs)</mat-label>
+                            <input matInput placeholder="Proposed Rent/Month(Rs)" autocomplete="off" formControlName="offered_rent" 
+                            (keypress)="omit_special_char($event)" [readonly]="readonlyRent" id="premise-identification-form-0009">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <!-- <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Remarks</mat-label>
+                            <input matInput placeholder="Remarks" autocomplete="off" formControlName="remarks"  id="premise-identification-form-0010">
+                        </mat-form-field>
+                    </td>
+                </tr> -->
+                <tr>
+                    <td *ngIf= "existing_premise">
+                        <mat-form-field class="input-style">
+                            <mat-label>Premises</mat-label>
+                            <input placeholder="Select Premises" matInput
+                                formControlName="exsiting_premise_id" #premiseInput
+                                [matAutocomplete]="autoPremise" id="premise-identification-form-0011">
+                            <mat-autocomplete #autoPremise="matAutocomplete"
+                                 [displayWith]="displayFnPremise">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                </mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let premise of premiseList"
+                                        [value]="premise">
+                                        {{premise.name}}-{{premise.code}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf= "existing_occ_code">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Occupancy Code</mat-label>
+                            <input  placeholder="Select Occupancy Code" matInput
+                                formControlName="exsiting_occupancy_code" #codeInput
+                                [matAutocomplete]="autocode" id="premise-identification-form-0012">
+                            <mat-autocomplete #autocode="matAutocomplete"
+                                 [displayWith]="displayFnCode" (opened)="priOffScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                </mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let code of codeList"
+                                        [value]="code">
+                                        {{code.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"> 
+                        <div>
+                            <mat-label>Note</mat-label>
+                            <div formControlName="description" [ngxSummernote]="config">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="btn-bottom">
+                <button type="submit"  matTooltip="Submit" class="btn btn-outline-primary" [disabled]="PreIdenBtn" id="premise-identification-form-0013">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button"  matTooltip="Cancel" (click)="onCancelClick()" class="btn btn-outline-primary" id="premise-identification-form-0014">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- <pre>
+    {{premiseIdentificationForm.value | json}}
+</pre> -->

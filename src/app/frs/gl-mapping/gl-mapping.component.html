@@ -1,0 +1,181 @@
+<div *ngIf="gl_mapping_hide">
+    <div class="container">
+        <br>
+        <h2> GL Mapping</h2>
+        <form [formGroup]="gl_mapping">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field  (click)="Creditgl()" appearance="outline">
+                            <mat-label>Sub Category GL</mat-label>
+                            <input #credit_data type="text" matInput formControlName="sub_creditGL" autocomplete="off"
+                                [matAutocomplete]="creditgls" (keyup)="Creditgl()">
+                            <mat-autocomplete #creditgls="matAutocomplete" (opened)="creditgl_datasscroll()"
+                                [displayWith]="creditgl_display">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let credit of creditgl_list" [value]="credit">
+                                        {{credit.glno}}-{{credit.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field  (click)="Credits_gl()" appearance="outline">
+                            <mat-label>GL</mat-label>
+                            <input #credits_data type="text" matInput formControlName="creditGL" autocomplete="off"
+                                [matAutocomplete]="credit_gls" (keyup)="Credits_gl()">
+                            <mat-autocomplete #credit_gls="matAutocomplete" (opened)="creditgls_datasscroll()"
+                                [displayWith]="creditgls_display">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let credit of creditgls_list" [value]="credit">
+                                        {{credit.no}}-{{credit.description}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field (click)="payment_type()"  appearance="outline">
+                            <mat-label>Payment Type</mat-label>
+                            <input #allocationfrom_Input placeholder="Payment Type" matInput formControlName="payment"
+                                [matAutocomplete]="payment">
+                            <mat-autocomplete #payment="matAutocomplete" [displayWith]="payment_display">
+                                <mat-option *ngFor="let pay of payment_list" [value]="pay">
+                                    {{pay.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3" style="margin-top: 1%;">
+                        <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary"
+                            (click)="mapping_summary(gl_mapping.value)">Search</button>
+                        <button type="submit" style="border-radius: 40px;margin-left: 7%;"
+                            class="btn btn-outline-primary" (click)="gl_mapping_clear()">Reset</button>
+                        <button type="submit" style="border-radius: 40px;margin-left: 7%;"
+                            class="btn btn-outline-primary" data-toggle="modal" data-target="#claimModal"
+                            (click)="add_fun()">ADD</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div style=" overflow: auto;padding-top: 2%;" class="tableFixHead">
+            <table class="table table-bordered" id="commonstyle" fixed-header>
+                <thead style="background-color: #ddefdd;">
+                    <th>S.No</th>
+                    <th>Sub Category GL</th>
+                    <th>GL</th>
+                    <th>Payment Type</th>
+                    <th>Action</th>
+                </thead>
+                <tbody *ngFor="let gl_mapp_value of gl_grpmapping; let ind=index">
+                    <tr [hidden]="array_hide">
+                        <td>{{(presentpage_sum - 1)*10 + ind+1 }}</td>
+                        <td>{{gl_mapp_value.subcat?.glno}}-{{gl_mapp_value.subcat?.name}}</td>
+                        <td>{{gl_mapp_value.gl?.no}}-{{gl_mapp_value.gl?.description}}</td>
+                        <td>{{gl_mapp_value.doc_type?.name}}</td>
+                        <td style="font-size: 13px;">
+                            <button mat-icon-button class="material-icons app-toolbar-menu save-button"
+                                matTooltip="Edit" style="color:'#108542'" data-toggle="modal" data-target="#claimModal"
+                                (click)="editDatas(gl_mapp_value,ind)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="gl_grpmapping?.length==0" style="margin-left: 42%;">
+                <h3> data not found!.. </h3>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+            <button mat-icon-button [disabled]="has_previous_sum === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button> {{presentpage_sum}}
+            <button mat-icon-button [disabled]="has_next_sum === false" color="primary" (click)="nextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="gl_mapping">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+      <div class="modal-content" id="mycontainer">
+        <div class="modal-header">
+          <p class="modal-title" style="text-align: center">
+            GL Mapping
+          </p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+            #closebutton
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="create_gl_mapping">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field  (click)="GL_Creditgl()" appearance="outline">
+                                <mat-label>Sub Category GL</mat-label>
+                                <input #gl_credit_data type="text" matInput formControlName="sub_creditGL"
+                                    autocomplete="off" [matAutocomplete]="gl_creditgls" (keyup)="GL_Creditgl()">
+                                <mat-autocomplete #gl_creditgls="matAutocomplete"
+                                    (opened)="GL_creditgl_datasscroll()" [displayWith]="gl_creditgl_display">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let credit of gl_creditgl_list" [value]="credit">
+                                            {{credit.glno}}-{{credit.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field  (click)="GL_Credits_gl()" appearance="outline">
+                                <mat-label>GL</mat-label>
+                                <input #gl_credits_data type="text" matInput formControlName="creditGL"
+                                    autocomplete="off" [matAutocomplete]="gl_credit_gls" (keyup)="GL_Credits_gl()">
+                                <mat-autocomplete #gl_credit_gls="matAutocomplete"
+                                    (opened)="GL_creditgls_datasscroll()" [displayWith]="gl_creditgls_display">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let credit of gl_creditgls_list" [value]="credit">
+                                            {{credit.no}}-{{credit.description}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field (click)="payment_type()"  appearance="outline">
+                                <mat-label>Payment Type</mat-label>
+                                <input #allocationfrom_Input placeholder="Payment Type" matInput
+                                    formControlName="payment" [matAutocomplete]="payment">
+                                <mat-autocomplete #payment="matAutocomplete" [displayWith]="payment_display">
+                                    <mat-option *ngFor="let pay of payment_list" [value]="pay">
+                                        {{pay.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3" style="padding-top: 1%;">
+                            <button type="button"  class="btn btn-outline-primary"
+                                style="border-radius: 40px;"
+                                (click)="submit(create_gl_mapping.value)">
+                                Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>        
+      </div>
+    </div>
+  </div>

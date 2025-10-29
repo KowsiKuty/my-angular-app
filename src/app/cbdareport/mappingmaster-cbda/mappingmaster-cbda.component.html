@@ -1,0 +1,111 @@
+<div class="Main">
+    <div *ngIf="SearchBool">
+        <form [formGroup]="SearchForm">
+            <div class="search-auto-fit">
+                <div id="matInput-size">
+                    <mat-form-field appearance="outline" class="Width170">
+                        <mat-label>Column</mat-label>
+                        <input matInput formControlName="Column" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto>
+                            <mat-option></mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <button class="btn-fill fill-primary">
+                    <mat-icon class="btn-icon">search</mat-icon>
+                </button>
+                <button class="btn-fill fill-secondary">
+                    <mat-icon class="btn-icon">refresh</mat-icon>
+                </button>
+                <button class="btn-fill fill-secondary" >
+                    <mat-icon class="btn-icon">add</mat-icon>
+                </button>
+            </div>
+        </form>
+        <div class="comp-table t-resposive">
+            <table></table>
+        </div>
+    </div>
+    <div *ngIf="CreateBool">
+         <div class="search-auto-fit" style="margin: 10px">
+      <div id="matInput-size">
+        <mat-form-field appearance="outline">
+          <mat-label>Select Column</mat-label>
+          <mat-select
+            [(value)]="selectedColumn"
+            (selectionChange)="onColumnChange($event.value)"
+          >
+            <mat-option *ngFor="let col of response.data" [value]="col.column">
+              {{ col.column }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="selectedMappings.length > 0" class="search-auto-fit">
+        <div *ngFor="let map of selectedMappings; let i = index">
+          <!-- From Field -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ map.From.field }}</mat-label>
+            <mat-chip-list #chipListFrom aria-label="From field selection">
+              <mat-chip
+                *ngFor="let chip of map.From.selectedOptions"
+                [selectable]="true"
+                [removable]="true"
+                (removed)="removeChip(map.From.selectedOptions, chip)"
+              >
+                {{ chip.name || chip.no }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Select {{ map.From.field }}"
+                [matAutocomplete]="autoFrom"
+                [matChipInputFor]="chipListFrom"
+                (focus)="onFieldChange(map.From.field)"
+                (matChipInputTokenEnd)="addChip($event, map.From)"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #autoFrom="matAutocomplete"
+              (optionSelected)="selectChip($event, map.From)"
+            >
+              <mat-option *ngFor="let option of dynamicdatas" [value]="option">
+                {{ option.name || option.no }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <!-- To Field -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ map.To.field }}</mat-label>
+            <mat-chip-list #chipListTo aria-label="To field selection">
+              <mat-chip
+                *ngFor="let chip of map.To.selectedOptions"
+                [selectable]="true"
+                [removable]="true"
+                (removed)="removeChip(map.To.selectedOptions, chip)"
+              >
+                {{ chip.name || chip.no }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Select {{ map.To.field }}"
+                [matAutocomplete]="autoTo"
+                [matChipInputFor]="chipListTo"
+                (focus)="onFieldChange(map.From.field)"
+                (matChipInputTokenEnd)="addChip($event, map.To)"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #autoTo="matAutocomplete"
+              (optionSelected)="selectChip($event, map.To)"
+            >
+              <mat-option *ngFor="let option of dynamicdatas" [value]="option">
+                {{ option.name || option.no }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    </div>
+</div>

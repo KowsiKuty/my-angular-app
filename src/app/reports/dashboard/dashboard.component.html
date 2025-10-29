@@ -1,0 +1,292 @@
+<div class="container-fluid mt-3">
+  <div class="header">
+    <b *ngIf="withoutSearch" [routerLink]="['/reports']"  [queryParams]="{ par_no: parNo }">
+ <span  class="text-link"> ← </span>  <span>Back</span>
+</b>
+
+    <div class="title">BPA Management Dashboard</div>
+  </div>
+
+      <!-- <lib-vs-search-cmp id="matInput-17" *ngIf="!withoutSearch"
+        [SearchArr]="searchArr"
+        (dataoutput)="searchData($event,1)"
+          [Downloadbutton]="true"
+                  (download)="searchData($event,2)"
+                  (ResetOutput)="ClearAll($event)"
+
+      ></lib-vs-search-cmp> -->
+      <form [formGroup]="searchBPA">
+        <div class="row">
+          <div class="col-md-3">
+                   <mat-form-field style="margin-left: 2%;width: 240px;" appearance="outline" (click)="departmentName('')">
+                        <mat-label>Choose BPA No</mat-label>
+                        <input matInput formControlName="bpa_no" #deptInput
+                            [matAutocomplete]="autoDept" (input)="inputdepartmentName()">
+                        <mat-autocomplete #autoDept="matAutocomplete" (opened)="autocompleteMepScrolls()"  (optionSelected)="onDeptSelected($event)"
+                            [displayWith]="displayFnDeptName">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let deptName of deptNameList" [value]="deptName">
+                                    {{deptName.no}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+          </div>
+          <div class="col-md-3" style="margin-top:1%">
+               
+                <button [disabled]="disableBtn" class="btn btn-outline-success" type="submit" style="border-radius:40px;margin-left: 15px;"
+                color="success" (click)="searchDatas(1)"> <i matTooltip="Search" class="fa fa-search" aria-hidden="true"></i></button>
+                <button [disabled]="disableBtn" class="btn btn-outline-success" type="clear" style="border-radius:40px;margin-left: 15px;" (click)="resetsearch()"
+                color="success" ><i matTooltip="Clear" class="fa fa-refresh" aria-hidden="true"></i></button>
+                  <button class="btn btn-outline-success" type="submit" style="border-radius:40px;margin-left: 15px;"
+                color="success" (click)="searchDatas(2)"><i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </form>
+</div>
+
+
+  <div class="row pr-4 pl-4" *ngIf="showDashboard">
+<div class="col-md-12">
+  <div class="kpi-cards">
+
+    <!-- Total Budget --> 
+    <div class="kpi-card blue">
+      <div class="label">BPA Total Budget</div>
+      <div class="value">₹{{ totalBudget | number }}</div>
+      <div class="small text-muted">100% of total</div>
+      <div class="bar-container">
+        <div class="bar" [ngStyle]="{ 'width': '100%', 'background-color': '#007bff' }"></div>
+      </div>
+    </div>
+
+    <!-- Utilized -->
+    <div class="kpi-card green">
+      <div class="label">BPA Utilized</div>
+      <div class="value">₹{{ totalUtilized | number }}</div>
+      <div class="small text-muted">{{ utilizationPercent }}% of total</div>
+      <div class="bar-container">
+        <div class="bar" [ngStyle]="{ 'width': utilizationPercent + '%', 'background-color': '#28a745' }"></div>
+      </div>
+    </div>
+
+    <!-- Remaining -->
+    <div class="kpi-card orange">
+      <div class="label">BPA Remaining</div>
+      <div class="value">₹{{ totalRemaining | number }}</div>
+      <div class="small text-muted">{{ remainingPercent }}% of total</div>
+      <div class="bar-container">
+        <div class="bar" [ngStyle]="{ 'width': remainingPercent + '%', 'background-color': '#fd7e14' }"></div>
+      </div>
+    </div>
+
+    <!-- Total PCAs (No bar) -->
+    <div class="kpi-card purple">
+      <div class="label">Total PCAs</div>
+      <div class="value">{{ pca_count }}</div>
+      <div class="small text-muted">Active contracts</div>
+    </div>
+
+    <!-- Total PRs (No bar) -->
+    <div class="kpi-card red">
+      <div class="label">Total PRs</div>
+      <div class="value">{{ totalPRs }}</div>
+      <div class="small text-muted">Purchase requests</div>
+    </div>
+
+  </div>
+</div>
+
+
+  </div>
+
+<div class="row p-4" *ngIf="showDashboard">
+   <div class="col-md-3">
+<div class="card hierarchy-card" *ngIf="bpaData">
+  <b class="topic">Procurement Hierarchy</b>
+  <hr>
+
+  <!-- BPA Header -->
+  <div class="bpa-header-box">
+    <span class="bpa-number">{{ bpaData.par_no }}</span>
+    <span class="bpa-status-badge">{{ bpaData.par_status }}</span>
+  </div>
+
+  <!-- PCA Level -->
+  <div *ngFor="let pca of bpaData.PCAs" class="pca-section">
+    <div class="pca-title"><b>{{ pca.id }}:</b> {{ pca.description }}</div>
+
+    <!-- PR Level -->
+    <div *ngFor="let pr of pca.PRs" class="pr-box">
+      <div class="pr-info">
+        <span class="pr-id">{{ pr.pr_no }}</span>
+        <span class="pr-desc">{{ pr.description }}</span>
+        <span 
+          class="pr-amount-label pr-amount-gray" 
+         
+        >
+         <!-- [ngClass]="{
+            'pr-amount-gray': pr.pr_amount >= 100000,
+            'pr-amount-red': pr.pr_amount < 100000
+          }" -->
+          ₹{{ pr.pr_amount | number:'1.0-0' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+   </div>
+   <div class="col-md-9">
+     <div class="card hiearchy-card" *ngIf="bpaData">
+      <div class="bpa-summary-card">
+  <div class="bpa-header">
+    <div class="bpa-title">
+      <b>{{ bpaData.par_no }}: {{ bpaData.description }}</b>
+      <!-- <p>
+        <small>Active since Jan 1, 2023 | Expires Dec 31, 2023</small>
+      </p> -->
+    </div>
+    <div class="bpa-kpis">
+      <div class="kpi">₹{{ bpaData.par_amount | number:'1.0-0' }}<br><span>Total Budget</span></div>
+      <div class="kpi green">₹{{ bpaData.par_utilized_amount | number:'1.0-0' }}<br><span>Utilized</span></div>
+      <div class="kpi orange">₹{{ bpaData.par_balance_amount | number:'1.0-0' }}<br><span>Remaining</span></div>
+    </div>
+  </div>
+<hr>
+<div class="pca-summary">
+  <div *ngFor="let pca of bpaData.PCAs; let i = index" class="pca-card" [ngClass]="getPcaClass(i)">
+    <div class="pca-header">
+      {{ pca.id }}: {{ pca.description }}
+    </div>
+    <div class="pca-amount">
+      ₹{{ pca.mep_amount | number }}
+    </div>
+    <div class="pca-footer">
+            <span>{{ calculateUtilizedPercent(pca) }}% utilized</span>
+
+      <!-- <span>{{ pca.utilized_percent }}% utilized</span> -->
+      <span>{{ pca.pr_count }} PRs</span>
+    </div>
+  </div>
+</div> 
+
+
+
+
+  <!-- PR + PO Table -->
+  <b class="topic">Recent Purchase Orders</b>
+<div class="table-scroll-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>PO ID</th>
+        <th>PR</th>
+        <th>Amount</th>
+        <th>GRNs</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let pca of bpaData.PCAs">
+        <ng-container *ngFor="let pr of pca.PRs">
+          <ng-container *ngFor="let po of pr.POs">
+            <tr>
+              <td>{{ po.po_no }}</td>
+              <td>{{ pr.pr_no }}</td>
+              <td>₹{{ po.po_amount }}</td>
+              <td>{{ po.GRNs?.length || 0 }}</td>
+              <td><span class="badge" [ngClass]="getStatusClass(po.po_status)">{{ po.po_status }}</span></td>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+<div style="align-items: center;display: flex;justify-content: center;" *ngIf="bpaData?.PCAs[0]?.PRs.length==0">
+                    No data found
+                </div>
+  <!-- ECF Table -->
+  <!-- <h5>Pending ECFs</h5> -->
+  <b class="topic">ECFs</b>
+  <div class="table-scroll-wrapper">
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>ECF ID</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let pca of bpaData.PCAs">
+        <tr *ngFor="let ecf of pca.ECFs">
+          <td>{{ ecf.ecf_no }}</td>
+          <td>₹{{ ecf.ecf_amount }}</td>
+          <td><span class="badge" [ngClass]="getStatusClass(ecf.ecf_status)">{{ ecf.ecf_status }}</span></td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+  <div style="align-items: center;display: flex;justify-content: center;" *ngIf="bpaData?.PCAs[0].ECFs.length==0">
+                    No data found
+                </div>
+<b class="topic">APs</b>
+                <div class="table-scroll-wrapper">
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>AP ID</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let pca of bpaData?.PCAs">
+                                <tr *ngFor="let ecf of pca?.APs">
+                                    <td>{{ ecf.ap_no }}</td>
+                                    <td>₹{{ ecf.ap_amount }}</td>
+                                    <td><span class="badge" [ngClass]="getStatusClass(ecf.ap_status)">{{ ecf.ap_status
+                                            }}</span></td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="align-items: center;display: flex;justify-content: center;" *ngIf="bpaData?.PCAs[0]?.APs?.length==0">
+                    No data found
+                </div>
+  <!-- AP Table -->
+  <!-- <h5>Pending APs</h5> -->
+  <!-- <b class="topic">Pending APs</b> -->
+
+  <!-- <table class="data-table">
+    <thead>
+      <tr>
+        <th>AP ID</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let pca of bpaData.PCAs">
+        <tr *ngFor="let ap of pca.APs">
+          <td>{{ ap.ap_no }}</td>
+          <td>₹{{ ap.ap_amount }}</td>
+          <td><span class="badge" [ngClass]="getStatusClass(ap.ap_status)">{{ ap.ap_status }}</span></td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table> -->
+</div>
+       </div>
+</div>

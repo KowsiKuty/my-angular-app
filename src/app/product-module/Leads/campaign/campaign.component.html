@@ -1,0 +1,184 @@
+<div class="container mt-1">
+
+    <mat-card *ngIf="CampaignSummary">
+        <div class="row">
+            <div class="col-md-10">
+                <h2>Campaign</h2>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-success" (click)="addCampaign.emit()" style="font-size: small;">Create Compaign</button>
+            </div>
+
+        </div>
+
+
+        <div class="row ml-2">
+           
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <!-- <h2>Campaign</h2> -->
+                <form [formGroup]="CampaignSummarySearch">
+                    <table>
+                        <tr>
+                            <td>
+                                <!-- <mat-label>Code / Name </mat-label><br> -->
+                                <mat-form-field>
+                                    <mat-label>Code / Name </mat-label>
+                                    <input type="text" matInput autocomplete="off" placeholder="Code"
+                                        formControlName="codename">
+                                </mat-form-field>
+                            </td>
+
+                            <td style="padding-left: 5%;">
+                                <!-- <mat-label class="ml-2">From Date</mat-label><br> -->
+                                <mat-form-field class="ml-2">
+                                    <mat-label class="ml-2">From Date</mat-label>
+                                    <input matInput readonly placeholder="From Date" [matDatepicker]="pick"
+                                        formControlName="from_date">
+                                    <mat-datepicker-toggle class="maticonsize" matSuffix [for]="pick">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #pick></mat-datepicker>
+                                </mat-form-field>
+
+                            </td>
+                            <td style="padding-left: 10%;">
+                                <!-- <mat-label class="ml-2">To Date</mat-label><br> -->
+                                <mat-form-field class="ml-2">
+                                    <mat-label class="ml-2">To Date</mat-label>
+                                    <input matInput readonly placeholder="To Date" [matDatepicker]="picker2"
+                                        formControlName="to_date">
+                                    <mat-datepicker-toggle class="maticonsize" matSuffix [for]="picker2">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                </mat-form-field>
+
+                            </td>
+
+                            <td style="padding-left: 15%;">
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsSubmit"
+                                    aria-label="Search" (click)="CampaignSearch('')">
+                                    <mat-icon>search</mat-icon>
+                                </button>
+                            </td>
+                            <td style="padding-left: 16%;">
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsWhite"
+                                    (click)="resetCampaign()">Clear</button>
+
+                            </td>
+                            <!-- <td>
+                                <button mat-fab color="primary" style="margin-left:2em" class="btnArrow"
+                                    (click)="addCampaign.emit()">
+                                    <mat-icon>cloud_circle</mat-icon>
+                                </button>
+                            </td> -->
+                            <!-- <td>
+                                <button class="ml-2" mat-stroked-button type="button" id="buttonsWhite"
+                                    (click)="AddCampaign()">Add</button>
+
+                            </td> -->
+                    </table>
+                </form>
+            </div>
+
+
+
+            <div class="col-sm-12 col-md-12 col-lg-12">
+
+                <table class="table table-bordered" id="tableGlobal">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+
+                            <th>Code</th>
+                            <th>Campaign Name </th>
+                            <th>Products</th>
+                            <th>Date</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let type of CampaignObjects.CampaignList; let proindex = index">
+                            <td>{{(CampaignObjects?.presentpageCampaign - 1)*10+proindex+1}}</td>
+
+                            <td>{{type?.code}}</td>
+                            <td>{{type?.name}}</td> 
+                            <td>
+                                <div style="white-space: nowrap;
+                                width: 150px;
+                                overflow: hidden;
+                                text-overflow: ellipsis; " data-toggle="modal" data-target="#exampleModalProductShow">
+                                    <span *ngFor="let prod of type?.product" id="hyperlink"  (click)="ShowProduct(type?.product)">
+                                        {{prod?.name}}
+                                    </span>
+
+                                    <div class="modal fade" id="exampleModalProductShow" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h3 class="modal-title" id="exampleModalLabel">Products for Campaign</h3>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                              </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- <ul class="list-group" class="LargeNoteView">
+                                                    <li class="list-group-item" *ngFor="let prod of type?.product">
+                                                        {{prod?.name}}
+                                                    </li>
+                                                </ul> -->
+                                                 <!-- <span *ngFor="let prod of type?.product" class="badge badge-secondary">{{prod?.name}}</span>  -->
+                                                 <mat-chip-list >
+                                                    <mat-chip *ngFor="let prod of CampaignObjects.ProductPopUpArr; let indexprod = index"> {{indexprod+1}}. {{prod?.name}}
+                                                    </mat-chip> 
+                                                  </mat-chip-list>
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+
+
+
+                                </div>
+                                
+                                <!-- ({{type.product?.code}}) 
+                                {{type.product?.name}} -->
+                            </td>
+                            <td>{{type?.created_date | date: 'medium'}}</td>
+                            <td>
+                                <button (click)="viewLeads.emit(type)" mat-icon-button class="btn btn-outline-primary">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="CampaignObjects.CampaignList?.length==0 || CampaignObjects.CampaignList == undefined || CampaignObjects.CampaignList == '' ; else paginationpro"
+                    class="NodataAlign text-center">No Records Found...</div>
+                <ng-template #paginationpro>
+                    <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                        <button type="button" mat-icon-button [disabled]="CampaignObjects.has_previousCampaign == false"
+                            color="primary" (click)="CampaignSearch('previous')">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{CampaignObjects?.presentpageCampaign}}
+                        <button type="button" mat-icon-button [disabled]="CampaignObjects.has_nextCampaign === false"
+                            color="primary" (click)="CampaignSearch('next')">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+
+
+            </div>
+        </div>
+    </mat-card>
+
+
+    <div *ngIf="Campaign">
+
+    </div>
+
+</div>

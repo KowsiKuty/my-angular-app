@@ -1,0 +1,628 @@
+<div class="body">
+  <!-- <div class="table">
+  
+      <div class="row"  style="padding-left:25px;padding-top: 1%;padding-right: 25px;">
+          <div class="col-md-12">
+              <div class="mat-elevation-z7">
+                  <table mat-table    [dataSource]="dataSource" matSort >
+                      <ng-container matColumnDef="first_name">
+                          <th mat-header-cell *matHeaderCellDef  mat-sort-header
+                          style="font-size: medium;font-weight: normal;">S.No </th>
+                          <td mat-cell *matCellDef="let acc"> {{acc.first_name}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="middle_name">
+                          <th mat-header-cell *matHeaderCellDef  mat-sort-header
+                          style="font-size: medium;font-weight: normal;"
+                          >Customer Name </th>
+                          <td mat-cell *matCellDef="let acc"> {{acc.middle_name}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="last_name"
+                        >
+                          <th mat-header-cell *matHeaderCellDef  mat-sort-header
+                          style="font-size: medium;font-weight: normal;">Occupation </th>
+                          <td mat-cell *matCellDef="let acc"> {{acc.last_name}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="dob"
+                        >
+                          <th mat-header-cell *matHeaderCellDef  mat-sort-header
+                          style="font-size: medium;font-weight: normal;"> Age </th>
+                          <td mat-cell *matCellDef="let acc"> {{acc.dob}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="aadhaar_no"
+                        >
+                          <th mat-header-cell *matHeaderCellDef  mat-sort-header
+                          style="font-size: medium;font-weight: normal;">Interested In</th>
+                          <td mat-cell *matCellDef="let acc"> {{acc.aadhaar_no}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="view"
+                        >
+                          <th mat-header-cell *matHeaderCellDef  mat-sort-header
+                          style="font-size: medium;font-weight: normal;">View</th>
+                          <td mat-cell *matCellDef="let acc"> {{acc.view}} </td>
+                        </ng-container>
+                        
+                        <ng-container matColumnDef="header-row-first-group">
+                          <th mat-header-cell *matHeaderCellDef 
+                             [style.text_align] = "center"
+                              [attr.colspan]="5"> 
+                            Customer Details
+                          </th>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="['header-row-first-group']"></tr>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      
+                     
+      
+      
+                  </table>
+                  </div>
+          </div>
+      </div>
+  
+  
+  </div>   -->
+  <div *ngIf="showdatatable">
+    <div class="page-content page-container" id="page-content">
+      <div>
+        <div class="row d-flex justify-content-center">
+
+          <div class="col-xl-12 grid-margin stretch-card">
+            <div>
+              <div>
+
+                <div class="form-group">
+                  <h2 style="margin-left:2%">Lead Summary</h2>
+                  <form [formGroup]="leadsearchform">
+                    <div class="searchstyle" style="margin-left:2%">
+                      <!-- <mat-form-field class="inputwidth" (click)="getemployee('')">
+                        <mat-label>Employee</mat-label>
+                        <input matInput #employeeinput formControlName="employee"
+                          [matAutocomplete]="employeechipautocomplete"
+                          (keyup)="getemployee(leadsearchform.value.employee)">
+                        <mat-autocomplete #employeechipautocomplete="matAutocomplete" [displayWith]="displayfnemployee">
+                          <mat-option *ngFor="let value of employeedata" [value]="value">
+                            {{value.full_name}}
+                          </mat-option>
+                        </mat-autocomplete>
+                      </mat-form-field> -->
+
+                      <mat-form-field class="inputwidth">
+                        <mat-label>Filter</mat-label>
+                        <mat-select formControlName="filter">
+                          <mat-option *ngFor="let data of filterdata" [value]="data.id">{{data.name}}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <button mat-fab style="margin-left: 20px;background-color: white;" (click)="getsearch()"
+                        aria-label="Search">
+                        <mat-icon>search</mat-icon>
+                      </button>
+
+                      <button mat-fab type="submit" (click)="resetsearchform()"
+                        style="border-radius:40px;margin-left: 20px;background-color: white;color: black;">Clear</button>
+
+                    </div>
+                  </form>
+                  <!-- <input type="text" class="form-control search-field" placeholder="Search..."
+                                        [(ngModel)]="searchText"> -->
+
+                </div>
+                <br>
+                <!-- <h4 class="card-title">Basic Table</h4> -->
+                <!-- <p class="card-description">
+                      Basic table with card
+                    </p> -->
+                <div>
+                  <table class="table table_text" style="margin-left:2%">
+                    <thead class="table_header">
+                      <tr>
+                        <th class="leftalignment">S.No</th>
+                        <th class="th-lg">Lead</th>
+                        <th>Created Date</th>
+                        <th>Product</th>
+                        <th>Aadhaar</th>
+                        <th>PAN</th>
+
+                        <th *ngIf="currentsearchrole == 2">Employee</th>
+                      </tr>
+                    </thead>
+                    <!-- <tbody *ngFor="let lists of leadssummarylist | searchfilter : searchText;index as ind">
+                        <tr (click)="viewLeadDetails(lists.id)">
+                          <td style="padding-left: 11px;">
+                            {{(pagination.index-1)*limit+ind+1}}
+                          </td>
+                          <td></td>
+                         
+                          <td class="leadname">{{lists.first_name}} {{lists.middle_name}} {{lists.last_name}}</td>
+                         
+                          <td>{{lists.dob | date : 'MMM d, y'}}</td>
+                          <td>{{lists.aadhaar_no }}</td>
+                          <td>{{lists.pan_no}}</td>
+  
+                        </tr>
+                      </tbody> -->
+                    <tbody *ngFor="let data of leadssummarylist | searchfilter : searchText;index as i">
+                      <tr>
+                        <td class="leftalignment clickable ">{{i+1}}</td>
+                        <td class="clickable" (click)="viewLeadDetails(data)">{{data?.lead_id?.lead_first_name}}</td>
+                        <td class="clickable" (click)="viewLeadDetails(data)">{{data?.created_date | date:"dd-MMM-yyyy"}}</td>
+                        <td class="clickable" (click)="viewLeadDetails(data)">{{data?.product_id?.name}}</td>
+                        <td class="clickable" (click)="viewLeadDetails(data)">{{data?.lead_id?.aadhaar_no}}</td>
+                        <td class="clickable" (click)="viewLeadDetails(data)">{{data?.lead_id?.pan_no}}</td>
+
+                        
+                        <td *ngIf="currentsearchrole == 2">
+                          <div>
+                            <button mat-icon-button (click)="clickassignemployee(data)">
+                              <mat-icon>group_add</mat-icon>
+                            </button>
+                          </div>
+                          <!-- <div>
+                            <mat-form-field style="width:400px" (click)="getemployeeclick()">
+
+                              <input matInput #employeeinput [matAutocomplete]="employeechipautocomplete"
+                                [(ngModel)]="data.employeedata" (keyup)="getemployee(data.employeedata)">
+                          
+                              <button mat-button *ngIf="data.employeedata != ''" matSuffix mat-icon-button
+                                aria-label="Clear" (click)="data.employeedata=''">
+                                <mat-icon>close</mat-icon>
+                              </button>
+
+                              <mat-autocomplete #employeechipautocomplete="matAutocomplete"
+                                [displayWith]="displayfnemployee">
+                              
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                  <mat-option *ngFor="let value of employeedata" [value]="value">
+                                    {{value.full_name}}
+                                  </mat-option>
+                                </ng-container>
+
+                              </mat-autocomplete>
+
+
+
+                            </mat-form-field>
+
+                            <button style="background-color:green;color:white;margin: 0px 13px;vertical-align: super;"
+                              mat-stroked-button (click)="leadagentemployeemapping(data)" aria-label="Clear">
+                              <mat-icon>done</mat-icon>Submit
+                            </button>
+
+                          </div> -->
+
+
+                          <!-- <mat-form-field style="width:400px;margin-left: 30px;font-size: 20px;"
+                            (click)="getemployee('')">
+                            <mat-chip-list #chiplistemployee>
+                              <mat-chip *ngFor="let chip of data.employeedata;let j=index" selectable="true" removable="true"
+                                (removed)="getremovechip(i,j,chip)">
+                                {{chip.full_name}} <mat-icon matChipRemove *ngIf="true">cancel
+                                </mat-icon>
+                              </mat-chip>
+                            </mat-chip-list>
+                            <input matInput #employeeinput [(ngModel)]="data.searchvalue"
+                              [matAutocomplete]="employeechipautocomplete" [matChipInputFor]="chiplistemployee"
+                              matChipInputAddOnBlur="true" (keyup)="getemployee(data.searchvalue)">
+                            <mat-autocomplete #employeechipautocomplete="matAutocomplete"
+                              [displayWith]="displayfnemployee" (optionSelected)="selectedemployee($event)">
+                              <mat-option *ngFor="let value of employeedata" [value]="value">
+                                {{value.full_name}}
+                              </mat-option>
+                            </mat-autocomplete>
+                          </mat-form-field> -->
+
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div *ngIf="leadssummarylist?.length == 0">
+                    <p style="text-align:center; ">No record found</p>
+                  </div>
+
+                  <div class="row" *ngIf="leadssummarylist?.length  != 0">
+                    <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                      <button mat-icon-button [disabled]="leaddata_hasprevious === false" color="primary"
+                        (click)="getpreviouslead()">
+                        <mat-icon>arrow_back</mat-icon>
+                      </button> {{currentleaddatapage}}
+                      <button mat-icon-button [disabled]="leaddata_hasnext === false" color="primary"
+                        (click)="getnextlead()">
+                        <mat-icon>arrow_forward</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                                        <button (click)="prevpage()" mat-icon-button
+                                            [disabled]="pagination.has_previous === false" color="primary">
+                                            <mat-icon>arrow_back</mat-icon>
+                                        </button>
+                                        {{pagination.index}}
+                                        <button (click)="nextpage()" mat-icon-button
+                                            [disabled]="pagination.has_next === false" color="primary">
+                                            <mat-icon>arrow_forward</mat-icon>
+                                        </button>
+
+                                    </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- <div *ngIf="showdatatable">
+    
+    <div id="leadssummary" class="table-responsive">
+    
+      <table class="table table-hover border mt-1" id="leadstable" matSort>
+      
+        <thead class="table_header">
+          <th mat-sort-header="sortcol1">S.No</th>
+          <th mat-sort-header="sortcol2">First Name</th>
+          <th mat-sort-header="sortcol3">Last Name</th>
+          <th mat-sort-header="sortcol4">Middle Name</th>
+          <th mat-sort-header="sortcol5" style="width: 120px;">DOB </th>
+          <th mat-sort-header="sortcol6">Adhaar</th>
+          <th mat-sort-header="sortcol7">PAN</th>
+         
+          <th>Action</th>
+        </thead>
+        <tbody *ngFor="let lists of leadssummarylist | searchfilter : searchText;index as ind">
+          <tr>
+            <td>{{(pagination.index-1)*limit+ind+1}}</td>
+            <td>{{lists.first_name}}</td>
+            <td>{{lists.last_name}}</td>
+            <td>{{lists.middle_name}}</td>
+            <td>{{lists.dob | date : 'MMM d, y'}}</td>
+            <td>{{lists.aadhaar_no }}</td>
+            <td>{{lists.pan_no}}</td>
+          
+            <td>
+              <mat-icon (click)="viewLeadDetails(lists.id)">visibility</mat-icon>
+            </td>
+          </tr>
+  
+        </tbody>
+  
+      </table>
+  
+  
+      <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+        <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false" color="primary">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        {{pagination.index}}
+        <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+  
+      </div>
+  
+    </div>
+    </div> -->
+
+
+  <div *ngIf="showleadsview" style="margin-left:1%;display:flex;" >
+    <div appResizeble id="topSectionTitle" style="padding-right:5px;width:65%" class="sectionTitle ">
+
+
+      <div>
+
+
+        <h4 class="card-title" style="font-size:21px;">
+          <button mat-icon-button (click)="gotoDatapage()">
+            <mat-icon class="alignvertical">
+              arrow_back
+            </mat-icon>
+          </button>
+          {{leadsview?.first_name}}&nbsp;{{leadsview?.middle_name}}&nbsp;{{leadsview?.last_name}}&nbsp;&nbsp;
+          - <span style="font-size:17px;"> {{leadsview.occupancy}}</span>
+        </h4>
+
+
+        <hr>
+        <h3 >Lead Information</h3>
+        <div style="margin-bottom:1%;" class="row" *ngFor="let item of leadDetails">
+          <div class="col-md-2 heading" *ngIf="item?.value1">
+            <mat-label>
+              {{item.name1}}
+            </mat-label>
+          </div>
+
+          <div class="col-md-4 value" *ngIf="item?.value1">
+            <mat-label>
+              {{item.value1}}
+            </mat-label>
+          </div>
+          <div class="col-md-3 heading" *ngIf="item?.value2">
+            <mat-label>
+              {{item.name2}}
+            </mat-label>
+          </div>
+          <div class="col-md-3 value" *ngIf="item?.value2">
+            <mat-label>
+              <span *ngIf="item?.pipe2;else value2">{{item.value2}}</span>
+              <ng-template #value2>
+                {{item.value2}}
+              </ng-template>
+            </mat-label>
+          </div>
+
+        </div>
+        <mat-accordion>
+          <mat-expansion-panel #panel>
+            <mat-expansion-panel-header>
+
+              <div *ngIf="!panel.expanded">Show Details</div>
+              <div *ngIf="panel.expanded">Hide Details</div>
+
+            </mat-expansion-panel-header>
+
+            <label class="mainheading">Address Details</label>
+            <br>
+
+            <div class="row maincontent" *ngFor="let item of addressDetails">
+              <div class="col-md-2 heading" *ngIf="item?.value1">
+                <mat-label>
+                  {{item.name1}}
+                </mat-label>
+              </div>
+
+              <div class="col-md-4 value" *ngIf="item?.value1">
+                <mat-label>
+                  {{item.value1}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 heading" *ngIf="item?.value2">
+                <mat-label>
+                  {{item.name2}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 value" *ngIf="item?.value2">
+                <mat-label>
+                  <span *ngIf="item?.pipe2;else temp3">{{item.value2}}</span>
+                  <ng-template #temp3>
+                    {{item.value2}}
+                  </ng-template>
+                </mat-label>
+              </div>
+
+            </div>
+            <label class="mainheading">Family Details</label>
+            <br>
+
+            <div class="row maincontent" *ngFor="let item of familyDetails">
+              <div class="col-md-2 heading" *ngIf="item?.value1">
+                <mat-label>
+                  {{item.name1}}
+                </mat-label>
+              </div>
+
+              <div class="col-md-4 value" *ngIf="item?.value1">
+                <mat-label>
+                  {{item.value1}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 heading" *ngIf="item?.value2">
+                <mat-label>
+                  {{item.name2}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 value" *ngIf="item?.value2">
+                <mat-label>
+                  <span *ngIf="item?.pipe2;else temp2">{{item.value2}}</span>
+                  <ng-template #temp2>
+                    {{item.value2}}
+                  </ng-template>
+                </mat-label>
+              </div>
+
+            </div>
+            <label class="mainheading">Bank Details</label>
+            <br>
+
+            <div class="row maincontent" *ngFor="let item of bankDetails">
+              <div class="col-md-2 heading" *ngIf="item?.value1">
+                <mat-label>
+                  {{item?.name1}}
+                </mat-label>
+              </div>
+
+              <div class="col-md-4 value" *ngIf="item?.value1">
+                <mat-label>
+                  {{item?.value1}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 heading" *ngIf="item?.value2">
+                <mat-label>
+                  {{item?.name2}}
+                </mat-label>
+              </div>
+              <div class="col-md-3 value" *ngIf="item?.value2">
+                <mat-label>
+                  <span *ngIf="item?.pipe2;else temp2">{{item.value2}}</span>
+                  <ng-template #temp2>
+                    {{item.value2}}
+                  </ng-template>
+                </mat-label>
+              </div>
+
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+      </div>
+
+      <!-- <app-lead></app-lead> -->
+      <!-- <div>
+        <div>
+          <section>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-12 pb-4">
+                  <h1>Notes</h1>
+                  <div class="comment mt-4 text-justify float-left" *ngFor="let note of notesList;let i=index" >
+                    <h4>{{note?.created_by?.full_name}}</h4>
+                    <span>- {{note?.created_date | date:"dd-MMM-yyyy"}}</span>
+                    <br>
+                    <p>{{note?.note}}</p>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            </section>
+        </div>
+      </div> -->
+
+    </div>
+
+    <div style="padding:1%;width:100%">
+      <!-- <mat-tab-group [selectedIndex]="tabIndex">
+        <mat-tab label="Lead-Product List">
+          <app-follow-up-leads-and-task></app-follow-up-leads-and-task>
+        </mat-tab>
+        <mat-tab label="Task">
+          <app-employee-task-edit></app-employee-task-edit>
+        </mat-tab>
+      </mat-tab-group> -->
+      <mat-tab-group>
+        <mat-tab style="display:none" label="Lead-Product List">
+          <br>
+          <app-followupleadandtask  ></app-followupleadandtask>
+
+        </mat-tab>
+        <mat-tab label="Task">
+          <br>
+
+          <app-employeetaskedit (ptb)="ptb()" ></app-employeetaskedit>
+          <!-- <app-lead></app-lead> -->
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+
+  <div *ngIf="showassignemployee"
+    style="margin:1%;display:flex;box-shadow: 0 4px 10px rgba(0,0,0,0.16), 0 4px 10px rgba(0,0,0,0.23);border-radius: 15px;">
+    <div appResizable id="topSectionTitle" style="padding:1%;width:100%" class="sectionTitle">
+      <div>
+        <h4 class="card-title" style="font-size:21px;">
+          <button mat-icon-button (click)="gotoDatapage()">
+            <mat-icon class="alignvertical">
+              arrow_back
+            </mat-icon>
+          </button>
+          {{leadsview?.first_name}}&nbsp;{{leadsview?.middle_name}}&nbsp;{{leadsview?.last_name}}&nbsp;&nbsp;
+          - <span style="font-size:17px;"> {{leadsview.occupancy}}</span>
+        </h4>
+
+        <hr>
+
+        <div>
+          <h3 style="margin-left:3%">Assign Lead</h3>
+          <form [formGroup]="assignleadform">
+            <table>
+              <tr>
+                <td>
+
+                  <!-- <mat-form-field (click)="getvendorgroupdropdown()"
+                    style="width: 250px;margin-left:30px">
+                    <mat-label>Group</mat-label>
+                    <input matInput formControlName="vendorgroup_id"
+                      (keyup)="getvendorgroupdropdown()"
+                      [matAutocomplete]="group">
+
+                    <mat-autocomplete #group="matAutocomplete" [displayWith]="displaygroup">
+
+                      <mat-option (click)="clearemployeedetails()" *ngFor="let value of vendorgroupdata"
+                        [value]="value">
+                        {{value.name}}
+                      </mat-option>
+
+                    </mat-autocomplete>
+                  </mat-form-field> -->
+
+                  <mat-form-field (click)="getvendorgroupdropdown()" style="width: 300px;margin-left:30px">
+                    <mat-label>Group</mat-label>
+
+                    <input matInput formControlName="vendorgroup_id" (keyup)="getvendorgroupdropdown()"
+                      [matAutocomplete]="group">
+
+                    <mat-autocomplete #group="matAutocomplete" [displayWith]="displayvendorbasedgroup">
+
+                      <mat-option (click)="clearemployeedetails()" *ngFor="let value of vendorgroupdata"
+                        [value]="value">
+                        {{value.vendorgroup_id.name}}
+                      </mat-option>
+
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                </td>
+                <td>
+                  <mat-form-field style="width:400px;margin-left: 30px;" [ngClass]="assignleadform.value.vendorgroup_id==''? 'disabledclick':''"
+                    (click)="getgroupbasedemployee('')">
+                    <mat-label>Employees</mat-label>
+                    <mat-chip-list #chiplistemployee>
+                      <mat-chip *ngFor="let chip of selectedemployees" selectable="true" removable="true"
+                        (removed)="getremovechip(chip)">
+                        {{chip.full_name}} ( Limit : {{chip?.limit}} ) <mat-icon matChipRemove
+                          *ngIf="true">cancel
+                        </mat-icon>
+                      </mat-chip>
+                    </mat-chip-list>
+                    <input matInput #employeeinput formControlName="employee_id"
+                      [matAutocomplete]="employeechipautocomplete" [matChipInputFor]="chiplistemployee"
+                      matChipInputAddOnBlur="true"
+                      (keyup)="getgroupbasedemployee(assignleadform.value.employee_id)">
+                    <button mat-button matSuffix mat-icon-button
+                      [ngClass]="(selectedemployees.length == groupbasedemployee.length && selectedemployees.length > 0 &&  groupbasedemployee.length >0 )? 'selectall':'' "
+                      (click)="selectallemployee()">
+                      <mat-icon>done_all</mat-icon>
+                    </button>
+                    <mat-autocomplete #employeechipautocomplete="matAutocomplete"
+                      [displayWith]="displayfngroupbasedemployees" (optionSelected)="selectedemployee($event)">
+                      <mat-option *ngFor="let value of groupbasedemployee" [value]="value">
+                        <!-- {{value.full_name}} ( Limit : {{value.limit}} ) -->
+                        {{value.full_name}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+
+
+                </td>
+              </tr>
+              <br>
+              <tr>
+                <div style="margin-left:12px ;margin-top: 3%;">
+                  <button type="button" class="btn btn-light" (click)="gotoDatapage()" style="border-radius: 7px;margin-left: 10px;
+          border-color: black;
+          background-color: white;">Cancel</button>
+                  <button type="submit" style="border-radius: 10px;margin-left: 10px;
+          border-color: #f5c68b;
+          background-color: #f5c68b;" class="btn btn-light" (click)="leadagentemployeemapping()">Submit</button>
+                </div>
+              </tr>
+
+            </table>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- <div>
+    <app-lead></app-lead>
+  </div> -->
+</div>

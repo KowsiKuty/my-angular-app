@@ -1,0 +1,418 @@
+<div style="margin-left: 40px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 50%;"><h2>
+                Agreement Add/Edit
+            </h2></td>
+            <td style="width: 50%;"><h2>
+                <div style="color:#a39e9e; font-family:  'Arial Narrow Bold', sans-serif">
+                    {{request_Status}} - {{premise_status}}
+                </div></h2>
+            </td>
+        </tr>
+    </table>
+</div>
+<div style="margin-left: 100px;margin-right: 80%;margin-top: 1%;width: 100%;">
+
+    <div>
+        <form [formGroup]="agreementForm" (ngSubmit)="agreementFormCreate()">
+            <table>
+            <div>   
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Schedule Type</mat-label>
+                            <mat-select formControlName="type" id="lease-agreement-0001">
+                                <mat-option (onSelectionChange)="scheduleTypechange($event)" *ngFor="let type of typeList" [value]="type.id">
+                                    {{type.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Status</mat-label>
+                            <mat-select formControlName="lease_status" id="lease-agreement-0002">
+                                <mat-option *ngFor="let status of leaseStatus" [value]="status.id">
+                                    {{status.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Primary Contact</mat-label>
+                            <input placeholder="Select Primary" matInput formControlName="primary_contact"
+                                #primaryContactInput [matAutocomplete]="autoPrimary" required id="lease-agreement-0003">
+                            <mat-autocomplete #autoPrimary="matAutocomplete" (opened)="autocompletePrimaryScroll()"
+                                [displayWith]="displayFn1">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let primary of primaryContactList" [value]="primary">
+                                        {{primary.full_name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <input matInput readonly [matDatepicker]="picker" formControlName="start_date" 
+                             (dateChange)="setDate($event.value)"
+                                placeholder="Lease Start Date" id="lease-agreement-0004">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </td> 
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker2" formControlName="end_date" 
+                                (dateChange)="enddate($event.value)"
+                                placeholder="Lease End Date" id="lease-agreement-0005">
+                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Lease Period(in Months)</mat-label>
+                            <input matInput placeholder="Lease Period(in Months)" [readonly] = "true" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="lease_period" [(ngModel)]="leasePeriod"
+                                required id="lease-agreement-0006">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Lease Registration Status</mat-label>
+                            <mat-select formControlName="lease_registration_status" id="lease-agreement-0007">
+                                <mat-option *ngFor="let status of registrationStatus"
+                                    (click)="regStatusDropDown(status)" [value]="status.id">
+                                    {{status.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="isRegdate">
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker3" formControlName="registration_date"
+                                placeholder="Registration Date" id="lease-agreement-0008">
+                            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                            <mat-datepicker #picker3></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+
+                    <td *ngIf="isRegcharges">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Lease Registration Charges</mat-label>
+                            <input matInput placeholder="Lease Registration Charges" maxlength="9" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="lease_registration" required id="lease-agreement-0009">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td *ngIf="isChargespaidby">
+                        <mat-form-field class="input-style">
+                            <mat-label>Lease Registration Charges Paid by</mat-label>
+                            <mat-select formControlName="lease_regcharges_paidby" id="lease-agreement-0010">
+                                <mat-option *ngFor="let regcharges of regchargespaidby"
+                                    (click)="regchargesDropDown(regcharges)" [value]="regcharges.id">
+                                    {{regcharges.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="isECFNo">
+                        <mat-form-field class="input-style2">
+                            <mat-label>ECF No</mat-label>
+                            <input matInput placeholder="ECF No" maxlength="20" autocomplete="off" (keypress)="omit_special_char($event)"
+                                formControlName="ecf_no" id="lease-agreement-0011">
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="isAllocation">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Allocation</mat-label>
+                            <input matInput placeholder="Allocation" autocomplete="off" maxlength="9" (keypress)="numberOnly($event)"
+                                formControlName="allocation" id="lease-agreement-0012">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Temporary Lease</mat-label>
+                            <mat-select formControlName="temporary_lease" id="lease-agreement-0013">
+                                <mat-option *ngFor="let temporary of temporaryLease" [value]="temporary.id">
+                                    {{temporary.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Security Deposit</mat-label>
+                            <input matInput placeholder="Security Deposit" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="security_deposit" required id="lease-agreement-0014">
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Lock in Period</mat-label>
+                            <input matInput placeholder="Lock in Period" autocomplete="off"
+                                formControlName="lock_in_period" id="lease-agreement-0015">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Lease Enhancement Terms</mat-label>
+                            <input matInput placeholder="Lease Enhancement Terms" autocomplete="off" (keypress)="omit_special_char($event)"
+                                formControlName="enhancement_terms" id="lease-agreement-0016">
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+
+                        <mat-form-field class="input-style2">
+                            <mat-label>Rent Adjustment Clause</mat-label>
+                            <input matInput placeholder="Rent Adjustment Clause" autocomplete="off"
+                                formControlName="rent_adjustment" id="lease-agreement-0017">
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Vacation Terms</mat-label>
+                            <input matInput placeholder="Vacation Terms" autocomplete="off"
+                                formControlName="vacation_terms" id="lease-agreement-0018">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Vacation Notice Period</mat-label>
+                            <input matInput placeholder="Vacation Period" autocomplete="off"
+                                formControlName="vacation_period" id="lease-agreement-0019">
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker5" formControlName="relaxation_start_date"
+                                (dateChange)="setDate1($event.value)"
+                                placeholder="Relaxation Start Date" id="lease-agreement-0020">
+                            <mat-datepicker-toggle matSuffix [for]="picker5"></mat-datepicker-toggle>
+                            <mat-datepicker #picker5></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker4" formControlName="relaxation_end_date"
+                                (dateChange)="relaxationEnddate($event.value)"
+                                placeholder="Relaxation End Date" [min]="toDate1" id="lease-agreement-0021">
+                            <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                            <mat-datepicker #picker4></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Relaxation Period(in Months)</mat-label>
+                            <input matInput placeholder="Relaxation Period(in Months)" [readonly] = "true" autocomplete="off"
+                                (keypress)="numberOnly($event)" formControlName="relaxation_period"
+                                [(ngModel)]="relaxationPeriod" id="lease-agreement-0022">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker6" formControlName="vacation_date"
+                                placeholder="Key Handover Date" id="lease-agreement-0023">
+                            <mat-datepicker-toggle matSuffix [for]="picker6"></mat-datepicker-toggle>
+                            <mat-datepicker #picker6></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Reason For Vacation </mat-label>
+                            <input matInput placeholder="Reason For Vacation" autocomplete="off"
+                                formControlName="vacation_reason" id="lease-agreement-0024">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Occupancy</mat-label>
+                            <mat-chip-list #chipList>
+                                <mat-chip *ngFor="let occu of chipSelectedOccupancy" [selectable]=true
+                                    [removable]=true (removed)="removeOccupancy(occu)">
+                                    {{occu.occupancy_code}}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                                <input #occupancyInput [formControl]="agreement_occupancy_map" [matAutocomplete]="autooccu"
+                                    [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    [matChipInputAddOnBlur]=true id="lease-agreement-0025">
+                            </mat-chip-list>
+                            <mat-autocomplete #autooccu="matAutocomplete" (optionSelected)="occupancySelected($event)">
+                                <mat-option *ngFor="let occupany of OccupancyListobj" [value]="occupany">
+                                    {{occupany.code}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td style="padding-left: 60px;">
+                        <mat-form-field class="input-style">
+                            <mat-label>Rent Paying Office</mat-label>
+                            <input #office1Input matInput formControlName="rentpaying_ofz" autocomplete="off"
+                                placeholder="Select Rent Paying Office" [matAutocomplete]="prioffice" required id="lease-agreement-0026">
+                            <mat-autocomplete #prioffice="matAutocomplete" [displayWith]="displayPriOff"
+                                (opened)="priOffScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let primary of primaryData" [value]="primary">
+                                        {{primary.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="comefrom == 'EDITAGREEMENT'">                 
+                        <mat-form-field class="input-style2">
+                            <mat-label>Status</mat-label>
+                            <mat-select formControlName="status" id="lease-agreement-0027">
+                                <mat-option *ngFor="let st of Status" [value]="st.id">
+                                    {{st.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr> 
+            </div>
+ 
+            <div [formGroup]="agreementForm.controls.landlord_allocation_ratio">
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Landlord</mat-label>
+                            <input placeholder="Select Landlord" matInput formControlName="landlord_id"
+                                #landlordInput [matAutocomplete]="auto" required id="lease-agreement-0028">
+                            <mat-autocomplete #auto="matAutocomplete" 
+                                [displayWith]="displayFnLandlord">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let landlord of landList" [value]="landlord">
+                                        {{landlord.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td> 
+                        <mat-form-field class="input-style2">
+                            <input matInput #ratio placeholder="Share%" (keypress)="numberOnlyandDot($event)" 
+                            (input)="valPercent()" type = "number" formControlName="share" autocomplete="off" required id="lease-agreement-0029">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>BS</mat-label>
+                            <input placeholder="Select BS" matInput formControlName="bs_id"
+                                #BSInput [matAutocomplete]="autobs1" required id="lease-agreement-0030">
+                            <mat-autocomplete #autobs1="matAutocomplete" 
+                                [displayWith]="displayFnBS">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option (onSelectionChange)="OnBSChange($event)" *ngFor="let cc of BSList" [value]="cc" (click) ="getccList()">
+                                        {{cc.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>CC</mat-label>
+                            <input placeholder="Select CC" matInput formControlName="cc_id"
+                                #BSInput [matAutocomplete]="autocc1" required id="lease-agreement-0031">
+                            <mat-autocomplete #autocc1="matAutocomplete" 
+                                [displayWith]="displayFnCC">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option  *ngFor="let cc of CCList" [value]="cc">
+                                        {{cc.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                    <button  *ngIf="AgreementDate_or_Landlord_Modify" type="button" class="btn btn-outline-success" (click)="addLandlord()" matTooltip="Add Row"
+                        style="border-radius:40px;margin-left: 50px; display:flex;" id="lease-agreement-0032"><span class="fa fa-plus"></span></button>
+                    </td>
+                </tr>
+            </div>
+            
+
+
+                <div class="table-responsive" style="margin-top: 2%;width: fit-content;" class="center">
+                <table class="table table-bordered" fixed-header>
+                    <thead class="table_header">
+                            <tr>
+                                 <th>Sl.No</th>
+                                <th>Landlord Name</th>
+                                <th>Share%</th>
+                                <th>BS</th>
+                                <th>CC</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead> 
+                        <tbody>
+                            <tr *ngFor="let details of detailsList;index as i">
+                                <td>{{i+1}}</td>
+                                <td><span *ngIf="details.landlord_name">{{details.landlord_name}}</span>
+                                    <span *ngIf="details.landlord_id">{{details.landlord_id.name}}</span>
+                                </td>
+                                <td>{{ details.share}}</td>
+                                <td>
+                                    <span *ngFor="let bs of details.ccbs; index as i">
+                                       <span *ngIf="bs.ccbs_details"> {{bs.ccbs_details.bs_name}}</span>
+                                       <span *ngIf="bs.bsname"> {{bs.bsname}}</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span *ngFor="let cc of details.ccbs; index as i">
+                                       <span *ngIf="cc.ccbs_details"> {{cc.ccbs_details.cc_name}}</span>
+                                       <span *ngIf="cc.ccname"> {{cc.ccname}}</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span *ngIf="AgreementDate_or_Landlord_Modify">
+                                        <mat-icon style="color: gray;cursor: pointer;" (click)="DeleteDetails(i)" matTooltip="Delete">delete</mat-icon>
+                                    </span>
+                                </td> 
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </table>
+            <div style="margin-bottom: 5%;">
+                <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" id="lease-agreement-0033">Submit</button>
+                <button type="button" (click)="onCancelClick()" style="border-radius: 40px;margin-left: 10px;"
+                class="btn btn-outline-primary" id="lease-agreement-0034">Cancel</button>
+                </div>
+        </form>
+    </div>
+</div>
+<!-- <pre>{{agreementForm.value|json}}</pre> -->

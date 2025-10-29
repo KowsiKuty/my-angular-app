@@ -1,0 +1,986 @@
+<div style="margin-left: 50px; margin-top: 3%">
+  <div *ngIf="isprimessummary">
+    <h2 style="color: black; margin-left: 4%; display: inline">
+      Vendor Markup-Premises Summary
+    </h2>
+    <button type="button" style="border-radius: 40px; margin-left: 20%; width: max-content"
+      class="btn btn-outline-primary" data-toggle="modal" data-target="#premiseadd">
+      <span class="fa fa-plus"></span> Premises Mapping
+    </button>
+    <h2 style="margin-left: 4%; margin-top: 1%">Vendor : {{ vendorName }}</h2>
+    <h2 style="margin-left: 4%">State &nbsp;&nbsp;&nbsp;: {{ state }}</h2>
+    <h2 style="margin-left: 4%">Zone &nbsp;&nbsp;&nbsp;: {{ zone }}</h2>
+    <!-- <div > -->
+    <div>
+      <form [formGroup]="premisearchform" style="margin-bottom: 3%; margin-left: 4%">
+        <!-- <table style="margin-bottom: 3%;">
+                     <div> 
+                         <tr>
+                              
+                             <td> -->
+
+        <mat-form-field style="width: 250px" (click)="branchSearch()">
+          <mat-label>Branch</mat-label>
+          <input placeholder="Branch" matInput formControlName="branch_id" #branchContactInput
+            (click)="clearpremiseSearch()" [matAutocomplete]="branchtype" />
+          <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaybranchSearch"
+            (opened)="autocompletebranchsearchScroll()">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let branchSearh of branchSearhList" (focusout)="FocusBranchSearch(branchSearh)"
+                [value]="branchSearh">
+                ({{ branchSearh.code }} ){{ branchSearh.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- </td> 
+                             <td> -->
+        <mat-form-field style="width: 250px; margin-left: 4%" (click)="premiseSearch()">
+          <mat-label>Premises</mat-label>
+          <input placeholder="Premises" matInput formControlName="premise_id" #PremiseContactInput
+            [matAutocomplete]="producttype" />
+          <mat-autocomplete #producttype="matAutocomplete" [displayWith]="displayPremiseSearch"
+            (opened)="autocompletePremiseSearchScroll()">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let premiseSearch of premiseSearchlist" [value]="premiseSearch">
+                ({{ premiseSearch.code }}){{ premiseSearch.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- </td>  -->
+        <!-- <td style="       padding-left: 14%;">
+                             <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" (click)="serachform(premisearchform.value)"
+                             >Search</button>
+                            </td> -->
+        <button class="btn btn-outline-primary" type="submit" (click)="PM_summarySearch()"
+          style="border-radius: 40px; margin-left: 5%" color="primary">
+          <i class="fa fa-search" aria-hidden="true"></i>
+        </button>
+        <button class="btn btn-outline-primary" type="submit" style="border-radius: 40px; margin-left: 2%"
+          (click)="formreset()" color="primary">
+          Reset
+        </button>
+
+        <button style="border-radius: 40px; margin-left: 5%" class="btn btn-outline-success" (click)="onBackClick()">
+          Back
+        </button>
+
+        <!-- </tr> 
+                     </div> 
+                 </table> -->
+      </form>
+
+      <div style="margin-top: 2%; margin-bottom: 3%; margin-left: 10%">
+        <!-- <h2><div style="color: green;"> Employee Category:{{categoryname}}</div></h2> -->
+      </div>
+      <div style="margin-top: 3%">
+        <div class="table-responsive" style="margin-top: 0.5%; width: 90%; margin-left: 4%">
+          <table class="table table-bordered" fixed-header style="text-align: center; width: 98%">
+            <thead class="table_header">
+              <tr>
+                <th rowspan="2">S.No</th>
+                <th rowspan="2">Created Date</th>
+                <th rowspan="2">Paying Branch</th>
+                <th rowspan="2">Premises</th>
+                <!-- <th rowspan="2">Paying Branch</th> -->
+
+                <th colspan="2">Armed</th>
+                <th colspan="2">Unarmed</th>
+                <th rowspan="2">View</th>
+                <th rowspan="2">Active Status</th>
+                <!-- <th rowspan="2" *ngIf="adminRightsShowHide">Action</th> -->
+                <th rowspan="2">Action</th>
+              </tr>
+              <tr>
+                <th>Count</th>
+                <th>Shift</th>
+                <th>Count</th>
+                <th>Shift</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let premise of premiselist; index as i">
+                <td>{{ (presentpagetype - 1) * pagesize + i + 1 }}</td>
+                <td>{{ premise?.created_date | date : "dd-MMM-yyyy" }}</td>
+                <td>
+                  ({{ premise?.branch_id?.code }}){{
+                  " " + premise?.branch_id?.name
+                  }}
+                </td>
+                <td>
+                  ({{ premise?.premise_id?.code }}){{
+                  " " + premise?.premise_id?.name
+                  }}
+                </td>
+                <!-- <td> ({{ premise.paying_branch.code}}){{" "+premise.paying_branch.name}} </td> -->
+
+                <button style="display: none" #button data-toggle="modal" data-target="#employeeadd"></button>
+
+                <td (click)="employeepatch(premise, 'Armed')" style="cursor: pointer" class="armed-card">
+                  {{ checkarmEmployeecount(premise?.type, 1)
+                  }}<i style="margin-left: 10px; color: mediumblue" class="fa fa-external-link"></i><span
+                    class="hovercard-armed">Add the Armed Employee</span>
+                </td>
+                <td>{{ checkarmEmployeecount(premise?.type, 2) }}</td>
+
+                <td (click)="employeepatch(premise, 'Unarmed')" style="cursor: pointer" class="unarmed-card">
+                  {{ checkunarmEmployeeshift(premise?.type, 1)
+                  }}<i style="margin-left: 10px; color: mediumblue" class="fa fa-external-link"></i><span
+                    class="hovercard-unarmed">Add the Unarmed Employee</span>
+                  <!-- <span  (click)="employeepatch1(premise)">
+                                         <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                                         data-target="#employeeadd" style="border-radius:40px;margin-left: 50px" [disabled]="premise.employee_count >= premise.count" ><span
+                                             class="fa fa-plus"></span>
+                                        </button></span> -->
+                </td>
+
+                <td>{{ checkunarmEmployeeshift(premise?.type, 2) }}</td>
+                <td>
+                  <button type="button" class="btn btn-outline-success" id="data" data-toggle="modal"
+                    (click)="getEmployeeListprimebranch(premise)" data-target="#employeesummary"
+                    style="border-radius: 40px; margin-left: 50px">
+                    <span class="fa fa-eye"></span>
+                  </button>
+                </td>
+                <td>
+                  {{premise?.status?.text}}
+                </td>
+                <td>
+                  <!-- <td *ngIf="adminRightsShowHide"> -->
+                  <!-- {{premise.is}} -->
+                  <!-- <button
+                    type="submit"
+                    class="btn btn-outline-danger"
+                    style="border-radius: 40px"
+                    (click)="UpdateDeavtivateStatus(premise)"
+                  >
+                    Deactivate
+                  </button> -->
+                  <button mat-icon-button matTooltip=" Edit" class="iconbutton" (click)="Edit_data(premise)"
+                    data-toggle="modal" data-target="#premiseedit" color="primary">
+                    <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                  </button>
+                  <mat-slide-toggle [checked]="premise?.status?.id===1" (change)="onChange($event,premise)">
+                  </mat-slide-toggle>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="premiselist?.length == 0" style="margin-left: 42%">
+            <h3>Sorry data not found!..</h3>
+          </div>
+          <div class="row" *ngIf="isPremisesMapping">
+            <div class="col-sm-12" style="font-size: small; text-align: right; margin-bottom: 100px">
+              <button mat-icon-button [disabled]="has_previouspremis === false" color="primary"
+                (click)="primespreviousClick()">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+              {{ presentpagetype }}
+              <button mat-icon-button [disabled]="has_nextprimes === false" color="primary" (click)="primesnextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- </div> -->
+  </div>
+
+  <div class="modal fade" id="premiseedit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" style="
+              color: black;
+              font-family: 'Times New Roman', Times, serif;
+              font-size: 20px;
+            ">
+            Premises Mapping
+          </h2>
+          <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close"
+            (click)="cancelprimesform()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="typeeditform" style="margin-left: 10%">
+          <table style="margin-bottom: 3%">
+            <div>
+              <!-- <form [formGroup]="risk_form" style="margin-left: 10%"> -->
+              <div>
+                <h2>State &nbsp;&nbsp;&nbsp; : {{ state }}</h2>
+                <h2>Zone &nbsp;&nbsp;&nbsp;&nbsp;: {{ zone }}</h2>
+                <h2>Vendor : {{ vendorName }}</h2>
+                <h2>Paying branch : {{ paying_branch }}</h2>
+                <h2>Premises : {{ premises }}</h2>
+                <h2>Risk Categorization : 
+ <mat-form-field style="width: 200px">
+    <mat-label>Risk Categorization</mat-label>
+    <mat-select formControlName="risk_categorization">
+      <mat-option *ngFor="let shift of RiskcatList" [value]="shift.id">
+        {{ shift.text }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+                </h2>
+                <br />
+              </div>
+              <!-- </form> -->
+              <!-- <tr>
+                  <td>
+                    <mat-form-field style="width: 275px" (click)="branchaddname()">
+                      <mat-label>Paying branch</mat-label>
+                      <input placeholder="Paying branch" (click)="clearpremises()" matInput formControlName="branch_id"
+                        #addbranchContactInput [matAutocomplete]="branchtypeaddpri" required />
+                      <mat-autocomplete #branchtypeaddpri="matAutocomplete" [displayWith]="displayBranchAdd"
+                        (opened)="autocompleteaddbranchnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let addBranch of addBranchList" (focusout)="FocusPayingBranch(addBranch)"
+                            [value]="addBranch">
+                            ({{ addBranch.code }}){{ addBranch.name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 5%">
+                    <mat-form-field style="width: 250px" (click)="premiseaddname()">
+                      <mat-label>Premises</mat-label>
+                      <input placeholder="Premises" matInput formControlName="premise_id" #addPremiseContactInput
+                        [matAutocomplete]="addpri" required />
+                      <mat-autocomplete #addpri="matAutocomplete" [displayWith]="displayPremiseAdd"
+                        (opened)="autocompleteaddpremisenameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let addPremise of addPremiseList"
+                            (focusout)="FocusOutPremises(addPremise)" [value]="addPremise">
+                            ({{ addPremise.code }}){{ addPremise.name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td *ngIf="isPremisesAddress" style="padding-left: 20%">
+                    <button mat-icon-button matTooltip="View Address" class="iconbutton" color="primary" mat-button
+                      data-toggle="modal" data-target="#viewAddress">
+                      <span class="material-icons" style="
+                          font-size: xx-large;
+                          cursor: pointer;
+                          color: mediumblue;
+                        ">
+                        open_in_new
+                      </span>
+                    </button>
+                  </td>
+                </tr> -->
+              <!-- </form> -->
+            
+                <tr *ngIf="isemp_edited">
+                  <h3>Edit Employee Details</h3>
+                </tr>
+                <tr *ngIf="isemp_edited">
+                  <td>
+                    <mat-form-field style="width: 200px" (click)="employeetypename()">
+                      <mat-label>Employee Type</mat-label>
+                      <input placeholder="Employee Type" matInput formControlName="type_id"
+                        [matAutocomplete]="employetype" />
+                      <mat-autocomplete #employetype="matAutocomplete" [displayWith]="displaydiss">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let type of employeetypelist" [value]="type">
+                            {{ type.emptype }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 175px;margin-left:30px">
+                      <mat-label>Employee Count</mat-label>
+                      <input type="number" matInput placeholder="Employee Count" formControlName="count"
+                        autocomplete="off" />
+                    </mat-form-field>
+                  </td>
+
+                  <td>
+                    <mat-form-field style="width: 200px; margin-left: 30px">
+                      <mat-label>Shift Type</mat-label>
+                      <mat-select formControlName="shift_type" (selectionChange)="
+                          shiftselect(typeaddform.value.shift_type)
+                        ">
+                        <mat-option *ngFor="let shift of HourShift" [value]="shift.id">
+                          {{ shift.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 200px; margin-left: 30px">
+                      <mat-label>Shift Count</mat-label>
+                      <mat-select formControlName="shift_count">
+                        <mat-option *ngFor="let shift of Shiftcount" [value]="shift.id">
+                          {{ shift.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr *ngIf="isemp_edited">
+                    <td>
+                      <mat-form-field style="width: 200px" (click)="shiftname()">
+                      <mat-label>Shift Name</mat-label>
+                      <input placeholder="Shift Name" matInput formControlName="shift_name"
+                        [matAutocomplete]="shift_name" />
+                      <mat-autocomplete #shift_name="matAutocomplete" [displayWith]="displayshiftname">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let type of Shiftname_List" [value]="type" (click)="editselectedshiftname(type)">
+                            {{ type.shift_name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 200px; margin-left: 30px">
+                      <mat-label>Shift Code</mat-label>
+                      <input matInput placeholder="Shift Code" formControlName="shift_code" readonly
+                        autocomplete="off" />
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 200px; margin-left: 30px">
+                      <mat-label>Shift Time</mat-label>
+                      <input matInput placeholder="Shift Time" formControlName="shift_time" readonly
+                        autocomplete="off" />
+                    </mat-form-field>
+                  </td>
+                  <td >
+                    <mat-form-field style="width: 200px; margin-left: 30px">
+                      <input matInput [matDatepicker]="dp" placeholder="Effective Month & Year"
+                        formControlName="monthdate" readonly [formControl]="monthdate" />
+                      <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                      <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandler($event)"
+                        (monthSelected)="chosenMonthHandler($event, dp)" panelClass="example-month-picker">
+                      </mat-datepicker>
+                    </mat-form-field>
+                  </td>
+
+                  
+                </tr>
+                <tr>
+
+                        <!-- <td *ngIf="isemp_edited">
+  <mat-form-field style="width: 200px">
+    <mat-label>Risk Categorization</mat-label>
+    <mat-select formControlName="risk_categorization">
+      <mat-option *ngFor="let shift of RiskcatList" [value]="shift.id">
+        {{ shift.text }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</td> -->
+
+                  <td style="padding-left: 30px">
+                    <button style="border-radius: 40px; margin-bottom: 10px" class="btn btn-outline-primary"
+                      (click)="edittypearr()">
+                      Add
+                    </button>
+                  </td>
+                </tr>
+
+                <mat-card>
+                  <table class="table table-bordered table-sm" fixed-header
+                style="text-align: left;  width: 100%">
+                <thead class="table_header">
+                      <tr>
+                        <th>Employee Type</th>
+                        <th>Employee Count</th>
+                        <th>Shift Name</th>
+                        <th>Shift type</th>
+                        <th>Shift Count</th>
+                        <th>Effective From Month</th>
+                        <th>Effective From Year</th>
+                        <th>Effective To Month</th>
+                        <th>Effective To Year</th>
+                        <!-- <th>Risk Categorization</th> -->
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let type of emp_type_editdata; let i = index">
+                        <td>{{ type?.type_id?.emptype }}</td>
+                        <td>{{ type.count }}</td>
+                        <td>{{type?.shift_name?.shift_name}}</td>
+                        <td>
+                          {{
+                          type.shift_type == 2
+                          ? "12 hour"
+                          : type.shift_type == 3
+                          ? "10 hour"
+                          : "8 hour"
+                          }}
+                        </td>
+                        <td>{{ type?.shift_count }}</td>
+                        <td>{{ monthNames[type?.effective_from_month - 1]}}</td>
+                        <td>{{ type?.effective_from_year}}</td>
+                        <td>{{ monthNames[type?.effective_to_month - 1]}}</td>
+                        <td>{{ type?.effective_to_year}}</td>
+                        <!-- <td >{{
+                          type?.risk_categorization == 1? "High" :
+                          type?.risk_categorization == 2? "Medium" :
+                          "Low"
+                           }}</td> -->
+                        <td><span *ngIf="type?.status == '1'">Activate</span>
+                          <span *ngIf="type?.status == '0'">Inactivate</span></td>
+                        <td>
+                          <button mat-icon-button matTooltip="Edit" *ngIf="type?.status=='1'" class="iconbutton"
+                            (click)="patch_editdata(type,i)" color="primary">
+                            <mat-icon style="color: gray" aria-label="Delete">edit</mat-icon>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </mat-card>
+              <!-- </form> -->
+            </div>
+          </table>
+          </form>
+          <button type="submit" style="border-radius: 40px; margin-bottom: 10px; margin-left: 7%"
+            class="btn btn-outline-primary" (click)="PremiseeditForm()">
+            Submit
+          </button>
+          <button type="button" data-dismiss="modal" class="btn btn-outline-primary" (click)="cancelprimesform()"
+            style="border-radius: 40px; margin-left: 10px; margin-bottom: 10px">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="premiseadd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" style="
+            color: black;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 20px;
+          ">
+            Premises Mapping
+          </h2>
+          <button type="button" #closebuttonadd class="close" data-dismiss="modal" aria-label="Close"
+            (click)="cancelprimesform()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table style="margin-bottom: 3%">
+            <div>
+              <form [formGroup]="premiseaddform" style="margin-left: 10%">
+                <div>
+                  <h2>State &nbsp;&nbsp;&nbsp; : {{ state }}</h2>
+                  <h2>Zone &nbsp;&nbsp;&nbsp;&nbsp;: {{ zone }}</h2>
+                  <h2>Vendor : {{ vendorName }}</h2>
+                  <br />
+                </div>
+                <tr>
+                  <td>
+                    <mat-form-field style="width: 250px" (click)="branchaddname()">
+                      <mat-label>Paying branch</mat-label>
+                      <input placeholder="Paying branch" (click)="clearpremises()" matInput formControlName="branch_id"
+                        #addbranchContactInput [matAutocomplete]="branchtypeaddpri" required />
+                      <mat-autocomplete #branchtypeaddpri="matAutocomplete" [displayWith]="displayBranchAdd"
+                        (opened)="autocompleteaddbranchnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let addBranch of addBranchList" (focusout)="FocusPayingBranch(addBranch)"
+                            [value]="addBranch">
+                            ({{ addBranch.code }}){{ addBranch.name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 5%">
+                    <mat-form-field style="width: 250px" (click)="premiseaddname()">
+                      <mat-label>Premises</mat-label>
+                      <input placeholder="Premises" matInput formControlName="premise_id" #addPremiseContactInput
+                        [matAutocomplete]="addpri" required />
+                      <mat-autocomplete #addpri="matAutocomplete" [displayWith]="displayPremiseAdd"
+                        (opened)="autocompleteaddpremisenameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let addPremise of addPremiseList"
+                            (focusout)="FocusOutPremises(addPremise)" [value]="addPremise">
+                            ({{ addPremise.code }}){{ addPremise.name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 250px;margin-left: 80px;">
+                      <mat-label>Risk Categorization</mat-label>
+                      <mat-select formControlName="risk_cat" [disabled]="createrisk">
+                        <mat-option *ngFor="let shift of RiskcatList" [value]="shift">
+                          {{ shift.text }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                  <td *ngIf="isPremisesAddress" style="padding-left: 5%">
+                    <button mat-icon-button matTooltip="View Address" class="iconbutton" color="primary" mat-button
+                      data-toggle="modal" data-target="#viewAddress">
+                      <span class="material-icons" style="
+                        font-size: xx-large;
+                        cursor: pointer;
+                        color: mediumblue;
+                      ">
+                        open_in_new
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              </form>
+              <form [formGroup]="typeaddform" style="margin-left: 10%">
+                <tr>
+                  <h3>Add Employee Details</h3>
+                </tr>
+                <tr>
+                  <td>
+                    <mat-form-field style="width: 200px" (click)="employeetypename()">
+                      <mat-label>Employee Type</mat-label>
+                      <input placeholder="Employee Type" matInput formControlName="type_id"
+                        [matAutocomplete]="employetype" />
+                      <mat-autocomplete #employetype="matAutocomplete" [displayWith]="displaydiss">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let type of employeetypelist" [value]="type">
+                            {{ type.emptype }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 8%">
+                    <mat-form-field style="width: 175px">
+                      <mat-label>Employee Count</mat-label>
+                      <input type="number" matInput placeholder="Employee Count" formControlName="count"
+                        autocomplete="off" />
+                    </mat-form-field>
+                  </td>
+
+                  <td style="padding-left: 16%">
+                    <mat-form-field style="width: 200px">
+                      <mat-label>Shift Type</mat-label>
+                      <mat-select formControlName="shift_type" (selectionChange)="
+                        shiftselect(typeaddform.value.shift_type)
+                      ">
+                        <mat-option *ngFor="let shift of HourShift" [value]="shift.id">
+                          {{ shift.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 24%">
+                    <mat-form-field style="width: 200px">
+                      <mat-label>Shift Count</mat-label>
+                      <mat-select formControlName="shift_count">
+                        <mat-option *ngFor="let shift of Shiftcount" [value]="shift.id">
+                          {{ shift.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <mat-form-field style="width: 200px" (click)="shiftname()">
+                      <mat-label>Shift Name</mat-label>
+                      <input placeholder="Shift Name" matInput formControlName="shift_name"
+                        [matAutocomplete]="shift_name" />
+                      <mat-autocomplete #shift_name="matAutocomplete" [displayWith]="displayshiftname">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                          <mat-option *ngFor="let type of Shiftname_List" [value]="type" (click)="selectedshiftname(type)">
+                            {{ type.shift_name }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 8%">
+                    <mat-form-field style="width: 200px">
+                      <mat-label>Shift Code</mat-label>
+                      <input matInput placeholder="Shift Code" formControlName="shift_code" readonly
+                        autocomplete="off" />
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 16%">
+                    <mat-form-field style="width: 200px">
+                      <mat-label>Shift Time</mat-label>
+                      <input matInput placeholder="Shift Time" formControlName="shift_time" readonly
+                        autocomplete="off" />
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 24%">
+                    <mat-form-field style="width: 200px">
+                      <input matInput [matDatepicker]="createdp" placeholder="Effective From Month & Year"
+                        formControlName="createmonthdatesecond" readonly [formControl]="createmonthdatesecond" />
+                      <mat-datepicker-toggle matSuffix [for]="createdp"></mat-datepicker-toggle>
+                      <mat-datepicker #createdp startView="multi-year" (yearSelected)="createchosenYearHandlersecond($event)"
+                        (monthSelected)="createchosenMonthHandlersecond($event, createdp)" panelClass="example-month-picker">
+                      </mat-datepicker>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <button style="border-radius: 40px; margin-bottom: 10px" class="btn btn-outline-primary"
+                      (click)="addtypearr()">
+                      Add
+                    </button>
+                  </td>
+                </tr>
+
+                <mat-card>
+                  <table style="width: 100%">
+                    <thead>
+                      <tr>
+                        <th>Risk Categorization</th>
+                        <th>Employee Type</th>
+                        <th>Employee Count</th>
+                        <th>Shift type</th>
+                        <th>Shift Count</th>
+                        <th>Shift Time</th>
+                        <th>Effective From Month</th>
+                        <th>Effective From Year</th>
+                        <th>Effective To Month</th>
+                        <th>Effective To Year</th>
+                        <th>Remove</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let type of getformprimesarr(); let i = index">
+                        <td>{{riskcatname.text}}</td>
+                        <td>{{ type.type_id.emptype }}</td>
+                        <td>{{ type.count }}</td>
+                        <td>
+                          {{
+                          type.shift_type == 2
+                          ? "12 hour"
+                          : type.shift_type == 3
+                          ? "10 hour"
+                          : "8 hour"
+                          }}
+                        </td>
+                        <td>{{ type.shift_count }}</td>
+                        <td>{{ type.shift_time}}</td>
+                        <td>{{ monthNames[type.effective_from_month - 1] }}</td>
+                        <td>{{ type.effective_from_year }}</td>
+                        <td>{{ monthNames[type?.effective_to_month - 1]}}</td>
+                        <td>{{ type?.effective_to_year}}</td>
+                        <td>
+                          <button mat-icon-button matTooltip="Delete" class="iconbutton" (click)="deletefromarr(i)"
+                            color="primary">
+                            <mat-icon style="color: gray" aria-label="Delete">delete</mat-icon>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </mat-card>
+              </form>
+            </div>
+          </table>
+          <button type="submit" style="border-radius: 40px; margin-bottom: 10px; margin-left: 7%"
+            class="btn btn-outline-primary" (click)="PremiseaddForm()">
+            Submit
+          </button>
+          <button type="button" data-dismiss="modal" class="btn btn-outline-primary" (click)="cancelprimesform()"
+            style="border-radius: 40px; margin-left: 10px; margin-bottom: 10px">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div *ngIf="datatoggleemp"> -->
+
+  <div class="modal fade" id="employeeadd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" style="
+              color: black;
+              font-family: 'Times New Roman', Times, serif;
+              font-size: 20px;
+            ">
+            Employee Add Form
+          </h2>
+          <button type="button" class="close" #closebuttonempadd data-dismiss="modal" (click)="onemployeeaddcancel()"
+            aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            <button type="button" class="close" id="clickmodal" #myButton data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true"></span>
+            </button>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="Employeeaddform" style="margin-top: 1%; margin-bottom: 3%; margin-left: 10%">
+            <table style="margin-bottom: 3%">
+              <div style="width: 150%">
+                <div>
+                  <h2 style="margin: 0px">Premises : {{ shoepremisname }}</h2>
+                  <h2 style="margin: 0px">Branch : {{ showbranchname }}</h2>
+                  <h2 style="margin: 0px">
+                    Type &nbsp;&nbsp;&nbsp;: {{ typename }}
+                  </h2>
+                  <h2 style="margin: 0px">Vendor : {{ vendorname }}</h2>
+                  <br />
+                </div>
+                <hr />
+                <br />
+                <tr>
+                  <td>
+                    <mat-form-field style="width: 175px">
+                      <mat-label>Name</mat-label>
+                      <input (keypress)="keyPressAlphanumeric($event)" matInput placeholder="Name"
+                        formControlName="name" autocomplete="off" required />
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 10%">
+                    <mat-form-field style="width: 175px">
+                      <mat-label>Code</mat-label>
+                      <input (keypress)="keyPressAlphanumeric($event)" matInput placeholder="code"
+                        formControlName="code" autocomplete="off" required />
+                    </mat-form-field>
+                  </td>
+                  <td style="padding-left: 20%">
+                    <mat-form-field style="width: 200px">
+                      <input matInput [matDatepicker]="dp" placeholder="Effective From Month & Year"
+                        formControlName="monthdatesecond" readonly [formControl]="monthdatesecond" />
+                      <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                      <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandlersecond($event)"
+                        (monthSelected)="chosenMonthHandlersecond($event, dp)" panelClass="example-month-picker">
+                      </mat-datepicker>
+                    </mat-form-field>
+                  </td>
+                </tr>
+              </div>
+            </table>
+            <button type="submit" style="border-radius: 40px" class="btn btn-outline-primary"
+              (click)="EmployeeaddForm()">
+              Submit
+            </button>
+            <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+              style="border-radius: 40px; margin-left: 10px" (click)="onemployeeaddcancel()">
+              Cancel
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--         
+</div>   -->
+
+  <div class="modal fade" id="employeesummary" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content" style="width: 80%; margin-left: 11%">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" style="
+              color: black;
+              font-family: 'Times New Roman', Times, serif;
+              font-size: 20px;
+            ">
+            Employee Summary View
+          </h2>
+          <button type="button" #closebuttonempsummary class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="margin-top: 1%">
+            <div style="margin-left: 10%">
+              <h2 style="margin: 0px">Premises &nbsp;: {{ shoepremisname }}</h2>
+              <h2 style="margin: 0px">
+                Branch &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ showbranchname }}
+              </h2>
+              <h2 style="margin: 0px">
+                Vendor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ vendorname }}
+              </h2>
+              <br />
+            </div>
+
+            <div class="table-responsive" style="margin-top: 0.5%; margin-left: 5%; overflow-x: hidden">
+              <table class="table table-bordered table-sm" fixed-header
+                style="text-align: center; margin-left: 16%; width: 55%">
+                <thead class="table_header">
+                  <tr>
+                    <th>S.NO</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Effective From Month</th>
+                    <th>Effective From Year</th>
+                    <th>Effective To Month</th>
+                    <th>Effective To Year</th>
+                    <th>Status</th>
+                    <!-- <th  *ngIf="effective_to_month_year">effective_to_month_year</th> -->
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let employee of employeelist; index as i">
+                    <td>{{ (presentpagetype - 1) * pagesize + i + 1 }}</td>
+                    <td>{{ employee?.name }}</td>
+                    <td>{{ employee?.type?.name }}</td>
+                    <td>{{ monthNames[employee?.effective_from_month - 1]}}</td>
+                    <td>{{ employee?.effective_from_year}}</td>
+                    <td>{{ monthNames[employee?.effective_to_month - 1]}}</td>
+                    <td>{{ employee?.effective_to_year}}</td>
+                    <td><span *ngIf="employee?.status == '1'">Activate</span>
+                      <span *ngIf="employee?.status == '0'">Inactivate</span></td>
+                  
+                    <td>
+                      <button mat-icon-button type="button" [disabled]="employee.status == '0'" (click)="delete1(employee?.id)"
+                      data-toggle="modal" data-target="#deletebutton">
+                          <mat-icon aria-label="Delete">delete</mat-icon>
+                      </button>
+                      <!-- <button mat-icon-button type="button" [disabled]="employee.status?.toLowerCase() === 'inactive'"
+                      >
+                        <mat-icon [style.color]="employee.status === 'Inactive' ? 'gray' : 'black'" aria-label="Delete" aria-label="Edit" (click)="delete(employee?.id)" >
+                          delete</mat-icon>
+                      </button> -->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                                             <button mat-icon-button [disabled]="has_previoustype=== false" color="primary"[disabled]="isDisabled"
+                                                 (click)="emptypepreviousClick()">
+                                                 <mat-icon>arrow_back</mat-icon>
+                                             </button>
+                                             {{presentpagetype}}
+                                             <button mat-icon-button [disabled]="has_nexttype === false" color="primary" (click)="emptypenextClick()">
+                                                 <mat-icon>arrow_forward</mat-icon>
+                                             </button>
+                                         </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="viewAddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content" style="width: 80%; margin-left: 11%">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" style="
+              color: black;
+              font-family: 'Times New Roman', Times, serif;
+              font-size: 20px;
+            ">
+            Premises address
+          </h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="margin-top: 1%">
+            <div style="margin-left: 10%">
+              <!-- <h2 style=" margin: 0px;">Premises &nbsp;: {{ shoepremisname }} </h2>
+
+                                            <h2 style=" margin: 0px;">Branch &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ showbranchname }}</h2>
+                                            <h2 style=" margin: 0px;" >Vendor &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ vendorname}}</h2> -->
+
+              <h2 style="margin: 0px">Premises &nbsp;: {{ premisesname }}</h2>
+              <p style="margin: 0px 0 4px">
+                {{ updatelineName1 }},{{ updatelineName2 }},{{
+                updatelineName3
+                }}
+              </p>
+              <p style="margin: 0px 0 4px">
+                {{ updatecityName }},{{ updatedistrictName }},
+              </p>
+              <p style="margin: 0px 0 4px">
+                {{ updatestateName }},{{ updatepinCode }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deletebutton" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content" style="width: 40%; margin-left: 25%">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title" style="
+              color: black;
+              font-family: 'Times New Roman', Times, serif;
+              font-size: 20px;
+            ">
+           Delete Screen
+          </h2>
+          <button type="button" #deletebuttonempsummary class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form [formGroup]="deleteform" style="margin-left: 10%">
+        <div class="modal-body">
+          <!-- <form [formGroup]="deleteform" style="margin-left: 10%"></form> -->
+          <div>
+            <mat-form-field style="width: 200px">
+              <input matInput [matDatepicker]="dpp" placeholder="Effective Month & Year" 
+                formControlName="monthdateone" readonly [formControl]="monthdateone"  [matDatepickerFilter]="filterMonth"/>
+              <mat-datepicker-toggle matSuffix [for]="dpp" ></mat-datepicker-toggle>
+              <mat-datepicker #dpp startView="multi-year" (yearSelected)="chosenYearHandlerone($event)"
+                (monthSelected)="chosenMonthHandlerone($event, dpp)" panelClass="example-month-picker">
+              </mat-datepicker>
+            </mat-form-field>
+        </div>
+      <div>
+          <button type="submit" style="border-radius: 40px" class="btn btn-outline-primary"
+          (click)="deleteone()">
+          Submit
+        </button>
+        <button type="button" data-dismiss="modal" class="btn btn-outline-primary"
+          style="border-radius: 40px; margin-left: 10px" (click)="onedeletecancel()">
+          Cancel
+        </button>
+      </div>
+    
+      
+         
+            
+          <!-- </div> -->
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+

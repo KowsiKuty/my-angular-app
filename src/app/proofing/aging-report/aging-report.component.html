@@ -1,0 +1,298 @@
+<mat-card style="margin:20px 12px 20px 20px;min-height: 89vh;">
+
+    <div>
+
+        <div class="col-md-12">
+            <h2>Ageing Report</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <section>
+                        <mat-label>Bucket Name</mat-label><br>
+                        <mat-form-field class="matformfieldstyle" appearance="outline">
+                            <input type="text" matInput [(ngModel)]="buckets" class="matformfieldinputstyle" placeholder="GL-20333"
+                                [matAutocomplete]="account">
+                            <mat-autocomplete  #account="matAutocomplete" [displayWith]="bucket_show">
+                                <mat-option type="button" *ngFor="let ac of bucketlist" [value]="ac">
+                                    {{ac.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <div matSuffix>
+                                <button #clearbtn style="border-radius:18px;padding:2px;vertical-align:inherit;border-style: none;" (click)="table_show()"
+                                 class="btn btn-outline-dark" type="button">
+                                    <mat-icon style="font-size: 21px">close</mat-icon>
+                                </button>
+                            </div>
+                    
+                        </mat-form-field>
+                    </section>
+                    <!-- <app-account-selection-dropdown></app-account-selection-dropdown> -->
+                </div>
+
+                <div class="col-md-4" style="margin-left: -70px">
+                    <!-- <div class="col-md-2"> -->
+
+                    <button mat-fab type="submit"
+                        style="border-radius:40px;margin-left: 20px;margin-top: 1rem;background-color: white;"
+                        aria-label="Search" (click)="agingSearch()">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                    <!-- </div> -->
+                    <!-- <div class="col-md-2"> -->
+
+                    <!-- <button mat-fab type="submit"
+                        style="border-radius:40px;margin-left: 20px;margin-top: 1rem;background-color: white;color: black;"
+                        (click)="agingClear()">Reset</button> -->
+                    <!-- </div> -->
+                    <!-- <div class="col-md-2"> -->
+
+                    <button mat-fab
+                        style="border-radius:40px;margin-left: 20px;margin-top: 1rem;background-color: white;"
+                        routerLink="/proofing/ProofingMap">Back</button>
+                    <!-- </div> -->
+
+                        <button *ngIf="ageingDatas" mat-fab matTooltip="download list" (click)="downloadxl(1)"
+                        style="border-radius:40px;margin-left:15px;background-color: white;"><mat-icon>get_app</mat-icon></button>
+                    
+                </div>
+
+
+
+            </div>
+        </div>
+
+    </div>
+    <br>
+    <div *ngIf="Bucketdata?.length>0">
+        <div class="row">
+            <div class="col-sm-6" style="margin-left: 14px; margin-top: 7px;">
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" >
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox
+                  (change)="$event ? masterToggle() : null"
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                >
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? selection.toggle(row) : null"
+                  [checked]="selection.isSelected(row)"
+                >
+                </mat-checkbox>
+              </td>
+            </ng-container>
+          
+            <ng-container matColumnDef="Account Name">
+              <th
+                mat-header-cell
+                *matHeaderCellDef 
+                style="background: #01A85A; text-align: center; color:#fff;font-size: 16px;"
+              >
+              Account Details
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element"
+                style="text-align: center; font-style: normal"
+              >
+                {{element.name}} -- {{element.account_number}}
+              </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns;"
+              [ngClass]="{highlighted: selection.isSelected(row)}"
+              (click)="selectRow(row)"
+            ></tr>
+          </table></div>
+
+          <div class="col-sm-3">
+            <button class="btn btn-outline-success" matTooltip="Click to get the report" style="margin-left: -259px;
+            font-size: 13px;
+            border-radius: 25px;
+            margin-top: 13px;"
+                    (click)="reportgettingfunc()" >Submit</button>
+          </div></div>
+          
+        <!-- <table mat-table [dataSource]="BucketData" class="mat-elevation-z8">
+
+            <ng-container matColumnDef="Account Name">
+              <th mat-header-cell *matHeaderCellDef> Account Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table> -->
+    </div>
+
+
+
+    <div style="margin:1%;overflow: auto;" *ngIf="ageingDatas">
+        <div *ngFor="let each of selection.selected;index as inx" >
+         <!-- <h4>
+            {{each.name}} -- {{each.account_number}}
+          
+      
+        </h4> -->
+        <table style="overflow:auto;" class=" table-bordered" style="font-size: 14px;">
+            <tr class="table_header centeralign">
+                <th colspan="4" style="padding-right: 33px;
+                padding-left: 33px;" >
+                
+                    {{each.name}} -- {{each.account_number}}
+                </th>
+            
+                <td style="width:70%" *ngFor="let item of ageingData[inx];index as i">
+                    
+                           
+            <tr class="table_header centeralign">
+                <th colspan="4" >
+                    {{item.timeline}} Days 
+                    <button [disabled]="!(item?.record)" type="button" class="btn" 
+                    style="border-radius:20px;margin-left: 50px;color: blue;" 
+                    data-toggle="modal" data-target="#viewrecords" (click)="viewRecord(item.record,item,each)" ><span
+                          class="fa fa-eye"></span>
+                     </button>
+                </th>
+            </tr>
+            <tr style="background-color:cornsilk" class="table_header centeralign">
+                <th colspan="2">Debit</th>
+                <th colspan="2">Credit</th>
+            </tr>
+            <tr>
+                <td class="leftalign">
+                    #Count
+                </td>
+                <td class="rightalign">
+                    Sum
+                </td>
+                <td class="leftalign">
+                    #Count
+                </td>
+
+                <td class="rightalign">
+                    Sum
+                </td>
+            </tr>
+
+            <tr>
+                <td class="leftalign">{{item.total_length_debit}}</td>
+                <td class="rightalign">{{item.total_sum_debit | currency:"INR":'symbol':'0.2-6'}}</td>
+                <td class="leftalign"> {{item.total_length_credit}}</td>
+                <td class="rightalign">{{item.total_sum_credit | currency:"INR":'symbol':'0.2-6'}}</td>
+            <!-- </tr>
+            <tr class="table_header centeralign">
+                <th colspan="4">
+                    <button data-toggle="modal" data-target="#viewrecords" (click)="viewRecord(item.record)"
+                        class="btn btn-outline-primary">
+                        View Records
+                    </button>
+                </th>
+            </tr> -->
+            </td> 
+            <th colspan="4" >
+             <button type="button" class="btn" 
+             style="border-radius:20px;color: blue;" 
+             data-toggle="modal" data-target="#viewrecords" (click)="downloadxl(each.id)"><mat-icon>get_app</mat-icon></button>
+                </th>
+        </tr> 
+        <!-- <div > -->
+        <!-- <tr ngIg="each.id=selection.selected[selection.selected.length-1].id">
+            <td class="leftalign">
+                <button type="button" class="btn" 
+                style="border-radius:20px;margin-left: 50px;color: blue;" 
+                data-toggle="modal" data-target="#viewrecords"><mat-icon>get_app</mat-icon></button>
+            </td>
+        </tr> -->
+        
+        <!-- </div> -->
+        </table>
+        <br>
+    </div> 
+    </div>
+</mat-card>
+
+<!-- Modal -->
+<div *ngIf="recordlist.length > 1" class="modal fade" id="viewrecords" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLongTitle">Records
+                    <button type="button" class="btn" 
+                    style="border-radius:20px;margin-left: 20px;color: blue;" 
+                    data-toggle="modal" (click)="downloadxl_trns()">
+                    <mat-icon>get_app</mat-icon>
+                     </button>
+                </h2> 
+                
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tableFixHead" (scroll)="tablescrolled($event)">
+                    <table class="table table-bordered">
+                        <thead class="table_header tableHeadFixed">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Age (days)</th>
+                                <th *ngFor="let item of headerarray;index as i" [ngClass]="item?.class">
+                                    <span *ngIf="item.sys_col_name != 'Description';else field">
+                                        {{item.column_name}}
+                                    </span>
+                                    <ng-template #field>
+                                        <mat-form-field style="margin-bottom:-6%;width:70%">
+                                            <mat-label>{{item.column_name}}</mat-label>
+                                            <input matInput [(ngModel)]="descinput">
+
+                                        </mat-form-field>
+                                    </ng-template>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody
+                            *ngFor="let temp of recordlist | FilterPipe:[{name:'description',value:descinput,length:desclength}] | slice:0:limit  ; let i = index">
+                            <tr [ngStyle]="temp?.rowstyle">
+
+                                <td style="font-size: small;">
+                                    {{ i+1 }}
+                                </td>
+                                <td style="font-size: small;">{{temp?.aging}}</td>
+                                <td>
+                                    {{temp.reference_no}}
+                                </td>
+                                <td style="font-size: small;">{{ temp?.date | date:'dd-MMM-yyyy' }}</td>
+                                <td style="font-size: small;">{{ temp?.description}}
+                                </td>
+                                <td style="font-size: small;text-align: right;">
+                                    <div *ngIf=" temp.creditamount=='0.0'">{{ temp.debitamount|
+                                        currency:"INR":'symbol':'0.2-6'}}
+                                    </div>
+                                </td>
+
+                                <td style="font-size: small;text-align: right;">
+                                    <div *ngIf="temp.debitamount=='0.0'">{{ temp.creditamount|
+                                        currency:"INR":'symbol':'0.2-6'}}
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

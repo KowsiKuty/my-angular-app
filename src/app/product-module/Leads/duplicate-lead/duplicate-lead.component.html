@@ -1,0 +1,232 @@
+<div class="container mt-1">
+    <mat-card style=" overflow-x:scroll;">
+        <h3>Duplicate Entries</h3>
+        <div>
+            <div>
+                <form [formGroup]="searchForm">
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-form-field>
+                                    <mat-select formControlName="source_id" placeholder="Source">
+                                        <mat-option *ngFor="let item of sourceList" [value]="item.id">
+                                            {{item.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="ml-2">
+                                    <mat-label>From Date</mat-label>
+                                    <input matInput [matDatepicker]="picker1" readonly autocomplete="off"
+                                        formControlName="from_date" placeholder="From Date">
+                                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="ml-2">
+                                    <mat-label>To Date</mat-label>
+                                    <input matInput [matDatepicker]="picker2" readonly autocomplete="off"
+                                        formControlName="to_date" placeholder="To Date">
+                                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                </mat-form-field>
+
+                            </td>
+
+                            <td style="vertical-align:baseline">
+                                <button  mat-stroked-button type="button" id="buttonsSubmit"
+                                    aria-label="Search">
+                                    <mat-icon>search</mat-icon>
+                                </button>
+                            </td>
+                            <td style="vertical-align:baseline">
+                                <button  mat-stroked-button type="button" id="buttonsWhite"
+                                    (click)="searchForm.reset()">Clear</button>
+
+                            </td>
+                    </table>
+                </form>
+            </div>
+
+
+            <div style="height:65vh;overflow:auto">
+                <table class="table">
+                    <tr class="table_header" style="position: sticky;top:0;z-index:1">
+                        <th>S.No</th>
+
+                        <th>Lead Name</th>
+                        <th>Mail</th>
+                        <th>Phone No.</th>
+                        <th>Gender</th>
+                        <th>DOB</th>
+                        <th>Aadhaar</th>
+                        <th>PAN</th>
+                        <th>CIF No</th>
+                        <th>Occupation</th>
+                        <th>Merge</th>
+                        <!-- <th>Marital Status</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th>Pincode</th> -->
+                        <!-- <th>Bank</th>
+                        <th>Branch</th>
+                        <th>Account No</th>
+                        <th>Father Name</th>
+                        <th>Father DOB</th>
+                        <th>Mother Name</th>
+                        <th>Mother DOB</th>
+                        <th>Spouse Name</th>
+                        <th>Spouse DOB</th> -->
+                    </tr>
+                    <tbody *ngFor="let sumsst of leadList;let ind = index">
+                        <tr>
+                            <td>{{ind+1}}</td>
+
+                            <td>{{sumsst?.first_name}}&nbsp;{{sumsst?.middle_name}}&nbsp;{{sumsst?.last_name}}</td>
+                            <td>{{sumsst?.mail_id}}</td>
+                            <td>{{sumsst?.ph_no}}</td>
+                            <td>{{sumsst?.Gender}}</td>
+                            <td>{{sumsst?.lead_dob}}</td>
+                            <td>{{sumsst?.aadhaar_no}}</td>
+                            <td>{{sumsst?.pan_no}}</td>
+                            <td>{{sumsst?.cif_no}}</td>
+                            <td>{{sumsst?.Occupation}}</td>
+                            <td>
+                                <button class="btn btn-outline-primary" (click)="editLead(sumsst);sumsst.isExpanded = !sumsst.isExpanded"
+                                     mat-icon-button>
+                                     <mat-icon  [ngClass]=" sumsst.isExpanded? 'closeicon':'editicon' "    ></mat-icon>
+                                    <!-- <mat-icon>edit</mat-icon> -->
+                                </button>
+                            </td>
+                            <!-- <td>{{sumsst.martial_status}}</td>
+                            <td>{{sumsst.line1}}</td>
+                            <td>{{sumsst?.city}}</td>
+                            <td>{{sumsst?.district}}</td>
+                            <td>{{sumsst?.state_name}}</td>
+                            <td>{{sumsst?.pincode}}</td> -->
+                            <!-- <td>{{sumsst?.branch}}</td>
+                            <td>{{sumsst?.branch}}</td>
+                            <td>{{sumsst?.account}}</td>
+                            <td>{{sumsst.father_name}}</td>
+                            <td>{{sumsst?.father_dob}}</td>
+                            <td>{{sumsst.mother_name}}</td>
+                            <td>{{sumsst?.mother_dob}}</td>
+                            <td>{{sumsst.spouse_name}}</td>
+                            <td>{{sumsst?.spouse_dob}}</td> -->
+                        </tr>
+
+                        <tr style="font-size:120%" *ngIf="sumsst.isExpanded">
+                            <td colspan="26">
+
+
+
+                                <h5>Duplicated Entries</h5>
+
+
+                                <div class="dupflex" *ngFor="let duplicate of duplicatedData;let ind = index">
+                                    <div>
+                                        {{ind+1}}
+                                    </div>
+                                    
+                                    <div class="dupdata" *ngFor="let entry of duplicate.entries">
+                                        <mat-label class="dupfield">{{entry.field}}</mat-label>
+                                        <mat-label class="duporgvalue">{{entry.originalValue}}</mat-label>
+                                        <mat-label class="dupdupvalue">{{entry.duplicateValue}}</mat-label>
+                                    </div>
+
+                                    <div style="display:grid">
+                                        <button mat-icon-button (click)="update(manual,merge,duplicate)"
+                                            [matTooltip]="'Click to Merge'" class="btn btn-outline-success">
+                                            <mat-icon>send</mat-icon>
+                                        </button>
+                                        <button mat-icon-button (click)="update(manual,reject,duplicate)" [matTooltip]="'Click to Reject'"
+                                            class="btn btn-outline-danger">
+                                            <mat-icon>delete_sweep</mat-icon>
+                                        </button>
+                                    </div>
+                                    <br>
+
+
+
+                                    <!-- <button mat-icon-button [matMenuTriggerFor]="menu">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #menu="matMenu">
+                                        <button mat-menu-item>
+                                            Merge
+                                        </button>
+                                        <button mat-menu-item>
+                                            Reject
+                                        </button>
+                                    </mat-menu> -->
+
+                                </div>
+                                <hr>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+
+
+
+            </div>
+
+        </div>
+    </mat-card>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="duplicateModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLongTitle">Merge Duplicate Entries</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <button mat-raised-button style="float:right;color:blue">
+                    <mat-icon class="ailgnvertical"> merge_type</mat-icon>Auto Merge
+                </button>
+                <button mat-raised-button style="float:right;color:red">
+                    <mat-icon class="ailgnvertical"> clear</mat-icon>Auto Reject
+                </button>
+                <!-- <h4>Original Entries</h4>
+                <table class="table table-bordered">
+                    <thead class="table_header">
+                        <th *ngFor="let key of keysList">{{key}}</th>
+                    </thead>
+                    <tbody>
+                        <td *ngFor="let item of keyData">{{item}}</td>
+                    </tbody>
+                </table> -->
+                <h4>Duplicated Entries</h4>
+                <table style="overflow:auto;display: block;" class="table table-bordered"
+                    *ngFor="let duplicate of duplicatedData;let ind = index">
+                    <thead class="table_header">
+                        <th *ngFor="let key of duplicate.keys">{{key}}</th>
+                    </thead>
+                    <tbody>
+                        <td *ngFor="let item of duplicate.values">
+                            {{item}}
+                        </td>
+                    </tbody>
+                </table>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

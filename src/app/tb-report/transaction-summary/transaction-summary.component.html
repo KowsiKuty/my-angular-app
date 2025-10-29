@@ -1,0 +1,142 @@
+<div class="pl-5 pr-5 pt-2" style="font-size: small;">
+    <form [formGroup]="gltransaction">
+        <div class="row">
+            <div class="col-md-3">
+                <mat-form-field appearance="outline" (click)="finyear_dropdown()">
+                    <mat-label>Fin Year</mat-label>
+                    <input placeholder="Fin Year" matInput formControlName="finyear" #finyearInput [matAutocomplete]="fin_year" required>
+                    <mat-autocomplete #fin_year="matAutocomplete" [displayWith]="displayfnfinyear" >
+                        <!-- (opened)="autocompletefinyearScroll()" -->
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let finyearname of finyearList" [value]="finyearname"> {{finyearname.finyer}} </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>From Date</mat-label>
+                    <input matInput [matDatepicker]="create_date" (dateChange)="todate_fun()"
+                        formControlName="from_date" [max]="maxDate">
+                    <mat-datepicker-toggle matSuffix [for]="create_date"></mat-datepicker-toggle>
+                    <mat-datepicker #create_date startView="multi-year"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>To Date</mat-label>
+                    <input matInput [matDatepicker]="too_date" [min]="gltransaction?.value?.from_date"
+                        (dateChange)="todate_reset_fun()" formControlName="to_date" [max]="maxDate">
+                    <mat-datepicker-toggle matSuffix [for]="too_date"></mat-datepicker-toggle>
+                    <mat-datepicker #too_date startView="multi-year"></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field (click)="branchname()" appearance="outline">
+                    <mat-label>Branch</mat-label>
+                    <input #branchInput placeholder="Branch" matInput formControlName="branch" #branchContactInput
+                        [matAutocomplete]="branch">
+                    <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayfnbranch"
+                        (opened)="autocompletebranchnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let branch of branchList" [value]="branch">
+                                {{branch.code}}-{{branch.name}} </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field (click)="gl_number()" appearance="outline">
+                    <mat-label>GL</mat-label>
+                    <input #branchInput placeholder="GL Number" matInput  formControlName="gl_no_id" #glContactInput
+                        [matAutocomplete]="gl_no">
+                    <mat-autocomplete #gl_no="matAutocomplete" [displayWith]="displayfngl"
+                        (opened)="autocompleteglnameScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let gl of gl_List" [value]="gl">
+                                {{gl.glno}}-{{gl.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>DR/CR</mat-label>
+                    <mat-select formControlName="drcr">
+                        <mat-option *ngFor="let amt of dcflage" [value]="amt">
+                            {{amt.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Description</mat-label>
+                    <input matInput formControlName="Description">
+                </mat-form-field>
+            </div>
+            
+            <div class="col-md-3" style="margin-top: 1%;">
+                <button class="btn btn-outline-primary" type="submit" (click)="gl_summary()"
+                    style="border-radius:40px;" color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                <button type="button" style="border-radius: 40px;margin-left: 10%;" class="btn btn-outline-primary"
+                    (click)="gltransaction_reset()">Reset</button>
+                <button matTooltip="Download" class="btn btn-outline-success"
+                    style="border-radius: 40px;margin-left: 10%;"  (click)="backend_download()"><i class="fa fa-download"
+                        aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </form>
+
+    <div>
+        <div class="tableFixHead">
+            <table class="table table-bordered" fixed-header>
+                <thead style="background-color: #00800021;">
+                    <tr class="text_center">
+                        <th>S.No</th>
+                        <th>Branch Name</th>
+                        <th>GL</th>
+                        <th>GL Description</th>
+                        <th>Transactiondate</th>
+                        <th>DR/CR</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tb_doc_obj of GL_data;index as ind" class="text_center">
+                        <td>{{(presentpage-1)*10+ind+1}}</td>
+                        <td>{{tb_doc_obj.branch_combo}}</td>
+                        <td>{{tb_doc_obj.gl_combo}}</td>
+                        <td>{{tb_doc_obj.gl_description}}</td>
+                        <td>{{tb_doc_obj.transactiondate | date: 'dd-MM-yyyy'}}</td>
+                        <td>{{tb_doc_obj.DRCR_IN}}</td>
+                        <td class="text_right">{{tb_doc_obj.amount | number:'1.2-2': 'en-IN'}}</td>    
+                        <td>{{tb_doc_obj.remarks}}</td>    
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_found" style="text-align: center;">Data Not Found...</p>
+            </div>
+            <div class="flex">
+                <div>
+                    <h3 class="count_text">Total Count : <span class="count">{{totalcount}}</span></h3>
+                </div>
+                <div>
+                    <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpage}}
+                    <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</div>

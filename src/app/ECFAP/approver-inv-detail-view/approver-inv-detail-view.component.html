@@ -1,0 +1,1673 @@
+<header class="header-adjust">
+    <div class="headingalign">
+
+        <h3 *ngIf="showdebitdiv">
+            <i
+              class="fa fa-arrow-left"
+              aria-hidden="true"
+              (click)="debitbacks()"
+            ></i
+            >&nbsp; Debit Details 
+        </h3>
+        <h3 *ngIf="showinvoicediv">
+            <i
+              class="fa fa-arrow-left"
+              aria-hidden="true"
+              id="ecf-approval-view-0068"
+              (click)="overallback()"
+            ></i
+            >&nbsp;Invoice Header
+        </h3>
+        
+
+    </div>
+    <!-- <div *ngIf="showinvoicediv" class="button-div">
+
+            <button type="button" class="btn btn-outline-primary" style="border-radius:40px;" (click)="overallback()" id="ecf-approval-view-0068">Back</button>
+        
+    </div>
+    <div *ngIf="showdebitdiv" class="button-div">
+
+            <button type="button" class="btn btn-outline-primary" style="border-radius:40px;" (click)="debitbacks()" id="ecf-approval-view-0068">Back</button>
+        
+    </div> -->
+</header>
+
+
+<div>
+    <div >
+    <div class="header-container" *ngIf="showinvoicediv">
+        <h3 >Invoice Header ({{crno}})</h3>
+        <div>
+          <i
+            class="fa fa-clock-o"
+            matTooltip="View Transaction"
+            style="font-size: 28px; cursor: pointer"
+            aria-hidden="true"
+            (click)="transaction_summary()"></i>
+        </div>
+      </div>
+      <div *ngIf="showinvoicediv">
+        <form [formGroup]="frmInvHdr">
+            <div>
+                <mat-accordion>
+                    <mat-expansion-panel [expanded]="true" class="expansion-conatiner">
+                        <mat-expansion-panel-header>
+                            <!-- <h3 class="component-title ">Tour</h3> -->
+                            <h3 class="expansion-title mb-0">Invoice Header</h3>
+                        </mat-expansion-panel-header>
+                        <div class="expansition-div">
+                            <div class="card-container">
+                                <div class="card-view">
+                                    <div class="card-point">
+                                        <h4>Employee</h4>
+                                        <p>{{ this.RsrEmppanel }}</p>
+                                    </div>
+
+                                    <div class="card-point">
+                                        <h4>Invoice No</h4>
+                                        <p>{{ this.InvNopanel }}</p>
+                                    </div>
+
+                                    <div class="card-point">
+                                        <h4>Branch</h4>
+                                        <p>{{ this.Branchpanel }}</p>
+                                    </div>
+                                    <div class="card-point">
+                                        <h4>Branch GST</h4>
+                                        <p>{{ this.BranchGSTpanel }}</p>
+                                    </div>
+
+                                    <div *ngIf="this.invHdrRes?.pmd_data?.location != undefined">
+                                        <h4>PMD Location</h4>
+                                        <p>{{ this.Pmdpanel }}</p>
+                                    </div>
+                                    <div class="card-point">
+                                        <h4>Invoice Date</h4>
+                                        <p>{{ this.InvDatepanel }}</p>
+                                    </div>
+                                    <!-- </div>
+              </div> -->
+                                    <!-- </mat-expansion-panel>
+        </mat-accordion>
+        <mat-accordion>
+            <mat-expansion-panel [expanded]="true" class="expansion-conatiner">
+              <mat-expansion-panel-header>
+                <h3 class="expansion-title mb-0">Supplier Details</h3>
+              </mat-expansion-panel-header> -->
+                                    <!-- <div class="card-container">
+                <div class="card-view"> -->
+                                    <div class="card-point">
+                                        <h4>Taxable Amount</h4>
+                                        <p>{{ this.TaxableAmtpanel }}</p>
+                                    </div>
+                                    <div class="card-point">
+                                        <h4>Invoice Amount</h4>
+                                        <p>{{ this.InvAmtpanel }}</p>
+                                    </div>
+                                    <div class="card-point">
+                                        <h4> Invoice Status</h4>
+                                        <p>{{ this.Statuspanel }}</p>
+                                    </div>
+                                    <div class="card-point" *ngIf="paytoid =='S'">
+                                        <h4>Supplier</h4>
+                                        <p>{{ this.Supplierpanel }}</p>
+                                    </div>
+                                    <div class="card-point" *ngIf="paytoid =='S'">
+                                        <h4>Supplier GST</h4>
+                                        <p>{{ this.SupGSTpanel }}</p>
+                                    </div>
+
+                                    <div class="card-point" *ngIf="aptypeid != 4">
+                                        <h4>GST Applicable</h4>
+                                        <p>{{ this.Gstpanel }}</p>
+                                    </div>
+                                    <!-- <div class="card-point">
+                                        <h4>Is Capitalized</h4>
+                                        <p>{{ this.capitalizesPanel }}</p>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+
+            <!-- <table>
+        <div> -->
+            <!-- <tr>
+        <td>
+            <mat-form-field appearance="outline">
+                <mat-label>Employee</mat-label>
+                <input type="text" matInput formControlName="rsrEmp" readonly  id="approver-inv-view-0003">   
+            </mat-form-field>
+        </td>
+        
+        <td>
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>Invoice No</mat-label>
+                <input type="text" matInput formControlName="invNo" readonly  id="approver-inv-view-0004">
+            </mat-form-field>
+        </td>  
+        <td>
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>Branch </mat-label>
+                <input type="text" matInput formControlName="branch" readonly  id="approver-inv-view-0005">
+            </mat-form-field>
+        </td>
+        <td>
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>Branch GST</mat-label>
+                <input type="text" matInput formControlName="branchGST" readonly  id="approver-inv-view-0006">
+            </mat-form-field>
+        </td>
+        <td *ngIf="this.invHdrRes?.pmd_data?.location != undefined">
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>PMD Location</mat-label>
+                <input type="text" matInput formControlName="pmd" readonly id="approver-inv-view-0007">
+            </mat-form-field>
+        </td>          
+
+    </tr>   -->
+            <!-- <tr > -->
+            <!-- <td>
+            <mat-form-field appearance="outline">
+                <mat-label>Invoice Date</mat-label>
+                <input type="text" matInput formControlName="invDate" readonly  id="approver-inv-view-0008">
+            </mat-form-field>
+        </td>
+        <td>
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>Taxable Amount</mat-label>
+                <input type="text" matInput formControlName="taxableAmt" readonly  style="text-align: right;" id="approver-inv-view-0009">
+            </mat-form-field>
+        </td>
+        <td>
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>Invoice Amount</mat-label>
+                <input type="text" matInput formControlName="invAmt" readonly style="text-align: right;" id="approver-inv-view-0010">
+            </mat-form-field>
+        </td>    
+        <td>
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>Status</mat-label>
+                <input type="text" matInput formControlName="status" readonly id="approver-inv-view-0011">
+            </mat-form-field>
+        </td>   -->
+            <!-- <td > -->
+            <!-- <h3   data-toggle="modal"
+                data-target=".bd-example-modal-xl" style="cursor: pointer;color:blue;font-family: 'Montserrat';margin-left:50px;" 
+                class="btn btn-link" matTooltip="View Transaction" matTooltipClass="custom-tooltipnew" (click)="viewtrn()" > -->
+            <!-- data-toggle="modal" data-target="#approver-inv-view-0001" -->
+            <!-- View Transaction</h3> -->
+            <!-- </td> 
+    </tr>      -->
+            <!-- <tr *ngIf="paytoid =='S'">
+        <td *ngIf="paytoid =='S'" colspan="2">
+            <mat-form-field style="width: 410px;" appearance="outline">
+                <mat-label>Supplier </mat-label>
+                <input type="text" matInput formControlName="supplier" readonly  id="approver-inv-view-0012">  
+            </mat-form-field>
+        </td> -->
+            <!-- <td>
+            <mat-form-field>
+                <input type="text" matInput formControlName="supCode" readonly placeholder="Supplier Code" id="approver-inv-view-0013">
+                <mat-label>Supplier Code</mat-label>
+            </mat-form-field>
+        </td>
+        <td>
+            <mat-form-field style="margin-left: 50px;">
+                <input type="text" matInput formControlName="supName" readonly placeholder="Supplier Name"  matTooltip="{{frmInvHdr?.value?.supName}}" id="approver-inv-view-0014">
+                <mat-label>Supplier Name</mat-label>
+            </mat-form-field>
+        </td> -->
+
+            <!-- <td>
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>Supplier GST</mat-label>
+                <input type="text" matInput formControlName="supGST" readonly  id="approver-inv-view-0015">       
+            </mat-form-field>
+        </td> 
+        <td *ngIf="aptypeid != 4">
+            <mat-form-field style="margin-left: 50px;" appearance="outline">
+                <mat-label>GST Applicable</mat-label>
+                <input type="text" matInput formControlName="gst" readonly  id="approver-inv-view-0016">   
+            </mat-form-field>
+        </td>
+               
+    </tr>   -->
+            <!-- </div>  
+        </table> -->
+        </form>
+        <!-- ----------Debit detail if aptype is advance--------- -->
+
+        <div *ngIf="this.aptypeid == 4">
+            <h3>Debit Details</h3>
+
+            <div>
+                <form [formGroup]="DebitDetailForm">
+                    <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                            <thead class="table_header" style="text-align: center;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Category</th>
+                                    <th>Sub Category </th>
+                                    <th>GL Number</th>
+                                    <th>BS <label style="color:red">*</label></th>
+                                    <th>CC<label style="color:red">*</label></th>
+                                    <th>CCBS Percentage</th>
+                                    <th>Amount</th>
+                                    <th>Adjust Amount</th>
+                                    <th>Debit Amount</th>
+
+                                </tr>
+                            </thead>
+                            <ng-container formArrayName="debitdtl"
+                                *ngFor="let section of getDebitSections(DebitDetailForm); let i = index">
+                                <tr [formGroupName]="i">
+                                    <!-- <td *ngIf="showaltslno == false">{{creditslno}}</td>
+                <td *ngIf="showaltslno == true">{{creditslnos}}</td> -->
+                                    <td>{{i+1}}</td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Category</mat-label>
+                                            <input #categoryInput placeholder="Category" matInput readonly
+                                                formControlName="category_code" [matAutocomplete]="cattype"
+                                                style="width: 160px;" id="approver-inv-view-0017">
+                                            <mat-autocomplete [panelWidth]="250" #cattype="matAutocomplete"
+                                                [displayWith]="displaycatFn" (opened)="categoryScroll()">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let categoryname of categoryNameData"
+                                                        [value]="categoryname">
+                                                        {{categoryname.code}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                        <p *ngIf="DebitDetailForm?.value?.debitdtl[i].category_code !='' && DebitDetailForm?.value?.debitdtl[i].category_code != 0 && DebitDetailForm?.value?.debitdtl[i].category_code != null && DebitDetailForm?.value?.debitdtl[i].category_code !=undefined"
+                                            style="color: blue;font: size 11px;">
+                                            {{section?.value?.category_code?.name}}</p>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Sub Category</mat-label>
+                                            <input #subcategoryInput placeholder="Sub Category" matInput readonly
+                                                formControlName="subcategory_code"
+                                                [matAutocomplete]="subcategorytype" style="width: 160px;"
+                                                id="approver-inv-view-0018">
+                                            <mat-autocomplete [panelWidth]="250" #subcategorytype="matAutocomplete"
+                                                [displayWith]="displaysubcatFn" (opened)="subcategoryScroll()">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let subcategoryname of subcategoryNameData"
+                                                        [value]="subcategoryname">
+                                                        {{subcategoryname.code}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                        <p *ngIf="DebitDetailForm?.value?.debitdtl[i].subcategory_code !='' && DebitDetailForm?.value?.debitdtl[i].subcategory_code != 0 && DebitDetailForm?.value?.debitdtl[i].subcategory_code != null && DebitDetailForm?.value?.debitdtl[i].subcategory_code !=undefined"
+                                            style="color: blue;font: size 11px;">
+                                            {{section?.value?.subcategory_code?.name}}</p>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="GL Number" type="text"
+                                                formControlName="glno" autocomplete="off" [readonly]="true"
+                                                id="approver-inv-view-0019">
+                                        </mat-form-field>
+                                        <p *ngIf="DebitDetailForm?.value?.debitdtl[i].glno !='' && DebitDetailForm?.value?.debitdtl[i].glno != 0 && DebitDetailForm?.value?.debitdtl[i].glno != null && DebitDetailForm?.value?.debitdtl[i].glno !=undefined"
+                                            style="color: blue;font: size 11px;">{{section?.value?.gldesc}}</p>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline" (click)="getbsdropdown()">
+
+
+                                            <mat-label>BS</mat-label>
+
+                                            <input #bsInput placeholder="BS" matInput formControlName="bs_code"
+                                                readonly [matAutocomplete]="bstype"
+                                                style="width: 160px;" id="approver-inv-view-0020">
+                                            <mat-autocomplete [panelWidth]="250" #bstype="matAutocomplete"
+                                                [displayWith]="displaybsFn" (opened)="bsScroll()">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let bsname of bsNameData" [value]="bsname"
+                                                        (onSelectionChange)="bsid(bsname,bsname.code,i)">
+                                                        {{bsname.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>CC</mat-label>
+                                            <input #ccinput placeholder="CC" matInput formControlName="cc_code"
+                                               readonly [matAutocomplete]="cctype"
+                                                style="width: 160px;" id="approver-inv-view-0021">
+                                            <mat-autocomplete [panelWidth]="250" #cctype="matAutocomplete"
+                                                [displayWith]="displayccFn" (opened)="ccScroll()">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                </mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let ccname of ccNameData" [value]="ccname"
+                                                        (onSelectionChange)="getccdata(ccname.code,ccname.id)">
+                                                        {{ccname.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+
+                                            <input matInput placeholder="%" formControlName="ccbspercentage"
+                                                readonly autocomplete="off" id="approver-inv-view-0022">
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+
+                                            <input matInput placeholder="Amount" type="text" autocomplete="off"
+                                                readonly formControlName="amt" style="text-align: right;"
+                                                id="approver-inv-view-0023">
+                                        </mat-form-field>
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+
+
+                                            <input matInput placeholder="Adjust" type="text" readonly
+                                                formControlName="deductionamount" id="approver-inv-view-0024">
+                                        </mat-form-field>
+
+                                    </td>
+                                    <td id="matInput-size">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput placeholder="Debit" type="text" formControlName="amount"
+                                                readonly style="text-align: right;" id="approver-inv-view-0025">
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <tr>
+                                <td class="totaldisplay" colspan="9" style="text-align: right;">Net Amount:
+                                </td>
+                                <td style="text-align: end;">{{debitsum | currency:'INR'}}</td>
+                            </tr>
+                            <!-- <tr>
+                                <td colspan="11">
+                                    <button type="button" style="border-radius:40px;float: right;"
+                                        class="btn btn-outline-primary" (click)="debitform()"
+                                        [disabled]="debitsaved" id="approver-inv-view-0026">
+                                        Save
+                                    </button>
+                                </td>
+                            </tr> -->
+                        </table>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+        <!-- -------------- -->
+
+        <form [formGroup]="InvoiceDetailForm">
+            <!-- ----------Invoice detail if aptype other than advance--------- -->
+
+            <div *ngIf="this.aptypeid !=4">
+                <h3 style="margin-top:15px">Invoice Details</h3>
+                <!-- <div class="card" style="margin-bottom: 3%;margin-right: 20px;margin-left: 10px;">
+            <div class="card-body">
+        <div class="tableFixHead">
+            <table class="table table-bordered  table-sm">
+                <thead style='font-family:"Times New Roman"'>
+                    <tr  class="table_header" fixed-header> -->
+                <div class="table-responsive">
+                    <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Particulars</th>
+                                <th *ngIf="aptypeid ==1">GRN Code</th>
+                                <th>Product Name</th>
+                                <!-- <th>Is RCM</th> -->
+                                <th *ngIf="this.aptypeid == 13 || this.aptypeid == 3">Supplier</th>
+                                <th>UOM</th>
+                                <th *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8">HSN Code</th>
+                                <th *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8">HSN %</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th> Amount</th>
+                                <th *ngIf=" this.aptypeid !== 4 && this.aptypeid !== 8">Discount</th>
+                                <th>Taxable Amount</th>
+                                <th *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8">CGST</th>
+                                <th *ngIf=" this.aptypeid !== 4 && this.aptypeid !== 8">SGST</th>
+                                <th *ngIf=" this.aptypeid !== 4 && this.aptypeid !== 8">IGST</th>
+                                <th *ngIf=" this.aptypeid !== 4 && this.aptypeid !== 8">Tax Amount</th>
+                                <th>Total Amount</th>
+                                <th *ngIf=" this.aptypeid !== 13">Is Capitalized</th>  
+                                <th>View Debit</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody *ngFor="let detail of headerdata;index as i">
+                            <tr *ngFor="let dtl of detail.invoicedetails.data;index as j">
+                                <td>{{j+1}}</td>
+                                <td matTooltip={{dtl?.description}}>{{dtl?.description}}</td>
+                                <td *ngIf="aptypeid ==1" matTooltip={{dtl?.grn_code}}>{{dtl?.grn_code}}</td>
+                                <td>
+                                    <div style="width: 220px;overflow: hidden;">
+                                        {{dtl?.productname}}
+                                        <h3>Is RCM :<span
+                                                [ngStyle]=" dtl?.is_rcmproduct == 'Y'?{'color':'green','font-weight':'bold'}: {'color': 'red','font-weight':'bold'}">{{dtl?.is_rcmproduct}}</span>&nbsp;&nbsp;Is
+                                            Blocked:<span
+                                                [ngStyle]=" dtl?.is_blockedproduct == 'Y'?{'color':'green','font-weight':'bold'}: {'color': 'red','font-weight':'bold'}">{{dtl?.is_blockedproduct}}</span>
+                                        </h3>
+                                    </div>
+                                </td>
+                                <!-- <td>{{dtl?.is_rcmproduct}}</td> -->
+                                <td *ngIf="this.aptypeid == 13 || this.aptypeid == 3" style="text-align: center;">
+                                    <i matTooltip="Supplier Details" matTooltipClass="custom-tooltipnew"
+                                        class="fa fa-eye create" style="color: darkviolet;"
+                                        (click)="getsupplierindex(dtl)"></i>
+                                    <!-- data-toggle="modal" data-target="#approver-inv-view-0002" -->
+                                </td>
+                                <td>{{dtl?.uom}}</td>
+                                <td *ngIf=" this.aptypeid !== 4 && this.aptypeid !== 8">{{dtl?.hsn?.code}}</td>
+                                <td *ngIf=" this.aptypeid !== 4 && this.aptypeid !== 8">{{dtl?.hsn_percentage}}</td>
+                                <td style="text-align:right">{{dtl?.unitprice| currency:'INR'}}</td>
+                                <td style="text-align: center;">{{dtl?.quantity}}</td>
+                                <td style="text-align:right">{{dtl?.amount| currency:'INR'}}</td>
+                                <td *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">
+                                    {{dtl?.discount| currency:'INR'}}</td>
+                                <td style="text-align:right">{{dtl?.taxable_amount| currency:'INR'}}</td>
+                                <td *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">
+                                    {{dtl?.cgst| currency:'INR'}}</td>
+                                <td *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">
+                                    {{dtl?.sgst| currency:'INR'}}</td>
+                                <td *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">
+                                    {{dtl?.igst| currency:'INR'}}</td>
+                                <td *ngIf="this.aptypeid !== 4 && this.aptypeid !== 8" style="text-align:right">
+                                    {{dtl?.taxamount| currency:'INR'}}</td>
+                                <td style="text-align:right">{{dtl?.totalamount| currency:'INR'}}</td>
+                                <!-- <td *ngIf=" this.aptypeid !== 13" style="text-align: center;">                                             
+                            <section class="example-section">
+                                <mat-checkbox class="example-margin"  disabled  [checked]= "dtl?.is_capitalized" ></mat-checkbox>
+                            </section>
+                         </td> -->
+                                <td *ngIf="dtl?.is_capitalized == true || dtl?.is_capitalized == 1" style="text-align: center;">Yes</td>
+                        <td *ngIf="dtl?.is_capitalized == false || dtl?.is_capitalized ==0" style="text-align: center;">No</td>
+                                <td style="text-align:center">
+
+                                    <i matTooltip="view" class=" fa fa-eye create "
+                                        style="color: black;cursor: pointer;" (click)="adddebits(dtl, j)"></i>
+
+
+
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td class="totaldisplay" colspan="10"
+                                    *ngIf="this.aptypeid !=1 && this.aptypeid !=4 && this.aptypeid != 8 && this.aptypeid !=13 && this.aptypeid != 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Total Taxable Amount:</td>
+                                <td class="totaldisplay" colspan="11"
+                                    *ngIf="this.aptypeid ==1 || this.aptypeid ==13 || this.aptypeid == 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Total Taxable Amount:</td>
+                                <td class="totaldisplay" colspan="2"
+                                    *ngIf=" this.aptypeid ==4 || this.aptypeid == 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Total Taxable Amount:</td>
+                                <td style="text-align:right">{{totaltaxable| currency:'INR'}}</td>
+
+                                <td class="totaldisplay" colspan="4"
+                                    *ngIf="this.aptypeid !=1 && this.aptypeid !=4 && this.aptypeid != 8 && this.aptypeid !=13 && this.aptypeid != 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Other Adjustment:</td>
+                                <td class="totaldisplay" colspan="4"
+                                    *ngIf="this.aptypeid ==1 || this.aptypeid ==13 || this.aptypeid == 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Other Adjustment:</td>
+                                <td class="totaldisplay" colspan="7"
+                                    *ngIf=" this.aptypeid ==4 || this.aptypeid == 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Other Adjustment:</td>
+                                <td style="text-align:right">{{OtherAmount| currency:'INR'}}</td>
+                            </tr>
+                            <tr>
+
+                                <td class="totaldisplay" colspan="15"
+                                    *ngIf="this.aptypeid !=1 && this.aptypeid !=4 && this.aptypeid != 8 && this.aptypeid !=13 && this.aptypeid != 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Rounding Off:</td>
+                                <td class="totaldisplay" colspan="16"
+                                    *ngIf=" this.aptypeid ==1 || this.aptypeid ==13 || this.aptypeid == 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Rounding Off:</td>
+                                <td class="totaldisplay" colspan="6"
+                                    *ngIf=" this.aptypeid ==4 || this.aptypeid == 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Rounding Off:</td>
+                                <td style="text-align:right">{{Roundoffamount| currency:'INR'}}</td>
+                            </tr>
+                            <tr>
+                                <td class="totaldisplay" colspan="15"
+                                    *ngIf="this.aptypeid !=1 && this.aptypeid !=4 && this.aptypeid != 8 && this.aptypeid !=13 && this.aptypeid != 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Net Amount:</td>
+                                <td class="totaldisplay" colspan="16"
+                                    *ngIf="this.aptypeid ==1 || this.aptypeid ==13 || this.aptypeid == 3"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Net Amount:</td>
+                                <td class="totaldisplay" colspan="6" *ngIf="this.aptypeid ==4 || this.aptypeid == 8"
+                                    style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                                    Net Amount:</td>
+                                <td style="text-align:right">{{INVsum | currency:'INR'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div *ngIf="headerdata[0]?.invoicedetails?.data?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- <ng-container formArrayName="invoicedtls"
+                        *ngFor="let section of InvoiceDetailForm.controls.invoicedtls['controls']; let invdtlindex = index">
+                        <tr [formGroupName]="invdtlindex">
+                            <td>{{invdtlindex+1}}</td>
+                            <td>
+                                <mat-form-field 
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput formControlName="description" readonly id="approver-inv-view-0027">
+                                    <mat-label>Particulars</mat-label>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field 
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <mat-label>Product</mat-label>
+                                <input #productInput placeholder="Product" matInput formControlName="productname" readonly id="approver-inv-view-0028">
+                            </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field 
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput formControlName="isrcm" placeholder="Is RCM" 
+                                        autocomplete="off" readonly id="approver-inv-view-0029">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field 
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput formControlName="uom" placeholder="UOM" readonly id="approver-inv-view-0030">
+                                </mat-form-field>
+                            </td>
+                            <td  *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+
+                                    <mat-label>HSN Code</mat-label>
+                                    <input placeholder="HSN" matInput formControlName="hsn" readonly id="approver-inv-view-0031">
+                                </mat-form-field>
+                            </td>
+                            
+                            <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">
+                                <mat-form-field 
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput formControlName="hsn_percentage" placeholder="HSN %" readonly id="approver-inv-view-0032">
+                                </mat-form-field>
+                            </td>
+                           
+                            <td>
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="Unit Price" formControlName="unitprice" readonly id="approver-inv-view-0033">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="Qty" formControlName="quantity" readonly id="approver-inv-view-0034">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="Amount" formControlName="amount" autocomplete="off" readonly  id="approver-inv-view-0035">
+                                </mat-form-field>
+                            </td>
+                            <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="CGST" formControlName="cgst" readonly id="approver-inv-view-0036">
+                                </mat-form-field>
+                            </td>
+                            <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="SGST" formControlName="sgst" readonly id="approver-inv-view-0037">
+                                </mat-form-field>
+                            </td>
+                            <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="IGST" formControlName="igst" readonly id="approver-inv-view-0038">
+                                </mat-form-field>
+                            </td>
+                            <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="Tax" formControlName="taxamount" readonly id="approver-inv-view-0039">
+                                </mat-form-field>
+                            </td>
+                            <td *ngIf="this.aptypeid !== 3 && this.aptypeid !== 4 && this.aptypeid !== 8">
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="Discount" formControlName="discount" readonly id="approver-inv-view-0040">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <input matInput placeholder="Total"
+                                        formControlName="totalamount" readonly id="approver-inv-view-0041">
+                                </mat-form-field>
+                            </td>
+                            <td style="text-align:center">
+
+                                <span matTooltip="view" class=" fa fa-eye create "
+                                    style="color: black;cursor: pointer;"   (click)="adddebit(section,InvoiceDetailForm.value,invdtlindex)"></span>
+                               
+
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <tr>
+                            
+                        <th class="totaldisplay" colspan="15"  style="text-align: end;" *ngIf="this.aptypeid != 3 && this.aptypeid !=4 && this.aptypeid != 8">
+                            Rounding Off:</th>
+                        <th class="totaldisplay" colspan="7"  style="text-align: end;" *ngIf="this.aptypeid == 3 || this.aptypeid ==4 || this.aptypeid == 8">
+                            Rounding Off:</th>
+                        <td>
+                            <mat-form-field style="width: 100px;">
+                                <input matInput formControlName="roundoffamt" readonly id="approver-inv-view-0042">
+                            </mat-form-field>
+                        </td>
+
+                    </tr>                            
+                    <tr >
+                        <th class="totaldisplay" colspan="15" *ngIf="this.aptypeid != 3 && this.aptypeid !=4 && this.aptypeid != 8"
+                            style="font-family: 'Times New Roman', Times, serif;">
+                            Net Amount:</th>
+                        <th class="totaldisplay" colspan="7" *ngIf="this.aptypeid == 3 || this.aptypeid ==4 || this.aptypeid == 8"
+                            style="font-family: 'Times New Roman', Times, serif;">
+                            Net Amount:</th>
+                        <td>{{INVsum | currency:'INR'}}</td>
+                    </tr>
+                </table>
+               
+        </div>
+        </div> -->
+
+
+        <!-- </div> -->
+        <!-- </div> -->
+
+
+        <!-- ----------credit detail --------- -->
+
+        <!-- <br><br> -->
+        <br>
+        <h3>Credit Details</h3>
+        <form [formGroup]="creditdetForm">
+            <table>
+                <tr>
+                    <td>
+                        <h3>TDS Applicability : {{tdsapplicability}}</h3>
+                    </td>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <td>
+                        <h3>Payment Instructions : {{paymentinstructions}}</h3>
+                    </td>
+                </tr>
+            </table>
+            <!-- <div>
+    <div class=" row col-md-12" *ngIf="paytoid=='SUPPLIER'">
+        <div class="col-md-3">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" formControlName="supName" matInput readonly placeholder="Supplier Name" id="approver-inv-view-0043">
+                <mat-label>Supplier Name</mat-label>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" formControlName="isexcempted" matInput readonly placeholder="Is Exempted" id="approver-inv-view-0044">
+                <mat-label>Is Exempted</mat-label>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3" *ngIf="showthreshold">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" formControlName="TDSSection" matInput readonly placeholder="TDS Section" id="approver-inv-view-0045">
+                <mat-label>TDS Section</mat-label>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3" *ngIf="showthreshold">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" formControlName="TDSRate" matInput readonly placeholder="TDS Rate" id="approver-inv-view-0046">
+                <mat-label>TDS Rate</mat-label>
+            </mat-form-field>
+        </div>
+    </div>    
+    <div class=" row col-md-12" *ngIf="paytoid=='S'">
+        <div class="col-md-3" *ngIf="showthreshold">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" formControlName="thresholdValue" matInput readonly placeholder="Threshold Value" id="approver-inv-view-0047">
+                <mat-label>Threshold Value</mat-label>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3" *ngIf="showthreshold">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" matInput formControlName="amountPaid" readonly placeholder="Amount Paid" id="approver-inv-view-0048">
+                <mat-label>Amount Paid</mat-label>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3" *ngIf="showthreshold">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" matInput formControlName="balThroAmt" readonly placeholder="Balance Threshold Amount" id="approver-inv-view-0049">
+                <mat-label>Balance Threshold Amount</mat-label>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3" *ngIf="showthreshold">
+            <mat-form-field style="margin-left: 5%;width:220px">
+                <input type="text" matInput formControlName="normaltdsRate" readonly placeholder="Normal TDS Rate" id="approver-inv-view-0050">
+                <mat-label>Normal TDS Rate</mat-label>
+            </mat-form-field>
+        </div>
+    </div>  
+</div> -->
+        </form>
+        <!-- <div class="card" style="margin-bottom: 3%;margin-right: 20px;margin-left: 10px;">
+<div class="card-body">
+<div class="tableFixHead">
+    <table class="table table-bordered  table-sm"> -->
+        <!-- <thead style='font-family:"Times New Roman"'>
+            <tr  class="table_header" fixed-header> -->
+        <div class="table-responsive">
+            <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Paymode</th>
+                        <th>Account Detail</th>
+                        <!-- <th>Transaction Branch</th> -->
+                        <th>Ref No</th>
+                        <th *ngIf="this.paytoid != 'E' && this.paytoid != 'B'">Bank Name</th>
+                        <th *ngIf="this.paytoid != 'E' && this.paytoid != 'B'">Branch Name</th>
+                        <th *ngIf="this.paytoid != 'E' && this.paytoid != 'B'">IFSC Code</th>
+                        <th>Beneficiary Name</th>
+                        <th>
+                            <div>Tax Type - GL No</div>
+                        </th>
+                        <th>Tax Rate</th>
+                        <th>TDS Excempt</th>
+                        <th>Taxable Amount</th>
+                        <th>GL No</th>
+                        <th>Amount</th>
+                        <!-- <th>Amount change</th> -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let cdt of invCreditList;index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{cdt?.paymode?.name}}</td>
+                        <td>{{cdt?.refno}}</td>
+                        <!-- <td style="text-align: center;">-</td> -->
+                        <td>{{cdt?.refno}}</td>
+
+                        <td *ngIf="this.paytoid == 'S'"><ng-container
+                                *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.bank_id?.name}}</ng-container>
+                        </td>
+                        <td *ngIf="this.paytoid == 'S'"><ng-container
+                                *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.branch_id?.name}}</ng-container>
+                        </td>
+                        <td *ngIf="this.paytoid == 'S'"><ng-container
+                                *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.branch_id?.ifsccode}}</ng-container>
+                        </td>
+                        <td *ngIf="this.paytoid == 'S'"><ng-container
+                                *ngFor="let cdtdtl of cdt?.supplierpayment_details?.data">{{cdtdtl?.beneficiary}}</ng-container>
+                        </td>
+
+                        <!-- <td *ngIf="this.paytoid == 'E'">{{cdt?.employeeaccount_details?.bank_name}}</td>
+                    <td *ngIf="this.paytoid == 'E'">{{cdt?.employeeaccount_details?.bankbranch?.name}}</td>
+                    <td *ngIf="this.paytoid == 'E'">{{cdt?.employeeaccount_details?.bankbranch?.ifsccode}}</td> -->
+                        <td *ngIf="this.paytoid == 'E'"><ng-container
+                                *ngFor="let cdtdtl of cdt?.employeeaccount_details?.data">{{cdtdtl?.beneficiary_name}}</ng-container>
+                        </td>
+
+                        <!-- <td *ngIf="this.paytoid == 'B'">KARUR VYSYA BANK</td>
+                    <td *ngIf="this.paytoid == 'B'">EXPENSES MANAGEMENT CELL</td>
+                    <td *ngIf="this.paytoid == 'B'">KVBL0001903</td> -->
+                        <td *ngIf="this.paytoid == 'B'"><ng-container
+                                *ngFor="let cdtdtl of cdt?.employeeaccount_details?.data">{{cdtdtl?.beneficiary_name}}</ng-container>
+                        </td>
+                        <!-- <ng-container *ngFor="let cdtdtl of cdt?.employeeaccount_details?.data"></ng-container> -->
+                        <td>{{cdt?.suppliertaxtype}}</td>
+                        <td>{{cdt?.suppliertaxrate == "0.0" ? "-" :cdt?.suppliertaxrate}}</td>
+                        <td *ngIf="cdt?.taxexcempted == 'Y' || cdt?.taxexcempted == 'Yes'">Yes</td>
+                        <td *ngIf="cdt?.taxexcempted == 'N' || cdt?.taxexcempted == 'No'">No</td>
+                        <td style="text-align:right">{{cdt?.taxableamount == "0.0" ? "-" :cdt?.taxableamount| currency:'INR'}}</td>
+                        <td>{{cdt?.glno}}
+                            <mat-icon matSuffix *ngIf="aptypeid == 7" 
+                            class="invoicedetail-style-536" (click)="crnglpopupopen()">info</mat-icon>
+                        </td>
+                        <td style="text-align:right">{{cdt?.amount| currency:'INR'}}</td>
+
+                    </tr>
+                </tbody>
+
+
+
+
+
+
+
+
+
+
+                <!-- <tbody>
+                    <ng-container formArrayName="creditdtl"
+                    *ngFor="let section of getCreditSections(InvoiceDetailForm); let creditindex = index">
+                    <tr [formGroupName]="creditindex">
+                        <td>{{creditindex+1}}</td>
+                        <td>
+                            <mat-form-field
+                            style="font-family: 'Times New Roman', Times, serif;">
+
+                            <mat-label>Paymode</mat-label>
+                            <input placeholder="Paymode" matInput formControlName="paymode_id" id="approver-inv-view-0051">                                
+                            </mat-form-field>
+                        </td>
+                        <td >
+                            <div *ngIf="showaccno[creditindex]==true && this.paymodecode[creditindex] == 'PM005' ">
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <mat-label>Acc no</mat-label>
+                                <input placeholder="Acc no" matInput formControlName="refno" id="approver-inv-view-0052"> 
+                            </mat-form-field>
+                            </div>
+                          
+                            <div *ngIf="showaccno[creditindex]==true && (this.paymodecode[creditindex] == 'PM004' || this.paymodecode[creditindex] == 'PM001')">
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <mat-label>Acc no</mat-label>
+                                <input placeholder="Acc no" matInput formControlName="refno" id="approver-inv-view-0053"> 
+                            </mat-form-field>
+                            </div>
+                            <div *ngIf="showaccno[creditindex]==true && this.paymodecode[creditindex] == 'PM008' ">
+                                <mat-form-field
+                                    style="font-family: 'Times New Roman', Times, serif;">
+                                    <mat-label>Acc no</mat-label>
+                                    <input matInput placeholder="Ref No" formControlName="refno"
+                                    autocomplete="off" readonly id="approver-inv-view-0054">
+                                </mat-form-field>
+                            </div>
+                            <div *ngIf="showaccno[creditindex]==false " style="margin-left: 75px;">-</div>
+                        </td>                             
+                        
+                        <td *ngIf="showtranspay[creditindex]==true">
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <mat-label>Payable Branch</mat-label>
+                                <input matInput placeholder="Payable Branch"
+                                    autocomplete="off" readonly id="approver-inv-view-0055">                                      
+                            </mat-form-field>
+
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <mat-label>Transaction Branch</mat-label>
+                                <input matInput placeholder="Transaction Branch"
+                                    autocomplete="off" readonly id="approver-inv-view-0056">    
+                            </mat-form-field>
+                        </td>
+                        <td *ngIf="showtranspay[creditindex]===false">
+                            <div style="margin-left: 35px;">-</div>
+                        </td> 
+
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="Ref No" formControlName="refno"
+                                    autocomplete="off" readonly id="approver-inv-view-0057">
+                            </mat-form-field>
+                        </td>
+
+
+
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="Bank Name" formControlName="bank"
+                                    autocomplete="off" readonly id="approver-inv-view-0058">
+                            </mat-form-field>
+
+                        </td>
+
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="Branch Name" formControlName="branch"
+                                    autocomplete="off" readonly id="approver-inv-view-0059">
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="IFSC code" formControlName="ifsccode"
+                                    autocomplete="off" readonly id="approver-inv-view-0060">
+                            </mat-form-field>
+                        </td>
+
+
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="Beneficiary" formControlName="benificiary"
+                                    autocomplete="off" readonly id="approver-inv-view-0061">
+                            </mat-form-field>
+                        </td>
+                        <td *ngIf="showtaxtype[creditindex]===true">
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <input placeholder="Tax type" matInput 
+                                    formControlName="suppliertaxtype" readonly id="approver-inv-view-0062">
+                            </mat-form-field>
+                        </td>
+                        <td *ngIf="showtaxrate[creditindex]===true">
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <input matInput placeholder="Tax Rate" formControlName="suppliertaxrate"
+                                    autocomplete="off" readonly id="approver-inv-view-0063">
+                            </mat-form-field>
+                        </td>
+                        <td *ngIf="showtaxtypes[creditindex] === true">
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <input matInput placeholder="Tax type" formControlName="suppliertaxtype"
+                                    autocomplete="off" readonly id="approver-inv-view-0064">
+                            </mat-form-field>
+                        </td>
+                        <td *ngIf="showtaxrates[creditindex] === true">
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <input matInput placeholder="Tax Rate" formControlName="suppliertaxrate"
+                                    autocomplete="off" readonly id="approver-inv-view-0065">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+                                <input matInput formControlName="taxexcempted"
+                                    autocomplete="off" readonly id="approver-inv-view-0066">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="Taxable amount" formControlName="taxableamount" readonly id="approver-inv-view-0067">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="Credit GL" formControlName="glno"
+                                    autocomplete="off" readonly id="approver-inv-view-0068">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">
+
+                                <input matInput placeholder="Amount" formControlName="amount" required readonly id="approver-inv-view-0069">
+                            </mat-form-field>
+                        </td>
+                        <td >
+                            <mat-form-field
+                                style="font-family: 'Times New Roman', Times, serif;">                                        
+                                <input matInput placeholder="Amount"
+                                    formControlName="amountchange" readonly id="approver-inv-view-0070">
+                            </mat-form-field>
+                        </td> 
+                    </tr>
+                   </ng-container>
+                </tbody>  -->
+
+                <tr *ngIf="this.paytoid != 'E' && this.paytoid != 'B'">
+                    <td class="totaldisplay" colspan="13"
+                        style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                        Net Amount:</td>
+                    <td style="text-align:right">{{cdtsum | currency:'INR'}}</td>
+                </tr>
+                <tr *ngIf="this.paytoid == 'E' || this.paytoid == 'B'">
+                    <td class="totaldisplay" colspan="10"
+                        style="font-family: 'Times New Roman', Times, serif;text-align: end;">
+                        Net Amount:</td>
+                    <td style="text-align:right">{{cdtsum | currency:'INR'}}</td>
+                </tr>
+            </table>
+            </div>
+            <div *ngIf="invCreditList?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+        </div>
+        <br>
+        <div style="display: flex;align-items: center;justify-content: center;">
+            <button type="button"    class="btn btn-outline-primary" style="border-radius:40px;" (click)="overallback()" id="approver-inv-view-0076">Back</button>
+        </div>
+        <!-- <div *ngIf="showApprove">
+    <form [formGroup]="SubmitECFApproverForm">
+        <tr>
+            <td>
+                <mat-form-field style="width: 250px;margin-left:38px;font-family: 'Times New Roman', Times, serif;" (click)="approvername()">
+                    <mat-label>Approver Name</mat-label>
+                    <input #appInput  placeholder="Choose Approver" matInput 
+                    formControlName="approvedby" [matAutocomplete]="approver"  id="approver-inv-view-0071">
+                    <mat-autocomplete [panelWidth]="400" #approver="matAutocomplete" (opened)="autocompleteapproverScroll()"
+                    [displayWith]="displayFnApprover">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let app of approverList"
+                    [value]="app?.employee_id" matTooltip="{{app?.employee_id?.name}}">{{app?.employee_id?.name}}
+                </mat-option>
+             </ng-container>
+                 </mat-autocomplete>
+                </mat-form-field>
+            </td>
+        <td>
+
+        <mat-form-field style="width: 250px;font-family: 'Times New Roman', Times, serif;margin-left: 40px;">
+            <input matInput placeholder="Remarks" formControlName="remark" autocomplete="off" required id="approver-inv-view-0072">
+        </mat-form-field>
+    </td>
+
+   <button type="button"    class="btn btn-outline-success" style="border-radius:40px;margin-left:50px;
+    margin-bottom: 0px; 
+    background-color: white;" (click)="ecfApprove()" id="approver-inv-view-0073">Approve</button>
+     <button
+     style="border-radius:40px;margin-left: 10px;margin-bottom: 0px;"
+     class="btn btn-outline-success" (click)="forward()" id="approver-inv-view-0074">
+     Approve and Forward</button> 
+    <button type="button"    class="btn btn-outline-success" style="border-radius:40px;margin-left:10px;
+    margin-bottom: 0px; 
+    background-color: white;" (click)="ecfReject()" id="approver-inv-view-0075">Reject</button>
+   
+    <button type="button"    class="btn btn-outline-primary" style="border-radius:40px;margin-left:10px;
+     margin-bottom: 0px;
+    background-color: white;" (click)="overallback()" id="approver-inv-view-0076">Back</button>
+    </tr>
+</form>
+</div>
+
+<div *ngIf="!showApprove && showAppName">
+    <form [formGroup]="SubmitECFApproverForm">
+        <mat-form-field style="width: 250px;font-family: 'Times New Roman', Times, serif;margin-left: 400px;margin-bottom: 40px">
+        <input matInput placeholder="Approver" formControlName="ecfApprover" autocomplete="off" readonly id="approver-inv-view-0077">
+    </mat-form-field>
+<button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left:10px;
+margin-bottom: 30px;
+background-color: white;" (click)="overallback()" id="approver-inv-view-0078">Back</button>
+</form>
+</div> -->
+        <!-- *ngIf="!showApprove && !showAppName" -->
+        <!-- <div >
+   
+<button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left:600px;
+margin-bottom: 50px;" (click)="overallback()" id="approver-inv-view-0079">Back</button>
+</div> -->
+        <!-- <button type="button" style="border-radius:40px;margin-left: 625px;margin-bottom: 25px;"
+class="btn btn-outline-primary" (click)="overallback()" id="approver-inv-view-0080">
+Back</button> -->
+     </div>
+    <!-- </div> -->
+    <!-- </form> -->
+    <!-- <div>
+        <button type="button" style="border-radius:40px;margin-left: 625px;margin-bottom: 25px;"
+        class="btn btn-outline-primary" (click)="overallback()" id="approver-inv-view-0081">
+        Back</button>
+    </div>         -->
+    <!-- </div> -->
+    <!-- Debit Div starts---- -->
+    <div *ngIf="showdebitdiv">
+       
+        <br>
+        <h3>Debit Details (Total Amount :
+            {{invtotamount | currency:'INR'}})</h3>
+
+        <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+
+        <div>
+            <form [formGroup]="DebitDetailForm">
+                <div class="table-responsive">
+                    <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+                    <table>
+                        <thead>
+                            <tr>
+                            <th>S.No</th>
+                            <th>Category</th>
+                            <th>Sub Category</th>
+                            <th>GL No</th>
+                            <th>BS<span style="color:red">*</span> </th>
+                            <th>CC<span style="color:red">*</span></th>
+                            <th>CCBS %</th>
+                            <th>Amount</th>
+                            <th>Adjust Amount</th>
+                            <th>Debit Amount</th>  
+
+                        </tr>
+                    </thead>
+                    <ng-container formArrayName="debitdtl"
+                        *ngFor="let section of getDebitSections(DebitDetailForm); let i = index">
+                        <tr [formGroupName]="i">
+                            <td>{{i+1}}</td>
+                            <td id="matInput-size">
+                                <mat-form-field appearance="outline" style="margin-top:20px;">
+                                    <mat-label>Category</mat-label>
+                                    <input #categoryInput placeholder="Category" matInput readonly
+                                        formControlName="category_code" [matAutocomplete]="cattype" id="approver-inv-view-0082">
+                                    <mat-autocomplete  [panelWidth]="250" #cattype="matAutocomplete"
+                                        [displayWith]="displaycatFn">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let categoryname of categoryNameData"
+                                                [value]="categoryname">
+                                                {{categoryname.code}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                                <p *ngIf="DebitDetailForm?.value?.debitdtl[i].category_code !='' && DebitDetailForm?.value?.debitdtl[i].category_code != 0 && DebitDetailForm?.value?.debitdtl[i].category_code != null && DebitDetailForm?.value?.debitdtl[i].category_code !=undefined"  style="color: blue;font: size 11px;">{{section?.value?.category_code?.name}}</p>
+                            </td>
+                            <td id="matInput-size">
+                                <mat-form-field appearance="outline" style="margin-top:20px;">
+                                    <mat-label>Sub Category</mat-label>
+                                    <input #subcategoryInput placeholder="Sub Category" matInput readonly
+                                        formControlName="subcategory_code"
+                                        [matAutocomplete]="subcategorytype" id="approver-inv-view-0083">
+                                    <mat-autocomplete  [panelWidth]="250" #subcategorytype="matAutocomplete"
+                                        [displayWith]="displaysubcatFn">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let subcategoryname of subcategoryNameData"
+                                                [value]="subcategoryname" >
+                                                {{subcategoryname.code}}
+                                            </mat-option>
+                                        </ng-container>
+                                </mat-autocomplete>
+                                </mat-form-field>
+                                <p *ngIf="DebitDetailForm?.value?.debitdtl[i].subcategory_code !='' && DebitDetailForm?.value?.debitdtl[i].subcategory_code != 0 && DebitDetailForm?.value?.debitdtl[i].subcategory_code != null && DebitDetailForm?.value?.debitdtl[i].subcategory_code !=undefined"  style="color: blue;font: size 11px;">{{section?.value?.subcategory_code?.name}}</p>
+                            </td>
+                            <td id="matInput-size">
+                                <mat-form-field
+                                appearance="outline">
+
+                                    <input matInput placeholder="GL Number" type="text"
+                                        formControlName="glno" autocomplete="off"
+                                         [readonly]="true" id="approver-inv-view-0084">
+                                </mat-form-field>
+
+                                <p *ngIf="DebitDetailForm?.value?.debitdtl[i].glno !='' && DebitDetailForm?.value?.debitdtl[i].glno != 0 && DebitDetailForm?.value?.debitdtl[i].glno != null && DebitDetailForm?.value?.debitdtl[i].glno !=undefined"  style="color: blue;font: size 11px;">{{section?.value?.gldesc}}</p>
+                            </td>
+                            <td id="matInput-size">
+                                <mat-form-field appearance="outline"
+                                   >
+
+
+                                    <mat-label>BS</mat-label>
+
+                                    <input #bsInput placeholder="BS" matInput formControlName="bs_code" readonly
+                                        [matAutocomplete]="bstype" appearance="outline" id="approver-inv-view-0085">
+                                    <mat-autocomplete  [panelWidth]="250" #bstype="matAutocomplete" [displayWith]="displaybsFn"
+                                        (opened)="bsScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let bsname of bsNameData" [value]="bsname" (onSelectionChange)="bsid(bsname,bsname.code,i)">
+                                                {{bsname.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>&nbsp; &nbsp;
+                                    <!-- <mat-icon *ngIf="DebitDetailForm?.value?.debitdtl[i]?.category_code?.code != 'GST Tax' && !debitsaved" style="color: red;" 
+                                    matTooltip="Clear" matTooltipClass="custom-tooltipnew" (click)="bsClear(i);">clear</mat-icon> -->
+
+
+                                </mat-form-field>
+                            </td>                                      
+                            <td id="matInput-size">
+                                <mat-form-field
+                                appearance="outline">
+                                    <mat-label>CC</mat-label>
+                                    <input #ccinput placeholder="CC" matInput formControlName="cc_code" readonly
+                                        [matAutocomplete]="cctype"  style="width: 160px;" id="approver-inv-view-0086">
+                                    <mat-autocomplete  [panelWidth]="250" #cctype="matAutocomplete" [displayWith]="displayccFn"
+                                        (opened)="ccScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let ccname of ccNameData" [value]="ccname"
+                                                (onSelectionChange)="getccdata(ccname.code,ccname.id)">
+                                                {{ccname.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>&nbsp; &nbsp;
+                                    <!-- <mat-icon *ngIf="DebitDetailForm?.value?.debitdtl[i]?.category_code?.code != 'GST Tax' && !debitsaved" style="color: red;" 
+                                    matTooltip="Clear" matTooltipClass="custom-tooltipnew" (click)="CCclear(i);">clear</mat-icon> -->
+
+                                </mat-form-field>
+                            </td>
+                            <td id="matInput-size">
+                                <mat-form-field
+                                appearance="outline">
+
+                                    <input matInput placeholder="%" formControlName="ccbspercentage" readonly 
+                                    style="text-align: right;" id="approver-inv-view-0087">
+                                </mat-form-field>
+                            </td>  
+                            <td id="matInput-size">
+                                <mat-form-field appearance="outline">        
+                                    <input matInput placeholder="Amount" type="text" autocomplete="off" readonly
+                                    formControlName="amt" style="text-align: right;"   id="approver-inv-view-0088">
+                                </mat-form-field>
+                            </td>
+                            <td id="matInput-size">
+                                <mat-form-field
+                                appearance="outline">
+
+                                    <input matInput placeholder="Adjust" type="text" readonly style="text-align: right;"
+                                        formControlName="deductionamount" autocomplete="off" [value]="0" id="approver-inv-view-0089">
+                                </mat-form-field>
+                               
+                            </td>
+                            <td id="matInput-size">
+                                <mat-form-field
+                                appearance="outline">
+                                    <input matInput placeholder="Debit" type="text" formControlName="amount" readonly style="text-align: right;" id="approver-inv-view-0090">
+                                </mat-form-field>
+                            </td>                         
+                        </tr>
+                    </ng-container>
+                    <tr>
+                        <td class="totaldisplay" colspan="9"
+                            style="text-align: right">Net Amount:
+                        </td>
+                        <td style="text-align: end;">{{debitsum | currency:'INR'}}</td>
+                    </tr>
+                    <tr>
+                        <!-- <td colspan="10">
+                            <button type="button" style="border-radius:40px;margin-left: 2450px;"
+                                class="btn btn-outline-success" (click)="debitform()" [disabled]="debitsaved" id="approver-inv-view-0091"> -->
+                                <!-- [disabled]="submitdebitdtlbtn" -->
+    
+                                <!-- Save
+                            </button>
+                            <button type="button" #debitclosebtn
+                                style="border-radius:40px;margin-left:15px;font-family: 'Times New Roman', Times, serif;"
+                                class="btn btn-outline-primary" (click)="debitbacks()" id="approver-inv-view-0092">
+                                Back</button> 
+                        </td>-->
+                    </tr>
+                </table>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div> 
+    
+    
+    <!-- Debit div ends -->
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+            data-keyboard="false" data-backdrop="static" id="crnglpopup">
+            <div class="modal-dialog modal-xl">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">CRNGL</h3>
+                        <button type="button" #closebuttonsgl class="close" data-dismiss="modal" aria-label="Close"
+                            id="invoice-detail-0240">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                            <div class="comp-table t-resposive t-bdr-line t-HoverZoom" id="summary-table">
+                                <table>
+                                    <thead>
+
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Category<span style="color:red">*</span></th>
+                                            <th>Sub Category<span style="color:red">*</span></th>
+                                            <th>GL Number</th>
+                                        </tr>
+                                    </thead>
+
+                                    <ng-container> 
+                                        <tr *ngFor="let section of invCreditList; let i = index">
+                                            <td>{{i+1}}</td>
+                                            <td>{{section?.category_code?.name}}</td>
+                                            <td>{{section?.subcategory_code?.name}}</td>
+                                            <td>{{section?.subcategory_code?.glno}}</td>
+                                        
+                                        </tr>
+                                    </ng-container>
+                                </table>
+                            </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        
+                            <button type="button"
+                                            style="border-radius:40px;margin-left:10px;font-family: 'Times New Roman', Times, serif;"
+                                            class="btn btn-outline-primary" (click)="crnback()"
+                                            id="invoice-detail-0249">
+                                            Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- View Trancation -->
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabels"
+  aria-hidden="true"
+  id="approver-inv-view-0001"
+>
+  <div class="modal-dialog modal-xl" style="width: 70%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><b>View Transaction</b></h3>
+        <button
+          class="close"
+          type="button"
+          data-dismiss="modal"
+          id="approver-inv-view-0093"
+        >
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <div class="table-responsive" style="width: 100%; margin-top: 1%">
+                <div class="table-responsive">
+              <lib-vs-cbox-summary
+                [SummaryDetails]="SummarytransactionData"
+                [SummaryApiObj]="SummaryApitransactionObjNew"
+                [FirstLastbtn]="true"
+              ></lib-vs-cbox-summary>
+              </div>
+            <br />
+            <table style="width: 100%; text-align: center">
+              <tr>
+                <td>Employee Name: &nbsp;{{ this.name }}</td>
+                <td>Designation: &nbsp;{{ this.designation }}</td>
+                <td>Branch Name : &nbsp;{{ this.branch }}</td>
+              </tr>
+            </table>
+            <!-- <table class="table table-bordered scrolltable" fixed-header
+                     [ngClass]="viewtrnlist.length > 5 ? 'ViewTrnScroll':  'ViewTrnScrollHide'">
+                <thead class="table_header">
+                <tr>
+                    <th>S.NO</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>From Date</th>
+                    <th>Remarks</th>
+                    <th>Employee Name</th>
+                    <th>Approver Name</th>
+                </tr>
+                </thead>
+                <tr *ngFor="let dt of viewtrnlist;let i=index">
+                    <td>{{i+1}}</td>
+                    <td>{{dt.Type}}</td>
+                    <td>{{dt?.comments}}</td>
+                    <td>{{dt.created_date}}</td>
+                    <td>{{dt.remarks}}</td>
+                    <td>{{dt.from_user.name}}
+                    <br>
+                    <div *ngIf="dt.from_user_id==-1; else deta"></div>
+                        <ng-template #deta>
+                            <a style="color: green;cursor: pointer;"  (click)="view(dt)">View Details</a>
+                        </ng-template>
+                    </td>
+                    <td>{{dt.to_user.name}}
+                    <br>
+                    <div *ngIf="dt.to_user_id==-1; else deta1"></div>
+                        <ng-template #deta1>
+                            <a style="color: green;cursor: pointer;"  (click)="viewto(dt)">View Details</a>
+                        </ng-template>
+                    </td>
+
+                     <div *ngIf="viewtrnlist?.length == 0" style="margin-left: 42%;">
+                     <h3 >Sorry data not found!.. </h3>
+                    </div>
+
+                    <div class="row" *ngIf="viewtrnlist?.length > 0">
+                        <div class="col-sm-8" style="margin-bottom: 0%;font-size: small;text-align: right;margin-top: 18px;font-weight:bold">
+                        Page: {{viewtrnCurrentPage}}
+                        </div>
+                        <div  class="col-sm-4" style="margin-bottom: 0%;font-size: small;text-align:right;">
+                            <mat-paginator  style="margin-top: 0%;width: 350px;"
+                                        (page)="handleViewtrn($event)"
+                                        [length]="length_viewtrn"
+                                        [pageSize]="pageSize_Viewtrn"
+                                        [showFirstLastButtons]="showFirstLastButtons"
+                                        [pageSizeOptions]="pageSizeOptions"
+                                        [pageIndex]="pageIndexViewtrn"
+                                        [hidePageSize]="true"
+                                        aria-label="Select page">                            
+                            </mat-paginator>
+                        </div>
+                    </div>
+                </tr>
+            </table> -->
+          </div>
+          <!-- <div class="modal-footer" > -->
+          <!-- <table style="width: 100%; text-align: center">
+                <tr>
+                    <td>Employee Name: &nbsp;{{this.name}}</td>
+                    <td>Designation: &nbsp;{{this.designation}}</td>
+                    <td>Branch Name : &nbsp;{{this.branch}}</td>
+                 </tr> -->
+          <!-- <tr>
+                    <td colspan="3"> -->
+       
+          <!-- </td>
+                    </tr> -->
+          <!-- </table>  -->
+          <!-- </div> -->
+        </div>
+      </div>
+  
+    </div>
+    <div class="modal-footer" >
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          style="border-radius: 40px"
+          data-dismiss="modal"
+          id="approver-inv-view-0094"
+        >
+          Back
+        </button>
+      </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" 
+tabindex="-1"
+ role="dialog"
+  aria-labelledby="exampleModalLabels"
+   aria-hidden="true" 
+    data-backdrop="static" 
+    data-keyboard="false"
+    id="approver-inv-view-0002">
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title mb-0">Supplier Details</h3>
+                <button type="button" #supclosebuttons class="close" data-dismiss="modal" aria-label="Close" id="approver-inv-view-0095">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <form [formGroup]="SupplierDetailForm">
+                    <div class="search-auto-fit" >
+                        <!-- <div> -->
+
+                            <!-- <tr> -->
+                                <div  id="matInput-size">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Supplier Gst-No</mat-label>
+                                        <input matInput placeholder="Supplier Gst-No" formControlName="suppliergst" readonly id="approver-inv-view-0096">
+                                           
+                                    </mat-form-field>
+                                    <!-- (input)="validationGstNo($event)" -->
+                           </div>
+                                <td>
+                                    <!-- <span class="fa fa-check-circle" style="font-size:36px;color:darkblue;margin-left:10px;cursor: pointer;" 
+                                    matTooltip="validate" matTooltipClass="custom-tooltipnew" (click)="validationGstNo(SupplierDetailForm?.value?.suppliergst)"></span> -->
+                                </td>
+                                <div  id="matInput-size">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Supplier Name</mat-label>
+                                        <input matInput placeholder="Supplier Name" formControlName="supplier_name"
+                                         readonly id="approver-inv-view-0097">
+                                    </mat-form-field>
+                               </div>
+                                <!-- <td *ngIf="!supdetDisable">
+                                    <mat-form-field
+                                        style="width:200px;margin-left:-400px;font-family: 'Times New Roman', Times, serif;">
+                                        <input matInput placeholder="Supplier Name" formControlName="supplier_name"
+                                        autocomplete="off" readonly id="approver-inv-view-0098">
+                                    </mat-form-field>
+                                </td> -->
+                                <div  id="matInput-size">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Supplier Pin-Code</mat-label>
+                                        <input matInput placeholder="Supplier Pin-Code" formControlName="pincode" readonly id="approver-inv-view-0099">
+                                    </mat-form-field>
+                           </div>
+                                <!-- <td >
+                                    <mat-form-field
+                                        style="width:200px;margin-left:-150px;font-family: 'Times New Roman', Times, serif;">
+                                        <input matInput placeholder="Supplier Pin-Code" formControlName="pincode" maxlength="6"
+                                        autocomplete="off" (keypress)="numberOnly($event)" readonly id="approver-inv-view-0100">
+                                    </mat-form-field>
+                                </td> -->
+                                <div  id="matInput-size">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Invoice No</mat-label>
+                                        <input matInput placeholder="Invoice No" formControlName="invoiceno"  readonly id="approver-inv-view-0101">
+                                    </mat-form-field>
+                          </div>
+
+                            <!-- </tr> -->
+                            <!-- <tr> -->
+
+                                <div  id="matInput-size">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Date</mat-label>
+                                        <input matInput placeholder="Date" formControlName="invoicedate" readonly id="approver-inv-view-0102">
+                                    </mat-form-field>
+                              </div>
+                              <div  id="matInput-size">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Supplier Address</mat-label>
+                                        <input matInput placeholder="Supplier Address" formControlName="address" readonly
+                                            autocomplete="off"  id="approver-inv-view-0103">
+                                    </mat-form-field>
+                              </div>
+                                <!-- <td *ngIf="!supdetDisable">
+                                    <mat-form-field
+                                        style="width:400px;margin-left:70px;font-family: 'Times New Roman', Times, serif;">
+                                        <input matInput placeholder="Supplier Address" formControlName="address" 
+                                            autocomplete="off"  id="approver-inv-view-0104">
+                                    </mat-form-field>
+                                </td> -->
+
+                            <!-- </tr> -->
+
+                        <!-- </div> -->
+                    </div>
+                    </form>
+
+                     </div>
+                                               <!-- <tr> -->
+                        <div class="modal-footer">
+                            <!-- <td> -->
+
+                                <button
+                                 type="submit"
+                                  style="border-radius:40px;"
+                                  (click)="supplierBack()"
+                                   class="btn btn-outline-primary"
+                                   id="approver-inv-view-0105">Back</button>
+
+                            <!-- </td> -->
+                        </div>
+                    <!-- </tr> -->
+        
+
+        </div>
+    </div>
+</div>

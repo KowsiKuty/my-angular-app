@@ -1,0 +1,994 @@
+<section class="screen-padding  screen-lm">
+
+<div class="filter-aling">  
+  <lib-vs-search-cmp
+  id="matInput-size"
+  [SearchArr]="datassearchs"
+  (dataoutput)="temp_search($event)"
+  [ButtonArr]="teplate_btns"
+  [Outputtype]="searchtemplate"
+>
+</lib-vs-search-cmp>
+  
+</div>
+
+
+<lib-vs-cbox-summary [SummaryDetails]="template_summary_table"
+  [SummaryApiObj]="template_search_summary_api"></lib-vs-cbox-summary>
+
+        <!-- <form [formGroup]="datassearch" style="margin-top:1%;margin-left:15px">
+            <section>
+                <div class="row">
+                <div class="col-sm-2">
+                    <mat-form-field class="formfieldwidth_sapce"> 
+                        <mat-label>Template Name</mat-label>
+                      
+                        <input matInput formControlName="temp_name">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-2" >
+                    <mat-form-field class="formfieldwidth_sapce">
+                        <mat-label>Description</mat-label>
+                      
+                        <input matInput formControlName="description">
+                    </mat-form-field>
+                </div>                
+                <div class="col-sm-2" >
+                    <mat-form-field class="formfieldwidth_sapce">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="status">
+                          <mat-option *ngFor="let data of status_array" [value]="data.id">
+                            {{data.name}}
+                          </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-2" >
+                  <mat-form-field class="formfieldwidth_sapce">
+                      <mat-label>Type</mat-label>
+                      <mat-select formControlName="recon_ars">
+                        <mat-option *ngFor="let data of typearray" [value]="data.id">
+                          {{data.name}}
+                        </mat-option>
+                      </mat-select>
+                  </mat-form-field>
+              </div>
+                <div class="col-sm-4">
+                    <button ngbTooltip="Search Records" class="btn btn-outline-success" id="rmubtn"  style=" border-radius: 25px;margin-left: 35px;"
+                    color="primary" (click)="temp_search()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-outline-primary" ngbTooltip="Clear Entries" style="margin-left:20px; border-radius: 25px;margin-left: 35px;" (click)="datassearchreset()"
+                    id="rmubtn">Clear</button>
+                    <button type="button" class="btn btn-outline-success" (click)="openBrsform()" 
+        style="border-radius:40px;text-align: center; margin-left: 35px;"><span class="fa fa-plus">&nbsp;</span>Templates</button>
+                </div>
+               
+            </div>
+            </section>
+    
+        </form> -->
+   
+<!-- <div class="table">
+
+    <div>
+        <div class="table-responsive">
+
+            <table class="table table-hover" id='commonstyle'>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>
+            
+                                Template Name
+                
+                        </th>
+                        <th>
+                            
+                    
+                                Description
+                          
+                        </th>
+                        <th>Recon / ARS</th>
+                        <th>Edit</th>
+                        <th>Status</th>                    
+                        <th>Filter</th>                    
+                    </tr>
+                </thead>
+                <tbody style="text-align: center;">
+                    <tr *ngFor="let sum of summarylist;index as ind" >
+                        <td>{{ (pagination.index - 1) * limit + ind + 1 }}</td>
+                        <td>{{sum.template_name}}</td>
+                        <td>{{sum.description}}</td>
+                        <td >
+                          <div *ngIf="sum.recon_ars===1">
+                           ARS
+                          </div>
+                          <div *ngIf="sum.recon_ars===0">
+                            Recon
+                           </div>
+                        </td>
+                        <td>
+                            <mat-icon (click)="editDatas(sum)"  style="cursor: pointer;">edit</mat-icon>
+                        </td>
+                        <td> 
+                        
+                         <mat-slide-toggle [(ngModel)]="sum.status" color="secondary" (click)="deletetemplate(sum);"></mat-slide-toggle> 
+                            
+                        </td>  
+                        <td>	<mat-icon style="cursor: pointer;" (click)="getfilter(sum)">filter_alt</mat-icon></td>
+                    </tr>
+                </tbody>
+            </table>
+           
+            <div *ngIf="summarylist ?.length == 0" style="margin-left: 42%;">
+              <h3>Sorry data not found... </h3>
+          </div>
+          <div class="row">
+              <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 50px;">
+                  <button mat-icon-button [disabled]="pagination.has_previous === false" color="primary" (click)="prevpages()">
+                      <mat-icon>arrow_back</mat-icon>
+                  </button>
+                  {{pagination.index}}
+                  <button mat-icon-button [disabled]="pagination.has_next === false" color="primary" (click)="nextpages()">
+                      <mat-icon>arrow_forward</mat-icon>
+                  </button>
+              </div>
+          </div>
+        </div>
+    </div>
+</div> -->
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="boxlevelform" aria-hidden="true" id="viewdata"
+    #viewdata>
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" style="color:black ;">View Wisefin Template</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <br>
+            <br>
+
+            <!-- <div style="margin-left:10px;">
+                <table class="table table-bordered table-responsive" id="boxlevel">
+                    <thead class="table_header">
+                        <th>S.No</th>
+                        <th>Template Name</th>
+                        <th>Account</th>
+                        <th>Line Description</th>
+                        <th>GL Date</th>
+                        <th>Source</th>
+                        <th>Category</th>
+                        <th>GL Doc No.</th>
+                        <th>User Name</th>
+                        <th>Invoice Number</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                        <th>Journal Name</th>
+                        <th>Account Description</th>
+
+                        <th></th>
+                    </thead>
+                    <tbody *ngFor="let lists of singleList;index as ind">
+                        <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                        <td>{{lists.template_name}}</td>
+                        <td>{{lists.account_id}}</td>
+                        <td>{{lists.line_description}}</td>
+                        <td>{{lists.gl_date}}</td>
+                        <td>{{lists.source}}</td>
+                        <td>{{lists.category}}</td>
+                        <td>{{lists.gl_doc_no}}</td>
+                        <td>{{lists.user_name}}</td>
+                        <td>{{lists.invoice_no}}</td>
+                        <td>{{lists.credit_amount}}</td>
+                        <td>{{lists.debit_amount}}</td>
+                        <td>{{lists.journal_name}}</td>
+                        <td>{{lists.account_description}}</td>
+                    </tbody>
+                </table> -->
+
+              
+
+            <!-- </div> -->
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="boxlevelform" aria-hidden="true" id="editdatas"
+    #editdatas>
+    <div class="modal-dialog modal-dialog-centered modal-xl" style="width: 80%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Edit Template</h2>
+                <button type="button" #closebuttonedittemp class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+              <form [formGroup]="newisefinform">
+                <div class="search-auto-fit">
+                  <div  id="matInput-size">
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label >Template name</mat-label>
+                      <input matInput formControlName="template_name">
+                    </mat-form-field>
+                  </div>
+                  <div  id="matInput-size">
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label >Description</mat-label>
+                      <input matInput formControlName="description">
+                    </mat-form-field>
+                  </div>
+                  <div  id="matInput-size">
+                    <mat-form-field  appearance="outline">
+                      <mat-label>Template</mat-label>
+                      <mat-select formControlName="recon_ars">
+                        <mat-option *ngFor="let data of recon_ars_array" [value]="data.id" (click)="gettemplateid(data.id)">
+                          {{data.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </form>
+              <div  style="margin-left: -15px;display: flex;gap: 10px;justify-content: space-around;">
+               
+                  <div style="width: 46%;">
+                   
+                    <mat-card class="card_border">
+                      <mat-card-content>
+                        <div style="display: flex;"> 
+                          <div id="matInput-size" >
+                            <mat-form-field  appearance="outline">
+                              <mat-label>File 1 Heading</mat-label>
+                              <input matInput [formControl]="wisefininput_form">
+                            </mat-form-field>
+                          </div>
+                          <!-- <div style="margin-left: 10px;margin-top: 12px;">
+                            <span class="header_font">Fields</span>
+                          </div> -->
+                        </div>
+                        <form [formGroup]="newisefinform" >
+                          <table class="table">
+                            <thead>
+                              <tr style="font-weight:bold;">
+                                <td>Template Columns</td>
+                                <td>Input Columns</td>
+                              </tr>
+                            </thead>
+                        <tbody>
+                          <tr>
+                            <td>Gl Number</td>
+                            <td>
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="account_number" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Branch Code</td>
+                            <td>
+                           
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="branch_code" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Transaction Date</td>
+                            <td>
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="transaction_date" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Dr/Cr</td>
+                            <td>
+
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="credit_debit" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Amount</td>
+                            <td>
+
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="amount" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Entry Crno</td>
+                            <td>
+        
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="entry_crno" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                            
+                          </tr>
+                          <tr>
+                            <td>Remark</td>
+                            <td>
+                         
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="remarks" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Entry GID</td>
+                            <td>
+                          
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="entry_gid" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Entry Module</td>
+                            <td>
+                          
+                            <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                            appearance="outline">
+                              <input matInput formControlName="entry_module" class="matformfieldinputstyle"  required>
+                          </mat-form-field>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <hr>
+       
+                      <div  [formGroup]="fas_form" style="margin-bottom: 10px;margin-top: 15px;">
+                        <ng-container formArrayName="fas">
+                            <div *ngFor="let form of fas?.controls; let i = index">
+                                <div  [formGroup]="form">
+                                  
+                                    <span style="margin-left: 13px;">Column&nbsp;{{i+1}}</span>
+                                    
+                                      <span style="display: flex;float:right;margin-right:75px;margin-top: -7px;">
+                                        <mat-form-field  style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"  appearance="outline">
+                                          <!-- <mat-select [formControlName]="'column' + (i + 1)" class="matformfieldinputstyle">
+                                            <mat-option *ngFor="let data of header_fas_array" [value]="data">
+                                              {{data}}
+                                            </mat-option>
+                                          </mat-select> -->
+                                          <input matInput  [formControlName]="'column'+(i+1)" class="matformfieldinputstyle"  required>
+                                        </mat-form-field>
+                                        <span ><button class="btn btn-danger danger_button" (click)="deletefascolumn(i)">X</button></span>
+                                        </span>
+                                
+                                </div>
+                                <hr>
+                              </div>
+                              
+                        </ng-container>
+                    
+                    </div>
+                    <div>
+                      <span style="margin-left: 13px;"><button class="btn btn-outline-info" style="border-radius: 50px;" ngbTooltip="Add column" (click)="fasaddform()">ADD</button></span>
+                    
+                    </div>
+                    
+                    <br>
+                    <br>
+                    </form>
+                      </mat-card-content>
+                    </mat-card>
+                   
+                 
+                  </div>
+                  <div style="width: 46%;" *ngIf="showandhide!==3">
+                    <mat-card class="card_border">
+                      <mat-card-content>  
+                        <div style="display: flex;"> 
+                          <div id="matInput-size" >
+                            <mat-form-field  appearance="outline">
+                              <mat-label>File 2 Heading</mat-label>
+                              <input matInput [formControl]="cbsinput_form">
+                            </mat-form-field>
+                          </div>
+                          <!-- <div style="margin-left: 10px;margin-top: 12px;">
+                            <span class="header_font">Fields</span>
+                          </div> -->
+                        </div>
+                        <form [formGroup]="newcbsform">
+                          <table class="table">
+                            <thead>
+                              <tr style="font-weight:bold;">
+                                <td>Template Columns</td>
+                                <td>Input Columns</td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Account Number</td>
+                                <td>
+                             
+                                <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                                appearance="outline">
+                                  <input matInput formControlName="account_number" class="matformfieldinputstyle"  required>
+                              </mat-form-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Branch Code	</td>
+                                <td>
+                             
+                                <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                                appearance="outline">
+                                  <input matInput formControlName="branch_code" class="matformfieldinputstyle"  required>
+                              </mat-form-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Narration</td>
+                                <td>
+                  
+                                <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                                appearance="outline">
+                                  <input matInput formControlName="narration" class="matformfieldinputstyle"  required>
+                              </mat-form-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Dr/Cr</td>
+                                <td>
+                            
+                                <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                                appearance="outline">
+                                  <input matInput formControlName="credit_debit" class="matformfieldinputstyle"  required>
+                              </mat-form-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Amount</td>
+                                <td>
+                                <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                                appearance="outline">
+                                  <input matInput formControlName="amount" class="matformfieldinputstyle"  required>
+                              </mat-form-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Transaction Date</td>
+                                <td>
+                                <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                                appearance="outline">
+                                  <input matInput formControlName="transaction_date" class="matformfieldinputstyle"  required>
+                              </mat-form-field>
+                                </td>
+                              </tr>
+                             
+                            </tbody>
+                          </table>
+                          <hr>
+           
+                          <div  [formGroup]="cbs_form" style="margin-bottom: 10px;margin-top: 15px;">
+                            <ng-container formArrayName="cbs">
+                                <div *ngFor="let form of cbs?.controls; let i = index">
+                                    <div  [formGroup]="form">
+                                      
+                                        <span style="margin-left: 13px;">Column&nbsp;{{i+1}}</span>
+                                        
+                                          <span style="display: flex;float:right;margin-right: 75px;margin-top: -7px;">
+                                            <mat-form-field  style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"  appearance="outline">
+                                              <!-- <mat-select [formControlName]="'column'+(i+1)" class="matformfieldinputstyle">
+                                                <mat-option *ngFor="let data of header_cbs_array" [value]="data">
+                                                  {{data}}
+                                                </mat-option>
+                                              </mat-select> -->
+                                              <input matInput  [formControlName]="'column'+(i+1)" class="matformfieldinputstyle"  required>
+                                            </mat-form-field>
+                                            <span ><button class="btn btn-danger danger_button" (click)="deletecbscolumn(i)">X</button></span>
+                                            </span>
+                                    
+                                   
+                                    </div>
+                                    <hr>
+                                  </div>
+                                  
+                            </ng-container>
+                        
+                        </div>
+                        <div>
+                          <span style="margin-left: 13px;"><button class="btn btn-outline-info" style="border-radius: 50px;" ngbTooltip="Add column" (click)="cbsaddform()">ADD</button></span>
+                      
+                        </div>
+                        <br>
+                        <br>
+                      </form>
+                    </mat-card-content>
+                    </mat-card>
+                
+                  </div>
+                  
+              
+               
+              </div>
+             
+              </div>
+              <div class="modal-footer">
+                <div style="float:right;">
+                  <!-- <button mat-raised-button type="submit" (click)="addRow()">Add row</button> -->
+                  <button style="border-radius: 50px;margin-right: 10px;" class="btn btn-outline-secondary" data-dismiss="modal" (click)="goback()" >Back</button>
+                  <button class="btn btn-outline-success" type="submit" style="border-radius: 50px;" (click)="submitsForm()">Update</button>
+                 
+                </div>
+              </div>
+            <!-- <pre>{{templateeditform.value | json }}</pre> -->
+            </div>
+            <!-- <div class="modal-footer">
+                <a href="#" data-dismiss="modal" class="btn">Close</a>
+            </div> -->
+
+        
+        </div>
+        
+    </div>
+
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="boxlevelform" aria-hidden="true" id="editdata"
+    #editdata>
+    <div class="modal-dialog modal-xl" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">View Wisefin Template</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <table class="table">
+                    <thead td >
+                      <tr style="font-weight:bold;">
+                        <th >Template Columns</th>
+                        <th >Input Columns</th>
+                      </tr>
+                    </thead>
+                    <tbody *ngFor="let sums of summaryslist">
+                        <tr>
+                            <td >Template Name</td>
+                            <td >{{sums.template_name}}                       
+                            </td>
+                          </tr>
+                      <tr>
+                        <td>Description</td>
+                        <td>{{sums.line_description}}                       
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>GL Date</td>
+                        <td>{{sums.gl_date}}                         
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Branch Code</td>
+                        <td>{{sums.branch_code}}                         
+                        </td>
+                      </tr>
+                      
+                      <tr>
+                        <td>Category</td>
+                        <td>{{sums.category}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>GL Doc No.</td>
+                        <td>
+                         {{sums.gl_doc_no}}
+                        </td>
+                      </tr>
+          
+                      <tr>
+                        <td>User Name</td>
+                        <td>{{sums.user_name}}
+                         
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Invoice Number</td>
+                        <td>{{sums.invoice_no}}
+                         
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Journal Name</td>
+                        <td>{{sums.journal_name}}
+                         
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Account Number</td>
+                        <td>{{sums.account_number}}
+                         
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Account Description</td>
+                        <td>{{sums.account_description}}
+                         
+                        </td>
+                      </tr>
+                     
+        
+                      <tr>
+                        <td>Credit/Debit</td>
+                        <td>
+                           {{sums.credit_debit}}
+                
+                        </td>
+                      </tr>
+        
+                     
+                      
+                        <tr>
+                          <td>Credit Name</td>
+                          <td>
+                           {{sums.credit_name}}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Debit Name</td>
+                          <td>
+                           {{sums.debit_name}}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Amount</td>
+                          <td>
+                           {{sums.amount}}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Credit Amount</td>
+                          <td>
+                           {{sums.credit_amount}}
+                          </td>
+                        </tr>
+                        <tr>
+                            <td>Debit Amount</td>
+                            <td>
+                             {{sums.debit_amount}}
+                            </td>
+                          </tr>
+                       
+                    
+          
+                    </tbody>
+                  </table>
+              
+            </div>
+            <div class="modal-footer">
+                <a href="#" data-dismiss="modal" class="btn">Close</a>
+            </div>
+
+        
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="boxlevelform" aria-hidden="true" id="filterscreen"
+    #filterscreen >
+    <div class="modal-dialog modal-lg" >
+        <div class="modal-content" style="width: 120%;">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <b class="modal-title" style="color:black ;">Template filters</b>
+                <button type="button" #closebuttonclosed class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+              <mat-expansion-panel style="box-shadow: 0px 1px 2px #0000004a;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title style="font-size: 14px; font-weight: 500">
+                    File 1 filter
+                  </mat-panel-title>
+                 
+                </mat-expansion-panel-header>
+                <form [formGroup]="fasfilterform" >
+                  <div class="search-auto-fit">
+                    <div id="matInput-size">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Column</mat-label>
+                        <mat-select formControlName="col_name">
+                          <mat-option *ngFor="let data of fascolumnlist" [value]="data">
+                            {{data}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div  id="matInput-size">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Condition</mat-label>
+                        <mat-select formControlName="symbols">
+                          <mat-option *ngFor="let data of conditionlist" [value]="data.id" (click)="fasrangecondition(data.id)">
+                            {{data.symbol}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div  id="matInput-size" *ngIf="!showfasrange">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Value</mat-label>
+                        <input matInput formControlName="condition">
+                      </mat-form-field>
+                    </div>
+                    <div>
+                      <span style="display: flex;float: right;padding-top: 4%;">
+                        <button style="border-radius: 50px;" class="btn btn-outline-success" (click)="fasfiltersubmit()">Submit</button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="search-auto-fit" *ngIf="showfasrange">
+                    <div id="matInput-size"
+                    >
+                      <mat-form-field  appearance="outline">
+                        <mat-label>From</mat-label>
+                        <input matInput formControlName="condition">
+                      </mat-form-field>
+                    </div>
+                    <div id="matInput-size"
+                    >
+                      <mat-form-field  appearance="outline">
+                        <mat-label>To</mat-label>
+                        <input matInput formControlName="range_value">
+                      </mat-form-field>
+                    </div>
+  
+                  </div>
+                  </form>
+            
+            
+              </mat-expansion-panel>
+              <mat-expansion-panel style="margin-top: 10px;box-shadow: 0px 1px 2px #0000004a;">
+                <mat-expansion-panel-header>
+                  <mat-panel-title style="font-size: 14px; font-weight: 500">
+                    File 2 filter
+                  </mat-panel-title>
+                 
+                </mat-expansion-panel-header>
+            
+                <form [formGroup]="cbsfilterform" >
+                  <div class="search-auto-fit">
+                    <div  id="matInput-size">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Column</mat-label>
+                        <mat-select formControlName="col_name">
+                          <mat-option *ngFor="let data of cbscolumnlist" [value]="data">
+                            {{data}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div  id="matInput-size">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Condition</mat-label>
+                        <mat-select formControlName="symbols">
+                          <mat-option *ngFor="let data of conditionlist" [value]="data.id" (click)="cbsrangecondition(data.id)">
+                            {{data.symbol}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div  id="matInput-size" *ngIf="!showcbsrange">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Value</mat-label>
+                        <input matInput formControlName="condition">
+                      </mat-form-field>
+                    </div>
+                    <div >
+                      <span style="display: flex;float: right;padding-top: 4%;">
+                        <button style="border-radius: 50px;" class="btn btn-outline-success" (click)="cbsfiltersubmit()">Submit</button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="search-auto-fit" *ngIf="showcbsrange">
+                    <div id="matInput-size">
+                      <mat-form-field  appearance="outline">
+                        <mat-label>From</mat-label>
+                        <input matInput formControlName="condition">
+                      </mat-form-field>
+                    </div>
+                    <div id="matInput-size">
+                      <mat-form-field  appearance="outline">
+                        <mat-label>To</mat-label>
+                        <input matInput formControlName="range_value">
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  </form>
+            
+              </mat-expansion-panel>
+              <!-- <mat-card>
+                <span style="font-size: 14px;font-weight:700;">
+                  File 1 filter
+                </span>
+                <mat-icon style="padding-left: 90%;cursor: pointer;" (click)="toggleForm()">{{ isFormExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+
+                <form [formGroup]="fasfilterform" *ngIf="isFormExpanded">
+                <div class="search-auto-fit">
+                  <div id="matInput-size">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Column</mat-label>
+                      <mat-select formControlName="col_name">
+                        <mat-option *ngFor="let data of fascolumnlist" [value]="data">
+                          {{data}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div  id="matInput-size">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Condition</mat-label>
+                      <mat-select formControlName="symbols">
+                        <mat-option *ngFor="let data of conditionlist" [value]="data.id" (click)="fasrangecondition(data.id)">
+                          {{data.symbol}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div  id="matInput-size" *ngIf="!showfasrange">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Value</mat-label>
+                      <input matInput formControlName="condition">
+                    </mat-form-field>
+                  </div>
+                  <div>
+                    <span style="display: flex;float: right;padding-top: 4%;">
+                      <button style="border-radius: 50px;" class="btn btn-outline-success" (click)="fasfiltersubmit()">Submit</button>
+                    </span>
+                  </div>
+                </div>
+                <div class="search-auto-fit" *ngIf="showfasrange">
+                  <div id="matInput-size"
+                  >
+                    <mat-form-field  appearance="outline">
+                      <mat-label>From</mat-label>
+                      <input matInput formControlName="condition">
+                    </mat-form-field>
+                  </div>
+                  <div id="matInput-size"
+                  >
+                    <mat-form-field  appearance="outline">
+                      <mat-label>To</mat-label>
+                      <input matInput formControlName="range_value">
+                    </mat-form-field>
+                  </div>
+
+                </div>
+                </form>
+              </mat-card>
+              <mat-card style="margin-top: 2px;">
+                <span style="font-size: 14px;font-weight:700;">
+                  File 2 filter
+                </span>
+                <mat-icon style="padding-left: 90%;cursor: pointer;" (click)="toggleFormcbs()">{{ isFormExpandedcbs ? 'expand_less' : 'expand_more' }}</mat-icon>
+                
+                <form [formGroup]="cbsfilterform" *ngIf="isFormExpandedcbs">
+                <div class="search-auto-fit">
+                  <div  id="matInput-size">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Column</mat-label>
+                      <mat-select formControlName="col_name">
+                        <mat-option *ngFor="let data of cbscolumnlist" [value]="data">
+                          {{data}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div  id="matInput-size">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Condition</mat-label>
+                      <mat-select formControlName="symbols">
+                        <mat-option *ngFor="let data of conditionlist" [value]="data.id" (click)="cbsrangecondition(data.id)">
+                          {{data.symbol}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div  id="matInput-size" *ngIf="!showcbsrange">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Value</mat-label>
+                      <input matInput formControlName="condition">
+                    </mat-form-field>
+                  </div>
+                  <div >
+                    <span style="display: flex;float: right;padding-top: 4%;">
+                      <button style="border-radius: 50px;" class="btn btn-outline-success" (click)="cbsfiltersubmit()">Submit</button>
+                    </span>
+                  </div>
+                </div>
+                <div class="search-auto-fit" *ngIf="showcbsrange">
+                  <div id="matInput-size">
+                    <mat-form-field  appearance="outline">
+                      <mat-label>From</mat-label>
+                      <input matInput formControlName="condition">
+                    </mat-form-field>
+                  </div>
+                  <div id="matInput-size">
+                    <mat-form-field  appearance="outline">
+                      <mat-label>To</mat-label>
+                      <input matInput formControlName="range_value">
+                    </mat-form-field>
+                  </div>
+                </div>
+                </form>
+              </mat-card> -->
+              <mat-card style="margin-top: 20px;border-style:outset;border-color: #cccccc;border-radius: 0px;">
+                <div>
+                  <span style="font-size: 14px; font-weight: 500">File 1 filter list</span>
+                  
+                  <div *ngIf="fas_filter_array.length===0" style="text-align: center;">
+<span style="font-size: 14px;font-weight: 500;">No File 1 filters found...</span>
+                  </div>
+                  <div>
+                    <mat-chip-list>
+                      <mat-chip *ngFor="let data of fas_filter_array; let i = index" 
+                                [removable]="true" 
+                                (removed)="removeChipfas(i,data)">
+                        {{data.chip_value}}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                      </mat-chip>
+                    </mat-chip-list>
+                  </div>
+                </div>
+  <hr style="height: 1px;border-width: 2px;">
+
+<div style="margin-top: 15px;">
+  <span style="font-size: 14px; font-weight: 500">File 2 filter list</span>
+  <div *ngIf="cbs_filter_array.length===0" style="text-align: center;">
+    <span style="font-size: 14px;font-weight: 500;">No File 2 filters found...</span>
+                      </div>
+  <div>
+    <mat-chip-list>
+      <mat-chip *ngFor="let data of cbs_filter_array; let i = index" 
+                [removable]="true" 
+                (removed)="removeChipcbs(i,data)">
+        {{data.chip_value}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+</div>
+              </mat-card>
+            
+            </div>
+            <div class="modal-footer">
+              <div style="float: right;">
+                
+                <button style="margin-left: 15px; border-radius: 50px;" class="btn btn-outline-secondary"  data-dismiss="modal">Back</button>
+              </div>
+            </div>
+            </div>
+           
+
+        
+        </div>
+        
+    </div>
+
+      
+  </section>

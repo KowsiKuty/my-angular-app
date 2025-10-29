@@ -1,0 +1,186 @@
+<div style="margin-left: 25px; margin-right: 80%; margin-top: 1%; width: 100%;">
+    <h1 style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;">PMD Branch Creation</h1>
+    <hr>
+    <div>
+        <form [formGroup]="PMDForm" (ngSubmit)="PMDSubmit()">
+        
+                <h2 style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;">Branch Details</h2>
+                <div class="row">                       
+                            <mat-form-field style="width: 250px;margin-left: 20px;">
+                                <mat-label>Branch</mat-label>
+                                <input class="toolbar-search" type="text" matInput autocomplete="off" matInput [matAutocomplete]="checkerbranch" #branchidInput formControlName="branch"required style="width: 250px;">
+                                <mat-placeholder>Branch</mat-placeholder>
+                                <mat-autocomplete #checkerbranch="matAutocomplete" #branch (opened)="autocompleteScroll_branch()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container>
+                                        <mat-option *ngFor="let d of branchdata" [value]="d.name" (focusout)="checker_branchs(d)">
+                                            {{d.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+
+                            <mat-form-field style="width: 250px; margin-left: 50px;">
+                                <mat-label>GST No</mat-label>
+                                <input matInput type="text" placeholder="GST No" autocomplete="off" readonly maxlength="16" formControlName="gst_number"  required />
+                                <mat-error> Length Less Than 16 Characters</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field style="width:250px;margin-left: 50px;">
+                                <mat-label> Remarks</mat-label>
+                                <textarea matInput placeholder="Remarks"  maxlength="128" autocomplete="off" required (keypress)="omit_special_char($event)" formControlName="remarks"></textarea>
+                            </mat-form-field>
+                        
+
+                            <!-- <mat-form-field style="width: 250px;margin-left: 50px;">
+                                <mat-label>Location Name</mat-label>
+                                <input matInput placeholder="Location Name" maxlength="128" (keypress)="omit_special_char($event)" autocomplete="off" formControlName="location" required />
+                            </mat-form-field> -->
+                     </div>
+                     <div class="row">       
+                            <!-- <mat-label style="margin-left:50px">Is Active</mat-label>
+                            <mat-radio-group [formControl]="gst_number" style="width: 175px; margin-left: 50px;">
+                                <mat-radio-button *ngFor="let a of status" [value]="a" (change)="radioChange($event,a.value)">
+                                    {{a.value}}
+                                </mat-radio-button>
+                            </mat-radio-group> -->
+
+                            
+                </div>
+                <div>
+                    <button type="submit" style="border-radius: 40px;" class="btn btn-outline-success" >Submit</button>
+                    <button type="button" (click)="onCancelClick()" class="btn btn-outline-danger" style="border-radius: 40px; margin-left: 10px;">Cancel</button>
+                </div>
+        </form>        
+
+                <h2  style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;margin-top:20px"> PMD Location Creation</h2>
+                <form [formGroup]="pmdlocationform">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <mat-form-field  style="width:250px;">
+                                <mat-label>Branch</mat-label>
+                                <input class="toolbar-search" type="text" matInput autocomplete="off" (click)="getpmdbranch()" matInput [matAutocomplete]="pmdbran" #pmdbraninput formControlName="branch"required style="width: 250px;">
+                                <mat-placeholder>Branch</mat-placeholder>
+                                <mat-autocomplete #pmdbran="matAutocomplete" [displayWith]="displaypmdbranch"  (opened)="autocompleteScroll_pmdbranch()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container>
+                                        <mat-option *ngFor="let d of pmdbranchlist" [value]="d">{{d.branch_name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+
+                            <mat-form-field style="width:250px;margin-left: 50px;">
+                                <mat-label>Location Name</mat-label>
+                                <input matInput placeholder="Location Name" maxlength="128" (keypress)="omit_special_char($event)" autocomplete="off" formControlName="location" required />
+                            </mat-form-field>
+
+                            <mat-form-field style="width:250px;margin-left: 50px;">
+                                <mat-label>GST No</mat-label>
+                                <input matInput  placeholder="GST No" autocomplete="off" maxlength="16" formControlName="gstno" pattern="[0-9,a-z,A-Z]{1,16}" required />
+                                <mat-error> Length Less Than 16 Characters</mat-error>
+                            </mat-form-field>    
+
+                           
+                        </div>    
+                        <div class="col-md-12">
+
+                            <mat-form-field style="width:250px;">
+                                <mat-label>Choose Category</mat-label>
+                                <input type="text" matInput formControlName="apcat" (click)="datacategory()" required [matAutocomplete]="catlists" #catinput>
+                                <mat-autocomplete #catlists="matAutocomplete" [displayWith]="getdisplaycategoryinterface" (opened)="getinfinitecategory()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of productcatlist" [value]="d">{{d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+
+                            <!-- <mat-form-field   style="width:250px;margin-left: 50px;">
+                                <mat-label>Choose SubCategory</mat-label>
+                                <input type="text" matInput formControlName="subcat" (click)="getapsubcategorydata()" required [matAutocomplete]="catsublists" #subInput>
+                                <mat-autocomplete #catsublists="matAutocomplete" [displayWith]="getsubcategoryinterface" (opened)="getsubcategoryinfinite()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of subcategorylistdata" [value]="d" (focusout)="subcategoryfocusout(d)">{{d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                                <mat-hint>GL No:{{this.gl_no}}</mat-hint>
+                            </mat-form-field> -->
+
+                            <!-- <mat-form-field style="width:250px;margin-left: 50px;">
+                                <mat-label>GL No</mat-label>
+                                <input type="text" readonly matInput formControlName="glno" maxlength="16"   required >
+                            </mat-form-field> -->
+                            <mat-form-field style="width:250px;margin-left: 50px;">
+                                <mat-label>CGST</mat-label>
+                                <input type="text" matInput formControlName="cgst" required (click)="cgstcategorydata()" (keypress)="keypressnodigit($event)" [matAutocomplete]="cgstref" #cgstinput>
+                                <mat-autocomplete #cgstref="matAutocomplete" [displayWith]="getdisplaycgstinterface" (opened)="autocompletecgstScroll()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of cgstlist" [value]="d" (focusout)="cgstfocusout(d)">{{d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                                <mat-hint>GL No:{{this.glno_cgst}}</mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field style="width:250px;margin-left: 50px;">
+                                <mat-label>IGST</mat-label>
+                                <input type="text" matInput formControlName="igst" required (click)="igstcategorydata()"  (keypress)="keypressnodigit($event)" [matAutocomplete]="igstref" #igstinput>
+                                <mat-autocomplete #igstref="matAutocomplete" [displayWith]="getdisplayigstinterface" (opened)="autocompleteigstScroll()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of igstlist" [value]="d" (focusout)="igstfocusout(d)">{{d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                                <mat-hint>GL No:{{this.glno_igst}}</mat-hint>
+                            </mat-form-field>
+
+                        </div>
+
+                        <div class="col-md-12">                                                    
+
+                            <mat-form-field style="width:250px;">
+                                <mat-label>SGST</mat-label>
+                                <input type="text" matInput formControlName="sgst" required (click)="sgstcategorydata()"  (keypress)="keypressnodigit($event)" [matAutocomplete]="sgstref" #sgstinput>
+                                <mat-autocomplete #sgstref="matAutocomplete" [displayWith]="getdisplaysgstinterface" (opened)="autocompletesgstScroll()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let d of sgstlist" [value]="d" (focusout)="sgstfocusout(d)">{{d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                                <mat-hint>GL No:{{this.glno_sgst}}</mat-hint>
+                            </mat-form-field>
+
+
+                            <mat-form-field style="width:250px;margin-left: 50px;">
+                                <mat-label> Remarks</mat-label>
+                                <textarea matInput placeholder="Remarks"  maxlength="128" autocomplete="off" required (keypress)="omit_special_char($event)" formControlName="remarks"></textarea>
+                            </mat-form-field>
+                            
+                        
+                            
+                        </div>
+
+                    </div>
+                    <div style="margin-top: 20px">
+                        <button type="button" (click)="pmdlocsubmit()" style="border-radius: 40px;" class="btn btn-outline-success" >Submit</button>
+                        <button type="button" (click)="onCancelClick()" class="btn btn-outline-danger" style="border-radius: 40px; margin-left: 10px;">Cancel</button>
+                    </div>
+                </form>
+                        
+                            
+                        
+                    
+                        
+                           
+                        
+                    
+                        
+                            
+                        
+              
+                    
+            
+           
+    </div>
+</div>

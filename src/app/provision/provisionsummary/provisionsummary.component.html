@@ -1,0 +1,1006 @@
+<div class="container">
+    <nav>
+        <div class="nav nav-tabs">
+
+            <a class="nav-item nav-link" data-toggle="tab" role="tab" *ngFor="let tab of tabs;let j=index"
+                (click)="subModuleData(j)">{{tab.tab_name}}</a>
+
+            <div *ngIf="provisionflagid==1" class="container">
+
+                <form [formGroup]="provisionsearch" (ngSubmit)="provisionsearch1(1)">
+
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-form-field class="inputsize">
+                                    <mat-label> Created Month</mat-label>
+                                    <input matInput [matDatepicker]="excemfrom" formControlName="expense_date">
+    
+                                    <mat-datepicker-toggle matSuffix [for]="excemfrom">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #excemfrom startView="multi-year"
+                                        (monthSelected)="setMonthAndYearsearch($event, excemfrom)"
+                                        panelClass="example-month-picker">
+                                    </mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="inputsize leftmargin">
+                                    <mat-label>Type</mat-label>
+                                    <mat-select formControlName="type">
+                                        <mat-option *ngFor="let c of type_data" [value]="c.id">
+                                            {{c.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="leftmargin">
+                                    <mat-label>Department</mat-label>
+                                    <input type="text" placeholder="Department" (click)="deparment_()" aria-label="Number"
+                                        matInput formControlName='dept_id' [matAutocomplete]="autod1">
+                                    <mat-autocomplete #autod1="matAutocomplete" [displayWith]="displayFdep" [panelWidth]="500">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let p of dep_data" [value]="p" title="{{p?.name}}">
+                                                {{p?.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="leftmargin">
+                                    <mat-label>BS</mat-label>
+                                    <input type="text" placeholder="BS" (click)="bsget_()" aria-label="Number" matInput
+                                        formControlName='bs_id' [matAutocomplete]="auto6">
+                                    <mat-autocomplete #auto6="matAutocomplete" [displayWith]="displayFnbs">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+    
+                                            <mat-option *ngFor="let p of bsdata " (focusout)="bsid_cc_(p.id)" [value]="p"
+                                                title="{{p?.name}}">
+                                                {{p?.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="leftmargin">
+                                    <mat-label>CC</mat-label>
+                                    <input type="text" placeholder="CC" (click)="ccget_()" aria-label="Number" matInput
+                                        formControlName='cc_id' [matAutocomplete]="auto1">
+                                    <mat-autocomplete #auto1="matAutocomplete" [displayWith]="displayFncc">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let p of ccdata" [value]="p" title="{{p?.name}}">
+                                                {{p?.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <div class="rightSide">
+                                <input #fileInput type="file" hidden (change)="fileupload($event.target.files)">
+                                <button mat-button class="test_btn" style="background: lightblue;"
+                                    (click)="fileInput.click()" type="button">Choose File</button>
+                                &nbsp;
+                                &nbsp;
+                                <button class="btn btn-outline-primary" type="button" (click)="bulkdataupload()"
+                                    style="border-radius:40px;margin-top: 0px;">
+                                    <i matTooltip="Upload" class="fa fa-upload"></i>
+                                </button>&nbsp; &nbsp;
+                                <code>Filename: {{file}}</code>
+                                &nbsp;&nbsp;
+                                <!-- file end -->
+                                <mat-form-field>
+                                    <mat-label>Status</mat-label>
+                                    <mat-select formControlName="status">
+                                        <mat-option *ngFor="let mode of VendorstatusesList" [value]="mode">{{mode.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                &nbsp;&nbsp;
+    
+                                <button class="btn btn-outline-primary" type="submit"
+                                    style="border-radius:40px;margin-top: 0px;" color="primary">
+                                    <i matTooltip="search" class="fa fa-search"></i></button>&nbsp;
+                                <button class="btn btn-outline-primary" type="button" (click)="Provisionreport()"
+                                    style="border-radius:40px;margin-top: 0px;" color="primary">
+                                    <i matTooltip="Download Excel" class="fa fa-download"></i>
+                                </button>&nbsp;&nbsp;
+                                <button class="btn btn-outline-primary" type="button" (click)="refresh()"
+                                    style="border-radius:40px;margin-top: 0px;" color="primary">
+                                    <i matTooltip="refresh" class="fa fa-refresh" aria-hidden="true"></i>
+    
+                                </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class=" row"> 
+
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-primary" type="button" style="border-radius:40px;"
+                                color="primary" (click)="getexceldownload()">
+                                <i matTooltip="Download Template" class="fa fa-download" aria-hidden="true"></i>
+                            </button>&nbsp;&nbsp;
+                            <button class="btn btn-outline-primary" type="button" (click)="addUser()" matTooltip="Add Provision"
+                                *ngIf="makerflag && ValidationDataBasedOnStatusSearch == false"
+                                style="border-radius:40px;margin-left: 15px;" color="primary"><i
+                                    class="fa fa-plus"></i></button>
+                            </div>
+                        
+                        <!-- <div *ngIf="makerflag" class="col-md-3">
+                            <button class="btn btn-outline-primary" type="button" (click)="addUser()" matTooltip="Add Provision"
+                                *ngIf="ValidationDataBasedOnStatusSearch == false"
+                                style="border-radius:40px;margin-left: 15px;" color="primary"><i
+                                    class="fa fa-plus"></i></button>
+                        </div>    -->
+                    </div>
+                </form>
+                <div class="col-md-12">
+                    <div class="col-md-8">
+                    </div>
+                </div>
+                <div>
+                    <form [formGroup]="pform">
+                        <table class="table  table-responsive table-bordered" fixed-header
+                            style="width:99%;margin-top:10px;">
+                            <thead class="table_header" style="text-align: left;">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>GL</th>
+                                    <th>Main cat </th>
+                                    <th>Sub cat</th>
+                                    
+                                    <th>BS </th>
+                                    <th>CC</th>
+                                    <th>Supplier name</th>
+                                    <th>Department </th>
+                                    <th>Amount <br>
+                                        <span style="font-size:9px;">(Exclusive of GST)</span>
+                                    </th>
+                                    <!-- <th>Gst Amount</th> -->
+                                    <th>Expense Month</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <!-- <th>Created By</th> -->
+                                    <th> Description</th>
+                                    <th>View</th> 
+                                    <th *ngIf="ValidationDataBasedOnStatusSearch == false">Action</th>
+                                    <!-- <th *ngIf="ValidationDataBasedOnStatusSearch == false">Bulk Select</th> -->
+                                    <th *ngIf="ValidationDataBasedOnStatusSearch == false">Select All
+
+                                        <mat-checkbox (change)="select_all($event, 'bulk')" [checked]="isChecked"
+                                            #checkbox class="example-margin">
+                                        </mat-checkbox>
+
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container formArrayName="users"
+                                    *ngFor="let group of pform.controls.users['controls'] ; let i=index">
+                                    <tr [formGroupName]="i">
+
+                                        <td> {{(presentpage - 1)*10 +i+1 }}</td> 
+                                        <td title="{{group.get('glname').value}}">
+                                            <div>
+                                                <mat-form-field class="example-full-width" style="width:84px" (click)="gldata('')">
+                                                    <mat-label>GL</mat-label>
+                                                    <input type="text" placeholder="Search GL" #sgl_no
+                                                    (keyup)="gldata(group.get('sgl_no').value)"
+                                                        [readonly]="ValidationDataBasedOnStatusSearch"
+                                                        aria-label="Number" matInput formControlName='sgl_no'
+                                                        [matAutocomplete]="autogl" required>
+                                                    <mat-autocomplete #autogl="matAutocomplete"
+                                                        [displayWith]="displayFn_GL" [panelWidth]="auto">
+                                                        <mat-option *ngIf="isLoading" class="is-loading ">Loading...
+                                                        </mat-option>
+                                                        <ng-container *ngIf="!isLoading">
+                                                            <mat-option *ngFor="let p of maingldata " 
+                                                                (focusout)="glid_get(p.glno,i)" [value]="p"
+                                                                title="{{p?.glno}}-{{p?.gl_name}}">
+                                                                {{p?.glno}}-{{p?.gl_name}}
+                                                            </mat-option>
+                                                        </ng-container>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <!-- <div *ngIf="ValidationDataBasedOnStatusSearch == true; else ShowName"> -->
+                                            <div>
+                                                <mat-form-field class="example-full-width" style="width:84px">
+                                                    <mat-label>Main cat</mat-label>
+                                                    <input type="text" placeholder="Search Main cat" #category_id #cat
+                                                    [readonly]="ValidationDataBasedOnStatusSearch"
+                                                    (click)="CategoryClick(i)"
+                                                    aria-label="Number" matInput formControlName='category_id'
+                                                    [matAutocomplete]="autocat" required>
+                                                    <mat-autocomplete #autocat="matAutocomplete"
+                                                        [displayWith]="displayFncat"  [panelWidth]="auto">
+                                                        <mat-option *ngIf="isLoading" class="is-loading ">Loading...
+                                                        </mat-option>
+                                                        <ng-container *ngIf="!isLoading">
+                                                            <mat-option *ngFor="let p of maincatdata " 
+                                                                (focusout)="catid_get(p.id,i)" [value]="p"
+                                                                title="{{p?.name}}">
+                                                                {{p?.code}}
+                                                            </mat-option>
+                                                        </ng-container>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <mat-form-field class="example-full-width" style="width:84px">
+                                                <mat-label>Sub cat</mat-label>
+                                                <input type="text" placeholder="Search Sub cat" #sub #subcategory_id
+                                                    [readonly]="ValidationDataBasedOnStatusSearch"
+                                                    (click)="subCategoryClick(i)" aria-label="Number" matInput
+                                                    formControlName='subcategory_id' required [matAutocomplete]="auto3">
+                                                <mat-autocomplete #auto3="matAutocomplete" [displayWith]="displayFnsub"  [panelWidth]="auto">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let p of subcatdata "
+                                                             [value]="p" title="{{p?.code}}">
+                                                            {{p?.code}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                        <!-- <td style="width:84px" title="{{group.get('glname').value}}" >
+                                            <mat-form-field class="example-full-width" style="width: 84px">
+                                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                                     required readonly
+                                                    value="{{group.get('gl_id').value}}" 
+                                                         >
+                                                <mat-placeholder>GL</mat-placeholder>
+                                            </mat-form-field>
+                                        </td> -->
+                                        <td>
+                                            <mat-form-field class="example-full-width" (click)="bsget(i)"
+                                                style="width: 122px">
+                                                <mat-label>BS</mat-label>
+                                                <input type="text" placeholder="Search BS" #bs #bs_id
+                                                    aria-label="Number" [readonly]="ValidationDataBasedOnStatusSearch"
+                                                    matInput formControlName='bs_id' required [matAutocomplete]="auto">
+                                                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnbs" [panelWidth]="auto">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let p of bsdata "
+                                                            (focusout)="bsid_cc(p.id,i)" [value]="p"
+                                                            title="{{p?.name}}">
+                                                            {{p?.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <mat-form-field class="example-full-width" style="width: 122px">
+                                                <mat-label>CC</mat-label>
+                                                <input type="text" placeholder="Search CC" #cc #cc_id (click)="ccget(i)"
+                                                    [readonly]="ValidationDataBasedOnStatusSearch" aria-label="Number"
+                                                    matInput formControlName='cc_id' required [matAutocomplete]="auto1">
+                                                <mat-autocomplete #auto1="matAutocomplete" [displayWith]="displayFncc" [panelWidth]="auto">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let p of ccdata" [value]="p"
+                                                            title="{{p?.name}}">
+                                                            {{p?.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+
+
+                                        </td>
+                                        <td>
+                                            <mat-form-field style="width: 122px" class="example-full-width"
+                                                (click)="vendorget(i)">
+                                                <mat-label>Supplier</mat-label>
+                                                <input type="text" placeholder="Search Supplier" aria-label="Number"
+                                                    matInput [readonly]="ValidationDataBasedOnStatusSearch"
+                                                    formControlName='vendor_id' [matAutocomplete]="autov">
+                                                <mat-autocomplete #autov="matAutocomplete"
+                                                    [displayWith]="displayFnvendor">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let p of vendordata" [value]="p"
+                                                            title="{{p?.name}}">
+                                                            {{p?.code}}--{{p?.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+
+                                        </td>
+                                        <td>
+                                            <mat-form-field style="width: 122px" class="example-full-width"
+                                                (click)="deparment_get(i)">
+                                                <mat-label>Department</mat-label>
+                                                <input type="text" placeholder="Search Department" aria-label="Number"
+                                                    matInput [readonly]="ValidationDataBasedOnStatusSearch"
+                                                    formControlName='dept_id' required [matAutocomplete]="autod">
+                                                <mat-autocomplete #autod="matAutocomplete" [displayWith]="displayFdep" [panelWidth]="500">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let p of dep_data" [value]="p"
+                                                            title="{{p?.name}}">
+                                                            {{p?.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+
+                                        </td>
+
+                                        <td style="width: 84px">
+                                            <div>
+                                                <mat-form-field class="example-full-width" style="width: 84px">
+
+                                                    <input class="toolbar-search" type="text" matInput
+                                                        [readonly]="ValidationDataBasedOnStatusSearch"
+                                                        autocomplete="off" required formControlName="amount"
+                                                        appTwoDigitDecimaNumber>
+                                                    <mat-placeholder>Amount</mat-placeholder>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <!-- 
+                                            <div>
+                                                <mat-checkbox class="example-margin" formControlName="gstflag"
+                                                    (change)="enable_gst(i,$event)">Gst</mat-checkbox>
+                                                <div *ngIf="group.get('gstflag').value">
+                                                    <mat-form-field class="example-full-width">
+                                                        <input class="toolbar-search" type="number" matInput
+                                                            autocomplete="off" required formControlName="gst_amount">
+                                                        <mat-placeholder>Gst Amount</mat-placeholder>
+                                                    </mat-form-field>
+
+                                                </div>
+
+                                            </div> -->
+
+
+                                        </td>
+
+
+                                        <td style="width: 84px">
+                                            <!-- <mat-form-field>
+                                                <mat-label>Expense Month</mat-label>
+                                                <input matInput [matDatepicker]="excemfrom"
+                                                    formControlName="expense_date" [max]="tomorrow" required>
+                                                <mat-datepicker-toggle matSuffix [for]="excemfrom">
+                                                </mat-datepicker-toggle>
+                                                <mat-datepicker #excemfrom disabled="false"></mat-datepicker>
+                                            </mat-form-field> -->
+                                            <mat-form-field style="width: 140px">
+                                                <mat-label> Expense Month</mat-label>
+                                                <input matInput [matDatepicker]="dp" [max]="maxDate"
+                                                    formControlName="expense_date" readonly required> 
+                                                <mat-hint>MM/YYYY</mat-hint>
+                                                <mat-datepicker-toggle matSuffix [for]="dp"
+                                                    [disabled]="ValidationDataBasedOnStatusSearch"
+                                                    (click)="fromDateSelection(i)"></mat-datepicker-toggle>
+                                                <mat-datepicker #dp startView="year"
+                                                    (monthSelected)="setMonthAndYear($event, dp,i)"
+                                                    panelClass="example-month-picker">
+                                                </mat-datepicker>
+                                            </mat-form-field>
+
+
+                                        </td>
+
+
+                                        <td>
+                                            <!-- <mat-form-field>
+                                                <mat-label>Type</mat-label>
+                                                <mat-select formControlName="type" required>
+                                                    <mat-option *ngFor="let food of type_data" [(value)]="Selected">
+                                                        {{food.name}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field> -->
+                                            <mat-form-field #categoryInput class="example-full-width"
+                                                style="width: 84px">
+                                                <input type="text" placeholder="TYPE" matInput formControlName="type"
+                                                    [readonly]="ValidationDataBasedOnStatusSearch"
+                                                    [matAutocomplete]="autotype" required>
+                                                <mat-autocomplete #autotype="matAutocomplete">
+                                                    <mat-option *ngFor="let option of type_data" [value]="option.name"
+                                                        title="{{option?.name}}">
+                                                        {{option.name}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                        <td>
+                                            <!-- <mat-form-field class="example-full-width">
+                                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                                    readonly required formControlName="provision_status">
+                                                <mat-placeholder>Status</mat-placeholder>
+                                            </mat-form-field> -->
+                                            <div class="alert alert-success" role="alert">
+                                                {{group.get('provision_status').value}} </div>
+                                        </td>
+                                        <!-- <td>
+                                            <span *ngIf="group.get('provision_status').value =='Draft'"></span>
+                                            <span *ngIf="group.get('provision_status').value !='Draft'">
+                                                {{group.get('created_by').value}}
+                                            </span>
+
+                                        </td> -->
+                                        <td>
+                                            <mat-form-field class="example-full-width">
+                                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                                    [readonly]="ValidationDataBasedOnStatusSearch"
+                                                    formControlName="narration">
+                                                <mat-placeholder>Description</mat-placeholder>
+                                            </mat-form-field>
+                                        </td>
+
+                                        <td>
+                                            <span class="material-icons" [matMenuTriggerFor]="detailsProvision">visibility</span>
+                                            <mat-menu #detailsProvision="matMenu">
+                                                <!-- <button mat-menu-item>Item 1</button>
+                                                <button mat-menu-item>Item 2</button> -->
+
+                                                 <span mat-menu-item><b>Code:</b> {{group.get('code').value}}</span>
+                                                 <span mat-menu-item><b>Created By:</b>
+                                                    <span *ngIf="group.get('provision_status').value =='Draft'">-</span>
+                                                <span *ngIf="group.get('provision_status').value !='Draft'">
+                                                    {{group.get('created_by').value}}
+                                                </span>
+                                            </span>
+
+
+                                              </mat-menu>
+                                        </td>
+
+
+                                        <td *ngIf="ValidationDataBasedOnStatusSearch == false">
+
+
+                                            <span
+                                                *ngIf="group.get('provision_status').value !='Approved' && hidden==false">
+
+                                                <span>
+                                                    <!-- formGroup.controls['features'].controls[index].invalid 
+                                                    [disabled]="isDirty(i, '') == false " -->
+                                                    <button mat-icon-button title="Add" type="button"
+                                                        (click)="doneRow(i,group); checkCheckBoxIsSelectedOrNot(i, group)"
+                                                        [disabled]="(pform.get('users')['controls'][i].status == 'VALID' && pform.get('users')['controls'][i].dirty == true) ? false : true"
+                                                        >
+                                                        <mat-icon class="done">done
+                                                        </mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button title="delete"
+                                                        *ngIf="group.get('provision_status').value =='Draft'">
+                                                        <mat-icon class="delete" style="color: red;"
+                                                            (click)="deleteRow(i,group.value)">delete_forever
+                                                        </mat-icon>
+
+                                                    </button>
+                                                </span>
+
+                                            </span>
+                                            <!-- <span *ngIf="group.get('provision_status').value =='Pending checker'">
+
+                                                <span>[disabled]="!isDirty(i)"     [disabled]="isDirty(i) == false "
+
+                                                    <button mat-icon-button [disabled]="true">
+                                                        <mat-icon class="done">done
+                                                        </mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button [disabled]="true">
+                                                        <mat-icon class="delete" style="color: gray;">delete_forever
+                                                        </mat-icon>
+
+                                                    </button>
+                                                </span>
+                                            </span> -->
+                                            <!-- 
+                                                <div>
+                                                    <mat-form-field class="example-full-width">
+
+                                                        <input class="toolbar-search" type="number" matInput
+                                                            autocomplete="off" required formControlName="camount">
+                                                        <mat-placeholder>Amount</mat-placeholder>
+                                                    </mat-form-field>
+                                                </div> -->
+
+                                            <!--     
+                                                <div>
+                                                    <mat-checkbox class="example-margin" formControlName="gstflag"
+                                                        (change)="enable_gst(i,$event)">Gst</mat-checkbox>
+                                                    <div *ngIf="group.get('gstflag').value">
+                                                        <mat-form-field class="example-full-width">
+                                                            <input class="toolbar-search" type="number" matInput
+                                                                autocomplete="off" required formControlName="cgst_amount">
+                                                            <mat-placeholder>Gst Amount</mat-placeholder>
+                                                        </mat-form-field>
+    
+                                                    </div>
+    
+                                                </div> -->
+
+                                            <!-- </span> -->
+                                            <!-- <span *ngIf="group.get('provision_status').value =='Pending header'">
+                                                <p>Checker amount:<code>{{group.get('camount').value}}</code>
+                                                    CheckerGst:<code>{{group.get('cgst_amount').value}}</code></p>
+
+
+                                                <div>
+                                                    <mat-form-field class="example-full-width">
+
+                                                        <input class="toolbar-search" type="number" matInput
+                                                            autocomplete="off" required formControlName="ap_amount">
+                                                        <mat-placeholder>Amount</mat-placeholder>
+                                                    </mat-form-field>
+                                                </div> -->
+
+                                            <!--         
+                                                    <div>
+                                                        <mat-checkbox class="example-margin" formControlName="gstflag"
+                                                            (change)="enable_gst(i,$event)">Gst</mat-checkbox>
+                                                        <div *ngIf="group.get('gstflag').value">
+                                                            <mat-form-field class="example-full-width">
+                                                                <input class="toolbar-search" type="number" matInput
+                                                                    autocomplete="off" required formControlName="apgst_amount">
+                                                                <mat-placeholder>Gst Amount</mat-placeholder>
+                                                            </mat-form-field>
+        
+                                                        </div>
+        
+                                                    </div> -->
+
+
+                                            <!-- </span> -->
+                                            <span *ngIf="group.get('provision_status').value  === 'Approved'">-</span>
+                                        </td>
+
+                                        <!-- <td *ngIf="ValidationDataBasedOnStatusSearch == false">
+                                            <span *ngIf="group.get('provision_status').value  != 'Approved' && hidden==false">
+                                            <mat-checkbox (change)="BulkAddOrUpdateOrDelete(i,group.value,$event)" 
+                                            formControlName="checkboxs"         *ngIf="isDirtyCheckbox(i); 
+                                            class="example-margin"></mat-checkbox></span>
+                                        </td> -->
+
+                                        <td *ngIf="ValidationDataBasedOnStatusSearch == false">
+                                            <span
+                                                *ngIf="group.get('provision_status').value  != 'Approved' && hidden==false">
+
+                                                <div *ngIf="isDirtyCheckbox(i); else dontshow">
+                                                    <mat-checkbox (change)="getvalue(i,group.value,$event); PushOrRemoveForBulkSubmit(i, group.value, $event ) "
+                                                        [checked]="isChecked" #checkbox class="example-margin">
+                                                    </mat-checkbox>
+                                                </div>
+
+                                                <ng-template #dontshow>
+                                                    --
+                                                </ng-template>
+
+                                            </span>
+
+
+
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                                </ng-container>
+
+                                <tr *ngIf="this.pform.value.users?.length==0">
+                                    <td colspan="12"> No Records found</td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- <div *ngIf="makerflag" class="action-container">
+                            <button class="btn btn-outline-primary" type="button" (click)="addUser()"
+                                *ngIf="ValidationDataBasedOnStatusSearch == false"
+                                style="border-radius:40px;margin-left: 15px;margin-top: 17px;" color="primary"><i
+                                    class="fa fa-plus"></i></button>
+
+                        </div> -->
+                    </form>
+                    <!-- <tr>    <td colspan="10"></td> -->
+
+
+                    <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                        <span>count <code>{{count}}</code></span>
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                            (click)="previousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;" *ngIf="!hidden">
+
+                        <div>
+                            <div
+                                *ngIf="pform.value.users?.length > 0 && ( (provisionsearch.value.status == 2 ||  provisionsearch.value.status == 3)  )">
+                                <mat-form-field appearance="fill" *ngIf="checkerflag || approverflag">
+                                    <mat-label>Select an option</mat-label>
+                                    <mat-select [(value)]="selected" >
+                                        <!-- <mat-option>None</mat-option> -->
+                                        <mat-option value="1">Approve</mat-option>
+                                        <mat-option value="2">Reject</mat-option>
+                                        <!-- <mat-option value="option3">Option 3</mat-option> -->
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            &nbsp;
+                            <button type="button" (click)="BulkAddOrUpdate()"
+                                style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                                class="btn btn-outline-success">Save/Update</button>
+
+                                <button type="button" (click)="BulkDelete()"
+                                    style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                                    class="btn btn-outline-danger">Delete</button>
+
+                            <button *ngIf="pform.value.users?.length > 0" type="button" (click)="checker(selected)"
+                                style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                                class="btn btn-outline-primary">Submit</button>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="container" *ngIf='provisionflagid==2'>
+                <!-- <div class=" row col-md-12 ">
+                    <div class="col-md-3">
+
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Month and Year</mat-label>
+                            <input matInput [matDatepicker]="dp" [formControl]="date1">
+                            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                            <mat-datepicker #dp startView="year" (monthSelected)="chosenMonthHandler($event, dp)"
+                                panelClass="example-month-picker">
+                            </mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-3">
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px;margin-left: 15px;margin-top: 17px;" (click)="previoussearch()"
+                            color="primary"><i class="fa fa-search"></i></button>
+                        <button class="btn btn-outline-primary" type="button" (click)="provisionget('add')" 
+                         style="border-radius:40px;margin-left: 15px;margin-top: 17px;" color="primary"><i class="fa fa-plus"></i></button> 
+                    </div>
+
+
+
+                </div> -->
+
+
+
+
+                <table class="table  table-responsive table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+
+                            <th>Main cat </th>
+                            <th>Sub cat</th>
+                            <th>GL</th>
+                            <th>BS </th>
+                            <th>CC</th>
+                            <th>Supplier name</th>
+                            <th>Department </th>
+                            <th>Expense Month</th>
+                            <!-- <th>Amount</th> -->
+
+                            <th>Amount(Exclusive of GST)</th>
+
+                            <th>Status</th>
+                            <th> Description</th>
+                            <th>select</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let  p of provisiondata_previousmonth; index as i"
+                            class="mon-{{p.expense_date.expense_month}}" style="text-align: left;">
+                            <td> {{(presentpages_month - 1)*10 +i+1 }} </td>
+                            <td>{{p?.code}}</td>
+                            <td>
+                                {{ p?.category_id?.name}}
+                            </td>
+                            <td>{{p?.subcategory_id?.name}}</td>
+                            <td>{{p?.subcategory_id?.glno}}</td>
+                            <td>{{p?.bs_id?.name}}</td>
+                            <td>{{p?.cc_id?.name}}</td>
+
+                            <td>{{p?.vendor_id?.name}}</td>
+                            <td>{{p?.dept_id?.name}}</td>
+                            <td>{{p?.expense_date| date: 'MMM-yyyy'}}</td>
+
+                            <td>{{p?.amount|number}}</td>
+                            <!-- <td>{{p.gst_amount |number}}</td> -->
+                            <td>{{p?.provision_status?.status}}</td>
+                            <td>{{p?.narration}}</td>
+                            <!-- <td *ngIf='p.provision_status.status=="Draft"'>
+                        <input [(ngModel)]="p.description" class="form-control" type="text" name="{{p.description}}" />
+                    </td>
+                    <td *ngIf='p.provision_status.status!="Draft"'>
+                        <input [(ngModel)]="p.description" class="form-control" type="text" name="{{p.description}}"
+                            [disabled]="true" />
+                    </td> -->
+                            <!-- <td *ngIf='p.provision_status.status!="Draft"'>
+                        <input type="checkbox" [(ngModel)]="p.provisionflag" [checked]="isChecked"
+                            (change)="ignore(p.provisionflag,i,p)" [disabled]="true"></td> -->
+
+                            <td>
+                                <input type="checkbox" [(ngModel)]="p.provisionflag" [checked]="isChecked"
+                                    (change)="ignore(p?.provisionflag,i,p)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td *ngIf="provisiondata_previousmonth?.length == 0" colspan="12"> No Records found</td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+
+                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <button mat-icon-button [disabled]="has_previous_month === false" color="primary"
+                        (click)="tab2previous()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpages_month}}
+                    <button mat-icon-button [disabled]="has_next_month === false" color="primary"
+                        (click)="tab2nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <button typae="button" (click)="ignoremaker('ignore')"
+                        style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                        class="btn btn-outline-primary">Ignore</button>
+                    <button typae="button" (click)="previous_Pvmove()"
+                        style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                        class="btn btn-outline-primary">Choose</button>
+
+
+                </div>
+
+
+            </div>
+
+
+            <div class="container" *ngIf='provisionflagid==3 '>
+
+
+                <form [formGroup]="provisionsearch" (ngSubmit)="systemdatasearch(1)">
+                    <!-- <h3>Provision Summary</h3> -->
+                    <div class=" row col-md-12 ">
+
+                        <div class="col-md-3">
+
+                            <mat-form-field>
+                                <mat-label> For Expense Month</mat-label>
+                                <input matInput [matDatepicker]="excemfrom" formControlName="expense_date">
+
+                                <mat-datepicker-toggle matSuffix [for]="excemfrom">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #excemfrom startView="multi-year"
+                                    (monthSelected)="setMonthAndYearsearch($event, excemfrom)"
+                                    panelClass="example-month-picker">
+                                </mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <!-- <mat-form-field class="example-full-width" (click)="moduleData('')">
+                                <mat-label>Module</mat-label>
+                                <input type="text" placeholder="Module" (keyup)="moduleData(this.provisionpipeline.value.module_id)" aria-label="Number" matInput
+                                    formControlName='module_id' [matAutocomplete]="auto18">
+                                <mat-autocomplete #auto18="matAutocomplete" [displayWith]="displayFnmodule">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+
+                                        <mat-option *ngFor="let p of moduledata " [value]="p">
+                                            {{p.text}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field> -->
+                            <mat-form-field style="width: 175px; margin-left: 50px;" >
+                                <mat-label>Module</mat-label>
+                                <mat-select formControlName="module_id">
+                                    <mat-option *ngFor="let module of moduledata" [value]="module?.id">
+                                        {{module?.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>BS</mat-label>
+                                <input type="text" placeholder="BS" #bs #bs_id (click)="bsget_()" aria-label="Number"
+                                    matInput formControlName='bs_id' [matAutocomplete]="auto6">
+                                <mat-autocomplete #auto6="matAutocomplete" [displayWith]="displayFnbs">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+
+                                        <mat-option *ngFor="let p of bsdata " (focusout)="bsid_cc_(p.id)" [value]="p">
+                                            {{p.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>CC</mat-label>
+                                <input type="text" placeholder="CC" #cc #cc_id (click)="ccget_()" aria-label="Number"
+                                    matInput formControlName='cc_id' [matAutocomplete]="auto1">
+                                <mat-autocomplete #auto1="matAutocomplete" [displayWith]="displayFncc">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let p of ccdata" [value]="p">
+                                            {{p.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-sm-12" style="text-align: right;">
+                            <button class="btn btn-outline-primary" type="submit"
+                                style="border-radius:40px;margin-top: 0px;" color="primary"><i
+                                    class="fa fa-search"></i></button>&nbsp;&nbsp;
+                                    <button class="btn btn-outline-primary" type="button" (click)="ProvisionSystemreport()"
+                                style="border-radius:40px;margin-top: 0px;" color="primary">
+                                <i matTooltip="Download Excel" class="fa fa-download"></i>
+                            </button>&nbsp;&nbsp;
+                            <button class="btn btn-outline-primary" type="submit" (click)="provisionsearch.reset()"
+                                style="border-radius:40px;margin-top: 0px;" color="primary">
+                                clear
+                            </button>&nbsp;&nbsp;
+                        </div>
+                    </div>
+                </form>
+
+
+                <table class="table  table-responsive table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Main cat </th>
+                            <th>Sub cat</th>
+                            <th>GL</th>
+                            <th>BS </th>
+                            <th>CC</th>
+                            <th>Module</th>
+                            <th>Supplier name</th>
+                            <th>Department </th>
+                            <th>Expense Month</th>
+                            <!-- <th>Amount</th> -->
+                            <!-- <th>Exclusive of GST</th> -->
+                            <th>Amount(Exclusive of GST)</th>
+                            <th>Status</th>
+                            <th> Description</th>
+                            <!-- <th>select</th> -->
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let  p of systemdata; index as i" class="mon-{{p.expense_date.expense_month}}"
+                            style="text-align: left;">
+                            <td> {{(presentpage2 - 1)*10 +i+1 }} </td>
+                            <!-- (click)="provisionget(p)" -->
+                            <td><span>
+                                    {{ p?.category_id?.name}}</span>
+                            </td>
+                            <td>{{p?.subcategory_id?.name}}</td>
+                            <td>{{p?.subcategory_id?.glno}}</td>
+                            <td>{{p?.bs_id?.name}}</td>
+                            <td>{{p?.cc_id?.name}}</td>
+                            <td>{{p?.module?.Module_Name}}</td>
+                            <td>{{p?.vendor_id?.name}}</td>
+                            <td>{{p?.dept_id?.name}}</td>
+                            <td>{{p?.expense_date| date: 'MMM-yyyy'}}</td>
+
+                            <td>{{p?.amount|number}}</td>
+                            <!-- <td>{{p.gst_amount |number}}</td> -->
+                            <td>{{p?.provision_status?.status}}</td>
+                            <td>{{p?.narration}}</td>
+                            <!-- <td *ngIf='p.provision_status.status=="Draft"'>
+                        <input [(ngModel)]="p.description" class="form-control" type="text" name="{{p.description}}" />
+                    </td>
+                    <td *ngIf='p.provision_status.status!="Draft"'>
+                        <input [(ngModel)]="p.description" class="form-control" type="text" name="{{p.description}}"
+                            [disabled]="true" />
+                    </td> -->
+                            <!-- <td *ngIf='p.provision_status.status!="Draft"'>
+                        <input type="checkbox" [(ngModel)]="p.provisionflag" [checked]="isChecked"
+                            (change)="ignore(p.provisionflag,i,p)" [disabled]="true"></td> -->
+                            <!-- 
+                            <td>
+                                <input type="checkbox" (change)=" ignore(p.provisionflag,i,p)"></td> -->
+                        </tr>
+                        <tr>
+                            <td *ngIf="systemdata?.length == 0" colspan="12"> No Records found</td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+
+                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+
+                    <button mat-icon-button [disabled]="has_previouss === false" color="primary"
+                        (click)="tab3previous()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpage2}}
+                    <button mat-icon-button [disabled]="has_nexts === false" color="primary" (click)="tab3nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+                <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+
+                    <!-- <button typae="button" (click)="approve_emc()"
+                        style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                        class="btn btn-outline-primary">submit</button> -->
+
+
+                </div>
+
+
+            </div>
+            <!-- </mat-tab> -->
+            <!-- </mat-tab-group> -->
+
+            <div class="container" *ngIf='provisionflagid == 4'>
+
+                <app-provision-report></app-provision-report>
+
+
+            </div>
+
+
+        </div>
+    </nav>
+
+</div>
+
+
+<!-- <pre> -->
+     <!-- {{this.pform.value.users[0].category_id.name}} -->
+     <!-- {{pform.value.users?.length}}  -->
+
+    <!-- {{pform.value | json}}
+</pre> -->

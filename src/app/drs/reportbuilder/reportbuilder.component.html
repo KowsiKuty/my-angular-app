@@ -1,0 +1,1055 @@
+<mat-tab-group style="margin-left: 3%;" (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="Report Master" >
+        <ng-template mat-tab-label>
+            <div (click)="Report_Master_Tab()">Report Master</div>
+        </ng-template>
+
+        <form [formGroup]="reportbuilder" id='show'>
+            <h2 style="margin-top: 3%;margin-left: 39%;">Report Master</h2>
+            <div class="col-md-12" style="width: 70%; margin-left: 13%;">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>Code</mat-label>
+                            <input matInput placeholder="" formControlName="report_master_code">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field>
+                            <mat-label>Name</mat-label>
+                            <input matInput placeholder="" formControlName="report_master_name">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="btn">
+                            <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center;"
+                                class="btn btn-outline-primary" (click)="drs_report_summary(reportbuilder.value)"><i
+                                    class="fa fa-search" aria-hidden="true"></i></button>
+                            <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center;"
+                                class="btn btn-outline-primary" data-toggle="modal" (click)="report_mast_add('ADD')"
+                                data-target="#exampleModal">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                            <button type="submit" style="border-radius: 30px; margin-top: 20px; align-items: center;"
+                                class="btn btn-outline-primary" (click)="rep_mas_clear()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-left: 18%;" class="tableFixHead">
+                <table class="table table-bordered" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container matColumnDef="position">
+                            <tr *ngFor="let report of report_data_list;let i=index">
+                                <td>{{(presentpage-1)*10+i+1}}</td>
+                                <td>{{report.code}}</td>
+                                <td>{{report.name}}</td>
+                                <td>
+                                    <div>
+                                        <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                            data-target="#exampleModal" class="iconbutton" color="primary"
+                                            style="color: green;" (click)="ReportMater_edit(report,'edit')">
+                                            <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button matTooltip="View" data-toggle="modal"
+                                            data-target="#exampleModal" class="iconbutton" color="primary"
+                                            style="color: green;" (click)="ReportMater_edit(report,'view')">
+                                            <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                        </button>
+                                        <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary"
+                                            style="color: green;" (click)="ReportMater_delete(report)">
+                                            <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                        </button>
+                                        <button mat-icon-button matTooltip="Add" class="iconbutton" color="primary"
+                                            style="color: green;" (click)="Reportheader_route(report)">
+                                            <span class="fa fa-plus"></span>
+                                        </button>
+                                        <!-- <button mat-icon-button matTooltip="Download" class="iconbutton" color="primary" style="color: green;" (click)="Repor_download(report)">
+                                            <mat-icon class="enabled_icon" aria-label="download">download</mat-icon>
+                                        </button> -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_master_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                        (click)="previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpage}}
+                    <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </mat-tab>
+    <mat-tab label="Report Header" >
+        <ng-template mat-tab-label>
+            <div #report_header (click)="Report_Header_Tab()">Report Header</div>
+        </ng-template>
+
+        <form [formGroup]="reportheader" style="margin-top: 3%;" id='show'>
+            <h2 style="margin-left: 39%;">Report Header</h2>
+            <div class="col-md-12" style="width: 70%; margin-left: 13%;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field (click)="reportmasterdrop()">
+                            <mat-label>Report Master Name</mat-label>
+                            <input placeholder="" matInput formControlName="report_master_data_name"
+                                [matAutocomplete]="maste_header_name" #RMContact_Input>
+                            <mat-autocomplete #maste_header_name="matAutocomplete" [displayWith]="reportmaster_display"
+                                (opened)="RMdropdown_header_Scroll()">
+                                <mat-option *ngFor="let reportgroupcreates of reportmaster_head_list"
+                                    [value]="reportgroupcreates">
+                                    {{reportgroupcreates.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field>
+                            <mat-label>Name</mat-label>
+                            <input matInput placeholder="" formControlName="report_header_name">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="btn">
+                            <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center;"
+                                class="btn btn-outline-primary"
+                                (click)="drs_report_header_summary(reportheader.value)"><i class="fa fa-search"
+                                    aria-hidden="true"></i></button>
+                            <button type="button" style="border-radius: 30px; margin-top: 20px;align-items: center;"
+                                class="btn btn-outline-primary" data-toggle="modal" (click)="report_Header_add('Add')"
+                                data-target="#exampleModal1">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" (click)="rep_head_clear()"
+                                style="border-radius: 30px;margin-top: 20px;align-items: center;">
+                                Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-left: 18%;" class="tableFixHead">
+                <table class="table table-bordered" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Report Master</th>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let report of report_header_list;let i=index">
+                            <td>{{(headpresentpage-1)*10+i+1}}</td>
+                            <td>{{report.code}}</td>
+                            <td>{{report.report_master.name}}</td>
+                            <td>{{report.name}}</td>
+                            <td>
+                                <div>
+                                    <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                        data-target="#exampleModal1" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="ReportHeadrer_edit(report,'edit')">
+                                        <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="view" data-toggle="modal"
+                                        data-target="#exampleModal1" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="ReportHeadrer_edit(report,'view')">
+                                        <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="delete" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="ReportHeadrer_delete(report)">
+                                        <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="Add" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reportgroup_route(report)">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_header_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="hashead_previous === false" color="primary"
+                        (click)="previousheadClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{headpresentpage}}
+                    <button mat-icon-button [disabled]="hashead_next === false" color="primary"
+                        (click)="nextheadClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+    </mat-tab>
+    <mat-tab label="Report Group" >
+        <ng-template mat-tab-label>
+            <div #report_Group (click)="Report_Group_Tab()">Report Group</div>
+        </ng-template>
+
+        <form [formGroup]="report_Group" style="margin-top: 3%;" id='show'>
+            <h2 style="margin-left: 39%;">Report Group</h2>
+            <div class="col-md-12" style="width: 70%; margin-left: 13%;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field (click)="reporthead_dropdown()" matTooltip="{{RHContactInput.value}}">
+                            <mat-label>Report Header Name</mat-label>
+                            <input type="text" matInput formControlName="report_head_data_name"
+                                [matAutocomplete]="repor_group_thead" #RHContactInput>
+                            <mat-autocomplete #repor_group_thead="matAutocomplete" [displayWith]="reporthead_display1"
+                                (opened)="RHdropdownScroll()">
+                                <mat-option *ngFor="let reportheadercreates of reporthead_list"
+                                    [value]="reportheadercreates">
+                                    {{reportheadercreates.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field>
+                            <mat-label>Name</mat-label>
+                            <input matInput placeholder="" formControlName="reportgroup_name">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="btn">
+                            <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center; "
+                                class="btn btn-outline-primary"
+                                (click)="drs_report_group_summary(report_Group.value)"><i class="fa fa-search"
+                                    aria-hidden="true"></i></button>
+                            <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center;"
+                                class="btn btn-outline-primary" data-toggle="modal" (click)="report_group_add('Add')"
+                                data-target="#exampleModal2">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" (click)="rep_grp_clear()"
+                                style="border-radius: 30px;margin-top: 20px; align-items: center;">
+                                Clear</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div style="margin-left: 18%;" class="tableFixHead">
+                <table class="table table-bordered" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Report Header</th>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let report of report_group_list;let i=index">
+                            <td>{{(grouppresentpage-1)*10+i+1}}</td>
+                            <td>{{report.code}}</td>
+                            <td>{{report.header.name}}</td>
+                            <td>{{report.name}}</td>
+                            <td>
+                                <div>
+                                    <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                        data-target="#exampleModal2" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reportgroup_edit(report,'edit')">
+                                        <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="view" data-toggle="modal"
+                                        data-target="#exampleModal2" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reportgroup_edit(report,'view')">
+                                        <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="delete" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reportgroup_delete(report)">
+                                        <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="Add" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reportitem_route(report)">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_group_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="hasgroup_previous === false" color="primary"
+                        (click)="previousreportgroupClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{grouppresentpage}}
+                    <button mat-icon-button [disabled]="hasgroup_next === false" color="primary"
+                        (click)="nextreportgroupClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+    </mat-tab>
+    <mat-tab label="Report Item" >
+        <ng-template mat-tab-label>
+            <div #report_item (click)="Report_Type_Tab()">Report Item</div>
+        </ng-template>
+
+        <form [formGroup]="report_type" id='show'>
+            <h2 style="margin-left: 39%;margin-top: 3%;">Report Item</h2>
+            <div class="col-md-12" style="margin-left: 8%; width: 70%;">
+                <div class="row">
+                    <div class="col-md-2">
+                    <mat-form-field>
+                        <mat-label>Source Type</mat-label>
+                        <input type="text" matInput formControlName="type"
+                            [matAutocomplete]="type_drop">
+                        <mat-autocomplete #type_drop="matAutocomplete" [displayWith]="type_display">
+                            <mat-option *ngFor="let type of type_data" (click)="type_values1(type)" [value]="type">
+                                {{type.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    </div>
+                    <div *ngIf="group_form_data" class="col-md-2">
+                    <mat-form-field  (click)="report_group_dropdown1()">
+                        <mat-label>Report Group</mat-label>
+                        <input type="text" matInput formControlName="reporttypecreate_group"
+                             [matAutocomplete]="reportgroupS" #RGCC_ontactInput>
+                        <mat-autocomplete #reportgroupS="matAutocomplete" [displayWith]="reportgroup_display"
+                            (opened)="RGCdrop_downScroll()">
+                            <mat-option *ngFor="let reportgroups of report_group_list3" [value]="reportgroups">
+                                {{reportgroups.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    </div>
+                    <div *ngIf="header_form_data" class="col-md-2">
+                    <mat-form-field  (click)="reporthead_dropdown1()">
+                        <mat-label>Report Header</mat-label>
+                        <input type="text" matInput formControlName="reportgroup_summary_head"
+                             [matAutocomplete]="reportheadS" #RHTSContactInput>
+                        <mat-autocomplete #reportheadS="matAutocomplete" [displayWith]="reporthead_display5"
+                            (opened)="RHTSdropdownScroll()">
+                            <mat-option *ngFor="let reportheads of reporthead_list2" [value]="reportheads">
+                                {{reportheads.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    </div>
+
+
+                    <!-- <div class="col-md-2" style="margin-left: 17.8%;">
+                        <mat-form-field (click)="reportgroup_dropdown()">
+                            <mat-label>Report Group Name</mat-label>
+                            <input type="text" matInput formControlName="report_group_data_name"
+                                [matAutocomplete]="reportgroup" #RGContactInput>
+                            <mat-autocomplete #reportgroup="matAutocomplete" [displayWith]="reportgroup_display"
+                                (opened)="RGdropdownScroll()">
+                                <mat-option *ngFor="let reportgroups of reportgroup_list"
+                                    [value]="reportgroups">{{reportgroups.name}}</mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div> -->
+                    <div class="col-md-2">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="" formControlName="report_type_name">
+                    </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="btn">
+                            <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center; margin-left: -10%; "
+                                class="btn btn-outline-primary" (click)="drs_report_type_summarys(report_type.value)"><i
+                                    class="fa fa-search" aria-hidden="true"></i></button>
+                            <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center; margin-left: 50% "
+                                class="btn btn-outline-primary" data-toggle="modal" (click)="report_Type_add('Add')"
+                                data-target="#exampleModal3">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" (click)="rep_itm_clear()"
+                                style="border-radius: 30px;margin-top: 20px; align-items: center; margin-left: 50%">
+                                Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-left: 16%;" class="tableFixHead">
+                <table class="table table-bordered" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Report Header / Group</th>
+                            <!-- <th>Type</th> -->
+                            <th>Name</th>
+                            <th>Item Number</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let report of report_type_list;let i=index">
+                            <td>{{(type_presentpage-1)*10+i+1}}</td>
+                            <td>{{report.code}}</td>
+                            <td>{{report.group.name}}</td>
+                            <!-- <td></td> -->
+                            <td>{{report.name}}</td>
+                            <td>{{report.number}}</td>
+                            <td>
+                                <div>
+                                    <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                        data-target="#exampleModal3" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reporttypeedit(report,'edit')">
+                                        <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="view" data-toggle="modal"
+                                        data-target="#exampleModal3" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reporttypeedit(report,'view')">
+                                        <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="delete" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Reporttype_delete(report)">
+                                        <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_item_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="hastype_previous === false" color="primary"
+                        (click)="previous_typeClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{type_presentpage}}
+                    <button mat-icon-button [disabled]="hastype_next === false" color="primary"
+                        (click)="next_typeClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+    </mat-tab>
+    <mat-tab label="Schedule Master" (click)="Schedule_Master_Tab()">
+        <ng-template mat-tab-label>
+            <div >Schedule Master</div>
+        </ng-template>
+
+    </mat-tab>
+
+    <mat-tab label="Currency Master" (click)="Currency_Master_Tab()">
+        <ng-template mat-tab-label>
+            <div >Currency Master</div>
+        </ng-template>
+    </mat-tab>
+    <mat-tab label="Exception Schedule" (click)="Exception_schedule_tab()">
+        <ng-template mat-tab-label>
+            <div >Exception Schedule</div>
+        </ng-template>
+    </mat-tab>
+</mat-tab-group>
+<!-- <mat-tab-group (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="Schedule Master">
+        <ng-template mat-tab-label>
+            <div>Schedule Master</div>
+        </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Currency Master">
+        <ng-template mat-tab-label>
+            <div>Currency Master</div>
+        </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Exception Schedule">
+        <ng-template mat-tab-label>
+            <div>Exception Schedule</div>
+        </ng-template>
+    </mat-tab>
+</mat-tab-group> -->
+
+
+    <!-- <mat-tab label="Schedule Item">
+       
+        <h2 style="text-align: center;margin-top: 3%;">Schedule Item</h2>
+        <form [formGroup]="Schdular_type" style="margin-top: 1%;">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-2" style="margin-left: 25%;">
+                        <mat-form-field (click)="Schdularmaster_dropdown()">
+                            <mat-label>Schedule Master</mat-label>
+                            <input type="text" matInput formControlName="Schdularmaster_data_name"
+                                [matAutocomplete]="schdularmaster">
+                            <mat-autocomplete #schdularmaster="matAutocomplete"
+                                [displayWith]="schdularmaster_display">
+                                <mat-option *ngFor="let schedmaster of Schdularmaster_list"
+                                    [value]="schedmaster">
+                                    {{schedmaster.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field >
+                            <mat-label>Name</mat-label>
+                            <input matInput placeholder="" formControlName="Schdular_type_name">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2" style="margin-left: 3%;">
+                        <div class="row">
+                        <button type="button" style="border-radius: 40px; margin-top: 20px;"
+                            class="btn btn-outline-primary" (click)="drs_schdular_type_summary(Schdular_type.value)"><i
+                                class="fa fa-search" aria-hidden="true"></i></button>
+                                <button type="button" style="border-radius: 40px; margin-top: 20px; margin-left: 20%;"
+                            class="btn btn-outline-primary" data-toggle="modal" (click)="Scheduler_Type_add()"
+                            data-target="#exampleModal5">
+                            <span class="fa fa-plus"></span>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" (click)="schd_itm_clear()" style="border-radius: 40px;margin-top: 20px;margin-left: 7%;">
+                        Clear</button>
+                        </div>
+                    </div>                   
+                </div>
+            </div>
+            <div style="margin-left: 25%;" class="tableFixHead">
+                <table class="table table-bordered" style="width: 200%;" fixed-header>
+                    <thead style="background-color: #00800021;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Schedule Master</th>
+                            <th>Name</th>                           
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let report of Schdular_type_list ;let i=index">
+                            <td>{{(schdultypepresentpage-1)*10+i+1}}</td>
+                            <td>{{report.code}}</td>
+                            <td>{{report.name}}</td>
+                            <td>
+                                <div style="display: flex;">
+                                    <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                        data-target="#exampleModal5" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Schdulartypeedit(report,'edit')">
+                                        <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="view" data-toggle="modal"
+                                        data-target="#exampleModal5" class="iconbutton" color="primary"
+                                        style="color: green;" (click)="Schdulartypeedit(report,'view')">
+                                        <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button matTooltip="delete" class="iconbutton" color="primary"
+                                    style="color: green;" (click)="Schdulartype_delete(report)">
+                                        <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <p *ngIf="!data_found" style="text-align: center;">Data Not Found</p>
+                </div>
+            </div>
+            <div>
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button mat-icon-button [disabled]="hasschdultype_previous === false" color="primary"
+                        (click)="previousSchedulerClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{schdultypepresentpage}}
+                    <button mat-icon-button [disabled]="hasschdultype_next === false" color="primary"
+                        (click)="nextSchedulerClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+   
+</mat-tab> -->
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px; margin-left: -20%;">
+            <div class="modal-header" style="width: 900px;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Report
+                        Master</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="reportmaster_close()" #report_mas_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="reportmaster">
+                    <div class="Create">
+                        <mat-form-field>
+                            <mat-label>Name</mat-label>
+                            <input matInput formControlName="reportmaster_name" autocomplete="off"
+                                [readonly]="rep_mas_view">
+                        </mat-form-field>
+                        <div style="margin-top: 3%;"> 
+                            <mat-radio-group aria-label="Select an option" formControlName="status"
+                                [disabled]="rep_mas_view">
+                                &nbsp;&nbsp;
+                                <mat-radio-button class="radio" value="GL">GL</mat-radio-button>&nbsp;&nbsp;
+                                <mat-radio-button value="SL">SL</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div style="margin-top: 3%;">
+                            <mat-radio-group aria-label="Select an option" formControlName="customer"
+                                [disabled]="rep_mas_view">
+                                &nbsp;&nbsp;
+                                <mat-radio-button value="ST">Standard Report</mat-radio-button>&nbsp;&nbsp;
+                                <mat-radio-button value="CM">Custom Report</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div style="margin-top: 3%; margin-left: 1%;">
+                            <mat-radio-group aria-label="Select an option" formControlName="is_schedule"
+                                [disabled]="rep_mas_view">
+                                <mat-radio-button value="0">Is Schedule 0</mat-radio-button>&nbsp;&nbsp;
+                                <mat-radio-button value="1">Is Schedule 1</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div class="isQuarterClass">
+                            <!-- <mat-radio-group aria-label="Select an option" formControlName="is_quarter">
+                                <mat-radio-button value="1">Is Quarter</mat-radio-button>
+                            </mat-radio-group> -->
+                              <mat-checkbox class="example-margin" formControlName="is_quarter">Is Quarter</mat-checkbox>
+                        </div>
+                        <button type="submit" style="border-radius: 40px; margin-left: 0%; margin-top: 2%;" *ngIf="report_master_submit_btn"
+                        class="btn btn-outline-primary"
+                        (click)="reportmastercreatedata(reportmaster.value)">Submit</button>
+                    </div>
+                    <!-- <button type="button" style="border-radius: 40px;background-color: #fff;"
+                        *ngIf="report_master_submit_btn"
+                        (click)="reportmastercreatedata(reportmaster.value)">Submit</button> -->
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px;  margin-left: -20%;">
+            <div class="modal-header" style="width: 900px; background-color: #00800021;">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Report
+                        Header</b></h5>
+                <button type="button" class="close" aria-hidden="true" (click)="reportmaster_close_create()" data-dismiss="modal" #report_repot_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="reportheadercreate">
+                    <div class="Create">
+                        <div class="col-md-3">
+                            <mat-form-field (click)="reportmasterdrop1()">
+                                <mat-label>Report Master</mat-label>
+                                <input type="text" matInput formControlName="reportheadercreate_master"
+                                    [readonly]="rep_Head_view" [matAutocomplete]="reportmasters" #RCContactInput>
+                                <mat-autocomplete #reportmasters="matAutocomplete" [displayWith]="reportmaster_display"
+                                    (opened)="RCdropdownScroll()">
+                                    <mat-option *ngFor="let reportheadercreates of reportmaster_list1"
+                                        [value]="reportheadercreates">
+                                        {{reportheadercreates.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Name</mat-label>
+                                <input matInput placeholder="" formControlName="reportheadercreate_name"
+                                    autocomplete="off" [readonly]="rep_Head_view">
+                            </mat-form-field>
+                        </div>
+                        <button type="submit" style="border-radius: 30px; margin-left: 1%; margin-top: 2%; margin-bottom: 2%;" *ngIf="report_head_submit_btn"
+                        class="btn btn-outline-primary"
+                        (click)="reportheadercreatedata(reportheadercreate.value)">Submit</button>
+
+                    </div>
+                    <!-- <button type="button" style="border-radius: 40px;background-color: #fff;"
+                        *ngIf="report_head_submit_btn"
+                        (click)="reportheadercreatedata(reportheadercreate.value)">Submit</button> -->
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-outline-primary"  (optionSelected)="status_summary($event)"style="border-radius: 40px;" >OK</button>     -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px; margin-left: -20%;">
+            <div class="modal-header" style="width: 900px;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Report
+                        Group</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="reportgroup_close()" #report_group_close aria-label="Close">
+                   &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="reportgroupcreate">
+                    <div class="Create">
+                        <div class="col-md-3">
+                            <mat-form-field (click)="reporthead_dropdown_group()">
+                                <mat-label>Report Header</mat-label>
+                                <input type="text" matInput formControlName="reportgroupcreate_head"
+                                    [readonly]="Report_grp_view" [matAutocomplete]="repor_gpr_thead" #RHCContactInput>
+                                <mat-autocomplete #repor_gpr_thead="matAutocomplete" [displayWith]="reporthead_displays"
+                                    (opened)="RHCdropdownScroll()">
+                                    <mat-option *ngFor="let reportheads of reporthead_list_group" [value]="reportheads">
+                                        {{reportheads.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Name</mat-label>
+                                <input matInput placeholder="" formControlName="reportgroupcreate_name"
+                                    autocomplete="off" [readonly]="Report_grp_view">
+                            </mat-form-field>
+                        </div>
+                        <button type="submit" style="border-radius: 40px; margin-left: 5%; margin-top: 2%; margin-bottom: 2%;" *ngIf="report_group_sub_btn"
+                        class="btn btn-outline-primary"
+                        (click)="reportgroupcreatedata(reportgroupcreate.value)">Submit</button>
+                    </div>
+                    <!-- <button type="button" style="border-radius: 40px;background-color: #fff;"
+                        *ngIf="report_group_sub_btn"
+                        (click)="reportgroupcreatedata(reportgroupcreate.value)">Submit</button> -->
+                  
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-outline-primary"  (optionSelected)="status_summary($event)"style="border-radius: 40px;" >OK</button>     -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px; margin-left: -20%;">
+            <div class="modal-header" style="width: 900px;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Report
+                        Item</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="Reporttype_close()" (click)="colse()" #report_item_close
+                    aria-label="Close">
+                   &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="reporttypecreate">
+                    <div class="typeclass">
+                        <!-- <div class="col-md-2"> -->
+                            <div class="col-md-3">
+                                <mat-form-field>
+                                    <mat-label>Name</mat-label>
+                                    <input matInput placeholder="" formControlName="reporttypecreate_name" autocomplete="off"
+                                        [readonly]="Report_itm_view">
+                                </mat-form-field>
+                            </div>
+                           
+                           
+                            <div class="col-md-3">
+                                <mat-form-field>
+                                    <mat-label>Item Number</mat-label>
+                                    <input matInput placeholder="" formControlName="reporttypecreate_number" autocomplete="off"
+                                        [readonly]="Report_itm_view">
+                                </mat-form-field>
+                            </div>
+                            
+                           
+                            <div class="col-md-3">
+                                <mat-form-field>
+                                    <mat-label>Source Type</mat-label>
+                                    <input type="text" matInput formControlName="type" [readonly]="Report_itm_view"
+                                        [matAutocomplete]="type_drop">
+                                    <mat-autocomplete #type_drop="matAutocomplete" [displayWith]="type_display">
+                                        <mat-option *ngFor="let types of type_data" (click)="types_values(types)"
+                                            [value]="types">
+                                            {{types.name}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            
+                           
+                            <div *ngIf="header_form_data" class="col-md-3">
+                                <mat-form-field  (click)="reportmaster_drop()">
+                                    <mat-label>Report Master Name</mat-label>
+                                    <input placeholder="" matInput formControlName="report_master_data_item_modal"
+                                        [matAutocomplete]="reprt_master_serch" #RMContactInput [readonly]="Report_itm_view">
+                                    <mat-autocomplete #reprt_master_serch="matAutocomplete"
+                                        [displayWith]="reportmaster_display_item" (opened)="RMdropdownScroll()">
+                                        <mat-option *ngFor="let reportgroupcreates of reportmaster_list"
+                                            [value]="reportgroupcreates"
+                                            (click)="Selected_value_master_item(reportgroupcreates)">
+                                            {{reportgroupcreates.name}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            
+                          
+                            <div *ngIf="group_form_data" class="col-md-3">
+                                <mat-form-field  (click)="reportgroup_dropdown1()">
+                                    <mat-label>Report Group</mat-label>
+                                    <input type="text" matInput formControlName="reporttype_sum_group"
+                                        [readonly]="Report_itm_view" [matAutocomplete]="reportgroup" #RGCContactInput>
+                                    <mat-autocomplete #reportgroup="matAutocomplete" [displayWith]="reportgroup_display"
+                                        (opened)="RGCdropdownScroll()">
+                                        <mat-option *ngFor="let reportgroups of reportgroup_list3" [value]="reportgroups">
+                                            {{reportgroups.name}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            
+                            
+                            <div *ngIf="header_form_data" class="col-md-3">
+                                <mat-form-field  (click)="reporthead_dropdown_mas()">
+                                    <mat-label>Report Header</mat-label>
+                                    <input type="text" matInput formControlName="reportgroup_create_head"
+                                        [readonly]="Report_itm_view" [matAutocomplete]="reporthead" #RHTCContactInput>
+                                    <mat-autocomplete #reporthead="matAutocomplete" [displayWith]="reporthead_display"
+                                        (opened)="RHTCdropdownScroll()">
+                                        <mat-option *ngFor="let reportheads of reporthead_list5" [value]="reportheads">
+                                            {{reportheads.name}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            
+                           
+                            <div class="col-md-3">
+                                <mat-form-field (click)="Schdulartype_dropdown()">
+                                    <mat-label>Report Type</mat-label>
+                                    <input type="text" matInput formControlName="Schdular_type" [matAutocomplete]="schdulartype"
+                                        [readonly]="Report_itm_view">
+                                    <mat-autocomplete #schdulartype="matAutocomplete" [displayWith]="schdulartype_display">
+                                        <mat-option *ngFor="let schedtype of Schedule_Type" (click)="scd_type(schedtype)"
+                                            [value]="schedtype">
+                                            {{ schedtype.name }}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                           
+                           
+                            <div class="col-md-3">
+                                <mat-form-field>
+                                    <mat-label>Schedule Master</mat-label>
+                                    <input #Sche_data type="text" matInput formControlName="Schdularmaster"
+                                        [matAutocomplete]="schdularmaster" (keyup)="Schdularmaster_dropdown()"
+                                        [readonly]="Report_itm_view">
+                                    <mat-autocomplete #schdularmaster="matAutocomplete" [displayWith]="schdularmaster_display"
+                                        (opened)="autocompleteschedule_mas_Scroll()">
+                                        <mat-option *ngFor="let schedmaster of Schdularmaster_list"
+                                            (click)="select_value1(schedmaster, 'Schedule')" [value]="schedmaster"
+                                            matTooltip="{{ schedmaster.name }}">
+                                            {{ schedmaster.name }}-{{ schedmaster.code }}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                         
+                        <!-- </div> -->
+                        
+
+                    </div>
+                    <div *ngIf="!elem_hide" style="margin-right: 24%;">
+                        <div class="containers">
+                            <div class="wrapper" #editableContent id="editableContents" [attr.contenteditable]="isEditable ? 'true' : null"
+                                (input)="editable($event)" (paste)="onPaste($event)" (keydown)="preventTyping($event)">
+                                <ng-container *ngIf="multidata.length != 0">
+                                    <span *ngFor="let gd of multidata; let i=index"
+                                        (keydown)="closes($event,i)">{{gd.name}}</span>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" style="margin: auto; margin-left: 1%; margin-top: 3%;" *ngIf="report_type_sub_btn"
+                        class="btn btn-outline-primary"
+                        (click)="reporttypecreatedata(reporttypecreate.value)">Submit</button>
+                    <!-- <button type="button" style="border-radius: 40px;background-color: #fff;"
+                        *ngIf="report_type_sub_btn"
+                        (click)="reporttypecreatedata(reporttypecreate.value)">Submit</button> -->
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-outline-primary"  (optionSelected)="status_summary($event)"style="border-radius: 40px;" >OK</button>     -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header" style="width: 900px;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Schedule
+                        Master</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" #schrdule_mas_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="Schdularmastercreate">
+                    <div class="Create">
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Name</mat-label>
+                                <input matInput placeholder="" formControlName="Schdularmastercreate_name"
+                                    autocomplete="off">
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3"> -->
+                        <!-- <mat-form-field (click)="reporttype_dropdown()" style="width: 180px;margin-left: 20px;">
+                                <mat-label>Report Type</mat-label>
+                                <input type="text" matInput formControlName="Schdularmastercreate_report"
+                                    [matAutocomplete]="schdularmaster">
+                                <mat-autocomplete #schdularmaster="matAutocomplete" [displayWith]="reporttype_display">
+                                    <mat-option *ngFor="let Schdularmasters of report_typedropdown_list"
+                                        [value]="Schdularmasters">
+                                        {{Schdularmasters.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field> -->
+                        <!-- <mat-form-field (click)="reporttype_dropdown()">
+                                <mat-label>Report Item</mat-label>
+                                <input type="text" matInput formControlName="Schdularmastercreate_report"
+                                 [matAutocomplete]="reporttype">
+                                <mat-autocomplete #reporttype="matAutocomplete" [displayWith]="reporttype_display">
+                                    <mat-option *ngFor="let reporttype of report_typedropdown_list"
+                                        [value]="reporttype">
+                                        {{reporttype.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field> -->
+                        <!-- </div> -->
+                        <div style="margin-left: 20px;">
+                            <mat-radio-group aria-label="Select an option" formControlName="yesorno">
+                                &nbsp;&nbsp;
+                                <mat-radio-button value="yes">YES</mat-radio-button>&nbsp;&nbsp;
+                                <mat-radio-button value="No">NO</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                    <!-- <button type="button" style="border-radius: 40px;background-color: #fff;"
+                        *ngIf="scdular_mas_sub_btn"
+                        (click)="schdularmastercreatedata(Schdularmastercreate.value)">Submit</button> -->
+
+                    <button type="submit" style="border-radius: 40px; margin-left: 3%;" *ngIf="scdular_mas_sub_btn"
+                        class="btn btn-outline-primary"
+                        (click)="schdularmastercreatedata(Schdularmastercreate.value)">Submit</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-outline-primary"  (optionSelected)="status_summary($event)"style="border-radius: 40px;" >OK</button>     -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- <div class="modal fade" id="exampleModal5" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header" style="width: 900px; background-color: #00800021;">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Schedule
+                        Item</b></h5>
+                <button type="button" class="close" data-dismiss="modal" #schrdule_item_close aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="margin-left: 3%;">
+                <form [formGroup]="Schdulartypecreate">
+                    <div class="row">
+                        <mat-form-field style="width: 20%;">
+                            <mat-label>Name</mat-label>
+                            <input matInput placeholder="" formControlName="Schdulartypecreate_name" autocomplete="off"
+                            [readonly]="schd_itm_view"   required>
+                        </mat-form-field>
+                        <mat-form-field (click)="Schdularmaster_dropdown()" style="width: 180px;margin-left: 20px;">
+                            <mat-label>Schedule Master</mat-label>
+                            <input type="text" matInput formControlName="Schdulartypecreate_sdlmaster"
+                            [readonly]="schd_itm_view" [matAutocomplete]="Schdular">
+                            <mat-autocomplete #Schdular="matAutocomplete" [displayWith]="Schdular_display">
+                                <mat-option *ngFor="let Schdulartype of Schdularmaster_list" [value]="Schdulartype">
+                                    {{Schdulartype.name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <mat-form-field style="width: 20%; margin-left: 20px;">
+                            <mat-label>Template</mat-label>
+                            <input matInput placeholder="" formControlName="Schdulartypecreate_type_name"
+                            [readonly]="schd_itm_view" autocomplete="off" required>
+                        </mat-form-field>
+                    </div>
+                    <button type="button" style="border-radius: 40px;background-color: #fff;" data-dismiss="modal"
+                        *ngIf="scdular_type_sub_btn"
+                        (click)="schdulartypecreatedata(Schdulartypecreate.value)">Submit</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+               
+            </div>
+        </div>
+    </div>
+</div> -->
+<!-- <button type="button" class="btn btn-outline-primary"  (optionSelected)="status_summary($event)"style="border-radius: 40px;" >OK</button>     -->
+<div *ngIf="scdule_master_screen">
+    <app-schedule-item></app-schedule-item>
+</div>
+<div *ngIf="currency_master_screen">
+    <app-currency-format></app-currency-format>
+</div>
+<div *ngIf="Exception_schedule_screen">
+    <!-- <app-currency-format></app-currency-format> -->
+    <app-exception-schedule></app-exception-schedule>
+</div>

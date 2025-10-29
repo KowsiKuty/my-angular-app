@@ -1,0 +1,406 @@
+<div class="container">
+    <h1 style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;">Ticket Followup</h1>
+</div><hr>
+<div class="container">
+    <div class="card" style="width:110%;">
+        <div class="card-header" style="background-color: #DDEFDD">
+            Ticket Followups Details
+        </div>
+        <div class="card-body">
+            <form [formGroup]="followupform">
+                <div class="row">
+                    <div class="col-md-6" style="width: 50px;">
+                        <mat-form-field appearance="outline" style="width: 300px;">
+                            <mat-label>Ticket Code</mat-label>
+                            <input type="text" matInput formControlName="code" required readonly  (keypress)="kyenbdata($event)">
+                        </mat-form-field>
+                        <br>
+                        <mat-form-field appearance="outline" style="width: 300px;">
+                            <mat-label>Branch Name</mat-label>
+                            <input type="text" matInput formControlName="branch" required readonly  (keypress)="kyenbdata($event)">
+                        </mat-form-field>
+                        <br>
+                        <mat-form-field appearance="outline" style="width: 300px;">
+                            <mat-label>Problem Description</mat-label>
+                            <textarea matInput formControlName="desc" rows="5" readonly  (keypress)="kyenbdata($event)"></textarea>
+                        </mat-form-field>
+                        <br>
+                    </div>
+                    <div class="col-md-6" style="width: 50%;">
+                        <mat-form-field appearance="outline" style="width: 300px;">
+                            <mat-label>Problem</mat-label>
+                            <input type="text" matInput formControlName="problem" readonly required  (keypress)="kyenbdata($event)">
+                        </mat-form-field>
+                        <br>
+                        <mat-form-field appearance="outline" style="width: 300px;">
+                            <mat-label>Nature Of Problem</mat-label>
+                            <input type="text" matInput formControlName="nop" required readonly (keypress)="kyenbdata($event)">
+                        </mat-form-field>
+                        <br>
+                        <div class="row">
+                            <mat-form-field  style="width: 200px;margin-left: 10px;">
+                                <mat-label>Engineer Name</mat-label>
+                                <input type="text" matInput [readonly]="editenb" formControlName="engineername" required  (keypress)="kyenbdata($event)">
+                            </mat-form-field>
+                            <button type="button" *ngIf="editenb" (click)="createfollowupdetails_edit()" mat-raised-button style="height: 40px;margin-left: 30px;">EDIT</button>
+                            <button type="button" *ngIf="!editenb" (click)="createfollowupdetails()" mat-raised-button style="height: 40px;margin-left: 30px;">Submit</button>
+                        </div>
+                        <br>
+                        <mat-form-field  style="margin-left: 10px;width: 200px;">
+                            <mat-label>Visiting Date</mat-label>
+                            <input [matDatepicker]="pic" matInput formControlName="vdate" required [readonly]="editenb">
+                            <mat-datepicker-toggle [for]="pic" matSuffix></mat-datepicker-toggle>
+                            <mat-datepicker #pic></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field style="width: 200px;margin-left: 10px;">
+                            <mat-label>Visiting Time</mat-label>
+                            <input type="time" matInput formControlName="vtime" required [readonly]="editenb">
+                        </mat-form-field>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+<br />
+<br />
+    <!-- <div class="card">
+        <div class="card-header">
+            Ticket Followups
+        </div>
+        <div class="card-body"  >
+            <button class="btn btn-link" type="button" style="text-decoration: none;" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Click To View Followups
+              </button>
+                <div style="overflow-y: auto;height: 500px;">
+                        <div  *ngFor="let d of trackDataList;let odd=odd;let even=even" style="margin-top: 170px;">
+                                <div  [ngClass]="even?'new':'news'">
+                                    <span>Track Updated From to</span><b>{{d.engineername}}</b><br />
+                                    <span>Track Updated From to</span><b>{{d.visit_date}}</b><br />
+                                    <span>Track Updated From to</span><b>{{d.visit_time}}</b><br />
+                                    <h3>Comment</h3>
+                                
+                                </div>
+                                <br />
+                        </div>
+                </div>
+        </div>
+
+    </div> -->
+    <div class="container">
+        <div class="card" style="width:110%;">
+            <div class="card-header">
+                Ticket Followups
+            </div>
+            <div class="container card-body">
+                <div class="page-header">
+                    <h1 id="timeline" data-toggle="collapse" data-target="#demo" style="color: blue;font-size: 20px;font-family: 'Times New Roman', Times, serif;">Click To View Ticket Followups</h1>
+                </div>
+                <div style="overflow-y: auto;height: 500px;" id="demo" class="collapse">
+                    <ul  class="timeline" *ngFor="let d of trackDataList;let odd=odd;let even=even">
+                        <li *ngIf="even">
+                        <div class="timeline-badge"><i class="glyphicon glyphicon-check"></i></div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                            <!-- <h4 class="timeline-title"><span>Engineer Name : </span>&nbsp;<b>{{d.engineername}}</b></h4> -->
+                            <!-- <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 11 hours ago via Twitter</small></p> -->
+                            </div>
+                            <div class="timeline-body">
+                                                <span  *ngIf="d.engineername">Engineer Name : </span>&nbsp;<b>{{d.engineername}}<br/></b>
+                                                <span *ngIf="d.visit_date">Visiting Date : </span>&nbsp;<b>{{d.visit_date}}<br /></b>
+                                                <span *ngIf="d.visit_time">Visiting Time : </span>&nbsp;<b>{{d.visit_time}}<br /></b>
+                                                <span *ngIf="d.assign_to_name">Ticket Updated By : </span>&nbsp;<b>{{d.assign_to_name}}<br /></b>
+                                                <span *ngIf="d.update_date">Ticket Updated Date :</span>&nbsp;<b>{{d.update_date| date:'dd-MMM-yyyy'}}<br /></b>
+                                                <!--<span *ngIf="d.followup_id">Track Updated From to</span>&nbsp;<b>{{d.followup_id}}<br /></b>-->
+                                                <!-- <span *ngIf="d.visit_date">Visiting Date : </span>&nbsp;<b>{{d.visit_date}}<br /></b>
+                                                <span *ngIf="d.visit_time">Visiting Time : </span>&nbsp;<b>{{d.visit_time}}<br /></b> -->
+                                                <span *ngIf="d.old_value">Old Value : &nbsp;{{d.old_value}}<br /></span>
+                                                <span *ngIf="d.new_value">Comment : &nbsp;<b>{{d.new_value}}</b><br /></span>
+                                                <span *ngIf="d.status">Status : &nbsp;<b>{{statusList_n[d.status]}}</b><br /></span>
+                                                <span *ngIf="d.file">
+                                                    <h3 style="color:green;text-decoration: dashed;">File List : </h3>
+                                                    <div *ngFor="let dear of d.file" style="color: blue;">
+                                                        <a (click)="download_file(dear)">{{dear['file_name']}}</a>
+                                                    </div>
+                                                </span>
+                                                <!-- <span *ngIf="d.new_value">Track Updated Status:&nbsp;<b>{{statusList_n[d.status]}}</b></span><br /> -->
+                            </div>
+                        </div>
+                        </li>
+                        <li class="timeline-inverted" *ngIf="odd">
+                        <div class="timeline-badge warning"><i class="glyphicon glyphicon-credit-card"></i></div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                            <!-- <h4 class="timeline-title"><span>Engineer Name :</span>&nbsp;<b>{{d.engineername}}</b></h4> -->
+                            </div>
+                            <div class="timeline-body">
+                                                <span  *ngIf="d.engineername">Engineer Name : </span>&nbsp;<b>{{d.engineername}}<br/></b>
+                                                <span *ngIf="d.visit_date">Visiting Date :</span>&nbsp;<b>{{d.visit_date}}<br /></b>
+                                                <span *ngIf="d.visit_time">Visiting Time : </span>&nbsp;<b>{{d.visit_time}}<br /></b>
+                                                <span *ngIf="d.assign_to_name">Ticket Updated By :</span>&nbsp;<b>{{d.assign_to_name}}<br /></b>
+                                                <span *ngIf="d.update_date">Ticket Updated Date :</span>&nbsp;<b>{{d.update_date| date:'dd-MMM-yyyy'}}<br /></b>
+                                                <!-- <span *ngIf="d.followup_id">Track Updated From to</span>&nbsp;<b>{{d.followup_id}}<br /></b> -->
+                                                <!-- <span *ngIf="d.visit_date">Visiting Date :</span>&nbsp;<b>{{d.visit_date}}<br /></b> -->
+                                                <!-- <span *ngIf="d.visit_time">Visiting Time : </span>&nbsp;<b>{{d.visit_time}}<br /></b> -->
+                                                <span *ngIf="d.old_value">Old Value : &nbsp;{{d.old_value}}<br /></span>
+                                                <span *ngIf="d.new_value">Comment : &nbsp;<b>{{d.new_value}}</b><br /></span>
+                                                <span *ngIf="d.status">Status:&nbsp;<b>{{statusList_n[d.status]}}</b><br /></span>
+                                                <span *ngIf="d.file">
+                                                    <h3 style="color:green;text-decoration: dashed;">File List :</h3>
+                                                    <div *ngFor="let dear of d.file" style="color: blue;">
+                                                        <a (click)="download_file(dear)">{{dear['file_name']}}</a>
+                                                    </div>
+                                                </span>
+                                                <!-- <span *ngIf="d.new_value">Track Updated Status:&nbsp;<b>{{statusList_n[d.status]}}</b></span><br /> -->
+                            </div>
+                        </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<br>
+<br>
+<div class="container">
+    <div class="card" style="width:110%;">
+        <div class="card-header" style="background-color: #DDEFDD">
+            Assets
+        </div>
+        <div class="card-body">
+            <!-- <button style="border: none;background: none;">Click To View Asset Details</button> -->
+            <div>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>S.No</th>
+                        <th>Branch name</th>
+                        <th>Vendor Name</th>
+                        <th>Asset Barcode</th>
+                        <th>Product Name</th>
+                        <th>Asset Serial Number</th>
+                        <th>AMC/WAR From Date</th>
+                        <th>AMC/WAR To Date</th>
+                        <th>Amount</th>
+                        <th>Header Type</th>
+                    </tr>
+                    <tr *ngFor="let d of assetList;let i=index">
+                        <td>{{(presentpage-1)*pagesize+i+1}}</td>
+                        <td>{{d['branch_id'].code+' - '+d['branch_id'].name}}</td>
+                        <td>{{d['vendorname']}}</td>
+                        <td>{{d['assetbarcode']}}</td>
+                        <td class="text-center">{{d['asset_name']}}</td>
+                        <td>{{d.assetserialno? d.assetserialno:"-"}}</td>
+                        <td>{{d.warrenty_from_date? (d.warrenty_from_date | date:'yyyy-MMM-dd'):'-' }}</td>
+                        <td>{{d.warrenty_to_date ? (d.warrenty_to_date | date:'yyyy-MMM-dd'):'-' }}</td>
+                        <td>{{d['amc_amount']|  number:'1.2-2'}}</td>
+                        <td>{{d['amcheader_type']}}</td>
+                    </tr>
+                    <tr *ngIf="assetList.length==0">
+                        <td colspan="3">No Records Found..</td>
+                    </tr>
+                    <tr >
+                        <td colspan="3">
+                            <div style="float: right;">
+                                <button type="button" mat-icon-button [disabled]="!has_previous" color="primary" (click)=" previousdata()"><mat-icon>arrow_back</mat-icon></button>{{presentpage}}
+                                <button  mat-icon-button type="button" [disabled]="!has_next" color="primary" (click)=" nextdata()"><mat-icon>arrow_forward</mat-icon></button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<div class="container">
+    <div class="card" style="width:110%;">
+        <div class="card-header" style="background-color: #DDEFDD">
+            PR Creation
+        </div>
+        <div class="card-body">
+            <button type="button" mat-mini-fab color="warn" style="float: right;" (click)="opendialog()"><mat-icon>add</mat-icon></button>
+
+        </div>
+
+    </div>
+</div>
+<br />
+<br />
+<div class="container">
+    <div class="jumbotron" style="width:110%;" >
+        <h1 style="font-size: 23px;font-family: 'Times New Roman', Times, serif; color: black;">Respond This Tickets</h1>
+        <form [formGroup]="respondform" style="margin-left: 100px;">
+            <mat-form-field appearance="outline" style="width: 300px;">
+                <mat-label>Comments</mat-label>
+                <textarea matInput formControlName="commends" rows="5"></textarea>
+            </mat-form-field><br><br>
+            <mat-radio-group formControlName="check">
+                <!--<mat-radio-button value="open">Open</mat-radio-button>-->
+                <mat-radio-button *ngIf="reopen_enable" value="reopen">Reopen</mat-radio-button>
+                <mat-radio-button *ngIf="status_default" value="close ticket">Close Ticket</mat-radio-button>
+                <mat-radio-button *ngIf="status_default" value="duplicated ticket">Duplicated Ticket</mat-radio-button>
+                <mat-radio-button *ngIf="status_default" value="update">Update</mat-radio-button>
+            </mat-radio-group><br><br>
+            <mat-form-field style="width: 300px;">
+                <mat-label>Ticket Updated By</mat-label>
+                <input type="text" matInput formControlName="name" [matAutocomplete]="nameref" (click)="getemplst()">
+                <mat-autocomplete  #nameref="matAutocomplete" [displayWith]="ownerdatainterface" (opened)=" autocompletesupname()">
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option title="{{d.code+' - '+d.name}}" *ngFor="let d of ownerList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field><br><br>
+            <input type="file" multiple (change)="onFileSelect($event)">
+
+        </form>
+    </div>
+    <div style="text-align: center;">
+        <button mat-raised-button type="button" (click)="followupdetailscreate()">Submit</button>&nbsp;&nbsp;&nbsp;
+        <button mat-raised-button type="button" color="warn" routerLink="/sms/smsticketsummary">Back</button>
+    </div>
+</div>
+<br />
+<br />
+<br />
+<ng-template #prcreate>
+    <div class="container">
+        <div style="height: 23px;font-size: 15px;font-family: 'Times New Roman', Times, serif;color: black;background-color: rgb(145, 219, 161);text-align: center;">AP Creation</div><hr>
+        <form [formGroup]="prcreatform">
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose BS</mat-label>
+                        <input type="text" matInput formControlName="bs" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose CC</mat-label>
+                        <input type="text" matInput formControlName="cc" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose Product Category</mat-label>
+                        <input type="text" matInput formControlName="productcategory" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <mat-checkbox color='primary' style="margin-left: 50px;" formControlName="check">DTS</mat-checkbox>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose Product Category type</mat-label>
+                        <input type="text" matInput formControlName="producttype" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose Product Name</mat-label>
+                        <input type="text" matInput formControlName="productname" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose Commodity Name</mat-label>
+                        <input type="text" matInput formControlName="commodityname" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose Commodity Name</mat-label>
+                        <input type="text" matInput formControlName="suppliername" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose Branch Name</mat-label>
+                        <input type="text" matInput formControlName="branchcode" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Choose Branch Name</mat-label>
+                        <input type="text" matInput formControlName="branchname" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Product Description</mat-label>
+                        <input type="text" matInput formControlName="desc" required  (keypress)="kyenbdata($event)">
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+        <br />
+        <table class="table table-bordered">
+            <thead>
+                <tr class="table_header">
+                    <th>S.No</th>
+                    <th>BS</th>
+                    <th>CC</th>
+                    <th>Product Category</th>
+                    <th>Product Category type</th>
+                    <th>Product Name</th>
+                    <th>Commodity Name</th>
+                    <th>Branch Name</th>
+                    <th>Supplier Name</th>
+                    <th>UOM</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tr *ngFor="let d of prcreateList;let i=index">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr *ngIf="prcreateList.length==0">
+                <td colspan="14"></td>
+            </tr>
+            <tr>
+                <td colspan="10">
+                    <div style="text-align: center;">
+                        <button type="button" mat-icon-button [disabled]="!has_prprevious"><mat-icon>arrow_back</mat-icon></button>
+                        {{prpresentpage}}
+                        <button type="button" mat-icon-button [disabled]="!has_prnext"><mat-icon>arrow_forward</mat-icon></button>
+                    </div>
+                </td>
+                <td colspan="4">
+                    Total Count:{{prcreateList.length}}
+                </td>
+            </tr>
+        </table>
+        <div style="margin-left: 50%;">
+           <span>Total Quantity:</span>&nbsp; &nbsp;&nbsp;<span>Total Count:</span>
+        </div>
+        <br />
+        <div class="text-align:center">
+            <button mat-raised-button type="button">Create PR</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <button mat-raised-button type="button" (click)="closedialog()">Cancel</button>
+        </div>
+        <br />
+    </div>
+</ng-template>

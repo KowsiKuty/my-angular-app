@@ -1,0 +1,116 @@
+<div class="p-5" *ngIf="temp_screen">
+    <div class="row d-flex justify-content-between">
+        <div class="col">
+            <h2 class="">Template Summary</h2>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <div class="left_btn col-md-5">
+                <from [formGroup]="temp_summary" class="cus-matInput" id="matInput-size">
+                    <mat-form-field appearance="outline" class="wigth">
+                        <mat-label>Name</mat-label>
+                        <input matInput type="text" formControlName="Name">
+                    </mat-form-field>
+                </from>
+            </div>
+            <div class="left_btn">
+                <button class="btn nor_btm" (click)="aws_search(this.temp_summary)">Search</button>
+            </div>
+            <div class="left_btn">
+                <button class="btn btn_clear ml" (click)="back_to_sqlscreen()">Back</button>
+            </div>
+        </div>
+    </div>
+    <div >
+        <div class="">
+            <table class="table table-bordered" fixed-header>
+                <thead class="bgcolor">
+                        <th class="text_center">S.No</th>
+                        <th class="text_center">Code</th>
+                        <th class="text_center">Name</th>
+                        <th class="text_center">View</th>
+                        <th class="text_center">Download</th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let temp of temp_data;let i=index" class="text_center">
+                       <td class="text_center">{{(presentpage-1)*10+i + 1 }}</td>
+                       <td class="text_center">{{temp.code}}</td>
+                       <td class="text_center">{{temp.name}}</td>
+                       <td class="text_center btnover po">
+                        <div class="btnprimary" matTooltip="View Query result" (click)="view_query(temp.id,temp.name)"><mat-icon>visibility</mat-icon></div>
+                        <div class="btnprimary" matTooltip="View Query" (click)="view_popup(temp.query_content)"><mat-icon>table_chart</mat-icon></div> 
+                       </td>
+                       <td class="text_center po"><div class="btnprimary" (click)="view_download(temp)"><mat-icon matTooltip="Trigger Download">download</mat-icon></div></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_found" class="Data_not_found" >Data Not Found</p>
+            </div>
+        </div>
+        <div class="table-pagination">
+            <div><button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                <mat-icon>arrow_circle_left</mat-icon>
+            </button>
+            </div>
+            <div class="bt">
+                {{presentpage}}
+            </div>
+             <div>
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_circle_right</mat-icon>
+                </button>
+             </div>
+        </div>
+    </div>
+</div>
+
+<div class="p-5" *ngIf="template_viewscreen">
+    <div class="mb-3 d-flex justify-content-between">
+        <h2 class="mb0">Query View - {{tempquery_name}}</h2>
+        <button class="btn_query_clear" (click)="back_to_temp()">Back</button>
+    </div>
+    <div class="">
+        <div class="over_flow">
+            <table class="table table-bordered fultable" fixed-header>
+                <thead class="bgcolor">
+                    <tr>
+                        <ng-container *ngFor="let d of tablecolumnlist">
+                            <th class="text_center">{{d}}</th>
+                        </ng-container>   
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let d of tabledata;let i=index">
+                        <ng-container *ngFor="let dta of d | keyvalue">
+                            <td class="text_center">{{dta.value }}</td>
+                        </ng-container>  
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center" *ngIf="tabledata.length == 0">
+                <h3>No Data Found...</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="popup-overlay" *ngIf="popupOpen">
+    <div class="popup large-popup">
+        <h3>Query View</h3>
+        <div class="overlayy">
+            <code class="language-sql">
+				<span *ngFor="let token of formattedQuery" [class]="token.class">{{ token.text }} </span>
+			  </code>
+        </div>
+        <div class="popup-buttons">
+            <div>
+                <button class="btn_clear" (click)="closePopup()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="main_screen">
+    <app-ppr-summary></app-ppr-summary>
+</div>

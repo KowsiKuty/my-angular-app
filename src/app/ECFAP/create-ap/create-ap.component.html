@@ -1,0 +1,973 @@
+<div>
+    <mat-card style="margin-top: 13px;margin-left: 20px;margin-right: 20px;margin-bottom: 20px;">
+        <div>
+            <h2 style="font-weight: bold;">ECF Header:({{ecfcrno}})</h2>
+            <form [formGroup]="ECFHeaderForm" autocomplete="off">
+                <table>
+                    <div>
+                        <tr>
+                            <td>
+                                   <mat-form-field style="width:200px;margin-left:2px;">
+                                    <input matInput placeholder="ECF Type" formControlName="apname" 
+                                        autocomplete="off" readonly id="create-ap-0006">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width:200px;margin-left:50px;">
+                                 <input matInput placeholder="Branch Name" formControlName="branchname" 
+                                     autocomplete="off" readonly id="create-ap-0007">
+                             </mat-form-field>
+                         </td>
+                         <td>
+                            <mat-form-field style="width: 200px;margin-left: 50px"
+                            (click)="getcommoditydd()">
+
+                            <input #commodityInput placeholder="Commodity Name" matInput
+                            formControlName="commodity_id" [matAutocomplete]="commoditytype"
+                            required  id="create-ap-0008">
+                            <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                            <mat-autocomplete [panelWidth]="400" #commoditytype="matAutocomplete"
+                                [displayWith]="displayFncommodity" (opened)="commodityScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let commodity of commodityList"
+                                        [value]="commodity" (click)="getcommoditydata(commodity)"
+                                        matTooltip="{{commodity.name}}">
+                                        {{commodity.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    
+                        </td>
+                        <td>
+                            <mat-form-field style="width:200px;margin-left:50px;">
+                                <mat-label>ECF Amount</mat-label>
+                             <input matInput placeholder="Amount" formControlName="apamount" style="text-align:right"
+                                 autocomplete="off" readonly id="create-ap-0009">
+                         </mat-form-field>
+                        </td>
+                        </tr>
+                        <tr>
+                           
+                                <td>
+                                       <mat-form-field style="width:200px;margin-left:2px;">
+                                        <input matInput placeholder="ECF Date" formControlName="apdate" 
+                                            autocomplete="off" readonly id="create-ap-0010">
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field style="width:200px;margin-left:50px;">
+                                     <input matInput placeholder="Raiser Name" formControlName="raisername" 
+                                         autocomplete="off" readonly id="create-ap-0011">
+                                 </mat-form-field>
+                                </td>
+                                <td>
+                                <button type="submit" style="border-radius:40px;margin-left:50px;"
+                                class="btn btn-outline-primary" (click)="SubmitForm()"
+                                [disabled]="disableecfsave" id="create-ap-0012">
+                                Save</button>
+                        </td>
+                        </tr>
+                    </div>
+                </table>
+            </form>
+        </div>
+        <div>
+            <h2  style="font-weight: bold;">Invoice Header:({{invhdrcrno}})</h2>
+            <div>
+                <form [formGroup]="InvoiceHeaderForm" autocomplete="off">
+                    <table>
+                        <div>
+                            <tr>
+                                <td *ngIf="this.ecftypeid == 2 || this.ecftypeid == 7 ||this.ecftypeid == 3||this.ecftypeid == 13|| this.ecftypeid == 14">
+                                    <div style="margin-left: 5px;">
+                                        <mat-label>GST Applicable <label style="color:red">*</label></mat-label>
+        
+                                        <mat-radio-group formControlName="invoicegst">
+                                            <mat-radio-button *ngFor="let n of yesorno" [value]="n.value"
+                                                style="margin-left: 10px;" (click)="GSTstatus(n)"
+                                                [disabled]="showgstapply">
+        
+                                                {{n.display}}
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                    </div>
+        
+                                    <!-- <div style="margin-left: 5px;" *ngIf="this.ecfheaderForm?.value?.ecftype == 13">
+                                        <mat-label>GST Applicable</mat-label>
+        
+                                        <mat-radio-group formControlName="invoicegst">
+                                            <mat-radio-button *ngFor="let n of yesorno" [value]="n.value"
+                                                style="margin-left: 10px;" (click)="GSTstatus(n)"
+                                                [disabled]="showgstapply">
+        
+                                                {{n.display}}
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                    </div> -->
+        
+                                </td>
+                                <!-- <td>
+        
+                                    <button type="button" class="btn btn-outline-success"
+                                                matTooltip="Add Invoice Header" style="border-radius:40px;margin-left:20px;"
+                                                (click)="addSection()" id="create-ap-0013"><span class="fa fa-plus"></span></button>
+                                    
+                                </td> -->
+                            </tr>
+                        </div>
+                    </table>
+        
+                    <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                            <thead class="table_header" style="text-align: center;">
+                                <tr>
+        
+                                    
+                                    <!-- <div class="card" style="margin-bottom: 3%;margin-right: 20px;margin-left: 10px;">
+                                        <div class="card-body">
+                                    <div class="tableFixHead">
+                                        <table class="table table-bordered  table-sm">
+                                            <thead style='font-family:"Times New Roman"'>
+                                 <tr  class="table_header" fixed-header> -->
+                                    <th>S.No</th>
+                                    <th *ngIf="this.ecftypeid == 3 && this.InvoiceHeaderForm.value.invoicegst == 'Y'">Supplier GST</th>
+                                    <th *ngIf="this.ecftypeid == 3 && this.InvoiceHeaderForm.value.invoicegst == 'Y'">Supplier Name</th>
+                                    <th *ngIf="showsuppname">Supplier Name<label style="color:red">*</label>
+                                    </th>
+                                    <th *ngIf="showsuppgst">Supplier GST</th>
+                                    <th *ngIf="showsuppstate">State</th>
+                                    <th>Place Of Supply</th>
+                                    <th *ngIf="this.ppxid != 'E' && this.ecftypeid != 3">Invoice No<label
+                                            style="color:red">*</label>
+                                    </th>
+                                    <th *ngIf="this.ecftypeid == 7">Credit Ref No<label
+                                            style="color:red">*</label>
+                                    </th>
+                                    <th *ngIf="this.ppxid != 'E'">Invoice Date<label style="color:red">*</label>
+                                    </th>
+                                    <th>Taxable Amount<label style="color:red">*</label></th>
+                                    <th
+                                        *ngIf="((this.ecftypeid == 2 || this.ecftypeid == 7 ||   this.ecftypeid == 14 || this.ecftypeid == 3 ) && (showtaxforgst == true))">
+                                        Tax Amount<label style="color:red">*</label></th>
+                                    <th
+                                        *ngIf="((this.ecftypeid == 2 || this.ecftypeid == 7 ||  this.ecftypeid == 14 || this.ecftypeid == 3 ) && (showtaxforgst == false))">
+                                        Tax Amount
+                                        <!-- <th>Round Off</th>
+                                    <th>Other Adjustment</th> -->
+                                    <th>Total Amount</th>
+                                    <th>Upload File<label style="color:red">*</label></th>
+                                    <th>Action</th>
+                                    <th *ngIf="this.ecftypeid !=4 && this.ecftypeid !=7">View 
+                                    </th>
+                                    <th *ngIf="this.ecftypeid ==4 ">View Debit Detail</th>
+                                    <th *ngIf="this.ecftypeid ==7 ">View CRN Detail</th>
+                                </tr>
+                            </thead>
+        
+                            <ng-container formArrayName="invoiceheader"
+                                *ngFor="let section of getSections(InvoiceHeaderForm); let i = index">
+                                <tr [formGroupName]="i">
+                                    <td>{{i+1}}</td>
+                                    <td *ngIf="this.ecftypeid == 3 && this.InvoiceHeaderForm.value.invoicegst == 'Y'">
+                                        <mat-form-field style="width:150px;">
+                                            <input matInput placeholder="Supplier GST" formControlName="manual_gstno"  autocomplete="off"
+                                            maxlength="15"  [ngModel]="inputGstValue" required (click)="getheaderedit(i)"
+                                                (ngModelChange)="inputGstValue = $event.toUpperCase()" (keydown.space)="$event.preventDefault();"  (input)="validationGstNo($event,i)" id="create-ap-0014">
+                                        </mat-form-field>
+                                    </td>
+                                    <td *ngIf="this.ecftypeid == 3 && this.InvoiceHeaderForm.value.invoicegst == 'Y'">
+                                        <mat-form-field style="width:150px;">
+                                            <input matInput placeholder="Supplier Name" readonly
+                                                formControlName="manualsupp_name"  autocomplete="off" id="create-ap-0015">
+                                        </mat-form-field>
+                                    </td>
+        
+                                    <!-- <div *ngIf="showsupppopup"> -->
+                                    <td *ngIf="showsuppname">
+                                        <mat-form-field style="width:200px;">
+                                            <input matInput placeholder="Supplier Name"
+                                                formControlName="suppname" readonly class="nowrap"
+                                                autocomplete="off" id="create-ap-0016">
+        
+                                        </mat-form-field>
+        
+                                        <button type="button" class="btn btn-outline-primary"
+                                            matTooltip="Select Supplier" data-toggle="modal"
+                                            data-target="#create-ap-0002" (click)="getsuppindex(i);getheaderedit(i)"
+                                            style="border-radius:40px;margin-left:15px;" id="create-ap-0017"><span
+                                                class="fa fa-arrow-up"></span></button>
+        
+                                    </td>
+                                    <!-- </div> -->
+                                    <!-- <div *ngIf="showsuppdropdown">
+                            <td>
+        
+                                <mat-form-field
+                                    style="width:180px;font-family: 'Times New Roman', Times, serif;">
+        
+                                    <mat-label>Supplier Namesssssssss</mat-label>
+                                    <input #suppInput placeholder="Supplier Name" matInput
+                                        formControlName="suppname" [matAutocomplete]="Suppliertype" id="create-ap-0018">
+                                    <mat-autocomplete #Suppliertype="matAutocomplete" [displayWith]="displayFn"
+                                        (opened)="supplierScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                        </mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let suppliername of getsuplist"
+                                                [value]="suppliername">
+        
+                                                {{suppliername.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+        
+                            </td>
+                        </div> -->
+                                    <td *ngIf="showsuppgst">
+                                        <mat-form-field style="width:150px;">
+                                            <input matInput placeholder="Supplier GST"
+                                                formControlName="suppliergst" readonly autocomplete="off" id="create-ap-0019">
+                                        </mat-form-field>
+                                    </td>
+                                    <td *ngIf="showsuppstate">
+                                        <mat-form-field style="width:150px;">
+                                            <input matInput placeholder="State" formControlName="suppstate"
+                                                placeholder="Supplier State" readonly autocomplete="off" id="create-ap-0020">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field style="width: 200px;" (click)="getposbranch()">
+                                            <mat-label>Place Of Supply</mat-label>
+                                            <input #posInput  placeholder="Place of Supply" matInput 
+                                            formControlName="place_of_supply" [matAutocomplete]="pos" readonly id="create-ap-0021">
+                                            <mat-autocomplete [panelWidth]="400" #pos="matAutocomplete" (opened)="posScroll()"
+                                            [displayWith]="displayFnplace">
+                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                            <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let pos of poslist" matTooltip="{{pos.code}}-{{pos.name}}"
+                                            [value]="pos"> {{pos.code}}-{{pos.name}}
+                                        </mat-option>
+                                     </ng-container>
+                                         </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td *ngIf="this.ppxid != 'E'  && this.ecftypeid != 3">
+                                        <mat-form-field style="width:110px;">
+                                            <input matInput placeholder="Invoice No" formControlName="invoiceno"
+                                                autocomplete="off" (click)="getheaderedit(i)"
+                                                (change)="filterTexts(invoiceno, 'invoiceno',i)" #invoiceno
+                                                [readonly]="readinvhdrdata == true" id="create-ap-0022">
+                                        </mat-form-field>
+                                    </td>
+        
+                                    <td *ngIf="this.ecftypeid == 7">
+                                        <mat-form-field style="width:110px;">
+                                            <input matInput placeholder="Credit Ref No" (click)="getheaderedit(i)"
+                                                formControlName="credit_refno" autocomplete="off"
+                                                (change)="filterTexts(credit_refno, 'credit_refno',i)"
+                                                #credit_refno [readonly]="readinvhdrdata == true" id="create-ap-0023">
+                                        </mat-form-field>
+                                    </td>
+                                    <!-- <td *ngIf="this.ecftypeid != 2 ">
+                                        <mat-form-field style="width:110px;">
+                                            <input matInput placeholder="Invoice No" formControlName="invoiceno"
+                                                (keypress)="characterandnumberonly($event)" autocomplete="off" id="create-ap-0024">
+                                        </mat-form-field>
+                                    </td> -->
+                                    <td *ngIf="this.ppxid != 'E'">
+                                        <mat-form-field style="width: 130px;">
+                                            <mat-label>Date</mat-label>
+                                            <input matInput [matDatepicker]="picker1" placeholder="Date" (click)="getheaderedit(i)"
+                                                formControlName="invoicedate" [max]="tomorrow" readonly id="create-ap-0025">
+                                            <!-- [readonly]="readinvhdrdata == true" -->
+                                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                            </mat-datepicker-toggle>
+                                            <mat-datepicker #picker1></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field>
+                                            <mat-label>Amount</mat-label>
+                                            <input type="tel" matInput style="text-align:right"
+                                                formControlName="invoiceamount" (click)="getheaderedit(i)"
+                                                (keypress)="numberOnlyandDot($event)" appTwodecimalvalue
+                                                [readonly]="readinvhdrdata == true" autocomplete="off" id="create-ap-0026">
+                                            <!-- (blur)="$event.target.value=removeSpaces($event.target.value)" value="" -->
+                                            <!-- [ngModel]="InvoiceHeaderForm?.value?.invoiceheader[i]?.invoiceamount| currency:'USD':'symbol':'2.2'"
+                                                (ngModelChange)="InvoiceHeaderForm?.value?.invoiceheader[i]?.invoiceamount.value=$event"
+                                               [ngModelOptions]="{updateOn:'blur'}"  -->
+                                        </mat-form-field>
+                                    </td>
+                                    <td
+                                        *ngIf="((this.ecftypeid==2 || this.ecftypeid == 7 || this.ecftypeid == 14 || this.ecftypeid == 3 ) && (InvoiceHeaderForm?.value?.invoicegst == 'Y'))">
+                                        <mat-form-field>
+                                            <mat-label>Tax Amount</mat-label>
+                                            <input type="tel" matInput  style="text-align:right"
+                                                formControlName="taxamount"
+                                                (keypress)="numberOnlyandDot($event)" appTwodecimalvalue (click)="getheaderedit(i)"
+                                                (ngModelChange)="Taxamount($event,i)" autocomplete="off"
+                                                [readonly]="readinvhdrdata == true" id="create-ap-0027">
+                                        </mat-form-field>
+                                    </td>
+                                    <td
+                                        *ngIf="((this.ecftypeid==2 || this.ecftypeid == 7 || this.ecftypeid == 14 || this.ecftypeid == 3) && (InvoiceHeaderForm?.value?.invoicegst == 'N'))">
+                                        <mat-form-field>
+                                            <mat-label>Tax Amount</mat-label>
+                                            <input matInput  formControlName="taxamount"
+                                                (keypress)="numberOnlyandDot($event)" style="text-align:right"
+                                                (ngModelChange)="Taxamount($event,i)" autocomplete="off" readonly id="create-ap-0028">
+                                        </mat-form-field>
+                                    </td>
+                                    <!-- <td>
+                                        <mat-form-field style="width:50px;">
+                                            <input matInput type="number" [min]="min" [max]="max"
+                                                placeholder="roundoff" (ngModelChange)="RoundingOFF($event)"
+                                                formControlName="roundoffamt" autocomplete="off"
+                                                (keypress)="numberOnlyandDotminus($event)" [readonly]="readinvhdrdata == true" id="create-ap-0029">
+                                        </mat-form-field>
+        
+                                    </td>
+                                    <td>
+                                        <mat-form-field style="width:50px;">
+                                            <input matInput type="number" [min]="min" [max]="max"
+                                                placeholder="other adjustment"
+                                                (ngModelChange)="OtherAdjustment($event)"
+                                                formControlName="otheramount" autocomplete="off"
+                                                (keypress)="numberOnlyandDot($event)" [readonly]="readinvhdrdata == true" id="create-ap-0030">
+                                        </mat-form-field>
+        
+                                    </td> -->
+                                    <td>
+                                        <mat-form-field>
+                                            <mat-label>Total Amount</mat-label>
+                                            <input type="tel" matInput style="text-align: right;" type="number"
+                                                formControlName="totalamount" autocomplete="off"
+                                                (click)="datasums()" (keypress)="numberOnlyandDot($event)"
+                                                readonly id="create-ap-0031">
+                                        </mat-form-field>
+                                    </td>
+                                  
+                                    <td>
+                                      
+        
+                                        <input #fileInput id="create-ap-0001" type="file" multiple (click)="getheaderedit(i)"
+                                            (change)="getFileDetails(i,$event)" style="width: 108px;"
+                                            [disabled]="readinvhdrdata != false">
+        
+                                      
+                                        <div
+                                            *ngFor="let files of InvoiceHeaderForm?.value?.invoiceheader[i]?.filevalue; let index = index">
+                                            <p (click)="filepreview(files)" data-toggle="modal"
+                                                data-target="#create-ap-0004"
+                                                style="color: #0000EE;cursor: pointer;">
+                                                {{index+1}}.{{files?.name}} </p>
+                                            <span
+                                                (click)="deletefileUpload(InvoiceHeaderForm?.value?.invoiceheader[i],index)"
+                                                [class.disabled]="readinvhdrdata != false">
+                                                <mat-icon matTooltip="Delete">delete
+                                                </mat-icon>
+                                            </span>
+        
+                                        </div>
+                                      
+                                        <div
+                                            *ngIf="InvoiceHeaderForm?.value?.invoiceheader[i]?.filekey?.length > 0">
+                                            <h3 (click)="getfiledetails(section,i)"
+                                                data-target="#create-ap-0003"
+                                                style="cursor: pointer;color:blue;margin-left: 5px;"
+                                                class="btn btn-link" data-toggle="modal">Previously Attached
+                                                Files</h3>
+                                        </div>
+        
+        
+                                     
+        
+        
+        
+        
+        
+                                    </td>
+        
+        
+        
+                                    <td>
+                                        <button mat-icon-button type="button"
+                                            [class.disabled]="readinvhdrdata != false" id="create-ap-0032">
+                                            <mat-icon style="color: black;" aria-label="Edit"
+                                                (click)="deleteinvheader(InvoiceHeaderForm.value,section,i)">
+                                                delete</mat-icon>
+                                        </button>
+                                    </td>
+                                    <!-- (click)=deleteinvheader(InvoiceHeaderForm.value,section,i) -->
+        
+                                    <td>
+        
+                                        <button *ngIf="showaddbtn" type="button" class="btn btn-outline-primary"
+                                            matTooltip="Add Details"
+                                            style="border-radius:40px;margin-left:5px;color: mediumblue;" (click)="gotodetail(section)"
+                                            id="create-ap-0033">
+                                           <span 
+                                                class="fa fa-arrow-right"></span>
+                                            </button>
+                                                <!-- (click)="Addinvoice(section,InvoiceHeaderForm.value,i)" -->
+        
+                                        <button *ngIf="showaddbtns" type="button"
+                                            class="btn btn-outline-primary" matTooltip="Add Details"
+                                            style="border-radius:40px;margin-left:5px;color: mediumblue;" (click)="gotodetail(section)"
+                                             id="create-ap-0034">
+                                            <span
+                                                class="fa fa-arrow-right"></span>
+                                                <!-- <mat-icon>chevron_right</mat-icon> -->
+                                            </button>
+        
+                                    </td>
+        
+        
+                                </tr>
+        
+        
+        
+                            </ng-container>
+                            <tr *ngIf="this.ecftypeid == 2 || this.ecftypeid == 14">
+                                <td class="totaldisplay" colspan="9" style="text-align: end;">Net Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+        
+        
+                            </tr>
+                            <tr *ngIf="this.ecftypeid == 7">
+                                <td class="totaldisplay" colspan="9" style="text-align: end;">Net Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+        
+        
+                            </tr>
+                            <tr *ngIf="this.ecftypeid == 13">
+                                <td class="totaldisplay" colspan="5" style="text-align: end;">Net Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+        
+        
+                            </tr>
+                        
+                            <tr *ngIf="this.ecftypeid == 4 && this.ppxid == 'E'">
+                                <td class="totaldisplay" colspan="3" style="text-align: end;">
+                                    Net Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+        
+        
+                            </tr>
+                            <tr *ngIf="this.ecftypeid == 4 && this.ppxid == 'S'">
+                                <td class="totaldisplay" colspan="8" style="text-align: end;">
+                                    Net Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+        
+        
+                            </tr>
+                            <tr *ngIf="this.ecftypeid == 3 && this.paytoid == 'E' && this.InvoiceHeaderForm.value.invoicegst == 'N'">
+                                <td class="totaldisplay" colspan="5" style="text-align: end;">
+                                    Net Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+        
+        
+                            </tr>
+                            <tr *ngIf="this.ecftypeid == 3 && this.paytoid == 'E' && this.InvoiceHeaderForm.value.invoicegst == 'Y'">
+                                <td class="totaldisplay" colspan="7" style="text-align: end;">
+                                    Net Amount:</td>
+                                <td style="text-align: right;">{{sum | currency:'INR'}}</td>
+        
+        
+                            </tr>
+                            <!-- <tr *ngIf="this.paytoid == 'B'">
+                        <th class="totaldisplay" colspan="4"  style="text-align: end;">
+                            Net Amount:</th>
+                        <td>{{sum | currency:'INR'}}</td>
+        
+        
+                    </tr> -->
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+                        </table>
+        
+                        <tr>
+                            <td *ngIf="this.ecftypeid == 2 || this.ecftypeid == 14">
+        
+                                <button type="submit"
+                                    style="border-radius:40px;margin-left: 1730px;"
+                                    class="btn btn-outline-primary" (click)="submitinvoiceheader()"
+                                    [disabled]="invheadersave" id="create-ap-0035">
+                                    Save</button>
+        
+                                <button type="button" style="border-radius:40px;margin-left:1800px;margin-bottom: -108px;
+                                margin-top :-170px;"
+                                    class="btn btn-outline-primary" (click)="backform()" id="create-ap-0036">
+                                    Back</button>
+                                <!-- 
+                                <button type="submit" style="border-radius:10px;margin-left: 1651px;margin-bottom:2%;
+                            border-color: #f5c68b;
+                            background-color: #f5c68b;" (click)="submitinvoiceheader()" class="btn btn-light"
+                                    [disabled]="invheadersave" id="create-ap-0037">Save</button> -->
+        
+                                <!-- <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:1723px;margin-bottom: -18px;
+                                margin-top :-151px;
+                                border-color: black; 
+                                background-color: white;" (click)="backform()" id="create-ap-0038">Back</button> -->
+        
+                            </td>
+                            <td *ngIf="this.ecftypeid == 7 ">
+        
+                                <button type="submit"
+                                    style="border-radius:40px;margin-left: 1800px;margin-bottom:2%;"
+                                    class="btn btn-outline-primary" (click)="submitinvoiceheader()"
+                                    [disabled]="invheadersave" id="create-ap-0039">
+                                    Save</button>
+        
+                                <button type="button" style="border-radius:40px;margin-left:1873px;margin-bottom: -18px;
+                                margin-top :-161px;"
+                                    class="btn btn-outline-primary" (click)="backform()" id="create-ap-0040">
+                                    Back</button>
+        
+                                <!-- <button type="submit" style="border-radius:10px;margin-left: 1800px;margin-bottom:2%;
+                            border-color: #f5c68b;
+                            background-color: #f5c68b;" (click)="submitinvoiceheader()" class="btn btn-light"
+                                    [disabled]="invheadersave" id="create-ap-0041">Save</button>
+        
+                                <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:1873px;margin-bottom: -18px;
+                                margin-top :-161px;
+                                border-color: black; 
+                                background-color: white;" (click)="backform()" id="create-ap-0042">Back</button> -->
+        
+                            </td>
+        
+                            <td *ngIf="(this.ecftypeid == 3 && this.paytoid == 'E' && this.InvoiceHeaderForm.value.invoicegst == 'N') || this.ecftypeid == 13 ">
+        
+                                <button type="submit"
+                                    style="border-radius:40px;margin-left: 1150px;margin-bottom:2%;"
+                                    class="btn btn-outline-primary" (click)="submitinvoiceheader()"
+                                    [disabled]="invheadersave" id="create-ap-0043">
+                                    Save</button>
+        
+                                <button type="button" style="border-radius:40px;margin-left:1220px;margin-bottom: -45px;
+                                margin-top :-160px;"
+                                    class="btn btn-outline-primary" (click)="backform()" id="create-ap-0044">
+                                    Back</button>
+        
+        
+                                <!-- <button type="submit" style="border-radius:10px;margin-left: 950px;margin-bottom:2%;
+                            border-color: #f5c68b;
+                            background-color: #f5c68b;" (click)="submitinvoiceheader()" class="btn btn-light"
+                                    [disabled]="invheadersave" id="create-ap-0045">Save</button>
+        
+                                <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:1023px;margin-bottom: -45px;
+                                margin-top :-160px;
+                                border-color: black; 
+                                background-color: white;" (click)="backform()" id="create-ap-0046">Back</button> -->
+        
+                            </td>
+                            <td *ngIf="this.ecftypeid == 3 && this.paytoid == 'E' && this.InvoiceHeaderForm.value.invoicegst == 'Y'">
+        
+                                <button type="submit"
+                                    style="border-radius:40px;margin-left: 1500px;margin-bottom:2%;"
+                                    class="btn btn-outline-primary" (click)="submitinvoiceheader()"
+                                    [disabled]="invheadersave" id="create-ap-0047">
+                                    Save</button>
+        
+                                <button type="button" style="border-radius:40px;margin-left:1575px;margin-bottom: -45px;
+                                margin-top :-175px;"
+                                    class="btn btn-outline-primary" (click)="backform()" id="create-ap-0048">
+                                    Back</button>
+        
+                            <td *ngIf="this.ecftypeid == 4 && this.ppxid == 'S'">
+        
+                                <button type="submit"
+                                    style="border-radius:40px;margin-left: 1451px;margin-bottom:2%;"
+                                    class="btn btn-outline-primary" (click)="submitinvoiceheader()"
+                                    [disabled]="invheadersave" id="create-ap-0049">
+                                    Save</button>
+        
+                                <button type="button" style="border-radius:40px;margin-left:1525px;margin-bottom: 0px;
+                                margin-top :-127px;"
+                                    class="btn btn-outline-primary" (click)="backform()" id="create-ap-0050">
+                                    Back</button>
+        
+                                <!-- 
+                                <button type="submit" style="border-radius:10px;margin-left: 1451px;margin-bottom:2%;
+                            border-color: #f5c68b;
+                            background-color: #f5c68b;" (click)="submitinvoiceheader()" class="btn btn-light"
+                                    [disabled]="invheadersave" id="create-ap-0051">Save</button>
+        
+                                <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:1525px;margin-bottom: 0px;
+                                margin-top :-127px;
+                                border-color: black; 
+                                background-color: white;" (click)="backform()" id="create-ap-0052">Back</button> -->
+        
+                            </td>
+                            <td *ngIf="this.ecftypeid == 4 && this.ppxid == 'E'">
+        
+                                <button type="submit"
+                                    style="border-radius:40px;margin-left: 951px;margin-bottom:2%;"
+                                    class="btn btn-outline-primary" (click)="submitinvoiceheader()"
+                                    [disabled]="invheadersave" id="create-ap-0053">
+                                    Save</button>
+        
+                                <button type="button" style="border-radius:40px;margin-left:1025px;margin-bottom: 2%;
+                                margin-top :-110px;"
+                                    class="btn btn-outline-primary" (click)="backform()" id="create-ap-0054">
+                                    Back</button>
+        
+                                <!-- <button type="submit" style="border-radius:10px;margin-left: 951px;margin-bottom:2%;
+                            border-color: #f5c68b;
+                            background-color: #f5c68b;" (click)="submitinvoiceheader()" class="btn btn-light"
+                                    [disabled]="invheadersave" id="create-ap-0055">Save</button>
+        
+                                <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:1025px;margin-bottom: 1px;
+                                margin-top :-110px;
+                                border-color: black; 
+                                background-color: white;" (click)="backform()" id="create-ap-0056">Back</button> -->
+        
+                            </td>
+                        </tr>
+        
+                        <!-- </div>
+                    </div> -->
+                    </div>
+        
+                </form>
+            </div>
+        </div>
+    </mat-card>
+</div>
+
+
+
+
+
+
+
+
+<div *ngIf="showsupppopup">
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" 
+        id="create-ap-0002">
+        <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                    <h2 class="modal-title">
+                        Find Supplier</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="create-ap-0057">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <br>
+                <div>
+                    <form [formGroup]="SelectSupplierForm" (ngSubmit)="SelectSuppliersearch()">
+                        <table style="margin-left: 20px;">
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>Supplier GST Number</mat-label>
+                                            <input matInput placeholder="GST No" formControlName="gstno"
+                                                autocomplete="off" (keypress)="only_numalpha($event)" maxlength="" id="create-ap-0058">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>Supplier Code</mat-label>
+                                            <input matInput placeholder="Supplier" formControlName="code"
+                                                autocomplete="off" (keypress)="only_numalpha($event)" id="create-ap-0059">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                    <!-- [disabled]="showsuppliercode"  -->
+
+                                    <td>
+                                        <mat-form-field style="width: 200px;">
+                                            <mat-label>PAN Number</mat-label>
+                                            <input matInput placeholder="PAN" formControlName="panno" autocomplete="off"
+                                                (keypress)="only_numalpha($event)" id="create-ap-0060">
+                                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                    <!--  [disabled]="true" -->
+                                    <button class="btn btn-outline-primary" type="submit"
+                                        style="border-radius:40px;margin-left: 15px;" color="primary"
+                                        (click)="SelectSuppliersearch()" id="create-ap-0061"><i class="fa fa-search"
+                                            aria-hidden="true"></i></button>&nbsp;
+
+                                    <!-- <button type="button" style="border-radius:10px;margin-left: 15px; border-color: black; 
+                                    background-color: white;" class="btn btn-light" (click)="dataclear()" id="create-ap-0062">
+                                        Reset</button> -->
+
+                                        <button type="button" style="border-radius:40px;margin-left: 15px;
+                                        font-family: 'Times New Roman', Times, serif;"
+                                            class="btn btn-outline-primary" (click)="dataclear()" id="create-ap-0063">
+                                            Reset</button>
+
+
+                                </tr>
+                                <tr>
+                                    <div *ngIf="default">
+                                        <td>
+                                            <mat-form-field style="width: 250px;margin-top: 5px;" (click)="getsuppdd()">
+                                                <mat-label>Choose Supplier</mat-label>
+                                                <input #suppInput placeholder="Choose Supplier" matInput
+                                                    formControlName="name" [matAutocomplete]="Suppliertype" id="create-ap-0064">
+                                                <mat-autocomplete [panelWidth]="400" #Suppliertype="matAutocomplete"
+                                                    [displayWith]="displayFn" (opened)="supplierScroll()">
+
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let suppliername of supplierNameData"
+                                                            ngDefaultControl [(ngModel)]="inputSUPPLIERValue"
+                                                            [ngModelOptions]="{standalone: true}"
+                                                            (ngModelChange)="inputSUPPLIERValue = $event.toUpperCase()"
+                                                            (focusout)="getsuppView(suppliername)"
+                                                            [value]="suppliername" matTooltip="{{suppliername.name}}">
+                                                            {{suppliername.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                    </div>
+
+                                    <div *ngIf="alternate">
+                                        <td>
+                                            <mat-form-field style="width: 250px;margin-top: 5px;" (click)="getsuppdd()">
+                                                <mat-label>Choose Supplier</mat-label>
+                                                <input #name placeholder="Choose Supplier" matInput
+                                                    formControlName="name" [matAutocomplete]="autosupp2" id="create-ap-0065">
+                                                <mat-autocomplete [panelWidth]="400" #autosupp2="matAutocomplete"
+                                                    [displayWith]="displaytest">
+                                                    <!-- [(ngModel)]="inputSUPPLIERValue" [ngModelOptions]="{standalone: true}" -->
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                                    </mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let suppliername of selectsupplierlist"
+                                                            ngDefaultControl
+                                                            (ngModelChange)="inputSUPPLIERValue = $event.toUpperCase()"
+                                                            (focusout)="getsuppView(suppliername)"
+                                                            [value]="suppliername" matTooltip="{{suppliername.name}}">
+                                                            {{suppliername.name}}
+                                                        </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                    </div>
+                                </tr>
+                            </div>
+                        </table>
+
+                        <!-- <form [formGroup]="supplierchooseForm"></form> -->
+                        <table width="100%" style="margin-top: 2%;margin-bottom: 5%;">
+                            <tbody>
+                                <tr>
+                                    <td width="20%" valign="top">
+                                        <table width="100%;" style="font-size:14px;margin-left: 20px;">
+                                            <tbody>
+                                                <tr>
+                                                    <p style="color: #808080; margin: 0px 0 4px;">
+                                                        Supplier Name:
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                            style="color: black;margin-left: 2.5em;">{{SupplierName }}
+                                                        </span>
+                                                    </p>
+                                                    <p style="color: #808080; margin: 0px 0 4px;margin-top: 3%;">
+                                                        Supplier Code:
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <span style="color: black;margin-left: 3.8em;">{{SupplierCode}}
+                                                        </span>
+                                                    </p>
+                                                    <p style="color: #808080; margin: 0px 0 4px;margin-top: 3%;">
+                                                        Supplier GST Number:
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <span
+                                                            style="color: black;margin-left: 0.2em;">{{SupplierGSTNumber}}
+                                                        </span>
+                                                    </p>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td width="20%" valign="top">
+                                        <table width="100%;" style="font-size:14px;margin-left:-120px;">
+                                            <tbody>
+                                                <tr>
+                                                    <p style="color: #808080; margin: 0px 0 4px;">
+                                                        PAN Number:
+                                                        &nbsp;&nbsp;&nbsp;<span
+                                                            style="color: black;margin-left: 0em;">{{SupplierPANNumber}}
+                                                        </span>
+                                                    </p>
+                                                    <p style="color: #808080; margin: 0px 0 4px;margin-top: 3%;">
+                                                        Address:
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <span style="color: black;margin-left: 0.3em;"> {{line1}},
+                                                            {{line2}},
+                                                            {{line3}}</span>
+                                                    </p>
+                                                    <p style="color: #808080; margin: 0px 0 4px;margin-top: 3%;">
+                                                        City:
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <span style="color: black;margin-left: -0.4em;">{{City}} </span>
+                                                    </p>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <br><br>
+                                <div *ngIf="submitbutton" style="margin-left: 20px; ">
+                                    <tr>
+                                        <!-- <button type="button" data-dismiss="modal" style="border-radius:10px;margin-left: 500px;border-color: #f5c68b;
+                                        background-color: #f5c68b;" class="btn btn-light"
+                                            (click)="Branchcallingfunction()" id="create-ap-0066">
+                                            Submit</button> -->
+
+                                        <button type="submit" data-dismiss="modal"
+                                            style="border-radius:40px;margin-left: 500px;font-family: 'Times New Roman', Times, serif;"
+                                            class="btn btn-outline-primary" (click)="Branchcallingfunction()" id="create-ap-0067">
+                                            Submit</button>
+
+
+                                    </tr>
+                                </div>
+                            </tbody>
+                        </table>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" 
+        id="create-ap-0003">
+        <div class="modal-dialog modal-xl " style="width: 70%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                    <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">Attachments
+                    </h2>
+                    <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close" id="create-ap-0068">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 80%;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                    <thead class="table_header" style="text-align: left;">
+
+                                        <tr>
+                                            <th style="text-align: center;">S.No</th>
+                                            <th style="text-align: center;">File Name</th>
+                                            <!-- <th style="text-align: center;">View File</th> -->
+                                            <th style="text-align: center;">Download File</th>
+                                            <th style="text-align: center;">Delete File</th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let attach of filedatas; index as i">
+                                            <td style="text-align: center;">{{i+1}}</td>
+                                            <td>
+                                                <div  style="width: 300px;overflow: hidden" matTooltip="{{attach.file_name}}" matTooltipClass="custom-tooltipnew">
+                                                    {{attach.file_name}}
+                                                </div>
+                                            </td>
+                                            <!-- <td style="text-align: center;color:blue;">
+                          <div matTooltip="View" class="fa fa-arrow-up" aria-hidden="true" 
+                            data-toggle="modal"
+                            (click)="data(attach.file_id)" >
+
+                           
+                          </div>
+                        </td> -->
+
+                                            <td style="text-align: center;">
+                                                <button class="btn btn-outline-primary" type="submit"
+                                                    (click)="getfiles(attach)"
+                                                    style="border-radius:40px;margin-left: 15px;" color="primary" id="create-ap-0069">
+                                                    <i matTooltip="Download" class="fa fa-download"
+                                                        aria-hidden="true"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <mat-icon style="color: black;cursor: pointer;margin-left: 80px;"
+                                                    (click)="fileDeletes(attach.file_id,i)">delete</mat-icon>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <tr>
+                                <td>
+
+                                    <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:450px;
+                        border-color: black; margin-bottom: 20px;
+                        background-color: white;" (click)="fileback()" id="create-ap-0070">Back</button>
+
+                                </td>
+                            </tr>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showimageHeaderPreview" id="create-ap-0004" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" data-dismiss="modal" style="width: 60%;height: 80%;">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="create-ap-0071">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showimageHeaderPreviewPDF" id="create-ap-0005" class="modal fade" aria-labelledby="my-modalLabel"
+    aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                <h2 class="modal-title"> ECF Attachments</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="create-ap-0072">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <pdf-viewer [src]="pdfurl" [original-size]="false" [render-text]='false' [show-borders]="true"
+                [fit-to-page]="true" [show-all]="true" style="display: block; height: 600px;" [fit-to-page]="true">
+            </pdf-viewer>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,126 @@
+<div style="margin-left: 50px;margin-top: 3%;">
+
+    <h2 style="margin-left: 1px;">Invoice Summary</h2>
+
+    
+    <div>
+        <form [formGroup]="InvoiceSearchForm" style="margin-left:2%;">
+            <table style="margin-bottom: 2%;">
+                <div>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 200px;" (click)="branchname()">
+                                <mat-label>Branch</mat-label>
+                                <input #branchInput placeholder="branch" matInput formControlName="branch_id" #branchContactInput
+                                    [matAutocomplete]="branchtype">
+                                <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaydiss2"
+                                (opened)="autocompletebranchnameScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of branchlist"
+                                        [value]="branch">
+                                        ({{branch.code}}){{branch.name+ " " }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left: 50px;" (click)="premisename()"> 
+                                <mat-label>Site</mat-label>
+                                <input #premiseInput placeholder="Site" matInput formControlName="premise_id" #PremiseContactInput
+                                    [matAutocomplete]="premisetype">
+                                <mat-autocomplete #premisetype="matAutocomplete" [displayWith]="displaydiss1"
+                                (opened)="autocompletePremisenameScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let premise of premiselist"
+                                        [value]="premise">
+                                        ({{premise.code}}){{premise.name+ " " }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 175px;margin-left: 50px;">
+                                <input matInput readonly [matDatepicker]="dp" placeholder="Month and Year" formControlName="monthdate" [formControl]="monthdate">
+                                <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                                <mat-datepicker #dp
+                                                startView="multi-year"
+                                                (yearSelected)="chosenYearHandler($event)"
+                                                (monthSelected)="chosenMonthHandler($event, dp)"
+                                                panelClass="example-month-picker">
+                                </mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                        <button class="btn btn-outline-primary" type="submit" (click)="getInvoiceSearch()"
+                            style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        <button class="btn btn-outline-primary" (click)="reset()" type="button"
+                            style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+                        <button type="button" class="btn btn-outline-success" ngbTooltip="Add Invoice"
+                        tooltipClass="my-custom-class" style="border-radius:40px;margin-left:15px;" (click)="AddInvoice()"><span
+                                class="fa fa-plus"></span></button>
+                    </tr>
+                </div>
+            </table>
+
+        </form>
+    </div>
+
+
+
+    <div class="table-responsive" style="width: 81%; overflow-x: hidden;">
+        <table class="table table-bordered" fixed-header>
+            <thead class="table_header">
+                <tr>
+    
+                    <th>Sl.No</th>
+                    <th>Month-Year</th>
+                    <th>Branch</th>
+                    <th>Site</th>
+                    <th>Raiser</th>
+                    <th>Approver</th>
+                    <th>Status</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let list of invoiceSummaryList; index as i">
+                    <td> {{(paymentpresentpage - 1)*pagesizepayment +i+1 }} </td>
+                    <td>{{mothfind(list.month,list.year) | date: 'MMM-yyyy'}}</td>
+                    <td> ({{ list.branch.code}}){{" "+list.branch.name}} </td>
+                    <td>({{ list.premise.code}}){{" "+list.premise.name}}</td>
+                    <td>{{list.created_by.name}}</td>
+                    <td>
+                        <div *ngIf="list.approver != null">
+                            {{ list.approver.name }}
+                        </div>
+                    </td>
+                    <td>{{list.approval_status.status}}</td>
+                    <td>
+                        <span matTooltip="view" class=" fa fa-eye create " style="color: green;cursor: pointer;" (click)="invoiceSummaryView(list)"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="invoiceSummaryList ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+        <div class="row" *ngIf="ispaymentpage">
+            <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 50px;">
+                <button mat-icon-button [disabled]="has_paymentprevious === false" color="primary"
+                    (click)="previousClickPayment()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{paymentpresentpage}}
+                <button mat-icon-button [disabled]="has_paymentnext === false" color="primary" (click)="nextClickPayment()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div> 
+    </div>
+  
+
+
+</div>

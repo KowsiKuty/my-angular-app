@@ -1,0 +1,634 @@
+<div class="container">
+    <div class="col-md-12 row">
+        <div class=" col-md-5 ">
+        <h3>   Modification changes </h3>
+        </div>
+ <div class="col-md-7 text-right">
+  <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 10px;"
+      (click)="backButton()">Back</button>
+      </div>
+    </div>
+    <ng-container *ngIf="(asyncTabs | async) === null">
+        Loading tabs...
+    </ng-container>
+    <mat-tab-group (selectedTabChange)="get_tabe($event)">
+        <mat-tab *ngFor="let tab of asyncTabs | async">
+            <ng-template mat-tab-label>{{tab.tab_name}}</ng-template>
+            <br />
+            <div *ngIf="tab.tab_name=='VEHICLE MASTER'">
+                <div class="main">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Code</th>
+                                <th>Vehicle Number</th>
+                                <th>Vehicle Model</th>
+                                <th>Ownership Type</th>
+                                <th>Branch</th>
+                                <!-- <th>Request Status</th> -->
+                                <th>Status</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  v of vehicle_data;index as i">
+                                <td>{{i+1}}
+
+                                    <span>    
+                                        <li *ngIf="v.new_data.modify_status_id==1" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="v.new_data.modify_status_id==1 ||v.new_data.modify_status_id==0 || v.new_data.modify_status_id==-1">
+                                    <td>{{ v.new_data.code }}</td>
+                                    <td >{{ v.new_data.vehicle_no }}</td>
+                                    <td>{{ v.new_data.vehicle_model}}</td>
+                                    <td>{{ v.new_data.ownership_type.text}}
+                                    </td>
+                                    <td>({{v.new_data.branch.code}}) {{v.new_data.branch.name}}</td>
+                                    <!-- <td>{{ v.new_data.request_status.text}}</td> -->
+                                    <td>{{ v.new_data.approval_status.status}}</td>
+                                    <td (click)="modify_vehicle(v)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="v.new_data.modify_status_id==2 ">
+                                    <td>{{ v.new_data.code }}</td>
+                                    <td >{{ v.new_data.vehicle_no }}</td>
+                                    <td>{{ v.new_data.vehicle_model}}</td>
+                                    <td>{{ v.new_data.ownership_type.text}}
+                                    </td>
+                                    <td>({{v.new_data.branch.code}}) {{v.new_data.branch.name}}</td>
+                                    <!-- <td>{{ v.new_data.request_status.text}}</td> -->
+                                    <td>{{ v.new_data.approval_status.status}}</td>
+                                    <td (click)="modify_vehicle(v)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <span *ngIf="vehicle_flag">
+                        <app-vehiclemodification (onCancel)="clientCancel()"></app-vehiclemodification>
+                    </span>
+                </div>
+
+
+
+
+            </div>
+            <div *ngIf="tab.tab_name=='INSURANCE'">
+                <div class="main">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.no</th>
+                                <th>Policy No </th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Premium Amount</th>
+                                <th>Insured Value </th>
+                                <th>Vendor</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  c of insurance_data;index as i">
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="c.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="c.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="c.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="c.new_data.modify_status_id==2 ">
+                                    <td>{{ c.new_data.policy_no }}</td>
+                                    <td>{{ c.new_data.start_date}}</td>
+                                    <td>{{ c.new_data.end_date}}</td>
+                                    <td>{{ c.new_data.premium_amount}}</td>
+                                    <td>{{ c.new_data.insurance_value}}</td>
+                                    <td>{{ c.new_data.vendor_id.name}}</td>
+                                    <td (click)="modify_insurance(c)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="c.new_data.modify_status_id==1 ||c.new_data.modify_status_id==0 || c.new_data.modify_status_id==-1">
+                                    <td>{{ c.new_data.policy_no }}</td>
+                                    <td>{{ c.new_data.start_date}}</td>
+                                    <td>{{ c.new_data.end_date}}</td>
+                                    <td>{{ c.new_data.premium_amount}}</td>
+                                    <td>{{ c.new_data.insurance_value}}</td>
+                                    <td>{{ c.new_data.vendor_id.name}}</td>
+                                    <td (click)="modify_insurance(c)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <!-- <td colspan="7">No changes</td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <span *ngIf="insurance_flag">
+                        <app-insurancemodification (onCancel)="clientCancel()"></app-insurancemodification>
+                    </span>
+                </div>
+
+
+
+
+            </div>
+
+            <div *ngIf="tab.tab_name=='FASTAG'">
+                <div class="container">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.no</th>
+                                <th>Recharged Amount </th>
+                                <th>Recharged Date </th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  c of fasttag_data;index as i">
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="c.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="c.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="c.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="c.new_data.modify_status_id==2">
+                                    <td>{{ c.new_data.recharged_amount }}</td>
+                                    <td>{{ c.new_data.recharged_date}}</td>
+                                    <td (click)="modify_fasttag(c)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="c.new_data.modify_status_id==1 ||c.new_data.modify_status_id==0 || c.new_data.modify_status_id==-1">
+                                    <td>{{ c.new_data.recharged_amount }}</td>
+                                    <td>{{ c.new_data.recharged_date}}</td>
+
+                                    <td (click)="modify_fasttag(c)">
+
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+                <div>
+                    <span *ngIf="fastatg_flag">
+                        <app-fasttagmodification (onCancel)="clientCancel()"></app-fasttagmodification>
+                    </span>
+                </div>
+
+
+
+
+            </div>
+            <div *ngIf="tab.tab_name=='TRIP DETAILS'">
+                <div class="container">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.no</th>
+                                <th>Driver </th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>From Place </th>
+                                <th>To Place </th>
+                                <th>Reason </th>
+                                <th>Start ODO </th>
+                                <th>End ODO </th>
+                                <th>Booked By </th>
+                                <th>Booked Type </th>
+                                <th>Fuel Filled  </th>
+                                <th>Mileage Run </th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  j of trip_data;index as i">
+                              
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="j.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="j.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="j.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+                                            <li *ngIf="j.new_data.modify_status_id==3" matTooltip="Active/Inactive"
+                                            class="fa fa-flag delete"></li>
+
+
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="j.new_data.modify_status_id==2 ">
+
+                                    <td>{{ j.new_data.driver }}</td>
+                                    <td>{{ j.new_data.start_date| date:'dd-MMM-yyyy'}}</td>
+                                    <td>{{ j.new_data.end_date| date:'dd-MMM-yyyy'}}</td>
+                                    <td>{{ j.new_data.from_place}}</td>
+                                    <td>{{ j.new_data.to_place}}</td>
+                                    <td>{{ j.new_data.reason}}</td>
+                                    <td>{{ j.new_data.start_odo}}</td>
+                                    <td>{{ j.new_data.end_odo}}</td>
+                                    <td>{{ j.new_data.booked_by.name}}</td>
+                                    <td>{{ j.new_data.booked_for_type.text}}</td>
+                                    <td>{{ j.new_data.fuel_filled}}</td>
+                                    <td>{{ j.new_data.mileage_run}}</td>
+                                    <td (click)="modify_trip(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="j.new_data.modify_status_id==1 ||j.new_data.modify_status_id==0 || j.new_data.modify_status_id==-1">
+                                    <td>{{ j.new_data.driver }}</td>
+                                    <td>{{ j.new_data.start_date| date:'dd-MMM-yyyy'}}</td>
+                                    <td>{{ j.new_data.end_date| date:'dd-MMM-yyyy'}}</td>
+                                    <td>{{ j.new_data.from_place}}</td>
+                                    <td>{{ j.new_data.to_place}}</td>
+                                    <td>{{ j.new_data.reason}}</td>
+                                    <td>{{ j.new_data.start_odo}}</td>
+                                    <td>{{ j.new_data.end_odo}}</td>
+                                    <td>{{ j.new_data.booked_by.name}}</td>
+                                    <td>{{ j.new_data.booked_for_type.text}}</td>
+                                    <td>{{ j.new_data.fuel_filled}}</td>
+                                    <td>{{ j.new_data.mileage_run}}</td>
+
+                                    <td (click)="modify_trip(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+                <div>
+                    <span *ngIf="trip_flag">
+                        <app-tripmodification (onCancel)="clientCancel()"></app-tripmodification>
+                    </span>
+                </div>
+
+             
+            </div>
+            <div *ngIf="tab.tab_name=='SERVICE HISTORY'">
+                <div class="container">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Service By</th>
+                                <th>Type</th>
+                                <th>Service Date</th>
+                                <th>Next Service Date</th>
+                                <th>Service Cost</th>
+                                <th>Vehicle ODO</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  j of service_data;index as i">
+                              
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="j.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="j.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="j.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+                                            <li *ngIf="j.new_data.modify_status_id==3" matTooltip="Active/Inactive"
+                                            class="fa fa-flag delete"></li>
+
+
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="j.new_data.modify_status_id==2 ">
+
+                                    <td>{{ j.new_data.service_by.name }}</td>
+                                    <td>{{j.new_data.type.text}}</td>
+                                    <td>{{j.new_data.service_date}}</td>
+                                    <td>{{ j.new_data.next_service_date}}</td>
+                                    <td>{{ j.new_data.service_cost}}</td>
+                                    <td>{{ j.new_data.vehicle_odo}}</td>
+                                    <td (click)="modify_service(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="j.new_data.modify_status_id==1 ||j.new_data.modify_status_id==0 || j.new_data.modify_status_id==-1">
+                                    <td>{{ j.new_data.service_by.name }}</td>
+                                    <td>{{j.new_data.type.text}}</td>
+                                    <td>{{j.new_data.service_date}}</td>
+                                    <td>{{ j.new_data.next_service_date}}</td>
+                                    <td>{{ j.new_data.service_cost}}</td>
+                                    <td>{{ j.new_data.vehicle_odo}}</td>
+
+                                    <td (click)="modify_service(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+                <div>
+                    <span *ngIf="service_flag">
+                        <app-servicemodification (onCancel)="clientCancel()"></app-servicemodification>
+                    </span>
+                </div>
+
+             
+            </div>
+            <div *ngIf="tab.tab_name=='DOCUMENT'">
+                <div class="container">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.no </th>
+                                <th>File Name </th>
+                                <th>Ref Type</th>
+                               
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  j of document_data;index as i">
+                               
+                              
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="j.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="j.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="j.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="j.new_data.modify_status_id==2">
+
+                                    <td>{{ j.new_data.file_name }}</td>
+                                    <td>{{ j.new_data.ref_type.text}}</td>
+                                    <td (click)="modify_doc(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="j.new_data.modify_status_id==1 ||j.new_data.modify_status_id==0 || j.new_data.modify_status_id==-1">
+                                    <td>{{ j.new_data.file_name }}</td>
+                                    <td>{{ j.new_data.ref_type.text}}</td>
+                                    
+                                    <td (click)="modify_doc(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <span *ngIf="document_flag">
+                        <app-documentmodification (onCancel)="clientCancel()"></app-documentmodification>
+                    </span>
+                </div>
+            </div>
+            <div *ngIf="tab.tab_name=='ASSET DETAILS'">
+                <div class="container">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.no</th>
+                                <th>Asset Id</th>
+                                <th>Purchase Value</th>
+                                <th>Capitalised Value</th>
+                                <th>Asset Life</th>
+                                <th>WDV</th>
+                                <th>Sale Value</th>
+
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  j of asset_data;index as i">
+
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="j.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="j.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="j.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+                                            <li *ngIf="j.new_data.modify_status_id==3" matTooltip="Active/InActive"
+                                            class="fa fa-flag delete"></li>
+
+
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="j.new_data.modify_status_id==2">
+                                    <td>{{ j.new_data.asset_id}}</td>
+                                    <td>{{ j.new_data.purchase_value }}</td>
+                                    <td>{{ j.new_data.capitalised_value}}</td>
+                                    <td>{{ j.new_data.asset_life}}</td>
+                                    <td>{{ j.new_data.wdv}}</td>
+                                    <td>{{ j.new_data.sale_value}}</td>
+
+                                    <td (click)="modify_asset(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="j.new_data.modify_status_id==1 ||j.new_data.modify_status_id==0 || j.new_data.modify_status_id==-1">
+                                    <td>{{ j.new_data.asset_id}}</td>
+                                    <td>{{ j.new_data.purchase_value }}</td>
+                                    <td>{{ j.new_data.capitalised_value}}</td>
+                                    <td>{{ j.new_data.asset_life}}</td>
+                                    <td>{{ j.new_data.wdv}}</td>
+                                    <td>{{ j.new_data.sale_value}}</td>
+                                    <td (click)="modify_asset(j)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <span *ngIf="asset_flag">
+                        <app-assetmodification (onCancel)="clientCancel()"></app-assetmodification>
+                    </span>
+                </div>
+            </div>
+            <div *ngIf="tab.tab_name=='CLAIM'">
+                <div class="container">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Claim Date</th>
+                                <th>Settled Amount</th>
+                                <th>Claim Amount </th>
+                                <th>Reason</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  c of claim_data;index as i">
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="c.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="c.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="c.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+
+                                    </span>
+
+                                </td>
+                                <ng-container *ngIf="c.new_data.modify_status_id==2">
+                                    <td>{{ c.new_data.claim_date| date:'dd-MMM-yyyy'}}</td>
+                                    <td>{{ c.new_data.settled_amount}}</td>
+                                    <td>{{ c.new_data.claim_amount}}</td>
+                                    <td>{{ c.new_data.reason}}</td>
+                                    <td (click)="modify_claim(c)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="c.new_data.modify_status_id==1 ||c.new_data.modify_status_id==0 || c.new_data.modify_status_id==-1">
+                                   
+                                 <td>{{ c.new_data.claim_date| date:'dd-MMM-yyyy'}}</td>
+                                    <td>{{ c.new_data.settled_amount}}</td>
+                                    <td>{{ c.new_data.claim_amount}}</td>
+                                    <td>{{ c.new_data.reason}}</td>
+                                    <td (click)="modify_claim(c)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <span *ngIf="claim_flag">
+                        <app-claimmodification (onCancel)="clientCancel()"></app-claimmodification>
+                    </span>
+                </div>
+            </div>
+
+            <div *ngIf="tab.tab_name=='MONTHLY RUN DETAIL'">
+
+                <div class="container">
+                    <table class="table">
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Year</th>
+                                <th>Month</th>
+                                <th>Monthly ODO</th>
+                                <th>Total Fuel</th>
+
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor=" let  c of eor_data;index as i">
+
+                                <td>{{i+1}}
+
+                                    <span>
+                                        <li *ngIf="c.new_data.modify_status_id==1" matTooltip="Create"
+                                            class=" fa fa-flag create "></li>
+                                        <li *ngIf="c.new_data.modify_status_id==2" matTooltip="Edit"
+                                            class=" fa fa-flag edit"></li>
+                                        <li *ngIf="c.new_data.modify_status_id==0" matTooltip="Delete"
+                                            class="fa fa-flag delete"></li>
+
+                                    </span>
+
+                                </td>
+
+                                <ng-container *ngIf="c.new_data.modify_status_id==2">
+                                    <td>{{ c.new_data.year }}</td>
+                                    <td>{{ c.new_data.month.text}}</td>
+                                    <td>{{ c.new_data.monthly_odo}}</td>
+                                    <td>{{ c.new_data.total_fuel}}</td>
+
+                                    <td (click)="modify_month(c)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+                                <ng-container *ngIf="c.new_data.modify_status_id==1 ||c.new_data.modify_status_id==0 || c.new_data.modify_status_id==-1">
+                                    <td>{{ c.new_data.year }}</td>
+                                    <td>{{ c.new_data.month.text}}</td>
+                                    <td>{{ c.new_data.monthly_odo}}</td>
+                                    <td>{{ c.new_data.total_fuel}}</td>
+
+                                    <td (click)="modify_month(c)">
+                                        <li matTooltip="view" class=" fa fa-eye create "></li>
+                                    </td>
+                                </ng-container>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+                <div>
+                    <span *ngIf="month_flag">
+                        <app-monthlydetailmodification (onCancel)="clientCancel()"> </app-monthlydetailmodification>
+                    </span>
+                </div>
+
+
+
+
+            </div>
+        
+
+
+        </mat-tab>
+    </mat-tab-group>
+    </div>

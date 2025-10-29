@@ -1,0 +1,472 @@
+<div class="search">
+    <!-- <button type="button" class="btn btn-outline-success" (click)="opennewtemplates()" 
+    style="border-radius:40px;text-align: center;margin-left: 25px;"><span class="fa fa-plus">&nbsp;</span>
+CBS Template</button> -->
+    <h3 style="margin-left:20px;margin-top:1%">CBS Templates
+        <button type="button" class="btn btn-outline-success" (click)="opennewtemplates()"
+            style="border-radius:40px;text-align: center; margin-left: 35px;"><span class="fa fa-plus">&nbsp;</span>
+            CBS Template</button>
+    </h3>
+
+    <form [formGroup]="datassearch" style="margin-top:1%;margin-left:15px">
+        <section>
+            <div class="row">
+                <div class="col-sm-2">
+                    <mat-form-field class="formfieldwidth_sapce">
+                        <mat-label>Template Name</mat-label>
+
+                        <input matInput formControlName="template_name">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-2" style="margin-left: 35px;">
+                    <mat-form-field class="formfieldwidth_sapce">
+                        <mat-label>Account Name</mat-label>
+
+                        <input matInput formControlName="account_name">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-2" style="margin-left: 35px;">
+                    <mat-form-field class="formfieldwidth_sapce">
+                        <mat-label>Status</mat-label>
+
+                        <input matInput formControlName="status">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                    <button ngbTooltip="Search Records" class="btn btn-outline-success" id="rmubtn"
+                        style=" border-radius: 25px;margin-left: 35px;" color="primary"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-primary" ngbTooltip="Clear Entries"
+                        style="margin-left:20px; border-radius: 25px;margin-left: 35px;" (click)="datassearch.reset()"
+                        id="rmubtn">Clear</button>
+                </div>
+                <div class="row">
+                    <!-- <div class="col-md-4">
+                <mat-form-field>
+                    <mat-label>Status</mat-label>
+                   
+                    <input matInput formControlName="status">
+                </mat-form-field>
+            </div> -->
+
+
+                    <!-- <div class="col-sm-4">
+                <button matTooltip="Search Records" class="btn btn-outline-success" id="rmubtn"  style=" border-radius: 15px;"
+                color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <button class="btn btn-warning" matTooltip="Clear Entries" style="margin-left:20px; border-radius: 15px;margin-left: 35px;" (click)="datassearch.reset()"
+                id="rmubtn">Clear</button> -->
+
+                </div>
+            </div>
+        </section>
+
+    </form>
+
+</div>
+
+<div class="table">
+
+    <div>
+        <h3 style="margin-left:25px;">CBS Templates Summary</h3>
+        <div class="table-responsive">
+
+            <table class="table table-hover" id='commonstyle'>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>
+                            <fieldset style="width:136px">
+                                Template Name
+                            </fieldset>
+                        </th>
+                        <th>
+
+                            <fieldset style="width:145px">
+                                Description
+                            </fieldset>
+                        </th>
+                        <th>Edit</th>
+                        <!-- <th>View</th> -->
+                        <th>View</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sum of summarylist;index as ind">
+                        <td>{{ (pagination.index - 1) * limit + ind + 1 }}</td>
+                        <td>{{sum.template_name}}</td>
+                        <td>{{sum.description}}</td>
+                        <td>
+                            <mat-icon (click)="editDatas(sum)" data-toggle="modal"
+                                data-target="#editdatas">edit</mat-icon>
+                        </td>
+                        <td>
+                            <mat-icon (click)="viewsinglerecord(sum.id)" data-toggle="modal"
+                                href="#myModal">visibility</mat-icon>
+                        </td>
+
+                        <td>
+
+                            <mat-slide-toggle [(ngModel)]="sum.status" color="secondary"
+                                (click)="deletetemplate(sum.id);"></mat-slide-toggle>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="summarylist ?.length == 0 || summarylist===undefined" style="margin-left: 42%;">
+              <h3>Sorry data not found... </h3>
+          </div>
+          <div class="row">
+              <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 50px;">
+                  <button mat-icon-button [disabled]="pagination.has_previous === false" color="primary" (click)="prevpages()">
+                      <mat-icon>arrow_back</mat-icon>
+                  </button>
+                  {{pagination.index}}
+                  <button mat-icon-button [disabled]="pagination.has_next === false" color="primary" (click)="nextpages()">
+                      <mat-icon>arrow_forward</mat-icon>
+                  </button>
+              </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title">View CBS Templates</h2>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="container"></div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead td>
+                        <tr style="font-weight:bold;">
+                            <th>Template Columns</th>
+                            <th>Input Columns</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let sums of summaryslist">
+                        <tr>
+                            <td>Template Name</td>
+                            <td>{{sums.template_name}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>{{sums.description}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Cheque No</td>
+                            <td>{{sums.cheque_no}}
+                            </td>
+                        </tr>
+                        <tr>
+                          <td>Branch Code</td>
+                          <td>{{sums.branch_code}}
+                          </td>
+                      </tr>
+
+                        <tr>
+                            <td>Customer Reference No</td>
+                            <td>{{sums.customer_ref_no}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Payment Date</td>
+                            <td>
+                                {{sums.payment_date}}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Transaction Date</td>
+                            <td>{{sums.transaction_date}}
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Running Balance</td>
+                            <td>
+                                {{sums.running_balance}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Credit/Debit</td>
+                            <td>
+                                {{sums.credit_debit}}
+
+                            </td>
+                        </tr>
+
+
+
+                        <tr>
+                            <td>Credit Name</td>
+                            <td>
+                                {{sums.credit_name}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Debit Name</td>
+                            <td>
+                                {{sums.debit_name}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Amount</td>
+                            <td>
+                                {{sums.amount}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Credit Amount</td>
+                            <td>
+                                {{sums.credit_amount}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Debit Amount</td>
+                            <td>
+                                {{sums.debit_amount}}
+                            </td>
+                        </tr>
+
+
+
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <a href="#" data-dismiss="modal" class="btn">Close</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="boxlevelform" aria-hidden="true" id="editdatas"
+#editdatas>
+<div class="modal-dialog modal-xl" style="width: 60%;">
+    <div class="modal-content">
+        <div class="modal-header" style="background:#DDEFDD;">
+            <h2 class="modal-title" style="color:black ;">Edit CBS Template</h2>
+            <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+          <form [formGroup]="templateeditform" >
+            <div class="row">
+              <div class="col-sm-4">
+                
+                      <mat-label>Template Name</mat-label>
+                   </div>
+                   <div class="col-sm-4">
+                   <mat-form-field>
+                      <input matInput formControlName="template_name">
+                  </mat-form-field>
+                </div>
+              </div>
+              <table class="table">
+                <thead>
+                  <tr style="font-weight:bold;">
+                    <td>Template Columns</td>
+                    <td>Input Columns</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Description</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="description" class="matformfieldinputstyle"  required>
+                    </mat-form-field>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Cheque No</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="cheque_no" class="matformfieldinputstyle"  required>
+                    </mat-form-field>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Branch Code</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="branch_code" class="matformfieldinputstyle"  required>
+                    </mat-form-field>
+                    </td>
+                  </tr>
+                  
+                  <tr>
+                    <td>Customer Reference No</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="customer_ref_no" style="font-size:16px;" required>
+                    </mat-form-field>
+                    </td>
+                  </tr>
+                  <!-- <tr>
+                    <td>Payment Date</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="payment_date" style="font-size:16px;" required>
+                    </mat-form-field>
+                    </td>
+                  </tr> -->
+      
+                  <tr>
+                    <td>Transaction Date</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="transaction_date" style="font-size:16px;" required>
+                    </mat-form-field>
+                    </td>
+                  </tr>
+                  <!-- <tr>
+                    <td>Credit</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="credit_amount" style="font-size:16px;" required>
+                    </mat-form-field>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Debit</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="debit_amount" style="font-size:16px;" required>
+                    </mat-form-field>
+                    </td>
+                  </tr> -->
+                  <tr>
+                    <td>Running Balance</td>
+                    <td>
+                      <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                      appearance="outline">
+                        <input matInput formControlName="running_balance" style="font-size:16px;" required>
+                    </mat-form-field>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Credit/Debit</td>
+                    <td>
+                      <input id="SingleColumn" 
+                      type="radio" 
+                      [value]="0" 
+                      name="amount_types" 
+                      formControlName="amount_types" 
+                      (change)="changeColumn()"/>
+            <label for="SingleColumn">Single Column</label>
+            <input id="multiColumn" 
+                      type="radio" 
+                      [value]="1" 
+                      name="amount_types" 
+                      formControlName="amount_types" 
+                      (change)="changeColumn()"/>
+            <label for="multiColumn">Seperate Column</label>
+            
+                    </td>
+                  </tr>
+    
+                  <div *ngIf="singleColumn">
+                    <tr>
+                      <td>Credit</td>
+                      <td>
+                        <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                        appearance="outline">
+                          <input matInput formControlName="credit_amount" style="font-size:16px;" required>
+                      </mat-form-field>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Debit</td>
+                      <td>
+                        <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                        appearance="outline">
+                          <input matInput formControlName="debit_amount" style="font-size:16px;" required>
+                      </mat-form-field>
+                      </td>
+                    </tr>
+                  </div>
+                  <div *ngIf="multiColumns">
+                    <tr>
+                      <td>Credit Name</td>
+                      <td>
+                        <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                        appearance="outline">
+                          <input matInput formControlName="credit_name" style="font-size:16px;" required>
+                      </mat-form-field>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Debit Name</td>
+                      <td>
+                        <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                        appearance="outline">
+                          <input matInput formControlName="debit_name" style="font-size:16px;" required>
+                      </mat-form-field>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Amount</td>
+                      <td>
+                        <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                        appearance="outline">
+                          <input matInput formControlName="amount" style="font-size:16px;" required>
+                      </mat-form-field>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Credit/Debit</td>
+                      <td>
+                        <mat-form-field style="margin-top: -1%;margin-bottom:-4%;" class="matformfieldstyle"
+                        appearance="outline">
+                          <input matInput formControlName="credit_debit" style="font-size:16px;" required>
+                      </mat-form-field>
+                      </td>
+                    </tr>
+                   
+                  </div>
+      
+                </tbody>
+              </table>
+            
+          <div >
+             <div class="row">
+              <button class="btn btn-primary" style="margin-left: 311px;" type="submit" (click)="UpdateForms()" data-dismiss="modal">Update</button>
+              <button class="btn btn-warning" data-dismiss="modal" style="margin-left: 20px;">Back</button> 
+            </div>
+          </div>
+    
+          <br>
+          <br>
+        </form>
+        <!-- <pre>{{templateeditform.value | json }}</pre> -->
+        </div>
+        <!-- <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">Close</a>
+        </div> -->
+
+    
+    </div>
+    
+</div>
+</div>

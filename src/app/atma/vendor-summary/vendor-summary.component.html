@@ -1,0 +1,441 @@
+<div class="cus-container">
+  <!-- Table Search -->
+  <div class="cus-container2">
+    <div class="cus-tableSearch">
+      <p class="cus-tableSearchHead">List of vendors</p>
+      <div class="cus-tableSearchContent">
+        <div class="cus-tableInputDiv">
+          <form class="cus-tableInput" [formGroup]="vendorSearchForm">
+            <div>
+              <input
+                placeholder="Vendor Name"
+                formControlName="name"
+                type="text"
+              />
+              <div (click)="vendorSearch()">
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </div>
+            </div>
+          </form>
+          <button (click)="adsearchclose()">AdvanceSearch</button>
+        </div>
+        <button
+          class="btn btn-outline-primary cus-TableBtnAdd"
+          type="button"
+          [routerLink]="'/atma/vendorcreate'"
+          skipLocationChange
+        >
+          <i class="fa fa-plus" aria-hidden="true"></i> Add Vendor
+        </button>
+      </div>
+    </div>
+    <div *ngIf="this.searclos == true">
+      <form
+        [formGroup]="vendorSearchForm"
+        (ngSubmit)="vendorsearchicon()"
+        class="cus-aSearch"
+      >
+        <p class="pop-indigator">^</p>
+        <div id="matInput-size">
+          <mat-form-field appearance="outline">
+            <mat-label>Code</mat-label>
+            <input
+              class="toolbar-search"
+              type="text"
+              matInput
+              autocomplete="off"
+              formControlName="code"
+            />
+            <mat-placeholder>Code1</mat-placeholder>
+          </mat-form-field>
+        </div>
+
+        <div id="matInput-size">
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input
+              class="toolbar-search"
+              type="text"
+              matInput
+              autocomplete="off"
+              formControlName="name"
+            />
+            <mat-placeholder>Name</mat-placeholder>
+          </mat-form-field>
+        </div>
+
+        <div id="matInput-size">
+          <mat-form-field appearance="outline">
+            <mat-label>Pan No.</mat-label>
+            <input
+              class="toolbar-search"
+              matInput
+              type="text"
+              maxlength="10"
+              (keypress)="namevalidation($event)"
+              formControlName="panno"
+            />
+            <mat-placeholder>PAN No</mat-placeholder>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <lib-vs-dynamicform-cmp
+          [formGroup]="vendorSearchForm"
+            [InputFields]="classifys"
+            
+          ></lib-vs-dynamicform-cmp>
+          <!-- (dataEvent)="classifydata($event)" -->
+          <!-- <mat-form-field appearance="outline" (click)="classifyname()">
+              <mat-label>Classification</mat-label>
+              <input
+                #classifyInput
+                placeholder="Select classification"
+                matInput
+                formControlName="classification"
+                [matAutocomplete]="classify"
+              />
+              <mat-autocomplete
+                #classify="matAutocomplete"
+                [displayWith]="displayFnclassify"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let classification of classificationList"
+                    [value]="classification"
+                  >
+                    {{ classification.text }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field> -->
+        </div>
+
+        <div>
+          <lib-vs-dynamicform-cmp
+          [formGroup]="vendorSearchForm"
+            [InputFields]="rmfield"
+            
+          ></lib-vs-dynamicform-cmp>
+          <!-- (dataEvent)="rmdata($event)" -->
+          <!-- <mat-form-field (click)="rmname()" appearance="outline">
+              <mat-label>Header Name</mat-label>
+              <input
+                #rmInput
+                placeholder="Select Header"
+                matInput
+                formControlName="rm_id"
+                [matAutocomplete]="rmemp"
+              />
+              <mat-autocomplete
+                #rmemp="matAutocomplete"
+                [displayWith]="displayFnRm"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let employee of employeeList"
+                    [value]="employee"
+                  >
+                    {{ employee.full_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field> -->
+        </div>
+
+        <div id="matInput-size">
+          <mat-form-field appearance="outline">
+            <mat-label>Renewal Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="excemfrom"
+              formControlName="renewal_date"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="excemfrom"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #excemfrom disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <lib-vs-dynamicform-cmp
+          [formGroup]="vendorSearchForm"
+            [InputFields]="status"
+           
+          ></lib-vs-dynamicform-cmp>
+          <!-- (dataEvent)="statussearch($event)" -->
+          <!-- <mat-form-field appearance="outline">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="vendor_status">
+                <mat-option
+                  *ngFor="let mode of VendorstatusesList"
+                  [value]="mode.id"
+                  >{{ mode.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field> -->
+        </div>
+
+        <div>
+          <lib-vs-dynamicform-cmp
+          [formGroup]="vendorSearchForm"
+            [InputFields]="requesttype"
+           
+          ></lib-vs-dynamicform-cmp>
+          <!-- (dataEvent)="requestypesearch($event)" -->
+
+          <!-- <mat-form-field appearance="outline"> -->
+          <!-- <mat-label>Filter</mat-label> BUG ID:7008-->
+          <!-- <mat-label>Request Type</mat-label>
+              <mat-select formControlName="vendorstatus"> -->
+          <!-- <mat-option (onSelectionChange)="Vendorchange($event)" *ngFor="let type1 of Vendorstatuslist" BUG ID:7009-->
+          <!-- <mat-option
+                  *ngFor="let type1 of Vendorstatuslist"
+                  [value]="type1.id"
+                  >{{ type1.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field> -->
+        </div>
+
+        <div>
+          <lib-vs-dynamicform-cmp
+          [formGroup]="vendorSearchForm"
+            [InputFields]="gstcatfield"
+            
+          ></lib-vs-dynamicform-cmp>
+          <!-- (dataEvent)="gstcatdata($event)" -->
+          <!-- <mat-form-field appearance="outline" (click)="GSTname()">
+              <mat-label>GST Category</mat-label>
+              <input
+                #gstInput
+                placeholder="Select gstcategory"
+                matInput
+                formControlName="GST_status"
+                [matAutocomplete]="gstcat"
+              />
+              <mat-autocomplete
+                #gstcat="matAutocomplete"
+                [displayWith]="displayFnGST"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let gst of GSTlist" [value]="gst">
+                    {{ gst.text }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field> -->
+        </div>
+
+        <div class="cus-aSearchBtns">
+          <button
+            class="btn btn-outline-primary"
+            style="border-radius: 40px"
+            color="primary"
+            (click)="Reset()"
+          >
+            Reset
+          </button>
+          <div class="cus-aSearchBtnDiv">
+            <button
+              class="btn btn-outline-primary"
+              style="border-radius: 40px"
+              type="submit"
+              color="primary"
+            >
+              Apply
+            </button>
+
+            <button
+              (click)="adsearchclose()"
+              style="border-radius: 40px"
+              class="btn btn-outline-secondary"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <lib-vs-cbox-summary
+      [SummaryDetails]="vendorsummaryData"
+      [SummaryApiObj]="vendorsummaryObjNew"
+      [unnecessary]="[]"
+    ></lib-vs-cbox-summary>
+    <!-- <table class="table scrolltable cus-tableView">
+      <thead class="table_header" fixed-header>
+        <tr>
+          <th>S.No</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>PANNo</th>
+          <th>Classification</th>
+          <th>GSTCategory</th>
+          <th>HeaderName</th>
+          <th>RenewalDate</th>
+          <th>VendorStatus</th>
+          <th>RequestType</th>
+          <th>RequestStatus</th>
+        </tr>
+      </thead> -->
+
+    <!-- <tbody>
+        <tr
+          *ngFor="let vendor of vendorSummaryList; index as i"
+          style="text-align: left"
+        >
+          <td>{{ (this.currentpage - 1) * pageSize + i + 1 }}</td>
+          <td>{{ vendor.code }}</td>
+          <td (click)="vendorView(vendor)" style="cursor: pointer; color: blue">
+            {{ vendor.name }}
+          </td>
+
+          <td>{{ vendor.panno }}</td>
+          <td>{{ vendor.type.text }}</td>
+          <td>{{ vendor.composite }}</td>
+          <td>{{ vendor.rm_id.full_name }}</td>
+          <td>{{  vendor.renewal_date | date:'dd-MMM-yyyy '  }}</td>
+          <td>
+            {{
+              vendor?.renewal_date == null || vendor?.renewal_date == "None"
+                ? ""
+                : (vendor?.renewal_date | date : "dd/MM/yyyy")
+            }}
+          </td>
+          <td
+            data-toggle="modal"
+            data-target="#rejectModal"
+            (click)="rejectPopup(vendor.vendor_status_name, vendor.id)"
+          >
+            {{ vendor.mainstatus_name }}
+          </td>
+          <td>{{ vendor.requeststatus_name }}</td>
+          <td>
+            <p
+              class="badge rounded-pill fw-normal py-2 px-3 ba-badge"
+              [ngClass]="{
+                'ba-status-green': vendor.vendor_status_name == 'Draft',
+                'ba-status-blue':
+                  vendor.vendor_status_name == 'Pending_Header' ||
+                  vendor.vendor_status_name == 'Pending RM' ||
+                  vendor.vendor_status_name == 'Pending_Checker',
+                'ba-status-yellow': vendor.vendor_status_name == 'Approved',
+                'ba-status-red': vendor.vendor_status_name == 'Rejected'
+              }"
+            >
+              {{ vendor.vendor_status_name }}
+            </p>
+          </td>
+
+          <td *ngIf="vendorSummaryList?.length == 0" colspan="10">
+            No Records found
+          </td>
+        </tr>
+      </tbody> -->
+    <!-- </table> -->
+
+    <!-- <div style="margin-bottom: 5%; font-size: small; text-align: right">
+      <button
+        mat-icon-button
+        [disabled]="has_previous === false"
+        color="primary"
+        (click)="previousClick()"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      {{ presentpage }}
+      <button
+        mat-icon-button
+        [disabled]="has_next === false"
+        color="primary"
+        (click)="nextClick()"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div> -->
+  </div>
+
+  <div
+    class="modal fade"
+    id="rejectModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="rejectModalLabel"
+    *ngIf="isRejectRemarks"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <!-- <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Reject</h4> -->
+          <!-- BUG ID:7112 -->
+          <h4 class="modal-title w-100 font-weight-bold" id="rejectModalLabel">
+            Return
+          </h4>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <p style="color: #808080; margin: 0px 0 4px">
+                    Remarks:
+                    <span style="color: black; margin-left: 8%"
+                      >{{ rejectedList }}
+                    </span>
+                  </p>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-outline-primary"
+            type="button"
+            data-toggle="modal"
+            data-target="#rejectModal"
+            style="border-radius: 40px; margin-left: 10px"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ngx-spinner
+    bdColor="rgba(51, 51, 51, 0.8)"
+    size="default"
+    [fullScreen]="true"
+    type="ball-spin-clockwise"
+  >
+    <p style="color: white">Please Wait.</p>
+  </ngx-spinner>
+
+  <!-- <pre>
+        {{vendorSearchForm.value | json}}
+    </pre>  -->
+</div>

@@ -1,0 +1,593 @@
+<!-- <div class="modal-body"> -->
+    <mat-card class="quotation-card">
+      <!-- <mat-card-title *ngIf="!View"><h3>Create Quotation</h3></mat-card-title> -->
+      <mat-card-content>
+        <form [formGroup]="quotationForm" (ngSubmit)="quotationSubmit()">
+          <!-- Vendor Details -->
+          <div class="row">
+            <div class="col">
+                <mat-form-field (focus)="forQuotationDD()">
+                  <mat-label>Quotation For</mat-label>
+                  <input
+                    #qforInput
+                    placeholder="Select Quotation For"
+                    matInput
+                    formControlName="quotation_for_id"
+                    [matAutocomplete]="quotforrr"
+                  />
+                  <mat-autocomplete
+                    #quotforrr="matAutocomplete"
+                    [displayWith]="displayFnQuot"
+                    (opened)="autocompleterforScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...</mat-option
+                    >
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let qf of forQuotationList"
+                        [value]="qf"
+                        (click)="getQuotationFor(qf)"
+                      >
+                        {{ qf.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                  <!-- <button
+                    type="button"
+                    matSuffix
+                    class="close"
+                    (focus)="resetDD('qfor', 'summ')"
+                  >
+                    x
+                  </button> -->
+                </mat-form-field>
+                <!-- <mat-form-field>
+                  <mat-label>Quotation For</mat-label>
+                  <input matInput type="text" formControlName="quot_number" />
+                </mat-form-field> -->
+              </div>
+              <div class="col">
+                <mat-form-field>
+                  <mat-label>Purpose</mat-label>
+                  <input matInput type="text" formControlName="purpose" />
+                </mat-form-field>
+              </div>
+             
+            <!-- <div class="col">
+              <mat-form-field (click)="getSuppliersearch()">
+                <mat-label>Vendor/ Supplier Name</mat-label>
+                <input
+                  #suppliersearchInput
+                  placeholder="Select supplier"
+                  matInput
+                  [readonly]="View"
+                  formControlName="supplier"
+                  [matAutocomplete]="suppliersearch"
+                />
+                <mat-autocomplete
+                  #suppliersearch="matAutocomplete"
+                  [displayWith]="displayFnsupplier"
+                  (opened)="autocompletesuppliersearchScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let supplier of suppliersearchList"
+                      [value]="supplier"
+                    >
+                      {{ supplier.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div> -->
+
+            <!-- <mat-form-field >
+      <mat-label>Vendor Name</mat-label>
+      <input matInput formControlName="vendorName" />
+    </mat-form-field> -->
+
+            <!-- Quotation Details -->
+            <!-- <div class="col">
+    <mat-form-field>
+      <mat-label>Quotation Code</mat-label>
+      <input matInput formControlName="quotationCode" />
+    </mat-form-field>
+</div> -->
+            <!-- <div class="col">
+              <mat-form-field>
+                <mat-label>Quotation Number</mat-label>
+                <input matInput type="text" formControlName="quot_number" />
+              </mat-form-field>
+            </div> -->
+
+            <div class="col">
+              <mat-form-field style="width: 11rem">
+                <mat-label>Quotation Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  formControlName="quotation_date"
+                  autocomplete="off"
+                  [readonly]="View"
+
+                />
+                <mat-datepicker-toggle matSuffix [for]="picker"  [disabled]="View">
+                  <mat-icon matDatepickerToggleIcon
+                  role="button"
+                    >keyboard_arrow_down</mat-icon
+                  >
+                </mat-datepicker-toggle>
+                <mat-datepicker [disabled]="View" #picker></mat-datepicker>
+              </mat-form-field>
+              <!-- <mat-form-field >
+      <mat-label>Quotation Date</mat-label>
+      <input matInput formControlName="quot_date" type="date" />
+    </mat-form-field> -->
+            </div>
+
+            <!-- </div>
+<div class="row"> -->
+            <div class="col">
+              <mat-form-field style="width: 11rem">
+                <mat-label>Validity Start Date</mat-label>
+                <input
+                [readonly]="View"
+
+                  matInput
+                  [matDatepicker]="picker1"
+                  formControlName="validity_start"
+                  autocomplete="off"
+                />
+                <mat-datepicker-toggle matSuffix [for]="picker1"  [disabled]="View">
+                  <mat-icon matDatepickerToggleIcon
+                    >keyboard_arrow_down</mat-icon
+                  >
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker1  [disabled]="View"></mat-datepicker>
+              </mat-form-field>
+              <!-- <mat-form-field >
+      <mat-label>Quotation Start Date</mat-label>
+      <input matInput formControlName="validity_start" type="date" />
+    </mat-form-field> -->
+            </div>
+            <div class="col">
+              <mat-form-field style="width: 11rem">
+                <mat-label>Validity End Date</mat-label>
+                <input
+                  matInput
+                  [readonly]="View"
+
+                  [matDatepicker]="picker2"
+                  formControlName="validity_end"
+                  autocomplete="off"
+                />
+                <mat-datepicker-toggle matSuffix [for]="picker2"  [disabled]="View">
+                  <mat-icon matDatepickerToggleIcon
+                    >keyboard_arrow_down</mat-icon
+                  >
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker2  [disabled]="View"></mat-datepicker>
+              </mat-form-field>
+              <!-- <mat-form-field >
+      <mat-label>Quotation End Date</mat-label>
+      <input matInput formControlName="validity_end" type="date" />
+    </mat-form-field> -->
+            </div>
+
+            <!-- Product Details -->
+            <!-- <div class="form-group">
+     -->
+            <div class="col">
+              <!-- <mat-form-field >
+                <mat-label>Product Type</mat-label>
+                <mat-select                     [disabled]="View"
+                formControlName="producttype"                    
+                >
+                  <mat-option
+                  
+                    *ngFor="let types of Lists"
+                    [value]="types"
+                    (click)="product_type = types?.id"
+                  >
+                    {{ types.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field> -->
+              <mat-form-field>
+                <mat-label>Product Type</mat-label>
+                <input matInput formControlName="producttype" readonly />
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field (click)="getpproduct(1)">
+                <mat-label>Product Name</mat-label>
+                <!-- <mat-label *ngIf="Services">Service Name</mat-label> -->
+
+                <input
+                  #productInput
+                  placeholder="Select Product"
+                  matInput
+                  readonly
+                  formControlName="product"
+                  [matAutocomplete]="productcat"
+                />
+                <mat-autocomplete
+                  #productcat="matAutocomplete"
+                  [displayWith]="displayFnproduct"
+                  (opened)="autocompleteproductScrollP()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let product of productList"
+                      [value]="product"
+                      (click)="getOtherAttributes(product)"
+                    >
+                      {{ product.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+                <!-- <button
+        type="button"
+        matSuffix
+        class="close"
+        (click)="resetAfterProductChange('', 'removeProd')"
+      >
+      x
+      </button> -->
+              </mat-form-field>
+            </div>
+            <!-- </div>
+<div class="row"> -->
+            <div *ngIf="!servicecheck" class="col">
+              <mat-form-field (click)="getitemFK()">
+                <mat-label>Make</mat-label>
+                <input
+                  #itemInput
+                  placeholder="Select Make"
+                  matInput
+                  [readonly]="View"
+                  formControlName="make"
+                  [matAutocomplete]="item"
+                />
+                <mat-autocomplete
+                  #item="matAutocomplete"
+                  [displayWith]="displayFnitem"
+                  (opened)="autocompleteitemScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let item of itemList"
+                      [value]="item"
+                      (click)="makeCheck(item)"
+                    >
+                      {{ item.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+                <!-- <button
+      type="button"
+      matSuffix
+      class="close"
+      (click)="resetAfterItemChange()"
+    >
+    x
+    </button> -->
+              </mat-form-field>
+            </div>
+            <div *ngIf="!servicecheck" class="col">
+              <mat-form-field (click)="getmodall()">
+                <mat-label>Model</mat-label>
+                <input
+                  #modelInput
+                  [readonly]="View"
+                  placeholder="Select Model"
+                  matInput
+                  formControlName="model"
+                  [matAutocomplete]="model"
+                />
+                <mat-autocomplete
+                  #model="matAutocomplete"
+                  [displayWith]="displayFnmodel"
+                  (opened)="autocompletemodelScroll()"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading"
+                    >Loading...</mat-option
+                  >
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option
+                      *ngFor="let model of modelList"
+                      [value]="model"
+                    >
+                      {{ model.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+                <!-- <button
+      type="button"
+      matSuffix
+      class="close"
+      (click)="resetAfterModelChange()"
+    >
+    x
+    </button> -->
+              </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field style="width: 200px" (click)="getbruom()">
+                  <mat-label>UOM</mat-label>
+                  <input
+                    #uomInput
+                    placeholder="UOM"
+                    matInput
+                    formControlName="uom"
+                    [matAutocomplete]="uom"
+                  />
+                  <mat-autocomplete
+                    [panelWidth]="250"
+                    #uom="matAutocomplete"
+                    [displayWith]="displayFnuom"
+                    (opened)="uomScroll()"
+                  >
+                    <mat-option *ngIf="isLoading" class="is-loading"
+                      >Loading...
+                    </mat-option>
+                    <ng-container *ngIf="!isLoading">
+                      <mat-option
+                        *ngFor="let uom of uomlist"
+                        [value]="uom.name"
+                      >
+                        {{ uom.name }}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            <div class="col-md-2">
+                <mat-form-field>
+                  <mat-label>Quantity</mat-label>
+                  <input matInput type="number" formControlName="qty" />
+                </mat-form-field>
+              </div>
+       
+            <div class="col-md-3 text-center">
+              <mat-form-field>
+                <mat-label>Price</mat-label>
+                <input matInput    [readonly]="View"
+                type="text" formControlName="unit_price"
+                  [value]="quotationForm.get('unit_price').value | amountPipeCustom" 
+                (input)="onAmountInput($event, quotationForm,'unit_price')" (keypress)="omit_special_num($event)"/>
+                       <!-- <input matInput
+       type="text"
+       formControlName="unit_price"
+       [value]="quotationForm.get('unit_price').value"
+       (input)="onAmountInput($event, quotationForm,'unit_price')"
+       (blur)="onAmountBlur(quotationForm,'unit_price')"
+       (keypress)="omit_special_num($event)"/> -->
+              </mat-form-field>
+            </div>
+     
+
+            <div class="col-md-7 mt-3 text-right">
+              <span class="header_file">Supporting Documents</span>
+              <!-- <input type="file" (change)="onFileSelect($event)" /> -->
+
+              <input
+                type="file"
+                multiple
+                [readonly]="View"
+                #takeInput
+                (change)="onFileSelect($event)"
+                class="file"
+              />
+              <!-- <mat-icon
+                style="color: gray; margin-top: 24px; font-size: 18px"
+                aria-label="Delete"
+                >delete
+              </mat-icon> -->
+            </div>
+           
+          </div>
+          <div class="row">
+            <div class="col ml-2 mr-2">
+              <mat-form-field class="supp" appearance="outline">
+                <mat-label>Vendor/ Supplier Name</mat-label>
+                
+                <mat-chip-list #chipList aria-label="Supplier selection">
+                  <mat-chip 
+                    *ngFor="let supplier of selectedSuppliers"
+                    [selectable]="true"
+                    [removable]="true"
+                    (removed)="removeSupplier(supplier)"
+                    [matTooltip]="supplier?.name"
+                  >
+                    {{ supplier.code }}
+                    <mat-icon matChipRemove *ngIf="!View">cancel</mat-icon>
+                  </mat-chip>
+                </mat-chip-list>
+              
+                <input
+                  #suppliersearchInput
+                  matInput
+                  formControlName="supplier"
+                  [readonly]="View"
+                  [matAutocomplete]="suppliersearch"
+                  (keydown)="preventEnterKey($event)"
+                />
+              
+                <mat-autocomplete 
+                  #suppliersearch="matAutocomplete" 
+                  [displayWith]="displayFnsupplier"
+                  (optionSelected)="selectSupplier($event)"
+                >
+                  <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option 
+                      *ngFor="let supplier of suppliersearchList" 
+                      [value]="supplier"
+                    >
+                      {{ supplier.name }}
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+              </mat-form-field>
+              
+            </div>
+          </div>
+          <!-- <div class="fo"> -->
+          <!-- <mat-form-field appearance="outline">
+      <mat-label>Model</mat-label>
+      <input matInput formControlName="model" />
+    </mat-form-field>
+-->
+          <!-- <mat-form-field appearance="outline">
+      <mat-label>Specification Combination</mat-label>
+      <input matInput formControlName="specificationCombination" />
+    </mat-form-field> -->
+    <div class="row mt-2 text-center" *ngIf="showCard">
+      <div class="card ml-4 mr-4 w-100">
+        <div class="card-body">
+          <div class="row">
+            <!-- Loop over specList and ensure each occupies col-md-3 -->
+            <div class="col-md-6" *ngFor="let spec of specList">
+              <div class="chip-container">
+                <mat-chip-list formControlName="spec_config" class="chip-list">
+                  <mat-chip>{{ spec?.specification }}</mat-chip>
+                  <mat-form-field class="conf-field">
+                    <input
+                      matInput
+                      [readonly]="View"
+                      placeholder="Select Configuration"
+                      [matAutocomplete]="auto"
+                      (focus)="getConf(spec?.specification)"
+                    />
+                    <mat-autocomplete #auto="matAutocomplete">
+                      <mat-option
+                        *ngFor="let conf of specsList"
+                        [value]="conf.configuration"
+                        (click)="addSpecConfig(spec.id, spec.specification, conf.configuration)"
+                      >
+                        {{ conf.configuration }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </mat-chip-list>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+          <!-- <div class="row">
+   
+  </div> -->
+
+          <!-- <mat-card-actions>
+    <button mat-raised-button color="primary" type="submit">Submit</button>
+  </mat-card-actions> -->
+          <!-- </div> -->
+          <div class="row">
+            <div class="col-md-12 p-4">
+              <div class="card">
+                <div class="card-header">
+                  <h4>Quotation Note</h4>
+                </div>
+                <div
+                  [ngxSummernote]="config"
+                  formControlName="remarks"
+                  [disabled]="View"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 text-right">
+                <button *ngIf="!View"
+      type="button"
+      style="border-radius: 40px;"
+      class="btn btn-outline-info"
+      (click)="quotationSubmit()"
+    >
+      Request Quotation
+    </button>
+            </div>
+          </div>
+          
+        </form>
+        <br>
+        <div class="table-responsive tableStyle" *ngIf="showSummary">
+          <table class="table table-hover">
+            <thead class="table_header">
+              <tr>
+                <th>S.No</th>
+                <th>Quotation ID</th>
+                <th>Quotation For</th>
+                <!-- <th>Quotation Number</th> -->
+                <th>Vendor/ Supplier Name</th>
+                <th>Product Type</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <!-- <th>Vendor/ Supplier</th> -->
+                <th>Purpose</th>
+                <th>Status</th>
+                <!-- <th>Action</th> -->
+                <!-- <td>Make</td> -->
+              </tr>
+            </thead>
+            <tbody *ngFor="let q of masterQuotationList; index as i">
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ q?.quotation_no }}</td>
+                <td>{{ q?.quotation_for_name }}</td>
+                <td>
+                  <ul *ngIf="q?.supplier?.length; else noSupplier">
+                    <li *ngFor="let sup of q.supplier">{{ sup }}</li>
+                  </ul>
+                  <ng-template #noSupplier>--</ng-template>
+                </td>
+                
+                <!-- <td>{{ q?.supplier }}</td> -->
+                <td>{{ q?.producttype?.name }}</td>
+                <!-- <td>
+                    {{ q?.product?.name }}
+                </td> -->
+                <td>
+                  {{ q?.product?.name }}
+                </td>
+                <td>{{ q?.qty }}</td>
+                <td>{{ q?.purpose }}</td>
+                <td>{{ q?.quotation_status == 1 ? "Fresh" : "Executed" }}</td>
+    
+                <!-- <td class="btn-link" data-toggle="modal" data-target="#addQuotation" (click)="ViewQuotation(q)">
+                  <mat-icon>visibility</mat-icon>
+                </td> -->
+                <!-- <td>{{ q.supplier_name }}</td> -->
+                <!-- <td>{{ asset.model_name }}</td> -->
+                <!-- <td>{{ asset.specification }}</td> -->
+              </tr>
+              <tr *ngIf="masterQuotationList.length == 0">
+                <td colspan="7" class="text-center">No Data Found!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- <h4><b>Note : </b>Click on any row to add or view quotation details below!</h4> -->
+          </mat-card-content>
+    </mat-card>
+
+  <!-- </div> -->
+
+
+  
+

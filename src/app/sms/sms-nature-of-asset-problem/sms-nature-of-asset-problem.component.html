@@ -1,0 +1,489 @@
+<div *ngIf="nop_screen">
+    <h2 style="color:blue;font-family: 'Times New Roman';font-weight: bold; margin-left: 35px;">Nature Of The Problem</h2>
+    <hr>
+    <form [formGroup]="smsassetcat">
+        <div class="row">
+            
+            <mat-form-field class="example-full-width" style="margin-left: 50px;width: 200px;">
+                <mat-label>Product Name</mat-label>
+             <input class="toolbar-search" type="text" matInput autocomplete="off" matInput (keypress)="kyenbdata1($event)" [matAutocomplete]="checkerproduct" formControlName="asset_name" >
+                <mat-placeholder>Product Name</mat-placeholder>
+                <mat-autocomplete #checkerproduct="matAutocomplete" #product [displayWith]="assetnameinterface" (opened)="autocompleteproductname()">
+                   <mat-option *ngIf="isLoading">Loading..</mat-option>
+                   <ng-container *ngIf="!isLoading">
+                      <mat-option  title="{{d.name}}"*ngFor="let d of productlist" [value]="d" >
+                      {{d.name}}
+                      </mat-option>
+                   </ng-container> 
+                </mat-autocomplete> 
+             </mat-form-field>
+     
+        <mat-form-field style="width: 220px;margin-left: 50px;">
+            <mat-label>Main Problem</mat-label>
+            <input matInput  formControlName="parent_name_list" 
+            autocomplete="off" required (click)="getproductspecificationclick()" #specification [matAutocomplete]="specitype">
+            <mat-autocomplete #specificationtye #specitype="matAutocomplete" (opened)="getproductspecificationscrool()"[displayWith]="parent">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let nop of productspecificationArray" [value]="nop">{{nop.errorcategory_name}}
+                        </mat-option>
+                    </ng-container>
+            </mat-autocomplete>
+
+        </mat-form-field>
+        <button type="button" mat-mini-fab style="border-radius: 40px;background-color: rgb(162, 206, 162);"  data-toggle="modal" data-target="#productmodalsubspe"><mat-icon>add</mat-icon></button>
+
+        <mat-form-field style="width: 250px; margin-left: 80px;">
+            <mat-label> Sub Problem </mat-label>
+            <input matInput  formControlName="childNOP"
+            autocomplete="off" required (click)="getproductchildnclick()" #child [matAutocomplete]="childname">
+            <mat-autocomplete #child #childname="matAutocomplete" (opened)="getchildcrool()"[displayWith]="parent">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let nop of productchildArray" [value]="nop">{{nop.errorcategory_name}}
+                        </mat-option>
+                    </ng-container>
+            </mat-autocomplete>
+
+        </mat-form-field>
+   
+        <!-- <mat-form-field style="width: 250px; margin-left: 80px;">
+            <mat-label>Sub Problem</mat-label>
+            <input matInput  formControlName="childNOP" 
+            autocomplete="off" required>
+        </mat-form-field> -->
+    
+
+<button type="submit"  class="btn btn-outline-success"
+style="border-radius: 40px;margin-left: 10px;    margin-top: 5px;
+height: fit-content;" (click)="saveNOP()"   >Submit</button>
+<button type="button" (click)="onCancelClick()" class="btn btn-outline-danger"
+style="border-radius: 40px;margin-left: 10px;    margin-top: 5px;
+height: fit-content;">Cancel</button>
+<button type="button" style="border-radius: 40px;margin-left: 50px;margin-top: 5px;height: fit-content;"  class="btn btn-outline-primary" routerLink="/sms/smstransaction"> Back</button>
+</div>
+</form> 
+<br />
+<br />
+<br />
+<br />
+
+
+<h2 style="color:blue;font-family: 'Times New Roman';font-weight: bold; margin-left: 35px;">Nature Of The Problem Summary</h2>
+<div>
+    <form [formGroup]="nopsearch" (ngSubmit)="getnopsearchApi()">
+    <div class="row">
+        <mat-form-field class="example-full-width" style="margin-left: 50px;width: 200px;">
+            <mat-label>Product Name</mat-label>
+        <input class="toolbar-search" type="text" matInput autocomplete="off" matInput (keypress)="kyenbdata1($event)" [matAutocomplete]="checkerproduct" formControlName="asset_name" >
+            <mat-placeholder>Product Name</mat-placeholder>
+            <mat-autocomplete #checkerproduct="matAutocomplete" #product [displayWith]="assetnameinterface" (opened)="autocompleteproductname()">
+            <mat-option *ngIf="isLoading">Loading..</mat-option>
+            <ng-container *ngIf="!isLoading">
+                <mat-option  title="{{d.name}}"*ngFor="let d of productlist" [value]="d" >
+                {{d.name}}
+                </mat-option>
+            </ng-container> 
+            </mat-autocomplete> 
+        </mat-form-field>
+    
+     <!-- <mat-form-field style="width: 250px; margin-left: 80px;">
+        <mat-label>Main Problem</mat-label>
+        <input matInput  formControlName="parent" 
+        autocomplete="off">
+    </mat-form-field> -->
+    <!-- <mat-form-field style="width: 250px; margin-left: 80px;">
+        <mat-label>Main Problem</mat-label>
+        <input matInput  formControlName="parent" 
+        autocomplete="off" required (click)="getproductspecificationclick()" #specification [matAutocomplete]="specitype">
+        <mat-autocomplete #specificationtye #specitype="matAutocomplete" (opened)="getproductspecificationscrool()"[displayWith]="parent">
+            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let nop of productspecificationArray" [value]="nop">{{nop.errorcategory_name}}
+                    </mat-option>
+                </ng-container>
+        </mat-autocomplete>
+
+    </mat-form-field> -->
+   
+    <button matTooltip="Search"  class="btn btn-outline-success" style="margin-left: 10px;border-radius: 40px;height: fit-content;">
+        Search
+    </button>
+    <button class="col-md-1" (click)="resetdata()" matTooltip="Reset" class="btn btn-outline-danger"  style="margin-left: 10px;border-radius: 40px;height: fit-content;" type="button" >Reset</button>
+    </div>
+</form>
+<div>
+<form [formGroup]="nopformsummary_array">
+    <table class="table table-bordered" style="margin-left: 30px; width: 90%;font-size: 15px;">
+        <!-- <form [formGroup]="nopformsummary_array"> -->
+        <tr class="table_header">
+            <th style="width:150px">S.No <button mat-icon-button [ngClass]="abcclr==false?'able':'disable'" matTooltip="asce" style="text-align: right;" 
+                (click)="getabcascdec('asce',1)"><mat-icon>arrow_upward</mat-icon></button>
+            <button mat-icon-button [ngClass]="abcclr1==false?'able':'disable'" matTooltip="dece" style="text-align: right;" color="primary"
+                (click)="getabcascdec('desc',2)"><mat-icon>arrow_downward</mat-icon></button></th>
+            <th>Expand</th>
+            <th>Product Name</th>
+            <!-- <th>Main Problem<</th>
+            <th>Sub Problem</th> -->
+            
+            <th>Action</th>
+        </tr>
+        <tbody>
+        <!-- <tr *ngFor="let d of nopsummary; let i=index" formArrayName="mainArray"> -->
+            <ng-container *ngFor="let d of nopsummary;let i=index" formArrayName="productArray" >
+            <tr>
+            <th scope="row">{{ i+1 }}</th>
+          
+            
+            <td (click)="expandenbdata(d,i)">
+                <span  *ngIf="d.enb_pro"  class="coloricon"><mat-icon>arrow_drop_down</mat-icon>
+
+                </span>
+
+                <span  *ngIf="!d.enb_pro" class="coloricon"><mat-icon>arrow_drop_up</mat-icon>
+                    
+                </span>
+            </td>
+            
+            <td >{{d?.asset_name?.name}}</td>
+            <td>
+            <button type="button" matTooltip="Edit" (click)="prouctcheck_new_fa_make_navigate(d?.asset_name)"  mat-mini-fab color="primary" color="primary" 
+            ><mat-icon>edit</mat-icon></button>
+            </td>
+            </tr>
+            <ng-container >
+                <tr *ngIf="d.enb_pro">
+                    <td colspan="5">
+                        <!-- <button mat-mini-fab color="accent" style="float: right;" (click)="addDataNewModelchild_new()" matTooltip="Add Child"><mat-icon>add</mat-icon></button> -->
+                        <form [formGroup]="makermodelformchild">
+                        <table class="table table-bordered">
+                            <thead class="table_header">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Main Problem List</th>
+                                    <th>Sub Problem List</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody  >
+                                <tr *ngFor="let dta of new_par_childList_new;let k=index">
+                                    <td>{{k+1}}</td>
+                                    <td>
+                                       {{dta.name}}
+                                    </td>
+                                    <td >
+                                       <ul>
+                                         <li *ngFor="let df of dta.child">{{df.child_name}}</li>
+                                       </ul>
+                                    </td>                
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </form>
+                    </td>
+                </tr>
+            </ng-container>
+            <!-- <td >{{d?.errorcategory_name}}</td>
+            <td>
+                <ul *ngFor="let names of d?.child" class="text-left">
+                    <li>{{names?.child_name}}</li>
+                </ul>
+            </td>
+            <td>
+                <button mat-icon-button color="primary" (click)="clicktoview(d)" [disabled]="d?.errorcategory_status == 0" >
+                    <mat-icon matTooltip="Click to View">visibility</mat-icon>
+                 </button>
+                <button mat-icon-button type="button" (click)="getactiveinactive(d)" [ngClass]="d.errorcategory_status==1?'prodactive':'proinactive'" [matTooltip]="d.errorcategory_status? 'click to inactive':'click to active' " >
+                    <mat-icon>wb_sunny</mat-icon>
+                </button>
+            </td> -->
+            
+        <!-- </tr> -->
+        </ng-container>
+   
+        <tr *ngIf="nopsummary.length==0">
+            <td colspan="5">No Records Found</td>
+        </tr>
+        <tr>
+           
+            <td colspan="5">
+                <div class="text-right">
+                    <button mat-icon-button (click)="previousdata()"  [disabled]="!has_previous" ><mat-icon>arrow_back</mat-icon></button>
+                    {{presentpage}}
+                    <button mat-icon-button (click)="nextdata()"  [disabled]="!has_next" ><mat-icon>arrow_forward</mat-icon></button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+        
+    </table>
+    </form>
+    </div>
+</div>
+
+
+
+<br />
+<br />
+<div class="modal fade" id="productmodalsubspe" data-backdrop="static" data-keyboard="false"  
+role="dialog" tabindex="-5">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<form [formGroup]="nopform">
+<div class="modal-header" style="background-color:rgb(204, 255, 204)">
+<h2 class="modal-title" style="font-weight:bold;font-family:Times New Roman;font-size:20px;margin-left:30%;">Add a New Main Problem</h2>
+<button #modalcloses class="close" type="button" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+
+<div class="row">
+
+    <div class="col-md-3">
+        <mat-form-field style="width:280px">
+            <mat-label>New Main Problem</mat-label>
+            <input type="text"  matInput formControlName="parent_name" required >
+        </mat-form-field>
+    </div>
+</div>
+
+
+</div>
+<div class="modal-footer">
+<button type="button" (click)="createspecificationsdata()"  class="btn btn-outline-success">Submit</button>
+<button type="button" class="close" data-dismiss="modal" class="btn btn-outline-danger">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+
+
+</div> 
+<br><br>
+
+</div>
+
+<div *ngIf="edit_parent_screen">
+        <h2 style="color:blue;font-family: 'Times New Roman';font-weight: bold; margin-left: 35px;">Edit Nature Of The Problem - {{nop_parent_name}}</h2>
+        <hr>
+        <form [formGroup]="nopchildedit">
+            <div class="row">
+               
+                <mat-form-field class="example-full-width" style="margin-left: 50px;width: 200px;">
+                    <mat-label>Product Name</mat-label>
+                 <input class="toolbar-search" type="text" matInput autocomplete="off" matInput (keypress)="kyenbdata1($event)" [matAutocomplete]="checkerproduct" formControlName="asset_name" >
+                    <mat-placeholder>Product Name</mat-placeholder>
+                    <mat-autocomplete #checkerproduct="matAutocomplete" #product [displayWith]="assetnameinterface1" (opened)="autocompleteproductname2()">
+                       <mat-option *ngIf="isLoading">Loading..</mat-option>
+                       <ng-container *ngIf="!isLoading">
+                          <mat-option  title="{{d.name}}"*ngFor="let d of productlist2" [value]="d" >
+                          {{d.name}}
+                          </mat-option>
+                       </ng-container> 
+                    </mat-autocomplete> 
+                 </mat-form-field>
+       
+            <mat-form-field style="width: 220px;margin-left: 50px;">
+                <mat-label>Main Problem</mat-label>
+                <input matInput  formControlName="parent_name_list" 
+                autocomplete="off" required (click)="getproductspecificationclick1()" #specification [matAutocomplete]="specitype">
+                <mat-autocomplete #specificationtye #specitype="matAutocomplete" (opened)="getproductspecificationscrool1()"[displayWith]="parentname1">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let nop of productspecificationArray1" [value]="nop">{{nop.errorcategory_name}}
+                            </mat-option>
+                        </ng-container>
+                </mat-autocomplete>
+    
+            </mat-form-field>
+            <button type="button" mat-mini-fab style="border-radius: 40px;background-color: rgb(162, 206, 162);"  data-toggle="modal" data-target="#productmodalsubspe1"><mat-icon>add</mat-icon></button>
+    
+        
+            <mat-form-field style="width: 250px; margin-left: 80px;">
+                <mat-label>Sub Problem</mat-label>
+                <input matInput  formControlName="childNOP" 
+                autocomplete="off" required>
+            </mat-form-field>
+        
+    
+    <button type="submit"  class="btn btn-outline-success"
+    style="border-radius: 40px;margin-left: 10px;    margin-top: 5px;
+    height: fit-content;" (click)="updateNOP()"   >Submit</button>
+    <button type="button" (click)="nopeditonCancelClick()" class="btn btn-outline-danger"
+    style="border-radius: 40px;margin-left: 10px;    margin-top: 5px;
+    height: fit-content;">Cancel</button>
+    <button type="button" style="border-radius: 40px;margin-left: 10px;margin-top: 5px;height: fit-content;"  class="btn btn-outline-primary" (click)="nopback()"> Back</button>
+    </div>
+    </form> 
+        <table class="table table-bordered " style="margin-left: 30px; width: 90%;font-size: 15px;">
+            <tr class="table_header">
+                <th style="width:150px">S.No 
+                    
+                </th>
+                
+                <th>Product Name</th>
+                <th>Main Problem</th>
+                <th>Sub Problem</th>
+                
+                <th>Action</th>
+            </tr>
+            <tr *ngFor="let d of nopsummary_parent; index as listIndex">
+    
+                <th scope="row">{{ (presentpage-1)*pageSize+listIndex+1 }}</th>
+              
+                <td >{{d?.asset_name?.name}}</td>
+                <td>
+                <fieldset >
+                    <mat-form-field style="width: 140px;">
+                      <mat-label>Main Problem</mat-label>
+                      <input matInput type="text" [value]="d?.parent_name" [(ngModel)]="parentvalue"
+                      (keyup)="smsnopchange($event)" formControlName="parentname"
+                      autocomplete="off" >
+                    </mat-form-field>
+                  </fieldset>
+                  <button type="button"  (click)="update_parentname(d,listIndex)" class="btn btn-outline-success"
+                style="border-radius: 40px;">Save</button>
+                </td>
+                <!-- <td >{{d?.parent_name}}</td> -->
+                <td>{{d?.child_name}}
+                  
+                </td>
+                <td>
+                    <button mat-icon-button matTooltip=" Edit" class="iconbutton"
+                                (click)="nopchildEdit(d)" color="primary">
+                                <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                  
+                        <mat-icon  style="color: gray;cursor: pointer;" 
+                      
+                         (click)="nopchildEditDelete(d)">delete
+                        </mat-icon>
+                       
+                    
+                    
+                </td>
+                
+            </tr>
+            <tr *ngIf="nopsummary_parent.length==0">
+                <td colspan="5">No Records Found</td>
+            </tr>
+            <tr>
+
+            </tr>
+        </table>
+        
+
+<div class="modal fade" id="productmodalsubspe1" data-backdrop="static" data-keyboard="false"  
+role="dialog" tabindex="-5">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<form [formGroup]="nopeditform">
+<div class="modal-header" style="background-color:rgb(204, 255, 204)">
+<h2 class="modal-title" style="font-weight:bold;font-family:Times New Roman;font-size:20px;margin-left:30%;">Add a New Main Problem</h2>
+<button #modalcloses class="close" type="button" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+
+<div class="row">
+
+    <div class="col-md-3">
+        <mat-form-field style="width:280px">
+            <mat-label>New Main Problem</mat-label>
+            <input type="text"  matInput formControlName="parent_name" required >
+        </mat-form-field>
+    </div>
+</div>
+
+
+</div>
+<div class="modal-footer">
+<button type="button" (click)="createspecificationsdata1()"  class="btn btn-outline-success">Submit</button>
+<button type="button" class="close" data-dismiss="modal" class="btn btn-outline-danger">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+
+
+</div> 
+<br><br>
+</div>
+
+<div *ngIf="ismakemodel" >
+    <h1 style="color: blue;font-size: 20px;margin-left: 2%;">NOP Creation</h1>
+    <form [formGroup]="sms_makemodel_new_form" style="margin-left:2%">
+        <div class="row">
+            <div class='col-md-3 col-sm-3'>
+                <mat-form-field class="example-full-width" style="margin-left: 50px;width: 200px;">
+                    <mat-label>Product Name</mat-label>
+                 <input class="toolbar-search" type="text" matInput autocomplete="off" matInput (keypress)="kyenbdata1($event)" placeholder="Product name"  [matAutocomplete]="productname" formControlName="productname" >
+    
+                    <mat-autocomplete #productname="matAutocomplete"  [displayWith]="assetnameinterface3" (opened)="autocompleteproductname1()">
+                       <mat-option *ngIf="isLoading">Loading..</mat-option>
+                       <ng-container *ngIf="!isLoading">
+                          <mat-option  title="{{d.name}}"*ngFor="let d of productlist1" [value]="d" >
+                          {{d.name}}
+                          </mat-option>
+                       </ng-container> 
+                    </mat-autocomplete> 
+                 </mat-form-field>
+            </div>
+           
+
+            <button    type="button" class="btn btn-outline-success" matTooltip="Add Make and Model  Data"  style="border-radius: 40px;height: 40px;" (click)="addnew_sms_data(1)"><span class="fa fa-plus"></span> Add NOP</button>
+
+        </div>
+        <div  formArrayName="mainArray" style="margin-left: 1%;">
+            <div class="row" >
+                <table class="table table-bordered" style="width: 70%;" *ngIf="sms_makemodel_new_form['controls'].mainArray.controls.length!=0">
+                    <thead class="table_header">
+                        <th>S.No</th>
+                        <th>Main Problem</th>
+                        <th>Sub Problem</th>
+                        
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let dta of sms_makemodel_new_form['controls'].mainArray.controls;let k=index" [formGroupName]="k">
+                            <td>{{k+1}}</td>
+                            <td>
+                               
+                                <mat-form-field style="width: 300px;margin-left: 10%;" >
+                                    <mat-placeholder>Main Problem</mat-placeholder>
+                                    <input type="text"  matInput formControlName="parent_name" required>
+                                    
+                                   
+                                </mat-form-field>
+
+                                
+                            </td>
+                            <td >
+                               
+                                <ul>
+                                    <li *ngFor="let mdl of dta.value.model_array">{{mdl.name}}</li>
+                                </ul>
+                                <div >
+                                    <button mat-mini-fab color="primary" matTooltip="Add Model Data"  style="float: right;" (click)="addnew_child_data(k)"><mat-icon>add</mat-icon></button>
+                                    <!-- <input type="text" formControlName="Child_name" required matInput>   formArrayName="model_array"-->
+                                    <mat-form-field style="width: 300px;" >
+                                        <mat-placeholder>Sub Problem</mat-placeholder>
+                                    <input type="text" formControlName="Child_name" required matInput>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <!-- <td>
+                            
+                                <button mat-mini-fab color="primary" [disabled]="!dta.value.main_enb" style="float: right;margin-left: 4%;" (click)="deleteDataNewModelchild(k)"><mat-icon>delete</mat-icon></button>
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button type="button"  style="border-radius: 30px;" matTooltip="Submit" color="primary" class="btn btn-success" (click)="sms_newparentchild_data()">Submit</button>
+        <button type="button" style="border-radius: 40px;margin-left: 10px;margin-top: 5px;height: fit-content;"  class="btn btn-outline-primary" (click)="nopback()"> Back</button>
+        <div style="height: 400px;">
+
+        </div>
+    </form>
+
+</div>

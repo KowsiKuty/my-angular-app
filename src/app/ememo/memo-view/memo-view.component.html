@@ -1,0 +1,2502 @@
+<div style="margin-left: 25px">
+  <div>
+    <table style="margin-top: 1%; width: 100%">
+      <tr>
+        <td>
+          <div
+            id="id_rdo_IOM_nfa_bna"
+            style="color: #a39e9e; font-family: 'Arial Narrow Bold', sans-serif"
+          >
+            {{ rdo_IOM_nfa_bna }}
+          </div>
+        </td>
+        <td>
+          <div *ngIf="this.priorityName === 'High'; else elseBlock1">
+            <div
+              id="id_priorityName1"
+              style="
+                color: #ec1b1b;
+                font-family: 'Arial Narrow Bold', sans-serif;
+              "
+            >
+              Priority&nbsp;&nbsp;&nbsp;&nbsp;{{ priorityName }}
+            </div>
+          </div>
+          <ng-template #elseBlock1>
+            <div
+              id="id_priorityName2"
+              style="
+                color: #a39e9e;
+                font-family: 'Arial Narrow Bold', sans-serif;
+              "
+            >
+              Priority&nbsp;&nbsp;&nbsp;&nbsp;{{ priorityName }}
+            </div>
+          </ng-template>
+        </td>
+        <td>
+          <div *ngIf="this.confidentialselect === 'NO'; else elseBlock">
+            <div
+              id="id_confidentialselect1"
+              style="
+                color: #a39e9e;
+                font-family: 'Arial Narrow Bold', sans-serif;
+              "
+            >
+              Confidential&nbsp;&nbsp;&nbsp;&nbsp;{{ this.confidentialselect }}
+            </div>
+          </div>
+          <ng-template #elseBlock>
+            <div
+              id="id_confidentialselect2"
+              style="
+                color: #ec1b1b;
+                font-family: 'Arial Narrow Bold', sans-serif;
+              "
+            >
+              Confidential&nbsp;&nbsp;&nbsp;&nbsp;{{ this.confidentialselect }}
+            </div>
+          </ng-template>
+        </td>
+        <td>
+          <div
+            *ngIf="sharedService.Memofrom === 'IOMEMO' && Versioned === false && buttonshow"
+          >
+            <button
+              id="id_replywithnewmemo"
+              type="button"
+              class="btn btn-success"
+              [routerLink]="'/ememo/memoForward'"
+              [queryParams]="{ memofrom_rf: 'REPLY', MemoView: 'NO' }"
+              skipLocationChange
+            >
+              Reply With New Memo
+            </button>
+          </div>
+        </td>
+        <td>
+          <button
+            id="id_editandresubmit"
+            type="button"
+            class="btn btn-success"
+            *ngIf="
+              isSender &&
+              MemoStatus_openclosed === 'OPEN' &&
+              AllareApproved === false &&
+              Versioned === false && buttonshow
+            "
+            (click)="CloseAndClone()"
+          >
+            Edit & Resubmit
+          </button>
+        </td>
+        <td>
+          <div *ngIf="permissionToHandle === 'true'&& buttonshow ">
+            <button
+              id="id_forwardmemo"
+              type="button"
+              class="btn btn-success"
+              *ngIf="Versioned === false"
+              (click)="Forward()"
+            >
+              Forward Memo
+            </button>
+          </div>
+        </td>
+        <td>
+          <button
+            id="id_skip"
+            type="button"
+            class="btn btn-success"
+            *ngIf="
+              isSender &&
+              MemoStatus_openclosed === 'OPEN' &&
+              AllareApproved === false &&
+              Versioned === false &&
+              this.isSkip === false && buttonshow
+            "
+            (click)="Skip_Rec_App()"
+          >
+            SKIP
+          </button>
+        </td>
+        <!-- // Ask opinion only in the case of (can_Approver is true || can_recommand is true) and memostatus is open and opinion status is -1  -->
+        <td>
+          <div>
+            <button
+              id="id_askopinion"
+              type="button"
+              class="btn btn-success"
+              data-toggle="modal"
+              *ngIf="Ask_Opinion && buttonshow"
+              data-target=".opinionEmployee"
+            >
+              Ask Opinion
+            </button>
+          </div>
+          <div>
+            <button
+              id="id_cancelopinion"
+              type="button"
+              class="btn btn-success"
+              (click)="cancelopinionRequest()"
+              *ngIf="CancelAskedOpinion && buttonshow"
+            >
+              Cancel Opinion
+            </button>
+          </div>
+        </td>
+        <td>
+          <button
+            id="id_closememo"
+            type="button"
+            class="btn btn-danger"
+            *ngIf="
+              isSender &&
+              MemoStatus_openclosed === 'OPEN' &&
+              Versioned === false && buttonshow
+            "
+            (click)="CloseMemo()"
+          >
+            Close Memo
+          </button>
+        </td>
+        <td>
+          <button
+            id="id_download"
+            mat-button
+            [matMenuTriggerFor]="menu"
+            class="btn btn-primary"
+          >
+            Download
+          </button>
+          <mat-menu #menu="matMenu">
+            <button id="id_withcom" mat-menu-item (click)="Download_WithComm()">
+              With Comments
+            </button>
+            <button id="id_withoutcom" mat-menu-item (click)="Download_WoutComm()">
+              Without Comments
+            </button>
+          </mat-menu>
+        </td>
+        <td>
+          <button
+            id="id_print"
+            type="button"
+            class="btn btn-primary"
+            *ngIf="Versioned === false && buttonshow"
+            (click)="printFile()"
+          >
+            Print
+          </button>
+        </td>
+        <td>
+          <button
+            id="id_back"
+            type="button"
+            class="btn btn-primary"
+            (click)="back()"
+          >
+            Back
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div id="id_createdDate">
+    <b>Created Date :</b>
+    {{ createdDate | date : "dd-MMM-yyyy hh:mm a" : "offset" }} / <b>From :</b>
+    {{ senderName }}
+  </div>
+  <div>
+    <table style="vertical-align: top; margin-top: 1%" class="tablenoborder">
+      <tr id="id_Recommender">
+        Recommender:
+        <td
+          *ngFor="
+            let recom of recomList;
+            index as i;
+            first as isFirst;
+            last as isLast
+          "
+          [id]="'id_listofRecommender-' + i"
+        >
+          <div *ngIf="recom.status === 0">
+            <div style="color: white; background-color: grey">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ recom.full_name }}
+            </div>
+          </div>
+          <div *ngIf="recom.status === 1 || recom.status === 7">
+            <div style="color: white; background-color: blue">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ recom.full_name }}
+            </div>
+          </div>
+          <div *ngIf="recom.status === 2 || recom.status === 8">
+            <div style="color: white; background-color: green">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ recom.full_name }}
+            </div>
+          </div>
+          <div *ngIf="recom.status === 3 || recom.status === 9">
+            <div style="color: white; background-color: red">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ recom.full_name }}
+            </div>
+          </div>
+          <div *ngIf="recom.status == 4 || recom.status === 10">
+            <div style="color: white; background-color: rgb(246, 68, 214)">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ recom.full_name }}
+            </div>
+          </div>
+          <div *ngIf="recom.status == 6">
+            <div style="color: white; background-color: mediumpurple">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ recom.full_name }}
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr id="id_Approver">
+        Approver:
+        <td
+          *ngFor="
+            let approver of approverList;
+            index as i;
+            first as isFirst;
+            last as isLast
+          "
+          [id]="'id_listofApprover-' + i"
+        >
+          <div *ngIf="approver.status === 0">
+            <div style="color: white; background-color: grey">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ approver.full_name }}
+            </div>
+          </div>
+          <div *ngIf="approver.status === 1 || approver.status === 7">
+            <div style="color: white; background-color: blue">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ approver.full_name }}
+            </div>
+          </div>
+          <div *ngIf="approver.status === 2 || approver.status === 8">
+            <div style="color: white; background-color: green">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ approver.full_name }}
+            </div>
+          </div>
+          <div *ngIf="approver.status === 3 || approver.status === 9">
+            <div style="color: white; background-color: red">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ approver.full_name }}
+            </div>
+          </div>
+          <div *ngIf="approver.status === 4 || approver.status === 10">
+            <div style="color: white; background-color: rgb(246, 68, 214)">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ approver.full_name }}
+            </div>
+          </div>
+          <div *ngIf="approver.status === 6">
+            <div style="color: white; background-color: mediumpurple">
+              <span *ngIf="!isFirst"
+                ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+              ></span>
+              {{ approver.full_name }}
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="flexrow">
+    <div>
+      <mat-accordion>
+        <mat-expansion-panel hideToggle>
+          <mat-expansion-panel-header style="width: fit-content">
+            <mat-panel-title>
+              Opinion List
+              <i class="fa fa-angle-double-down" style="font-size: 24px"></i>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div>
+            <table class="table1">
+              <thead>
+                <tr>
+                  <th>Raised By</th>
+                  <th>Remarks</th>
+                  <th>Opinioner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let data of OpinionList; index as i">
+                  <tr>
+                    <td
+                      [id]="'id_listofopinioner1-' + i"
+                      [attr.rowspan]="data.opinioner.length + 1"
+                      class="tabletext"
+                    >
+                      {{ data?.raiser?.name }}
+                    </td>
+                    <td [attr.rowspan]="data.opinioner.length + 1">
+                      {{ data?.comment == null ? "-" : data?.comment }}
+                    </td>
+                  </tr>
+                  <tr *ngFor="let opinionrs of data?.opinioner; index as i">
+                    <td class="tabletext" [id]="'id_listofopinioner2-' + i">
+                      <span
+                        [ngClass]="
+                          opinionrs?.status?.id == 1 ||
+                          opinionrs?.status?.id == 7
+                            ? 'pendingstate whitecolor'
+                            : opinionrs?.status?.id == 0
+                            ? 'pendingQueue whitecolor'
+                            : opinionrs?.status?.id == 6
+                            ? 'skipped whitecolor'
+                            : opinionrs?.status?.id == 2 ||
+                              opinionrs?.status?.id == 8
+                            ? 'approvedState whitecolor'
+                            : opinionrs?.status?.id == 4 ||
+                              opinionrs?.status?.id == 10
+                            ? 'askedopinion whitecolor'
+                            : opinionrs?.status?.id == 3 ||
+                              opinionrs?.status?.id == 9
+                            ? 'rejectedState whitecolor'
+                            : ''
+                        "
+                      >
+                        {{ opinionrs?.user?.name }}
+                      </span>
+                    </td>
+                  </tr>
+                </ng-container>
+                <div *ngIf="OpinionList?.length == 0">No Records Found!</div>
+              </tbody>
+            </table>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <div>
+      <mat-accordion>
+        <mat-expansion-panel hideToggle>
+          <mat-expansion-panel-header style="width: fit-content" id="memodet">
+            <mat-panel-title>
+              Memo Details
+              <i class="fa fa-angle-double-down" style="font-size: 24px"></i>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div>
+            <table style="vertical-align: top; margin-top: 0%" class="table1">
+              <tr>
+                <td><b>Memo No</b></td>
+                <td id="id_ionName">{{ ionName }}</td>
+              </tr>
+              <tr>
+                <td><b>Author</b></td>
+                <td id="id_createdBy">{{ createdBy }}</td>
+              </tr>
+              <tr>
+                <td><b>Category</b></td>
+                <td id="id_categoryName">{{ categoryName }}</td>
+              </tr>
+              <tr>
+                <td><b>SubCategory</b></td>
+                <td id="id_subCategoryName">{{ subCategoryName }}</td>
+              </tr>
+              <tr *ngIf="refIonName">
+                <td *ngIf="refIonName" colspan="2" id="id_refIonName">
+                  <b>Reference</b
+                  ><span
+                    class="btn btn-link"
+                    (click)="getReference(memoViewList.ref_id)"
+                  >
+                    {{ refIonName }}</span
+                  >
+                </td>
+              </tr>
+              <tr *ngIf="sharedService.Memofrom === 'IOMEMO'">
+                <td>
+                  <b>To</b>
+                </td>
+                <td>
+                  <span
+                    *ngFor="
+                      let tolist of toList;
+                      index as i;
+                      first as isFirst;
+                      last as isLast
+                    "
+                    [id]="'id_toList' + i"
+                  >
+                    <ng-container *ngIf="!isFirst">,</ng-container>
+                    {{ tolist.full_name }}
+                    <ng-container *ngIf="isLast">,</ng-container>
+                  </span>
+                  <span
+                    *ngFor="
+                      let dept of departmentList;
+                      first as isFirst;
+                      index as i
+                    "
+                    [id]="'id_departmentList' + i"
+                  >
+                    <ng-container *ngIf="!isFirst">, </ng-container>
+                    <div *ngIf="dept.branch_code">
+                      ({{ dept.branch_code }} - {{ dept.branch }})
+                    </div>
+                    <div *ngIf="dept.name">{{ dept.name }}</div>
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="is_sender_dept">
+                <td><b>BTo</b></td>
+                <td>
+                  <span
+                    *ngFor="let bto of btoList; index as i"
+                    [id]="'id_btoList' + i"
+                  >
+                    {{ bto.full_name }},</span
+                  >
+                </td>
+              </tr>
+              <tr *ngIf="sharedService.Memofrom === 'IOMEMO'">
+                <td><b>CC</b></td>
+                <td>
+                  <span
+                    *ngFor="let cc of ccList; index as i"
+                    [id]="'id_ccList' + i"
+                  >
+                    {{ cc.full_name }},</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <b>Recommended By</b>
+                </td>
+                <td>
+                  <span
+                    *ngFor="let recomm of recomList; index as i"
+                    [id]="'id_recomList' + i"
+                  >
+                    <div *ngIf="recomm.status === 2">
+                      <span>{{ recomm.order }}.{{ recomm.full_name }} </span>
+                    </div>
+                    <div *ngIf="recomm.status === 8">
+                      <span
+                        >{{ recomm.order }}.{{ recomm.full_name }} (DA
+                        Recommended)</span
+                      >
+                    </div>
+                    <div *ngIf="recomm.status === 3">
+                      <span
+                        >{{ recomm.order }}.{{ recomm.full_name }}(Not
+                        Recommended)
+                      </span>
+                    </div>
+                    <div *ngIf="recomm.status === 9">
+                      <span
+                        >{{ recomm.order }}.{{ recomm.full_name }}(DA Not
+                        Recommended)
+                      </span>
+                    </div>
+                    <div *ngIf="recomm.status === 6">
+                      <span
+                        >{{ recomm.order }}.{{ recomm.full_name }}(Skipped)
+                      </span>
+                    </div>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td *ngIf="sharedService.Memofrom === 'IOMEMO'">
+                  <b>Signed By</b>
+                </td>
+                <td
+                  id="id_Memofrom"
+                  *ngIf="
+                    sharedService.Memofrom === 'NFA-MEMO' ||
+                    sharedService.Memofrom === 'BNA-MEMO'
+                  "
+                >
+                  <b>Approved By</b>
+                </td>
+                <td>
+                  <span
+                    *ngFor="let approver of approverList; index as i"
+                    [id]="'id_approverList' + i"
+                  >
+                    <div *ngIf="approver.status === 2">
+                      <span
+                        >{{ approver.order }}.{{
+                          approver.full_name
+                        }}
+                        (Approved),</span
+                      >
+                    </div>
+                    <div *ngIf="approver.status === 8">
+                      <span
+                        >{{ approver.order }}.{{ approver.full_name }} (DA
+                        Approved),</span
+                      >
+                    </div>
+                    <div *ngIf="approver.status === 3">
+                      <span
+                        >{{ approver.order }}.{{
+                          approver.full_name
+                        }}
+                        (Review/Resubmit initiated),</span
+                      >
+                    </div>
+                    <div *ngIf="approver.status === 9">
+                      <span
+                        >{{ approver.order }}.{{ approver.full_name }} (DA
+                        Review/Resubmit initiated),</span
+                      >
+                    </div>
+                    <div *ngIf="approver.status === 6">
+                      <span
+                        >{{ approver.order }}.{{
+                          approver.full_name
+                        }}
+                        (Skipped),</span
+                      >
+                    </div>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><b>Department Reference No</b></td>
+                <td id="id_manualreference">{{ manualreference }}</td>
+              </tr>
+              <tr>
+                <td><b>Watermark Text</b></td>
+                <td id="id_watermarktext">{{ watermarktext }}</td>
+              </tr>
+              <tr>
+                <td><b>Parallel Delivery</b></td>
+                <td
+                  *ngIf="this.paralleldelivery === true"
+                  id="id_paralleldeliveryyes"
+                >
+                  Yes
+                </td>
+                <td
+                  *ngIf="this.paralleldelivery === false"
+                  id="id_paralleldeliveryno"
+                >
+                  No
+                </td>
+              </tr>
+            </table>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+  <div>
+    <span>Attachment(s):</span>
+    <span
+      style="margin-left: 10px"
+      *ngFor="let attachment of attachmentData; index as i"
+      [id]="'id_attachmentData' + i"
+      class="btn btn-link" matTooltip="Images" >
+      <span
+        data-toggle="modal"
+        data-target="#exampleModal1"
+        (click)="imagePreview_attachment(attachment.id, attachment.file_name)"
+        >{{ attachment.file_name }},</span>
+      <button
+      id="id_getapp"
+        mat-icon-button
+        style="color: gray; margin-right: 2px"
+        (click)="downloaddata(attachment.id, attachment.file_name)"
+      >
+        <mat-icon> get_app</mat-icon>,
+      </button>
+    </span>
+
+    <div
+      *ngIf="
+        this.fileextension === 'png' ||
+        this.fileextension === 'jpeg' ||
+        this.fileextension === 'jpg' ||
+        this.fileextension === 'JPG' ||
+        this.fileextension === 'JPEG'
+      "
+    >
+      <!-- <div *ngIf='this.fileextension === "pdf";else dismiss'>
+                    <pdf-viewer src={{pdffilename}} [rotation]="0" [fit-to-page]="true" [original-size]="true"
+                        [show-all]="true" style="display:block;">
+                    </pdf-viewer>
+                </div> -->
+      <!-- <ng-template #dismiss> -->
+      <div
+        class="modal fade"
+        id="exampleModal1"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <!-- w-100 class so that header
+                div covers 100% width of parent div -->
+              <h5 class="modal-title w-100" id="exampleModalLabel">
+                Attachment View
+              </h5>
+
+              <button
+              id="id_back1"
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true"> × </span>
+              </button>
+            </div>
+
+            <!--Modal body with image-->
+            <div class="modal-body">
+              <img src="{{ imgfilename }}" />
+            </div>
+
+            <div class="modal-footer"></div>
+          </div>
+        </div>
+      </div>
+      <!-- </ng-template> -->
+    </div>
+  </div>
+  <div>
+    <span>Forward Comments:</span>
+    <span
+      >{{ commentdata1 }}
+      <div *ngIf="showannotation" style="text-align: right">
+        <button
+          id="id_submitannotation1"
+          type="button"
+          class="btn btn-outline-success"
+          (click)="submitannotation()"
+          style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+          color="primary"
+          *ngIf="Versioned === false"
+        >
+          <span></span> Notify Annotation
+        </button>
+      </div>
+      <div *ngIf="showannotations" style="text-align: right">
+        <button
+          id="id_submitannotation2"
+          type="button"
+          class="btn btn-outline-success"
+          (click)="submitannotation()"
+          style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+          color="primary"
+          *ngIf="Versioned === false"
+        >
+          <span></span> Notify Annotation
+        </button>
+      </div>
+    </span>
+  </div>
+  <div *ngIf="commentdatas == true">
+    <div *ngIf="frwdcmts">
+      <button
+        id="id_AddComments"
+        type="button"
+        class="btn btn-outline-success"
+        style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+        color="primary"
+        data-toggle="modal"
+        data-target="#rejectModalForForwardComments"
+      >
+        <span class="fa fa-plus"></span>
+        Add Comments
+      </button>
+    </div>
+    <div
+      class="modal fade"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+      id="rejectModalForForwardComments"
+    >
+      <div class="modal-dialog modal-xl" style="width: 70%">
+        <div class="modal-content">
+          <div class="modal-header" style="background: #ddefdd">
+            <h2 class="modal-title" style="color: black">Forward Comments</h2>
+            <button
+            id="id_back2"
+              type="button"
+              #closebutton
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div
+            style="
+              margin-left: 70px;
+              margin-right: 80%;
+              margin-top: 2%;
+              width: 40%;
+            "
+          >
+            <form
+              [formGroup]="ForwardcommentForm"
+              (ngSubmit)="commentCreateForm()"
+            >
+              <table>
+                <div>
+                  <tr>
+                    <td>
+                      <mat-form-field id="id_forwardcomm" style="width: 35rem; margin-left: 7px">
+                        <mat-label>Forward Comments</mat-label>
+                        <input
+                          matInput
+                          style="font-size: small"
+                          formControlName="comment"
+                          placeholder="Your Comments"
+                          autocomplete="off"
+                        />
+                      </mat-form-field>
+                    </td>
+                  </tr>
+                </div>
+              </table>
+              <tr>
+                <button
+                  id="id_submit"
+                  type="submit"
+                  style="float: left"
+                  class="btn btn-outline-primary"
+                  style="border-radius: 20px"
+                >
+                  Submit</button
+                >&nbsp;&nbsp;
+                <button
+                  id="id_cancel"
+                  type="button"
+                  data-dismiss="modal"
+                  class="btn btn-outline-primary"
+                  style="border-radius: 20px"
+                >
+                  Cancel
+                </button>
+              </tr>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br />
+  <div class="dropdown-text" id="txtt">
+    <table style="width: 100%">
+      <tbody>
+        <tr>
+          <td id="id_subjectName">
+            <b>
+              <span style="color: black; font-size: 16px">
+                {{ subjectName }}</span
+              ></b
+            >
+          </td>
+          <td style="text-align: right">
+            <div *ngIf="permissionToHandle === 'true'">
+              <button
+                id="id_comment"
+                type="button"
+                class="btn btn-outline-success"
+                (click)="addReplyCommentBtn(addReply.comment)"
+                style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+                color="primary"
+                (click)="addReply.comment = !addReply.comment"
+                *ngIf="can_comment && Versioned === false"
+              >
+                <span class="fa fa-plus"></span> Comment
+              </button>
+
+              <!-- // Add Opinion only in the case of Opinion status = 2  -->
+              <button
+                id="id_opinion"
+                type="button"
+                class="btn btn-outline-success"
+                (click)="OpinionTextBtn(addReply.opinion)"
+                style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+                color="primary"
+                (click)="addReply.opinion = !addReply.opinion"
+                *ngIf="Can_Opinion"
+              >
+                <span class="fa fa-plus"></span> Opinion
+              </button>
+
+              <button
+                id="id_approve"
+                type="button"
+                class="btn btn-outline-success"
+                (click)="approveTextBtn(addReply.approve)"
+                style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+                color="primary"
+                (click)="addReply.approve = !addReply.approve"
+                *ngIf="
+                  can_approve &&
+                  MemoStatus_openclosed === 'OPEN' &&
+                  Versioned === false
+                "
+              >
+                <span class="fa fa-plus"></span> Approve
+              </button>
+
+              <button
+                id="id_reviewresubmit"
+                type="button"
+                class="btn btn-outline-success"
+                (click)="resubmitTextBtn(addReply.resubmit)"
+                style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+                color="primary"
+                (click)="addReply.resubmit = !addReply.resubmit"
+                *ngIf="
+                  can_approve &&
+                  MemoStatus_openclosed === 'OPEN' &&
+                  Versioned === false
+                "
+              >
+                <span class="fa fa-plus"></span> Review/Resubmit
+              </button>
+
+              <!-- <button type="button" class="btn btn-outline-success" (click)="addAssignBtn(addReply.assign)"
+                            style="border-radius: 20px;margin-left:5px;margin-top: 1px;" color="primary"
+                            (click)="addReply.assign = !addReply.assign;"
+                            *ngIf="is_toemployee && sharedService.Memofrom === 'IOMEMO' && Versioned === false"><span
+                                class="fa fa-plus"></span>
+                            Assign</button> -->
+
+              <button
+                id="id_recommend"
+                type="button"
+                class="btn btn-outline-success"
+                (click)="addRecommendBtn(addReply.recommend)"
+                style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+                color="primary"
+                (click)="addReply.recommend = !addReply.recommend"
+                *ngIf="Versioned === false && can_recommend"
+              >
+                <span class="fa fa-plus"></span> Recommend
+              </button>
+              <button
+                id="id_paralleldelivery"
+                type="button"
+                class="btn btn-outline-success"
+                (click)="submitparallel()"
+                style="border-radius: 20px; margin-left: 5px; margin-top: 1px"
+                color="primary"
+                *ngIf="
+                  isSender &&
+                  Versioned === false &&
+                  this.paralleldelivery === false
+                "
+              >
+                <span></span> Parallel Delivery
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="table-responsive" id="cmttab">
+    <table class="tablenoborder" style="vertical-align: top">
+      <tr>
+        <td *ngIf="ShowExpandMemoView" style="text-align: right">
+          <span *ngIf="ShowExpandMemoView1" (click)="ExpandMemoView()"
+            ><i
+              class="fa fa-angle-double-right"
+              style="font-size: 24px; color: blue"
+            ></i>
+          </span>
+          <span *ngIf="!ShowExpandCommentView" (click)="NormalView()"
+            ><i
+              class="fa fa-angle-double-left"
+              style="font-size: 24px; color: darkred"
+            ></i
+          ></span>
+        </td>
+        <td *ngIf="ShowExpandCommentView">
+          <span *ngIf="ShowExpandCommentView1" (click)="ExpandCommentView()"
+            ><i class="fa fa-angle-double-left" style="font-size: 24px"></i
+          ></span>
+          <span *ngIf="!ShowExpandMemoView" (click)="NormalView()"
+            ><i class="fa fa-angle-double-right" style="font-size: 24px"></i
+          ></span>
+        </td>
+      </tr>
+      <tr>
+        <td *ngIf="ShowExpandMemoView" [ngStyle]="tdwidth1.style" id="t1">
+          <table class="table scrolltable1 table-bordered" id="t2">
+            <tbody>
+              <tr>
+                <td>
+                  <div
+                    data-toggle="modal"
+                    [innerHtml]="contentName"
+                    data-keyboard="false"
+                    data-backdrop="static"
+                    (input)="updateModel($event)"
+                    data-target="#myModal"
+                    (mouseup)="bindSelection($event)"
+                    id="para"
+                  ></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td *ngIf="ShowExpandCommentView" [ngStyle]="tdwidth2.style" id="t3">
+          <table class="table scrolltable1 tablenoborder" id="t4">
+            <tbody>
+              <tr>
+                <td id="tltab">
+                  <!-- Comment Section Start -->
+                  <div *ngIf="addReply.comment">
+                    <form [formGroup]="commentForm">
+                      <div
+                        class="form-group shadow-textarea"
+                        style="
+                          padding-top: 15px;
+                          padding-right: 10px;
+                          padding-left: 10px;
+                          border-radius: 4px;
+                          border: 1px solid #ddd;
+                        "
+                      >
+                        <textarea
+                          id="cmmd1"
+                          class="form-control z-depth-1"
+                          formControlName="content"
+                          rows="3"
+                          placeholder="Comment..."
+                        ></textarea>
+                        <div class="form-group">
+                          <input
+                            type="file"
+                            accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,.dotx,.dotm,.docb,
+                                                    .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png"
+                            style="width: 250px; margin-top: 10px"
+                            name="file-comment"
+                            #userPhoto
+                            (change)="fileChange($event)"
+                            class="inputfile inputfile-4"
+                            multiple="multiple"
+                          />
+                          <div class="memoView-popupBtnDiv">
+                            <button
+                              id="id_cancel1"
+                              class="btn btn-outline-success"
+                              (click)="onCancel(addReply.comment)"
+                              (click)="addReply.comment = !addReply.comment"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              id="id_saveasdraft"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="commentdraftClick_disabled"
+                              (click)="
+                                commentdraft_Click(
+                                  commentType.comments,
+                                  commentForm
+                                )
+                              "
+                            >
+                              Save as Draft
+                            </button>
+                            <button
+                              id="id_comment1"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="comment2Click_disabled"
+                              (click)="createCommentform()"
+                            >
+                              Comment
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- Comment Section End -->
+                  <!--  Opinion Comment Section Start -->
+                  <div *ngIf="addReply.opinion">
+                    <form [formGroup]="opinionForm">
+                      <div
+                        class="form-group shadow-textarea"
+                        style="
+                          padding-top: 15px;
+                          padding-right: 10px;
+                          padding-left: 10px;
+                          border-radius: 4px;
+                          border: 1px solid #ddd;
+                        "
+                      >
+                        <mat-radio-group
+                          aria-label="Select an option"
+                          formControlName="status"
+                          (change)="OpinionChange($event)"
+                        >
+                          &nbsp;&nbsp;
+                          <mat-radio-button [value]="2"
+                            >Recommmend</mat-radio-button
+                          >
+                          &nbsp;&nbsp;
+                          <mat-radio-button [value]="3"
+                            >Not Recommend
+                          </mat-radio-button>
+                        </mat-radio-group>
+                        <br />
+                        <textarea
+                          class="form-control z-depth-1"
+                          formControlName="content"
+                          rows="3"
+                          placeholder="Your reply to Memo..."
+                        ></textarea>
+                        <br />
+                        <div class="form-group">
+                          <!-- <input type="file" accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,.dotx,.dotm,.docb,
+                                                    .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png"
+                                                        style="width:250px;margin-top: 10px;" name="file-comment"
+                                                        #userPhoto (change)="fileChange($event)"
+                                                        class="inputfile inputfile-4" multiple="multiple"> -->
+                          <div class="memoView-popupBtnDiv">
+                            <button
+                              id="id_cancel2"
+                              class="btn btn-outline-success"
+                              (click)="onCancel(addReply.opinion)"
+                              (click)="addReply.opinion = !addReply.opinion"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              id="id_saveasdraft2"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="commentdraftClick_disabled"
+                              (click)="
+                                commentdraft_Click(
+                                  commentType.opinion_cmt,
+                                  opinionForm
+                                )
+                              "
+                            >
+                              Save as Draft
+                            </button>
+                            <button
+                              id="id_submit_opinion"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="Opinion2Click_disabled"
+                              (click)="createOpinionform()"
+                            >
+                              Submit
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!--  Opinion Comment Section END -->
+                  <!-- APPROVE COMMENT START -->
+                  <div *ngIf="addReply.approve">
+                    <form [formGroup]="approveForm">
+                      <div
+                        class="form-group shadow-textarea"
+                        style="
+                          padding-top: 15px;
+                          padding-right: 10px;
+                          padding-left: 10px;
+                          border-radius: 4px;
+                          border: 1px solid #ddd;
+                        "
+                      >
+                        <textarea
+                          class="form-control z-depth-1"
+                          formControlName="content"
+                          rows="3"
+                          placeholder=""
+                        ></textarea>
+                        <div class="form-group">
+                          <input
+                            type="file"
+                            accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,.dotx,.dotm,.docb,
+                                                    .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png"
+                            style="width: 250px; margin-top: 10px"
+                            name="file-comment"
+                            #userPhoto
+                            (change)="fileChange($event)"
+                            class="inputfile inputfile-4"
+                            multiple="multiple"
+                          />
+                          <div class="memoView-popupBtnDiv">
+                            <button
+                              id="id_cancel3"
+                              class="btn btn-outline-success"
+                              (click)="onCancel(addReply.comment)"
+                              (click)="addReply.approve = !addReply.approve"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              id="id_saveasdraft_approve"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="commentdraftClick_disabled"
+                              (click)="
+                                commentdraft_Click(
+                                  commentType.approver_cmt,
+                                  approveForm
+                                )
+                              "
+                            >
+                              Save as Draft
+                            </button>
+                            <button
+                              id="id_approve1"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="Approve2Click_disabled"
+                              (click)="approveCommentForm()"
+                            >
+                              Approve
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- APPROVE COMMENT END -->
+                  <!-- Review/Resubmit COMMENT START -->
+                  <div *ngIf="addReply.resubmit">
+                    <form [formGroup]="resubmitForm">
+                      <div
+                        class="form-group shadow-textarea"
+                        style="
+                          padding-top: 15px;
+                          padding-right: 10px;
+                          padding-left: 10px;
+                          border-radius: 4px;
+                          border: 1px solid #ddd;
+                        "
+                      >
+                        <textarea
+                          class="form-control z-depth-1"
+                          formControlName="content"
+                          rows="3"
+                          placeholder=""
+                        ></textarea>
+                        <div class="form-group">
+                          <input
+                            type="file"
+                            accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,.dotx,.dotm,.docb,
+                                                    .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png"
+                            style="width: 250px; margin-top: 10px"
+                            name="file-comment"
+                            #userPhoto
+                            (change)="fileChange($event)"
+                            class="inputfile inputfile-4"
+                            multiple="multiple"
+                          />
+                          <div class="memoView-popupBtnDiv">
+                            <button
+                              id="id_cancel4"
+                              class="btn btn-outline-success"
+                              (click)="onCancel(addReply.comment)"
+                              (click)="addReply.resubmit = !addReply.resubmit"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              id="id_saveasdraft_comment"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="commentdraftClick_disabled"
+                              (click)="
+                                commentdraft_Click(
+                                  commentType.reviewresubmit,
+                                  resubmitForm
+                                )
+                              "
+                            >
+                              Save as Draft
+                            </button>
+                            <button
+                              id="id_reviewresubmit2"
+                              type="button"
+                              class="btn btn-outline-success"
+                              [disabled]="Review2Click_disabled"
+                              (click)="resubmitCommentForm()"
+                            >
+                              Review/Resubmit
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- Review/Resubmit COMMENT END -->
+                  <!-- RECOMMEND COMMENT START -->
+                  <div *ngIf="addReply.recommend">
+                    <form [formGroup]="recommendForm">
+                      <div
+                        class="form-group shadow-textarea"
+                        style="
+                          padding-top: 15px;
+                          padding-right: 10px;
+                          padding-left: 10px;
+                          border-radius: 4px;
+                          border: 1px solid #ddd;
+                        "
+                      >
+                        <textarea
+                          class="form-control z-depth-1"
+                          formControlName="content"
+                          rows="3"
+                          placeholder="Your reply to Memo..."
+                        ></textarea
+                        ><br />
+
+                        <mat-radio-group
+                          aria-label="Select an option"
+                          formControlName="status"
+                        >
+                          &nbsp;&nbsp;
+                          <mat-radio-button
+                            value="recommended"
+                            id="id_radio_recommended"
+                            >Recommended</mat-radio-button
+                          >
+                          &nbsp;&nbsp;
+                          <mat-radio-button
+                            value="not_recommended"
+                            id="id_radio_notrecommended"
+                            >Not Recommended
+                          </mat-radio-button>
+                        </mat-radio-group>
+                        <div class="memoView-popupBtnDiv">
+                          <button
+                            id="id_cancel5"
+                            class="btn btn-outline-success"
+                            (click)="onCancel(addReply.comment)"
+                            (click)="addReply.recommend = !addReply.recommend"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            id="id_saveasdraft_recommender"
+                            type="button"
+                            class="btn btn-outline-success"
+                            [disabled]="commentdraftClick_disabled"
+                            (click)="
+                              commentdraft_Click(
+                                commentType.recommender_cmt,
+                                recommendForm
+                              )
+                            "
+                          >
+                            Save as Draft
+                          </button>
+                          <button
+                            id="id_submit_recommend"
+                            type="button"
+                            class="btn btn-outline-success"
+                            [disabled]="Recommend2Click_disabled"
+                            (click)="submitRecommendBtn()"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- RECOMMEND COMMENT END -->
+                  <div *ngIf="addReply.assign">
+                    <form [formGroup]="assignForm">
+                      <div
+                        class="form-group shadow-textarea"
+                        style="
+                          padding-top: 15px;
+                          padding-right: 10px;
+                          padding-left: 10px;
+                          border-radius: 4px;
+                          border: 1px solid #ddd;
+                        "
+                      >
+                        <mat-form-field id="id_approverr" style="width: 350px; margin-left: 10px">
+                          <mat-label>Approver</mat-label>
+                          <mat-select formControlName="to">
+                            <mat-option
+                              *ngFor="let app of AssigntoList"
+                              [value]="app.id"
+                            >
+                              {{ app.full_name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <textarea
+                          class="form-control z-depth-1"
+                          formControlName="comments"
+                          rows="3"
+                          placeholder="Your reply to Memo..."
+                        ></textarea>
+                        <section class="example-section">
+                          <mat-checkbox
+                          id="id_action"
+                            class="example-margin"
+                            formControlName="action"
+                            >Action
+                          </mat-checkbox>
+                        </section>
+                        <div style="margin-left: 75%">
+                          <button
+                            id="id_cancel6"
+                            class="btn btn-link"
+                            (click)="onCancel(addReply.assign)"
+                            (click)="addReply.assign = !addReply.assign"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            id="id_assign"
+                            type="button"
+                            class="btn btn-outline-success"
+                            style="border-radius: 20px"
+                            (click)="createAssignform()"
+                          >
+                            Assign
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div *ngIf="cmtdata">
+                    <div
+                      [id]="'ttb-' + i"
+                      class="comment-box"
+                      *ngFor="let comment of commentDataList; let i = index"
+                      style="padding-left: 10px"
+                    >
+                      <form [formGroup]="commentForm">
+                        <table style="font-size: 18px" id="tb1">
+                          <tbody id="tb2">
+                            <tr>
+                              <td id="apr1">
+                                <a id="cmt_1" style="font-size: 15px; margin-left: 10px">
+                                  {{ comment.created_by.full_name }}
+                                  <div *ngIf="comment.is_da === true">(DA)</div>
+                                </a>
+                              </td>
+                              <td id="cmt_2">
+                                {{ comment.ion }}
+                              </td>
+                              <td id="ct_3">
+                                <span
+                                  id="cmt_3"
+                                  style="font-size: 15px; margin-left: 10px"
+                                >
+                                  {{
+                                    comment.created_date
+                                      | date : "dd-MMM-yyyy hh:mm a" : "offset"
+                                  }}
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td colspan="3">
+                                <span id="cmt_4" style="font-size: 15px; margin-left: 10px"
+                                  >{{ comment.content }}
+                                  <button
+                                  id="id_dellete"
+                                    mat-icon-button
+                                    type="button"
+                                    *ngIf="comment.can_delete === true"
+                                  >
+                                    <mat-icon
+                                      style="color: grey"
+                                      aria-label="Edit"
+                                      (click)="removeComment(comment)"
+                                    >
+                                      delete</mat-icon
+                                    >
+                                  </button>
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <div>
+                          <a *ngIf="comment.document">
+                            <p
+                              id = "cmdd"
+                              class="btn btn-link"
+                              style="height: 0px; margin-bottom: 20px"
+                              *ngFor="let doc of comment.document"
+                              data-toggle="modal"
+                              data-target="#exampleModal1"
+                              (click)="
+                                imagePreview_attachment(
+                                  doc.file_id,
+                                  doc.file_name
+                                )
+                              "
+                            >
+                              {{ doc.file_name }}
+                            </p>
+                          </a>
+                          <a>
+                            <mat-icon
+                              matTooltip="Reply"
+                              style="
+                                color: #808080;
+                                float: right;
+                                margin-right: 2rem;
+                                margin-bottom: 1rem;
+                              "
+                              data-toggle="tooltip"
+                              title="Reply"
+                              *ngIf="replyButton === false"
+                              (click)="sho(i)"
+                            >
+                              reply_all
+                            </mat-icon>
+                          </a>
+                        </div>
+                      </form>
+                      <div
+                        *ngIf="showValue.commentValue && selectedIndex === i"
+                      >
+                        <hr />
+                        <form [formGroup]="commentForm">
+                          <div
+                            id = "txt1"
+                            class="form-group shadow-textarea"
+                            style="
+                              padding-top: 15px;
+                              padding-right: 10px;
+                              padding-left: 10px;
+                              border-radius: 4px;
+                              margin-right: 10px;
+                              border: 1px solid #ddd;
+                            "
+                          >
+                            <textarea
+                              class="form-control z-depth-1"
+                              formControlName="content"
+                              rows="3"
+                              placeholder="Your reply to Memo..."
+                            ></textarea>
+                            <div class="form-group">
+                              <input
+                                type="file"
+                                accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,.dotx,.dotm,.docb,
+                                        .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png"
+                                style="width: 250px; margin-top: 10px"
+                                name="file-comment"
+                                #userPhoto
+                                (change)="fileChange($event)"
+                                class="inputfile inputfile-4"
+                                multiple="multiple"
+                              />
+                              <div style="margin-left: 75%">
+                                <button
+                                id="id_cancel7"
+                                  class="btn btn-link"
+                                  (click)="onCancel(addReply.comment)"
+                                  (click)="sho(i)"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                id="id_comment2"
+                                  type="button"
+                                  class="btn btn-outline-success"
+                                  style="border-radius: 20px"
+                                  (click)="createCommentform()"
+                                >
+                                  Comment
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div
+                        *ngIf="showValues.assignValue && selectedIndex === i"
+                      >
+                        <hr />
+                        <form [formGroup]="assignForm">
+                          <div
+                            class="form-group shadow-textarea"
+                            style="
+                              padding-top: 15px;
+                              padding-right: 10px;
+                              padding-left: 10px;
+                              border-radius: 4px;
+                              border: 1px solid #ddd;
+                            "
+                          >
+                            <mat-form-field
+                            id="id_aprover"
+                              style="width: 175px; margin-left: 20px"
+                            >
+                              <mat-label>Approver</mat-label>
+                              <mat-select formControlName="to">
+                                <mat-option
+                                  *ngFor="let app of AssigntoList"
+                                  [value]="app.id"
+                                >
+                                  {{ app.full_name }}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                            <textarea
+                              class="form-control z-depth-1"
+                              formControlName="comments"
+                              rows="3"
+                              placeholder="Your reply to Memo..."
+                            ></textarea>
+                            <section class="example-section">
+                              <mat-checkbox
+                              id="id_action2"
+                                class="example-margin"
+                                formControlName="action"
+                                >Action</mat-checkbox
+                              >
+                            </section>
+                            <div style="margin-left: 75%">
+                              <button
+                              id="id_cancel8"
+                                class="btn btn-link"
+                                (click)="onCancel(addReply.assign)"
+                                (click)="sho(i)"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                              id="id_assign2"
+                                type="button"
+                                class="btn btn-outline-success"
+                                style="border-radius: 20px"
+                                (click)="createAssignform()"
+                              >
+                                Assign
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div *ngIf="assdata">
+    <div
+      class="comment-boxes"
+      *ngFor="let assigned of assignData; let i = index"
+      style="padding-left: 10px"
+    >
+      <form [formGroup]="assignForm">
+        <table style="font-size: 18px">
+          <tbody>
+            <tr>
+              <td>
+                <span style="font-size: 15px; margin-left: 10px">
+                  {{ assigned.from_id.full_name }}
+                </span>
+              </td>
+              <td>
+                <span style="font-size: 15px; margin-left: 10px">
+                  {{ assigned.to_id.full_name }}
+                </span>
+              </td>
+              <td>
+                <span style="font-size: 15px; margin-left: 10px">
+                  {{
+                    assigned.created_date
+                      | date : "dd-MMM-yyyy hh:mm a" : "offset"
+                  }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a style="font-size: 15px; margin-left: 10px">
+                  {{ assigned.comments }}
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <span style="font-size: 15px; margin-left: 10px">{{
+                  assigned.content
+                }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+  <div id="meminfo">
+    <table
+      class="table table-bordered"
+      style="width: 99%; font-size: 14px; margin-top: 5%"
+    >
+      <thead class="table_header" style="text-align: left">
+        <tr>
+          <th style="width: 140px">Date</th>
+          <th style="width: 200px">Sender (From)</th>
+          <th style="width: 200px">To</th>
+          <th style="width: 250px">Subject</th>
+          <th style="width: 100px">MemoNo</th>
+        </tr>
+      </thead>
+      <tbody class="table-tb">
+        <tr *ngFor="let data of memolist; index as i" style="text-align: left">
+          <td style="width: 140px">
+            {{ data.created_date | date : "dd-MMM-yyyy hh:mm a" : "offset" }}
+          </td>
+          <td style="width: 150">
+            <div *ngIf="data.sender.branch_code">
+              ({{ data.sender.branch_code }} - {{ data.sender.branch }})
+            </div>
+            <div *ngIf="data.sender.name">{{ data.sender.name }}</div>
+          </td>
+          <td
+            style="width: 200px"
+            *ngIf="
+              sharedService.Memofrom === 'NFA-MEMO' ||
+              sharedService.Memofrom === 'BNA-MEMO'
+            "
+          >
+            <span class="wrap">
+              <span class="overflow" style="float: left; width: 200px">
+                <ng-container *ngFor="let toemp of data.approver">
+                  {{ toemp.full_name }},
+                </ng-container>
+              </span>
+              <span class="tooltip">
+                <ng-container>
+                  <ol>
+                    <li *ngFor="let toemp of data.approver">
+                      {{ toemp.full_name }}
+                    </li>
+                  </ol>
+                </ng-container>
+              </span>
+            </span>
+          </td>
+          <td style="width: 200px" *ngIf="sharedService.Memofrom === 'IOMEMO'">
+            <span class="wrap">
+              <span class="overflow" style="float: left; width: 200px">
+                <span
+                  *ngFor="
+                    let toemp of data.to_emp;
+                    first as isFirst;
+                    last as isLast
+                  "
+                >
+                  <ng-container *ngIf="!isFirst">,</ng-container>
+                  {{ toemp.full_name }}
+                  <ng-container *ngIf="isLast">,</ng-container>
+                </span>
+                <span *ngFor="let dept of data.to_dept; first as isFirst">
+                  <ng-container *ngIf="!isFirst">, </ng-container>
+                  <div *ngIf="dept.branch_code">
+                    ({{ dept.branch_code }} - {{ dept.branch }})
+                  </div>
+                  <div *ngIf="dept.name">{{ dept.name }}</div>
+                </span>
+              </span>
+              <span class="tooltip">
+                <ng-container>
+                  <ol>
+                    <li *ngFor="let toemp of data.to_emp">
+                      {{ toemp.full_name }}
+                    </li>
+                    <li *ngFor="let dept of data.to_dept">
+                      <div *ngIf="dept.branch_code">
+                        ({{ dept.branch_code }} - {{ dept.branch }})
+                      </div>
+                      <div *ngIf="dept.name">{{ dept.name }}</div>
+                    </li>
+                  </ol>
+                </ng-container>
+              </span>
+            </span>
+          </td>
+          <td>
+            <span class="wrap">
+              <span class="overflow" style="float: left; width: 200px">
+                {{ data.subject }}
+              </span>
+              <span class="tooltip">
+                <span class="nowrap">{{ data.subject }}</span>
+              </span>
+            </span>
+          </td>
+          <td style="width: 200px">{{ data.ion }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div
+    id="my-modal"
+    class="modal fade"
+    aria-labelledby="my-modalLabel"
+    aria-hidden="true"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div class="modal-dialog" data-dismiss="modal">
+      <div class="modal-content">
+        <div class="modal-body" *ngIf="pdfUrls !== 'pdf'">
+          <img
+            src="{{ imgfilename }}"
+            class="img-responsive"
+            style="width: 100%"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row" style="margin-bottom: 2%">
+      <div class="col-9">
+        <a *ngIf="commentTag === 'document'">
+          <div class="drowdown-text">
+            <span style="font-size: 26px; margin-left: 12px">Documents</span>
+          </div>
+        </a>
+        <a *ngIf="commentTag === 'history'">
+          <div class="drowdown-text">
+            <span style="font-size: 26px; margin-left: 12px">History</span>
+          </div>
+        </a>
+
+        <a *ngIf="commentTag === 'approve'">
+          <div class="drowdown-text">
+            <span style="font-size: 26px; margin-left: 12px">Approvals</span>
+          </div>
+        </a>
+        <a *ngIf="commentTag === 'recommender'">
+          <div class="drowdown-text">
+            <span style="font-size: 26px; margin-left: 12px">Recommender</span>
+          </div>
+        </a>
+      </div>
+      <div class="col-3" id="id_NoteHistory_div">
+        <mat-form-field id="id_NoteHistory_mat">
+          <mat-label id="id_NoteHistory">Note History</mat-label>
+          <mat-select [(ngModel)]="commentTag" id="id_historyTag-select">
+            <mat-option
+              (click)="getDocuments()"
+              [attr.id]="'id_document-option'"
+              value="document"
+            >
+              Documents</mat-option
+            >
+            <mat-option
+              (click)="getMemoHistoryView()"
+              [attr.id]="'id_history-option'"
+              value="history"
+            >
+              History</mat-option
+            >
+            <mat-option
+              (click)="getApprove()"
+              [attr.id]="'id_approver-option'"
+              value="approve"
+            >
+              Approvals</mat-option
+            >
+            <mat-option
+              (click)="getRecommender()"
+              [attr.id]="'id_recommender-option'"
+              value="recommender"
+            >
+              Recommender</mat-option
+            >
+            <mat-option
+              (click)="getOpinionHistory()"
+              [attr.id]="'id_opinion-option'"
+              value="opinion"
+            >
+              Opinion</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div
+      style="margin-top: 2%; width: 100%; color: #ddefdd"
+      *ngIf="commentTag === 'document'" id="doct"
+    >
+      <table class="table">
+        <thead class="table_header">
+          <tr id="doc1">
+            <th>User</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let document of documentDatas; index as i" id="doc2">
+            <td>{{ document.created_by.full_name }}</td>
+            <td>
+              {{
+                document.created_date | date : "dd-MMM-yyyy hh:mm a" : "offset"
+              }}
+            </td>
+            <td
+              [id]="'id_documentDatas' + i"
+              class="btn btn-link"
+              data-toggle="modal"
+              data-target="#exampleModal1"
+              (click)="
+                imagePreview_attachment(document.file_id, document.file_name)
+              "
+            >
+              {{ document.file_name }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top: 2%; width: 100%" *ngIf="commentTag === 'history'" id="hist">
+      <table class="table">
+        <thead class="table_header">
+          <tr id="history1">
+            <th>Dept</th>
+            <th>User</th>
+            <th>Designation</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let his of historyList; index as i" id="history2">
+            <td [id]="'id_his-department_name' + i">
+              {{ his.department_name }}
+            </td>
+            <td [id]="'id_his-full_name' + i">
+              {{ his.created_by.full_name }}
+            </td>
+            <td [id]="'id_his-designation' + i">{{ his.designation }}</td>
+            <td [id]="'id_his-created_date' + i">
+              {{ his.created_date | date : "dd-MMM-yyyy hh:mm a" : "offset" }}
+            </td>
+            <td [id]="'id_his-status' + i">{{ historyStatus(his) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div
+      style="margin-top: 2%; width: 100%; color: #ddefdd"
+      *ngIf="commentTag === 'approve'" id="apprv"
+    >
+      <table class="table">
+        <thead class="table_header">
+          <tr id="approve1">
+            <th>Dept</th>
+            <th>Approver</th>
+            <th>Designation</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let approve of approveData; index as i" id="approve2">
+            <td [id]="'id_approvedept' + i">{{ approve.department_name }}</td>
+            <td [id]="'id_approvefull_name' + i">
+              {{ approve.approver.full_name }}
+            </td>
+            <td [id]="'id_approvedesignation' + i">
+              {{ approve.designation }}
+            </td>
+            <td [id]="'id_approvecreated_date' + i">
+              {{
+                approve.created_date | date : "dd-MMM-yyyy hh:mm a" : "offset"
+              }}
+            </td>
+            <td [id]="'id_approvestatus' + i">{{ approvedStatus(approve) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div
+      style="margin-top: 2%; width: 100%; color: #ddefdd"
+      *ngIf="commentTag === 'recommender'" id="recomen"
+    >
+      <table class="table">
+        <thead class="table_header">
+          <tr id="recom1">
+            <th>Dept</th>
+            <th>Recommender</th>
+            <th>Designation</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let recommender of recommenderData; index as i" id="recom2">
+            <td [id]="'id_recommenderdept' + i">
+              {{ recommender.department_name }}
+            </td>
+            <td [id]="'id_recommendername' + i">
+              {{ recommender.recommender.full_name }}
+            </td>
+            <td [id]="'id_recommenderdesignation' + i">
+              {{ recommender.designation }}
+            </td>
+            <td [id]="'id_recommendercreated_date' + i">
+              {{
+                recommender.created_date
+                  | date : "dd-MMM-yyyy hh:mm a" : "offset"
+              }}
+            </td>
+            <td [id]="'id_recommenderstatus' + i">
+              {{ recommender.recommender_status.status }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 2%; width: 100%" *ngIf="commentTag === 'opinion'" id="opinin">
+      <div id="opinin2">
+        <table class="table table-bordered">
+          <thead class="table_header">
+            <tr id="opn1">
+              <th>Raised By</th>
+              <th>Raiser / Opinioner</th>
+              <th>Dept</th>
+              <th>Designation</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let data of OpinionListHistory; index as i">
+              <tr id="opn2">
+                <td
+                  [id]="'id_opinionhisname' + i"
+                  [attr.rowspan]="data.opinioner.length + 1"
+                >
+                  {{ data?.raiser?.name }}
+                </td>
+              </tr>
+              <tr *ngFor="let opinionrs of data?.opinioner; index as i" id="opn3">
+                <td [id]="'id_opinionrsname' + i">
+                  {{ opinionrs?.user?.name }}
+                </td>
+                <td [id]="'id_opinionrsdept' + i">
+                  {{ opinionrs?.department_name }}
+                </td>
+                <td [id]="'id_opinionrsdesignation' + i">
+                  {{ opinionrs?.designation }}
+                </td>
+                <td [id]="'id_opinionrsdate' + i">
+                  {{
+                    opinionrs.action_date == null
+                      ? "-"
+                      : (opinionrs.action_date | date : "dd-MM-yyyy  hh:mm a")
+                  }}
+                </td>
+                <td [id]="'id_opinionrsstatus' + i">
+                  {{ opinionrs?.status?.status }}
+                </td>
+              </tr>
+            </ng-container>
+            <div *ngIf="OpinionListHistory?.length == 0">No Records Found!</div>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isSuperScript">
+  <div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="max-width: 800px">
+      <!-- Modal content-->
+      <form [formGroup]="superScriptForm" (ngSubmit)="superScriptFormCreate()">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+            id="id_back3"
+              type="button"
+              #closebutton
+              class="close"
+              data-dismiss="modal"
+              (click)="close()"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div style="white-space: pre-wrap">
+            <p [innerHTML]="selectText">{{ selectText }}</p>
+          </div>
+
+          <mat-form-field id="id_remarks" class="input-style2">
+            <mat-label>Remarks</mat-label>
+            <textarea
+              matInput
+              placeholder="Remarks"
+              autocomplete="off"
+              formControlName="remarks"
+              required
+            >
+            </textarea>
+          </mat-form-field>
+          <div class="modal-footer">
+            <button
+              id="id_submit1"
+              type="submit"
+              class="btn btn-outline-primary"
+            >
+              Submit
+            </button>
+            <button
+              id="id_close"
+              type="button"
+              class="btn btn-default"
+              data-dismiss="modal"
+              (click)="close()"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div
+    class="table-responsive"
+    style="margin-top: 2%; width: 100%; color: #ddefdd"
+    *ngIf="commentTag === 'assignto'"
+  >
+    <table class="table">
+      <thead class="table_header">
+        <tr>
+          <th>Comments</th>
+          <th>Date</th>
+          <th>From</th>
+          <th>To</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let assign of assignData">
+          <td>{{ assign.comments }}</td>
+          <td>
+            {{ assign.created_date | date : "dd-MMM-yyyy hh:mm a" : "offset" }}
+          </td>
+          <td>{{ assign.from_id.full_name }}</td>
+          <td>{{ assign.to_id.full_name }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<button
+  id="myCheck"
+  type="button"
+  class="btn btn-primary"
+  #closebutton1
+  data-toggle="modal"
+  data-target="#exampleModal"
+  style="display: none"
+>
+  Launch demo modal
+</button>
+
+<div id="exampleModal" class="modal fade" role="dialog">
+  <div
+    class="modal-dialog"
+    style="
+      overflow-y: scroll;
+      max-height: 85%;
+      margin-top: 50px;
+      margin-bottom: 50px;
+    "
+  >
+    <!-- Modal content-->
+    <div class="modal-content" style="white-space: pre-wrap">
+      <div class="modal-header"></div>
+
+      <div class="modal-body" style="white-space: pre-wrap">
+        <!-- <div class="modal-body"  style="white-space: pre-wrap;"> -->
+        <p style="color: green">{{ title }}</p>
+        <!-- </div> -->
+
+        <table *ngIf="arraybool">
+          <tr *ngFor="let approve of immediate; index as i">
+            <!-- <td>{{}}</td> -->
+            <p>Employee name:&nbsp;&nbsp;&nbsp;&nbsp;{{ approve.employees }}</p>
+            <p>
+              Created Date and Time:&nbsp;&nbsp;&nbsp;&nbsp;{{
+                approve.dates | date : "dd-MMM-yyyy hh:mm a" : "offset"
+              }}
+            </p>
+
+            <p>Annotation:&nbsp;&nbsp;&nbsp;&nbsp;{{ approve.remarks }}</p>
+            <br />
+          </tr>
+        </table>
+        <div *ngIf="nonarraybool">
+          <div
+            class="comment-box"
+            *ngFor="let comment of commentlist; let i = index"
+            style="padding-left: 10px"
+          >
+            <form [formGroup]="superScriptCommentForm">
+              <table style="font-size: 18px">
+                <tbody>
+                  <tr>
+                    <td>
+                      <a style="font-size: 15px; margin-left: 10px">
+                        {{ comment.created_by.full_name }}
+                      </a>
+                    </td>
+                    <td>
+                      <span style="font-size: 15px; margin-left: 100px">
+                        {{
+                          comment.created_date
+                            | date : "dd-MMM-yyyy hh:mm a" : "offset"
+                        }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <span style="font-size: 15px; margin-left: 10px"
+                        >{{ comment.content }}
+                        <button
+                        id="id_edit1"
+                          mat-icon-button
+                          matTooltip=" Edit"
+                          class="iconbutton"
+                          (click)="data(comment)"
+                          *ngIf="comment.can_edit === true"
+                          color="primary"
+                          data-toggle="modal"
+                          data-target="#rejectModalForSuperscript"
+                        >
+                          <mat-icon style="color: gray" aria-label="Edit"
+                            >edit</mat-icon
+                          >
+                        </button>
+                        <button
+                        id="id_del1"
+                          mat-icon-button
+                          type="button"
+                          *ngIf="comment.can_delete === true"
+                        >
+                          <mat-icon
+                            style="color: grey"
+                            aria-label="Edit"
+                            (click)="removescriptComment(comment)"
+                          >
+                            delete</mat-icon
+                          >
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+                <!-- </form> -->
+
+                <!-- <table *ngIf="nonarraybool">
+                        <tr *ngFor="let comment of commentlist;index as i"> -->
+
+                <!-- <p>Employee name:&nbsp;&nbsp;&nbsp;&nbsp;{{comment.created_by.full_name}}</p>
+                                <p>Created Date and Time:&nbsp;&nbsp;&nbsp;&nbsp;{{comment.created_date|date:'dd-MMM-yyyy h:mm a'}}</p>
+                                <p>Annotation:&nbsp;&nbsp;&nbsp;&nbsp;{{comment.content}}</p>
+                             
+
+                             </tr> -->
+                <!-- </thead> -->
+
+                <!-- <tr>
+                            <p>Employee name:&nbsp;&nbsp;&nbsp;&nbsp;{{empname}}</p>
+                            <p>Created Date and Time:&nbsp;&nbsp;&nbsp;&nbsp;{{formatDate(comtdate)|date:'dd-MMM-yyyy h:mm a'}}</p>
+
+
+                            <p>Annotation:&nbsp;&nbsp;&nbsp;{{titlesinglevar}}</p><br>
+
+                        </tr> -->
+              </table>
+            </form>
+          </div>
+        </div>
+        <form [formGroup]="superScriptCommentForm">
+          <mat-form-field id="id_remarks2" style="width: 670px">
+            <mat-label>Remarks</mat-label>
+            <textarea
+              matInput
+              placeholder="Remarks"
+              autocomplete="off"
+              formControlName="remarks"
+              required
+            >
+            </textarea>
+          </mat-form-field>
+
+          <div class="modal-footer">
+            <button
+              id="id_commentsubmit"
+              type="submit"
+              class="btn btn-outline-primary"
+              (click)="commentsubmit()"
+            >
+              Submit
+            </button>
+            <button
+              id="id_closepopup"
+              type="button"
+              class="btn btn-default"
+              data-dismiss="modal"
+              (click)="closepopup()"
+            >
+              Close
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabels"
+  aria-hidden="true"
+  id="rejectModalForSuperscript"
+>
+  <div class="modal-dialog modal-xl" style="width: 50%">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #ddefdd">
+        <h2 class="modal-title" style="color: black">Annotation Edit</h2>
+        <button
+        id="id_back4"
+          type="button"
+          #closebutton2
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div
+        style="margin-left: 70px; margin-right: 80%; margin-top: 2%; width: 40%"
+      >
+        <form [formGroup]="SuperscriptEditForm" (ngSubmit)="commentEditForm()">
+          <table>
+            <div>
+              <tr>
+                <td>
+                  <mat-form-field id="id_remarks3" style="width: 470px">
+                    <mat-label>Remarks</mat-label>
+                    <textarea
+                      matInput
+                      placeholder="Remarks"
+                      autocomplete="off"
+                      formControlName="remarks"
+                      required
+                    >
+                    </textarea>
+                  </mat-form-field>
+                </td>
+              </tr>
+            </div>
+          </table>
+          <tr>
+            <button
+            id="id_update"
+              type="submit"
+              style="float: left"
+              class="btn btn-outline-primary"
+              style="border-radius: 20px"
+            >
+              Update</button
+            >&nbsp;&nbsp;
+            <button
+            id="id_cancel9"
+              type="button"
+              data-dismiss="modal"
+              class="btn btn-outline-primary"
+              style="border-radius: 20px"
+            >
+              Cancel
+            </button>
+          </tr>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- //////// Ask opinion Employee select -->
+
+<div
+  class="modal fade opinionEmployee"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myLargeModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #ddefdd">
+        <h1 class="modal-title" style="color: black">Ask Opinion</h1>
+        <button
+        id="id_back5"
+          type="button"
+          #closebutton2
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <mat-form-field id="id_need" style="width: 28rem; margin-left: 5px">
+          <mat-label>Need Opinions From</mat-label>
+          <mat-chip-list #chipListapprover>
+            <mat-chip
+              *ngFor="let employeeapprover of chipSelectedEmployeeApprover"
+              [selectable]="true"
+              [removable]="true"
+              (removed)="removeEmployeeApprover(employeeapprover)"
+            >
+              {{ employeeapprover.full_name }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              #employeeApproverInput
+              [formControl]="employeeApproverControl"
+              [matAutocomplete]="autoapprover"
+              [matChipInputFor]="chipListapprover"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="true"
+            />
+          </mat-chip-list>
+          <mat-autocomplete
+            #autoapprover="matAutocomplete"
+            (optionSelected)="employeeApproverSelected($event)"
+          >
+            <mat-option
+              *ngFor="let thisEmployeeCC of allEmployeeList"
+              [value]="thisEmployeeCC"
+            >
+              {{ thisEmployeeCC.full_name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <br />
+
+        <textarea
+          class="form-control z-depth-1"
+          [formControl]="Opinioncontent"
+          rows="3"
+          placeholder="Your reply to Memo7..."
+        ></textarea>
+        <br />
+        <div>
+          <button
+            id="id_opinion_cancel"
+            type="button"
+            data-dismiss="modal"
+            class="btn btn-outline-primary"
+            style="border-radius: 20px"
+          >
+            Cancel
+          </button>
+
+          <button
+            id="id_chooseempforopinion"
+            type="button"
+            class="btn btn-outline-success spacing"
+            data-dismiss="modal"
+            style="border-radius: 20px"
+            (click)="ChoosingEmpForOpinion()"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-spinner
+  bdColor="rgba(51, 51, 51, 0.8)"
+  size="default"
+  [fullScreen]="true"
+  type="ball-spin-clockwise"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>

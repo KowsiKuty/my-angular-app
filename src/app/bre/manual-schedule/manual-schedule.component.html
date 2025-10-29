@@ -1,0 +1,195 @@
+<mat-card class="mat-card">
+<div>
+    <mat-card style="margin-top: 13px;margin-left: 20px;margin-right: 20px;margin-bottom: 20px;">
+
+    <h2 style="margin-left: 30px;margin-top: 1%;">Expense Schedule Search</h2>
+    <div style="margin-left: 2%;margin-top: 10px;">
+        <form [formGroup]="brexpSearchFrm">
+            <table>
+                <div>
+                <tr>
+                <td>
+                    <mat-form-field>
+                    <mat-label>Expense Type</mat-label>
+                    <input #exptypeInput placeholder="Select Expense Type" matInput style="width:150px"
+                        formControlName="expense_type_id" [matAutocomplete]="exptype"  id="bre-0001">
+                    <mat-autocomplete [panelWidth]="200" #exptype="matAutocomplete"
+                        [displayWith]="displayFnexptype" (opened)="exptypeScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let exp of expenseTypeList" [value]="exp" >
+                                {{exp.expense_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field
+                style="margin-left: 20px;width: 250px;margin-top: 5px;">
+                <mat-label>Choose Supplier</mat-label>
+                <input #suppInput placeholder="Choose Supplier" matInput
+                    formControlName="supplier_id" [matAutocomplete]="Suppliertype" id="bre-0002">
+                <mat-autocomplete #Suppliertype="matAutocomplete" [displayWith]="displayFn"
+                    (opened)="supplierScroll()">
+    
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                    </mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let suppliername of supplierNameData"
+                             [value]="suppliername">
+                            {{suppliername.name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </td>      
+        <td>
+            <mat-form-field style="margin-left: 15px;">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="picker4" formControlName="from_date" autocomplete="off" style="width:150px" readonly id="bre-0003">
+                <mat-datepicker-toggle matSuffix [for]="picker4">
+                    <!-- <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon> -->
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker4></mat-datepicker>
+            </mat-form-field>
+        </td>
+        <td>
+            <mat-form-field style="margin-left: 15px;">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="picker5" formControlName="to_date" autocomplete="off" style="width:150px"
+                [min]="this.brexpSearchFrm.value.from_date" readonly id="bre-0004">
+                <mat-datepicker-toggle matSuffix [for]="picker5">
+                    <!-- <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon> -->
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker5></mat-datepicker>
+            </mat-form-field>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <mat-form-field>
+                <mat-label>Branch</mat-label>
+                <input type="text" placeholder="Choose Branch" matInput autocomplete="off" #branchidInput [matAutocomplete]="branchref" formControlName="branch_id" 
+                style="width: 250px;" (keypress)="kyenbdata($event)"  id="bre-0005"/>
+                <mat-autocomplete [panelWidth]="200" #branchref="matAutocomplete" [displayWith]="branchintreface" (opened)="autocompletebranchname()">
+                    <mat-option *ngIf="isLoading" >Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option  title="{{d.code+' - '+d.name}}" *ngFor="let d of branchList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>   
+        </td>
+        <td></td>
+        <td colspan="3" style="margin-left: 200px;">
+            <button class="btn btn-outline-primary" type="submit"
+            style="border-radius:40px;margin-left: 10px;" color="primary"
+            (click)="getBranchExpense(1)" id="bre-0006"><i matTooltip="Search" matTooltipClass="custom-tooltipnew" class="fa fa-search"
+                aria-hidden="true"></i></button>     
+            <button class="btn btn-outline-primary" type="button" matTooltip="Reset"
+            style="border-radius:40px;margin-left: 10px;"
+           color="primary" (click)="resetsearch()" id="bre-0007">Reset</button>
+           <!-- <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;" 
+           matTooltip="Add Branch Expense" matTooltipClass="custom-tooltipnew" (click)="addBranchExp()" id="bre-0008">
+            <span
+                class="fa fa-plus"></span>&nbsp;Branch Expense</button> -->
+                <button class="btn btn-outline-primary" type="button" matTooltip="Manual Schedule Run"
+                style="border-radius:40px;margin-left: 10px;" [disabled]="!manual_scheduler"
+               color="primary" (click)="manual_sch_run()" id="bre-0009">Manual Schedule Run</button>
+        </td>
+    </tr>
+                </div>
+</table>
+    </form>
+    </div>
+        
+    <h2 style="margin-left: 30px;margin-top: 1%;">Expense Schedule Summary</h2>
+    
+    <div   style="margin-top: 1%;margin-left: 30px; width: 95%;">
+        <table class="table table-bordered scrolltable"  style="text-align:center;" >	        
+            <thead fixed-header>
+                <tr class="table_header " fixed-header style="text-align: center;margin-left: 3%;background: #a7e4ab;">
+                    <th style="width: fit-content;">S No</th>
+                    <th>Amount</th>
+                    <th>Expense Type</th>
+                    <th>Supplier Name</th>
+                    <th>Branch</th>
+                    <th>Recurring From</th>
+                    <th>Recurring To</th>
+                    <th>Expense Status</th>
+                    <th>Recurring Period</th>
+                    <!-- <th colspan="2">Action</th> -->
+                    <!-- <th>Select All<br> <input type="checkbox" [(ngModel)]="masterSelected" name="list_name"
+                        value="m1" (change)="checkUncheckAll()" /> </th> -->
+                        <th>Select All<br>
+                            <input type="checkbox" [checked]="masterSelected" (change)="checkUncheckAll()" />
+                        </th>
+
+                </tr>
+            </thead>
+            <tbody style="text-align: center;">
+                <tr *ngFor="let expt of branchexpList; index as i">
+                    <td>{{(presentpagebrexp - 1)*10 +i+1 }} </td>
+                    <td>{{expt?.amount}}</td>
+                    <td>{{expt?.expense_type_id?.expense_name}}</td>
+                    <td>{{expt?.supplier_id?.name}}</td>
+                    <td>{{expt?.branch_id?.code}} - {{expt?.branch_id?.name}}</td>
+                    <td>{{expt?.from_date | date:'dd-MMM-yyyy'}}</td>
+                    <td>{{expt?.to_date | date:'dd-MMM-yyyy'}}</td>
+                    <td>{{ expt?.expense_status?.text}}</td>
+                    <td>{{expt?.recurring_period?.text}}</td>
+                    <!-- <td *ngIf="expt.expense_status?.id == 3 || expt.expense_status?.id == 7 ">
+                        <span matTooltip="Hold / Unhold / Cancel" matTooltipClass="custom-tooltipnew" class=" fa fa-eye create "
+                           style="color: green;cursor: pointer;padding:10px;margin-top: 6px;" (click)="showview(expt)"></span>
+                    </td>
+                    <td *ngIf="expt.expense_status?.id != 3 && expt.expense_status?.id != 7 ">
+                        <span matTooltip="View" matTooltipClass="custom-tooltipnew" class=" fa fa-eye create "
+                           style="color: green;cursor: pointer;padding:10px;margin-top: 6px;" (click)="showview(expt)"></span>
+                    </td>
+                    <td class="cursor">
+                        <div *ngIf="expt.expense_status?.id == 1 || expt.expense_status?.id == 2 ; ">
+                            <mat-icon (click)="chngStatBrexp(expt)" matTooltip="Delete"
+                                style="color: green; cursor: pointer;margin-top:11px;" aria-label="inactive">delete</mat-icon>
+                        </div>
+                    </td> -->
+                    <td>
+                        <!-- <section>
+                            <input type="checkbox" [(ngModel)]="expt.isSelected" name="list_name"
+                                value="{{expt.id}}" (change)="isAllSelected()" />
+                            {{expt.value}}
+                        </section> -->
+                        <section>
+                            <input type="checkbox" [checked]="selectedItems.has(expt.id)" (change)="toggleSelection(expt)" />
+                            {{ expt.value }}
+                        </section>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="!isbrexppage" class="NodataAlign" style="margin-left: 42%;">No Records Found...</div>
+               
+    </div>
+    <tr style="margin-left: 30px;" *ngIf="isbrexppage">
+       <td style="width: 30px;"></td>
+        <td style="margin-bottom: 0%;font-size: small;font-weight:bold;margin-top: 30px;width: 600px">
+            Page: {{presentpagebrexp}}
+        </td>
+         <td style="margin-bottom: 0%;font-size: small;width: 900px;margin-left: 600px;">
+           
+            <mat-paginator  
+                                        (page)="handlebrexpSearchPageEvent($event)"
+                                        [length]="length_brexp"
+                                        [pageSize]="pageSize_brexp"
+                                        [showFirstLastButtons]="showFirstLastButtons"
+                                        [pageSizeOptions]="pageSizeOptions"
+                                        [pageIndex]="pageIndex"
+                                        [hidePageSize]="true"
+                                        aria-label="Select page">
+                                    </mat-paginator>
+                                   
+                                </td>
+        </tr>
+    </mat-card>
+</div>
+</mat-card>

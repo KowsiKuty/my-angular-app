@@ -1,0 +1,390 @@
+<div class="container">
+
+
+    <mat-tab-group #allTabs (selectedTabChange)="subModuleData($event)">
+        <mat-tab *ngFor="let tab of tabs;" [label]="tab.tab_name">
+            <p>
+                Provision Approver Summary
+            </p>
+
+
+            <div  class="container"  *ngIf="tab.tab_id==1">
+
+            <form [formGroup]="provisionsearch" >
+                <div class=" row col-md-12 ">
+                    
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width" >
+                          <mat-label>Branch</mat-label>
+                          <input type="text" placeholder="Branch"  (click)="branchget()"
+                      
+                          aria-label="Number"  matInput formControlName='branch_id' required
+                            [matAutocomplete]="auto">
+                          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnbranch">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+              
+                            <mat-option *ngFor="let p of branchdata "  [value]="p">
+                              {{p.name}}
+                            </mat-option>
+                            </ng-container>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </div>
+
+                      <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>BS</mat-label>
+                            <input type="text" placeholder="BS" #bs #bs_id (click)="bsget()" aria-label="Number"
+                                matInput formControlName='bs_id' required [matAutocomplete]="auto6">
+                            <mat-autocomplete #auto6="matAutocomplete" [displayWith]="displayFnbs">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+
+                                    <mat-option *ngFor="let p of bsdata " (focusout)="bsid_cc(p.id)" [value]="p">
+                                        {{p.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>CC</mat-label>
+                            <input type="text" placeholder="CC" #cc #cc_id (click)="ccget()" aria-label="Number"
+                                matInput formControlName='cc_id' required [matAutocomplete]="auto11">
+                            <mat-autocomplete #auto11="matAutocomplete" [displayWith]="displayFncc">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let p of ccdata" [value]="p">
+                                        {{p.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+
+                    <div class="col-sm-3">
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px;margin-left: 15px;margin-top: 17px;" color="primary" (click)="checkersearch(1,0)"><i class="fa fa-search"></i></button>
+                                </div>
+                </div>
+            </form>
+                <table class="table table-responsive  table-bordered" fixed-header style="width: 95%;margin-top: 10px;">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <!-- <th>CR number</th> -->
+                            <th>Main cat </th>
+                            <th>Sub cat</th>
+                            <th>GL</th>
+                            <th>BS </th>
+                            <th>CC</th>
+                            <th>Narration </th>
+                            <th>Vendor name</th>
+                            <th>Expense Month</th>
+                            <th>Amount</th>
+                            <th>Gst Amount</th>
+                            <th>Checker Amount</th>
+                            <th>Checker Gst Amount</th>
+                            <th>Approver Description</th>
+                            <th>Approver Amount</th>
+                            <th>Approver Gst Amount</th>
+                            <th>Status</th>
+                            <th>select</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let  p of provisiondata; index as i" style="text-align: left;"
+                        class="mon-{{p.expense_date.expense_month}}">
+                            <td> {{(presentpage - 1)*10 +i+1 }} </td>
+                            <td style="cursor: pointer;color:blue;"><span>
+                                    {{ p.category_id.name}}</span>
+                            </td>
+                            <!-- <td>{{p.category_id.name}}</td> -->
+                            <td>{{p.subcategory_id.name}}</td>
+                            <td>{{p.subcategory_id.glno}}</td>
+                            <td>{{p.bs_id.name}}</td>
+                            <td>{{p.cc_id.name}}</td>
+                            <td>{{p.narration}}</td>
+                            <td>{{p.vendor_id.name}}</td>
+                            <!-- <td>{{p.expense_date}}</td> -->
+                            <td>{{p.expense_date.expense_date | date: 'MMM-yyyy'}}</td>
+                            <td class='maker'>{{p.amount|number}}</td>
+                            <td class='maker'>{{p.gst_amount|number}}</td>
+                            <td class='checker'>{{p.amount_checker|number}}</td>
+                            <td class='checker'>{{p.gst_amount_checker|number}}</td>
+
+                            <td>
+                                <input [(ngModel)]="p.description" class="form-control" type="text"
+                                    name="{{p.description}}" />
+                            </td>
+                            <td class='approver'><input [(ngModel)]="p.amount_approver" class="form-control" type="text"
+                                    name="{{p.amount_approver}}" /></td>
+
+                            <td class='approver'><input [(ngModel)]="p.gst_amount_approver" class="form-control"
+                                    type="text" name="{{p.gst_amount_approver}}" />
+                            </td>
+                            <!-- 
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Checker"'>
+
+                        
+                    </td>
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Checker"'>
+
+                        <input [(ngModel)]="p.gst_amount_approver" class="form-control" type="text"
+                            name="{{p.gst_amount_checker}}" [disabled]="true" />
+
+                    </td>
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Approver"'>
+
+                        <input [(ngModel)]="p.gst_amount_approver" class="form-control" type="text"
+                            name="{{p.gst_amount_checker}}" [disabled]="true" />
+
+                    </td>
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Approver"'>
+
+                        <input [(ngModel)]="p.gst_amount_approver" class="form-control" type="text"
+                            name="{{p.gst_amount_checker}}" [disabled]="true" />
+
+                    </td> -->
+
+                            <td>{{p.provision_status.pro_status}}</td>
+                            <td> <input type="checkbox" [(ngModel)]="p.provisionflag" [checked]="isChecked"
+                                    (change)="getvalue(p.provisionflag,i,p)"></td>
+                        </tr>
+                        <tr>
+                    <td *ngIf="provisiondata.length == 0" colspan="12"> No Records found</td>
+                </tr>
+
+
+                    </tbody>
+                </table>
+
+                <div class="col-sm-11" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                        (click)="previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpage}}
+                    <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+
+                <div class="col-sm-9" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Action</mat-label>
+                        <input type="text" placeholder="Pick one" aria-label="Action" matInput [matAutocomplete]="autop">
+                        <mat-autocomplete #autop="matAutocomplete">
+                            <mat-option *ngFor="let option of options" [value]="option"
+                                (onSelectionChange)="provisionstatus(option)">
+                                {{option}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <button type="button" (click)="checker()"
+                    style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                    class="btn btn-outline-primary">Submit To</button>
+
+                </div>
+            </div>
+
+            <div class="container" *ngIf="tab.tab_id==3">
+
+            <form [formGroup]="provisionsearch"  >
+                <div class=" row col-md-12 ">
+                    
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width" >
+                          <mat-label>Module</mat-label>
+                          <input type="text" placeholder="Module"  (click)="module()"
+                      
+                          aria-label="Number"  matInput formControlName='module_id' required
+                            [matAutocomplete]="auto1">
+                          <mat-autocomplete #auto1="matAutocomplete" [displayWith]="displayFnmodule">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+              
+                            <mat-option *ngFor="let p of moduledata "  [value]="p">
+                              {{p.text}}
+                            </mat-option>
+                            </ng-container>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>BS</mat-label>
+                            <input type="text" placeholder="BS" #bs #bs_id (click)="bsget()" aria-label="Number"
+                                matInput formControlName='bs_id' required [matAutocomplete]="auto6">
+                            <mat-autocomplete #auto6="matAutocomplete" [displayWith]="displayFnbs">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+
+                                    <mat-option *ngFor="let p of bsdata " (focusout)="bsid_cc(p.id)" [value]="p">
+                                        {{p.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>CC</mat-label>
+                            <input type="text" placeholder="CC" #cc #cc_id (click)="ccget()" aria-label="Number"
+                                matInput formControlName='cc_id' required [matAutocomplete]="auto11">
+                            <mat-autocomplete #auto11="matAutocomplete" [displayWith]="displayFncc">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let p of ccdata" [value]="p">
+                                        {{p.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px;margin-left: 15px;margin-top: 17px;" (click)="systemdatasearch(1,0)" color="primary"><i class="fa fa-search"></i></button>
+                                </div>
+                </div>
+            </form>
+                <table class="table table-responsive table-bordered" fixed-header style="width: 95%;margin-top: 10px;">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <th>CR number</th>
+                            <th>Module code</th>
+                            <th>Module</th>
+                            <th>Main cat </th>
+                            <th>Sub cat</th>
+                            <th>GL</th>
+                            <th>BS </th>
+                            <th>CC</th>
+                            <th>Narration </th>
+                            <th>Vendor name</th>
+                            <th>Expense Month</th>
+                            <th>Amount</th>
+                            <th>Gst Amount</th>
+                            <th>Checker Amount</th>
+                            <th>Checker Gst Amount</th>
+                            <th>Approver Description</th>
+                            <th>Approver Amount</th>
+                            <th>Approver Gst Amount</th>
+                            <th>Status</th>
+                            <th>select</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let  p of systemdata; index as i" style="text-align: left;"
+                        class="mon-{{p.expense_date.expense_month}}">
+                            <td> {{(presentpages - 1)*10 +i+1 }} </td>
+                            <td>{{p.cr_number}}</td>
+                            <td>{{p.reference_code}}</td>
+                            <td style="cursor: pointer;color:blue;" >{{p.refenrence_text}}</td>
+                            <td ><span>
+                                    {{ p.category_id.name}}</span>
+                            </td>
+                          
+                            
+                            <!-- <td>{{p.category_id.name}}</td> -->
+                            <td>{{p.subcategory_id.name}}</td>
+                            <td>{{p.subcategory_id.glno}}</td>
+                            <td>{{p.bs_id.name}}</td>
+                            <td>{{p.cc_id.name}}</td>
+                            <td>{{p.narration}}</td>
+                            <td>{{p.vendor_id.name}}</td>
+                            <!-- <td>{{p.expense_date}}</td> -->
+                            <td>{{p.expense_date.expense_date | date: 'MMM-yyyy'}}</td>
+                            <td class='maker'>{{p.amount|number}}</td>
+                            <td class='maker'>{{p.gst_amount|number}}</td>
+                            <td class='checker'>{{p.amount_checker|number}}</td>
+                            <td class='checker'>{{p.gst_amount_checker|number}}</td>
+
+                            <td>
+                                <input [(ngModel)]="p.description" class="form-control" type="text"
+                                    name="{{p.description}}" />
+                            </td>
+                            <td class='approver'><input [(ngModel)]="p.amount_approver" class="form-control" type="text"
+                                    name="{{p.amount_checker}}" /></td>
+
+                            <td class='approver'><input [(ngModel)]="p.gst_amount_approver" class="form-control"
+                                    type="text" name="{{p.gst_amount_approver}}" />
+                            </td>
+                            <!-- 
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Checker"'>
+
+                        
+                    </td>
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Checker"'>
+
+                        <input [(ngModel)]="p.gst_amount_approver" class="form-control" type="text"
+                            name="{{p.gst_amount_checker}}" [disabled]="true" />
+
+                    </td>
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Approver"'>
+
+                        <input [(ngModel)]="p.gst_amount_approver" class="form-control" type="text"
+                            name="{{p.gst_amount_checker}}" [disabled]="true" />
+
+                    </td>
+                    <td *ngIf='p.provision_status.status=="Ignored_By_Approver"'>
+
+                        <input [(ngModel)]="p.gst_amount_approver" class="form-control" type="text"
+                            name="{{p.gst_amount_checker}}" [disabled]="true" />
+
+                    </td> -->
+
+                            <td>{{p.provision_status.pro_status}}</td>
+                            <td> <input type="checkbox" [(ngModel)]="p.provisionflag" [checked]="isChecked"
+                                    (change)="getvalue(p.provisionflag,i,p)"></td>
+                        </tr>
+                        <tr>
+                    <td *ngIf="systemdata.length == 0" colspan="12"> No Records found</td>
+                </tr>
+
+
+                    </tbody>
+                </table>
+                <div class="col-sm-10" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <button mat-icon-button [disabled]="has_previouss === false" color="primary"
+                        (click)="tab3previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button> {{presentpages}}
+                    <button mat-icon-button [disabled]="has_nexts === false" color="primary" (click)="tab3nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+             
+
+                <div class="col-sm-9" style="font-size: small;text-align:right;margin-bottom: 5%;">
+                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Action</mat-label>
+                        <input type="text" placeholder="Pick one" aria-label="Action" matInput [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let option of options" [value]="option"
+                                (onSelectionChange)="provisionstatus(option)">
+                                {{option}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field> -->
+
+                    <button type="button" (click)="checker()"
+                        style="border-radius:40px;margin-left: 15px;margin-top: 17px;"
+                        class="btn btn-outline-primary">Submit To</button>
+
+                </div>
+
+            </div>
+
+            <!-- <button mat-raised-button tabindex="-1" type="button" color="warn" (click)='moveToSelectedTab("Tab 2")'>Move to Tab 2</button> -->
+        </mat-tab>
+    </mat-tab-group>
+
+</div>

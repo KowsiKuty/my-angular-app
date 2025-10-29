@@ -1,0 +1,253 @@
+<section class="screen-padding screen-lm">
+
+    <div class="comp-header">
+        <span style="font-weight: 600;">Vendor Initiation Summary</span>
+    </div>
+
+    <!-- <div class="filter-aling-2">
+            <lib-vs-search-cmp
+            class="npm-mat-edit"
+            [SearchArr]="vendor_initiation_search"
+            [Outputtype]="vendor_initiation_searchvar"
+            (dataoutput)="vendor_initiation_summarysearch($event)"
+            [ButtonArr]="rulebutton"
+            ></lib-vs-search-cmp>
+        </div> -->
+    <form [formGroup]="summaryform" >
+        <section role="search" class="row" style="padding-left: 1%;">
+
+            <!-- <div class="col-md-2">
+                <mat-form-field class="summaryformfield">
+                    <mat-label>Branch/Dept</mat-label>
+                    <input matInput formControlName="department">
+                </mat-form-field>
+            </div>
+            <div class="col-md-2">
+                <mat-form-field class="summaryformfield">
+                    <mat-label>Product</mat-label>
+                    <mat-select matInput formControlName="product_id">
+                        <mat-option *ngFor="let item of barcodetype" [value]="item.value">
+                            {{item.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-3" class="npm-mat-edit">
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Vendor</mat-label>
+                    <input matInput formControlName="query">
+                </mat-form-field>
+            </div>
+
+            <!-- <div class="col-md-3" class="npm-mat-edit" style="padding-left: 2%;">
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Status</mat-label>
+                    <input matInput formControlName="status">
+                </mat-form-field>
+            </div> -->
+
+            <div class="col-md-4">
+                <button matTooltip="Search Records" matTooltipClass="rmutooltip" matTooltipClass="rmutooltip"
+                    (click)="getsummary()" class="btn btn-outline-success" style="margin-left:5%" id="rmubtn"
+                    color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-warning" matTooltipClass="rmutooltip" [matTooltip]="'Clear Entries'"
+                    style="margin-left:20px" id="rmubtn" (click)="clear()">Clear</button>
+                <!-- <button matTooltip="Add RMU Vendor" matTooltipClass="rmutooltip" type="button"
+                    data-target="#vendormodal" data-toggle="modal" class="btn btn-outline-success" id="rmubtn"
+                    style="margin-left: 20px;"><span class="fa fa-plus"></span>
+                    ADD</button> -->
+                <button matTooltip="Add Vendor Details" matTooltipClass="rmutooltip" type="button" class="btn btn-outline-success" id="rmubtn"
+                    style="margin-left: 20px;" (click)="vendor_create()"><span class="fa fa-plus"></span>ADD
+                </button>
+            </div>
+
+
+        </section>
+    </form>
+
+    <!-- <lib-vs-cbox-summary [SummaryDetails]="vendor_initiation_summary"
+    [SummaryApiObj]="vendor_initiation_summaryapi"></lib-vs-cbox-summary> -->
+    <div id="rmucontent" class="table-responsive">
+        <table class="table table-bordered" id="rmutable">
+            <thead class="table_header">
+                <th>S.No</th>
+                <th>Vendor Name</th>
+                <th>Vendor Mobile No</th>
+                <th>Email</th>
+                <th>Contact Person(M/N)</th>
+                <th>Contact Email</th>
+                <!-- <th>Status</th> -->
+                <th>Action</th>
+            </thead>
+            <tbody *ngFor="let sum of summarylist;index as ind">
+                <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                <td>{{sum.name | titlecase}}</td>
+                <td>{{sum.mobile_no}}</td>
+                <td>{{sum.email_id}}</td>
+                <td>{{sum.contact_person}}</td>
+                <td>{{sum?.contact_email_id}}</td>
+                <td>
+                    <button style="margin-top:-6%" id="rmubtn" matTooltip="Delete RMU vendor"
+                        class="btn btn-outline-danger" 
+                        matTooltipClass="rmutooltip" mat-icon-button (click)="removermuvendor(sum)" clas="btn btn-danger">
+                        <mat-icon >delete</mat-icon>
+                    </button>
+                    <button id="rmubtn" matTooltipClass="rmutooltip" matTooltip="Edit Vendor" 
+                    (click)="edit_vendor(sum)" mat-icon-button class="btn btn-outline-success">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                </td>
+            </tbody>
+        </table>
+        <div *ngIf="!summarylist.length" style="margin-left: 42%;">
+            <h3>Sorry no data found!... </h3>
+        </div>
+
+        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+            <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false" color="primary">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{pagination.index}}
+            <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+        </div>
+    </div>
+    <div class="modal fade" id="vendormodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title mb-0" id="exampleModalLabel" style="font-weight: 600;">Initiate New Vendor</p>
+                    <button type="button" class="close" data-dismiss="modal" #closevendorpopup aria-label="Close"
+                        (click)="closedpopup()">
+                        <i aria-hidden="true">&times;</i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Vendor</mat-label>
+                        <input matInput formControlName="query">
+                    </mat-form-field> -->
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" (click)="creatermuvendor()" id="rmubtn" matTooltipClass="rmutooltip"
+                        class="btn btn-outline-success">Submit</button>
+                    <button type="button" #closevendorpopup id="rmubtn" (click)="closedpopup()" matTooltipClass="rmutooltip"
+                        class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="vendordetailsmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title mb-0" id="exampleModalLabel" style="font-weight: 600;">Vendor Contact Details </p>
+                    <button type="button" class="close" data-dismiss="modal" #closevendordetailpopup aria-label="Close"
+                        (click)="closedvenpopup()">
+                        <i aria-hidden="true">&times;</i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- <h2></h2> -->
+                    <form [formGroup]="contact">
+                        <div class="row">
+                            <div class="col-md-3" class="npm-mat-edit" style="padding-left: 2%;">
+                                <mat-form-field appearance="outline" style="width: 100%;">
+                                    <mat-label>Vendor Name*</mat-label>
+                                    <input matInput formControlName="name" maxlength="100">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-3" class="npm-mat-edit" style="padding-left: 2%;">
+                                <mat-form-field appearance="outline" class="nopadding">
+                                    <mat-label>Mobile No*</mat-label>
+                                    <input type="tel" pattern="\d{10}" (keyup)="only_nummber($event)"                                     
+                                        maxlength="10" minlength="10" matInput placeholder=""
+                                        oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3);}"
+                                        formControlName="mobile" autocomplete="off">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-3" class="npm-mat-edit" style="padding-left: 2%;">
+                                <mat-form-field appearance="outline" class="nopadding">
+                                    <mat-label>Email*</mat-label>
+                                    <input matInput
+                                        pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}"
+                                        type="email" placeholder="" formControlName="email"
+                                        autocomplete="off" 
+                                        (change)="email_validation($event)">
+                                </mat-form-field>
+                            </div>                            
+                            <div class="col-md-3" class="npm-mat-edit" style="padding-left: 2%;">
+                                    <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                        <mat-label>Another Contact (M/N)*</mat-label>
+                                        <input type="tel" pattern="\d{10}" (keyup)="only_contact_nummber($event)"                                     
+                                        maxlength="10" minlength="10" matInput placeholder=""
+                                        oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3);}"
+                                        formControlName="another" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-3" class="npm-mat-edit" style="padding-left: 2%;">
+                                    <mat-form-field class="summaryformfield" appearance="outline" style="width: 100%;">
+                                        <mat-label>Another Contact (Email)</mat-label>
+                                        <input matInput formControlName="anotheremail" matInput
+                                        pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}"
+                                        type="email" placeholder="" 
+                                        autocomplete="off" 
+                                        (change)="email_contact_validation($event)">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-3"  style="padding-left: 2%;">
+                                    <mat-form-field appearance="outline" class="nopadding" style="width: 100%;">
+                                        <mat-label>Address*</mat-label>
+                                        <textarea matInput placeholder="" formControlName="address"
+                                            autocomplete="off" >
+                                                            </textarea>
+                                    </mat-form-field>
+                                </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" (click)="contact_detail_submit()" id="rmubtn" matTooltipClass="rmutooltip"
+                        class="btn btn-outline-success">Submit</button>
+                    <button type="button" #closevendorpopup id="rmubtn" (click)="closedpopup()" matTooltipClass="rmutooltip"
+                        class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmationpopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header hdrclr">
+                    <h2 class="modal-title" id="exampleModalLongTitle">Removal confirmation</h2>
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button> -->
+                </div>
+                <div class="modal-body">
+                    <mat-icon style="vertical-align:sub">info</mat-icon>
+                    <mat-label>
+                        Are you okay to remove vendor - {{rmuvendorid.code }} {{rmuvendorid.name |titlecase}}
+                    </mat-label>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" id="rmubtn" class="btn btn-outline-primary">Ok</button>
+                    <button type="button" #actionclose id="rmubtn" class="btn btn-outline-secondary" 
+                        data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

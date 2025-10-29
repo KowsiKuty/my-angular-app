@@ -1,0 +1,133 @@
+<mat-card>
+    <div class="mat-card">
+<div *ngIf="expression"> <h2 style="margin-left: 30px;margin-top: 1%;">Premises Identification Summary</h2>
+
+<div style=" margin: auto;">
+    <div>
+        <div class="col-12">
+            <div style="margin-left: 20px;">
+                <form [formGroup]="premisesIdentificationSearch" (ngSubmit)="identificationSearch()">
+                    <mat-form-field style="margin-left: 2%;width: 200px;">
+                        <input class="toolbar-search" type="text" matInput autocomplete="off" formControlName="code" id="premise-identification-summary-0001">
+                        <mat-placeholder>Premises Identification Code</mat-placeholder>
+                    </mat-form-field>
+                    <!-- <mat-form-field style="width: 175px;margin-left: 0px;">
+                        <mat-label>Premise Identification</mat-label>
+                        <mat-select formControlName="identificationdropdown" [(ngModel)]="selectedFood1" 
+                        (selectionChange)="onBookChange($event.value)" id="premise-identification-summary-0002">
+                            <mat-option *ngFor="let premise of PremiseIdentificationdrop" [value]="premise.id">
+                                {{premise.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field> -->
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"  matTooltip="Search"
+                        color="primary" id="premise-identification-summary-0003"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-primary" (click)="reset()" type="button"  matTooltip="Reset"
+                        style="border-radius:40px;margin-left: 15px;" color="primary" id="premise-identification-summary-0004">Reset</button>
+                    <!-- <mat-form-field style="width: 200px;margin-left: 5%;">
+                        <mat-label>Premises Identification</mat-label>
+                        <mat-select (selectionChange)="onpremiseChange($event.value)" id="premise-identification-summary-0005">
+                            <mat-option *ngFor="let premise of PremiseIdentificationdrop" [value]="premise.id">
+                                {{premise.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field> -->
+                    <mat-form-field style="width: 200px;margin-left: 5%;">
+                        <mat-label>Premises Identification</mat-label>
+                        <mat-select readonly="readonly" formControlName="status" (selectionChange)="onpremiseChange($event.value)" id="premise-identification-summary-0006">
+                            <mat-option *ngFor="let premise of premisedropList" [value]="premise.id">
+                                {{premise.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button type="button" class="btn btn-outline-success"
+                        (click)=addIdentificationForm() style="border-radius: 20px; cursor: pointer;margin-left: 5rem;"  matTooltip="Add Premise Identification"
+                        color="primary" id="premise-identification-summary-0007"><span class="fa fa-plus"></span> Premises Identification
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- <form [formGroup]="premisesIdentificationdropdown" (ngSubmit)="dropdownsubmit()">
+
+    <mat-form-field style="width: 175px;margin-left: 0px;">
+        <mat-label>Premise Identification</mat-label>
+        <mat-select formControlName="identificationdropdown" [(ngModel)]="selectedFood1" 
+        (selectionChange)="onBookChange($event.value)" id="premise-identification-summary-0008">
+            <mat-option *ngFor="let premise of PremiseIdentificationdrop" [value]="premise.id">
+                {{premise.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+        color="primary" id="premise-identification-summary-0009"><i class="fa fa-search" aria-hidden="true"></i></button>
+    </form> -->
+
+    <div class="table-responsive" style="margin-top: 2%;width: 99%;">
+        <!-- overflow-x: hidden;margin-left: 50px; -->
+        <table class="table table-bordered" fixed-header>
+            <thead class="table_header">
+                <tr>
+                    <th>S.no</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Ownership Type</th>
+                    <th>Occupancy Usage</th>
+                    <th>Identification Type</th>
+                    <th>Created Date</th>
+                    <th>Request Branch</th>
+                    <th>Status</th>
+                    <th *ngIf="statusId === 1">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let identification of identificationData; index as i">
+                    <td> {{(presentIdentification - 1)*identificationSize +i+1 }} </td>
+                    <td>{{ identification.code }}</td>
+                    <td style="cursor: pointer; color: #3684BF; " (click)="premiseIDView(identification.id)">
+                        {{ identification?.name }}</td>
+                    <td>{{ identification?.ownership_type.text }}</td>
+                    <td>{{ identification?.usage_code.text }}</td>
+                    <td>{{ identification?.identificationtype.text }}</td>
+                    <td>{{ identification.created_date | date:'dd-MMM-yyyy ' }}</td>
+                    <td>
+                        <div *ngIf="identification?.request_branch != null">
+                        {{ identification?.request_branch.code }} - {{ identification?.request_branch.name }}
+                        </div>
+                    </td>
+                    <td>{{ identification?.status.status }}</td>
+                    <td *ngIf="statusId === 1">
+                        <div class="d-flex">
+                        <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                            (click)="identificationEdit(identification)" id="premise-identification-summary-0010">
+                            <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary"
+                            (click)="identificationDelete(identification.id)">
+                            <mat-icon style="color: gray;" aria-label="">delete</mat-icon>
+                        </button>
+                    </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="identificationData ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+            <button mat-icon-button [disabled]="previousIdentification === false" color="primary"
+                (click)="identificatinPrevious()" id="premise-identification-summary-0011">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{presentIdentification}}
+            <button mat-icon-button [disabled]="nextIdentification === false" color="primary"
+                (click)="identificationNext()" id="premise-identification-summary-0012">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+    </div>
+</mat-card>

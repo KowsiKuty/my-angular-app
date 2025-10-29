@@ -1,0 +1,148 @@
+<div class="container">
+    <form [formGroup]="Currencysummary" id='show'>
+        <h2 style="margin-left: 39%; margin-top: 3%;">Currency Master</h2>
+        <div>
+            <div class="row">
+                <div class="col-md-2">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="" formControlName="Summary_name" autocomplete="off">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-2">
+                    <mat-form-field (click)="Status_check()">
+                        <mat-label>Status</mat-label>
+                        <input type="text" matInput formControlName="Statustypes" [matAutocomplete]="statustype" />
+                        <mat-autocomplete #statustype="matAutocomplete" [displayWith]="Currencytype_display">
+                            <mat-option *ngFor="let Status of Status_Type" (click)="status_select_type(Status)"
+                                [value]="Status">
+                                {{ Status.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="btn">
+                    <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center;" class="btn btn-outline-primary"
+                        (click)="Currency_search(Currencysummary.value)"><span class="fa fa-search"></span></button>
+                <!-- </div> -->
+                <!-- <div class="col-md-1"> -->
+                    <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center;" class="btn btn-outline-primary"
+                        data-toggle="modal" (click)="Currency_add('Add')" data-target="#exampleModalcurrency"><span
+                            class="fa fa-plus"></span></button>
+                <!-- </div> -->
+                <!-- <div class="col-md-1"> -->
+                    <button type="button" style="border-radius: 30px; margin-top: 20px; align-items: center;" class="btn btn-outline-primary"
+                        (click)="Currency_clear()">Clear</button>
+                </div>
+            </div>
+        </div>
+        <div style="margin-left: -7%; margin-top: 3%;" class="tableFixHead">
+            <table class="table table-bordered" style="width: 110%;" fixed-header>
+                <thead style="background-color: #00800021;">
+                    <tr>
+                        <th>S:No</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Value</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let currency of currency_summary_data ; let i = index">
+                        <td>{{(presentpage-1)*10+i+1 }}</td>
+                        <td>{{currency.name}}</td>
+                        <td>{{currency.code}}</td>
+                        <td>{{currency.value}}</td>
+                        <td>
+                            <div *ngIf="currency.status===1;else statusElse">{{'Active'}}</div>
+                            <ng-template #statusElse>
+                                <div *ngIf="currency.status===0;else statusElseif">{{'In-Active'}}</div>
+                            </ng-template>
+                            <ng-template #statusElseif>
+                                <div>--</div>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div style="display: flex;">
+                                <button mat-icon-button matTooltip="Edit" data-toggle="modal"
+                                    data-target="#exampleModalcurrency" class="iconbutton" color="primary"
+                                    style="color: green;" (click)="Currency_edit(currency,'edit')">
+                                    <mat-icon class="enabled_icon" aria-label="view">edit</mat-icon>
+                                </button>
+                                <!-- <button mat-icon-button matTooltip="view" data-toggle="modal"
+                                    data-target="#exampleModal" class="iconbutton" color="primary" style="color: green;"
+                                    (click)="Currency_view(currency,'view')">
+                                    <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+                                </button> -->
+                                <button mat-icon-button matTooltip="delete"
+                                    class="material-icons app-toolbar-menu delete-button"
+                                    (click)="Currency_delete(currency)"
+                                    *ngIf="currency.status===1 || currency.status === 0"
+                                    [ngStyle]="{'color':currency.status===1 ? 'green' : 'red' }"
+                                    [matTooltip]="currency.status===1? 'In-Active' : 'Active' ">
+                                    <mat-icon class="enabled_icon" aria-label="Delete">delete</mat-icon>
+                                </button>
+                                <!-- <button mat-icon-button class="material-icons app-toolbar-menu delete-button" (click)="deleteexpgrp_mapping(expencegrp_level,ind)"
+                                  *ngIf="expencegrp_level.value.isEditable" [ngStyle]="{'color':expencegrp_level.value.exp_status == 0 ? '#66bb6a' : 'red' }" [matTooltip]="expencegrp_level.value.exp_status == 0 ? 'Active' : 'In-Active' " color="warn">
+                                  <mat-icon>delete</mat-icon>
+                                </button> -->
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_scdhele_found" style="text-align: center;">Data Not Found</p>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="hasprevious === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>{{presentpage}}
+                <button mat-icon-button [disabled]="hasnext === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal fade" id="exampleModalcurrency" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 150%;">
+            <div class="modal-header" style="width: 100%;background-color: #00800021; ">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;"><b>Currency
+                        Master</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="currencyclose()" #Currency_sum_close aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="CurrencyModal">
+                    <div class="Create">
+                        <!-- <div class="col-md-1"> -->
+                        <mat-form-field style="width: 20%;margin-left: 5%; ">
+                            <mat-label>Name*</mat-label>
+                            <input matInput formControlName="currency_modal_name" autocomplete="off">
+                        </mat-form-field>
+                        <!-- </div> -->
+                        <!-- <div class="col-md-1"> -->
+                        <mat-form-field style="width: 20%;margin-left: 5%; ">
+                            <mat-label>Value*</mat-label>
+                            <input matInput type="number" formControlName="currency_modal_value" autocomplete="off">
+                        </mat-form-field>
+                        <button type="submit" style="border-radius: 40px; margin-left: 4%; margin-top: 2%; margin-bottom: 2%;"
+                        *ngIf="currency_master_submit_btn" class="btn btn-outline-primary"
+                        (click)="currencycreatedata()">Submit</button>
+                        <!-- </div> -->
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="modal-backdrop fade show"></div> -->

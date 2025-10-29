@@ -1,0 +1,1133 @@
+<div style="margin-left: 2%;">
+    <h2 style="color: blueviolet;margin-left: 35px;;">FA-Reports Download</h2>
+</div>
+<div style="margin-left: 2%;">
+    <form [formGroup]="dataForm">
+        <div class="row col-12">
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>PV Maker</mat-label>
+                    <input type="text" formControlName="pv_make" matInput (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>PV Serial Number</mat-label>
+                    <input type="text" formControlName="serialnumber" matInput (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            </div>
+        
+        <div class="col-md-3">
+            <mat-form-field style="width: 250px;">
+                <input  type="text" formControlName="vendorname" matInput #supnameids
+                    autocomplete="off" [matAutocomplete]="supname" (keypress)="kyenbdata($event)">
+                    <mat-autocomplete #supname="matAutocomplete" >
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let d of supnamelist" [value]="d.name" (focusout)="supnameid(d)">{{d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+
+                <mat-placeholder>Supplier Name</mat-placeholder>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field  style="width:250px">
+                <mat-label>Branch Name</mat-label>
+                <input type="text" matInput autocomplete="off" #inputbranchs [matAutocomplete]="branch" formControlName="branch" (keypress)="kyenbdata($event)">
+                <mat-autocomplete  #branch="matAutocomplete" >
+                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                    <ng-container *ngIf="!isLoading">
+        
+                        <mat-option *ngFor="let d of branchlist" [value]="d.name" (focusout)="branchselect(d)">{{d.name}}</mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        </div>
+        <div class="row col-12">
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Asset Id</mat-label>
+                    <input type="text" formControlName="assetId" matInput (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Asset RefId</mat-label>
+                    <input type="text" formControlName="assetrefId" matInput (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>CR No.</mat-label>
+                    <input type="text" formControlName="crno" matInput (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field>
+                    <mat-label>Choose From Date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="fromdate">
+                    
+                    <mat-datepicker-toggle matIconSuffix [for]="picker" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field>
+                    <mat-label>Choose To Date</mat-label>
+                    <input matInput [matDatepicker]="picker1"  formControlName="todate">
+                   
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                  </mat-form-field>
+            </div>
+            <div>
+                <button class="btn btn-primary"   data-toggle="modal" data-target="#entrypopup" type="button" style="border-radius:40px; width:180px;height: 40px;" (click)="entryFailed()" matTooltip="Entry Failed summary "
+                color="primary">Failed Entries <span class="fa fa-plus"></span> </button> 
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary" type="button" style="border-radius:40px;margin-left: 4px; width:40px;height: 40px;" matTooltip="Search"
+                        color="primary" (click)="fardownload('all')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-primary" (click)="resets()" type="reset" style="border-radius:40px;margin-left: 4px; width:80px;height: 40px;" matTooltip="Reset"
+                        color="primary">Reset</button>
+            </div>
+           
+        </div>
+      
+   </form>
+</div>
+<div style="margin-left: 2%;">
+    <table class="table table-responsive table-bordered">
+        <thead class="table_header">
+            <tr>    
+                <th>S.No</th>
+                
+                
+                <th>Type</th>
+                <th>Excel Name</th>
+                <th>Excel Size</th>
+                <th>Created Date</th>
+                <th>Excel Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    1
+                </td>
+               
+                <td><b>Forecast</b></td>
+                
+                <td>
+                    {{prepate?.filename}}
+                    
+                </td>
+                <td>
+                    {{prepate?.size}}
+                </td>
+                <td>
+                    {{prepate?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" (click)=forecastDownload() >FORECAST EXCEL<mat-icon matSuffix>download</mat-icon></button>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><b>Regular</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{regdata?.filename}}
+                </td>
+                <td>
+                    {{regdata?.size}}
+                </td>
+                <td>
+                    {{regdata?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" (click)=regularDownload() >REGULAR EXCEL<mat-icon matSuffix>download</mat-icon></button>
+
+                </td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><b>Temp Dep Data</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{querydata?.filename}}
+                </td>
+                <td>
+                    {{querydata?.size}}
+                </td>
+                <td>
+                    {{querydata?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="querydataforecastdownload()" style="height: 40px;">Temp Dep data Download<mat-icon >download</mat-icon></button>
+                </td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><b>FAR</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{fardata?.filename}}
+                </td>
+                <td>
+                    {{fardata?.size}}
+                </td>
+                <td>
+                    {{fardata?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="fardownload('all')" style="height: 40px;">FA-Reports Prepare</button><br>
+                    <button mat-flat-button color="primary" type="button"  (click)="fardownload('any')" style="height: 40px;margin-top: 2%;">FA-Reports Download<mat-icon >download</mat-icon></button>
+                </td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><b>FA-Regular Query Data</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{reg_q_data?.filename}}
+                </td>
+                <td>
+                    {{reg_q_data?.size}}
+                </td>
+                <td>
+                    {{reg_q_data?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="regularDownload_q()" style="height: 40px;">FA-Regular Dep Query Data Download</button><br>
+                </td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><b>FA-IT Depreciation</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{reg_q_data?.filename}}
+                </td>
+                <td>
+                    {{reg_q_data?.size}}
+                </td>
+                <td>
+                    {{reg_q_data?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="It_Dep_Prepare_Q()" style="height: 40px;">FA-IT Depreciation Prepare</button><br><br>
+                    <button mat-flat-button color="primary" type="button"  (click)="It_Dep_Download_Q()" style="height: 40px;">FA-IT Depreciation Data Download</button><br>
+                </td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><b>FA-GST Expense Report</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{gst_q_reports?.filename}}
+                </td>
+                <td>
+                    {{gst_q_reports?.size}}
+                </td>
+                <td>
+                    {{gst_q_reports?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="Gst_Expense_Reports()" style="height: 40px;">FA-GST Expense Report Prepare</button><br><br>
+                    <button mat-flat-button color="primary" type="button"  (click)="Gst_Expense_Reports_Download()" style="height: 40px;">FA-GST Expense Report Download</button><br>
+                </td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><b>FA-Minor Expense Report</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{min_exp_data?.filename}}
+                </td>
+                <td>
+                    {{min_exp_data?.size}}
+                </td>
+                <td>
+                    {{min_exp_data?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="fa_min_Expense_Reports()" style="height: 40px;">FA-Minor Expense Report Prepare</button><br><br>
+                    <button mat-flat-button color="primary" type="button"  (click)="fa_min_Expense_Reports_Download()" style="height: 40px;">FA-Minor Expense Report Download</button><br>
+                </td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td><b>FA-Expense Report</b></td>
+                <!-- <td></td> -->
+                <td>
+                    {{exp_data_reports?.filename}}
+                </td>
+                <td>
+                    {{exp_data_reports?.size}}
+                </td>
+                <td>
+                    {{exp_data_reports?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="fa_Expense_Reports()" style="height: 40px;">FA-Expense Report Prepare</button><br><br>
+                    <button mat-flat-button color="primary" type="button"  (click)="fa_Expense_Reports_Download()" style="height: 40px;">FA-Expense Report Download</button><br>
+                </td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td><b>FAS-ENTRY CHECK</b></td>
+                <!-- <td></td> -->
+                <td>
+                    DUMMY
+                </td>
+                <td>
+                    DUMMY
+                </td>
+                <td>
+                    DUMMY
+                </td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="fas_entry_Reports()" style="height: 40px;">FA-Expense Report Prepare</button><br><br>
+                </td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td><b>FA-FAR Report</b></td>
+                <td>{{fa_forecas_new?.filename}}</td>
+                <td>{{fa_forecas_new?.size}}</td>
+                <td>{{fa_forecas_new?.created_date}}</td>
+                <td>
+                    <button mat-flat-button color="primary" type="button"  (click)="forecast_dowload('p')" style="height: 40px;">FA-FAR Prepare</button><br><br>
+                    <button mat-flat-button color="primary" type="button"  (click)="forecast_dowload('d')" style="height: 40px;">FA-FAR Download</button><br>
+                </td>
+            </tr>
+            <!-- <tr>
+                <td>4</td>
+                <td><b>Asset Header Move</b></td>
+                
+                <td colspan="2">
+                    <button type="button" mat-flat-button color="success" (click)="movetoassetheaderhistory()" style="height: 40px;">Move to Header</button>
+
+                </td>
+                <td></td>
+            </tr> -->
+        </tbody>
+    </table>
+</div>
+<div style="margin-left: 2%;">
+    <h1 style="font-family: 'Times New Roman', Times, serif;font-size: 20px;color: blue;">FA GEFU AND JW REPORTS Prepare and Download</h1>
+        <br>
+    <form [formGroup]="gefujwform">
+        <div class="row col-12">
+            <div class="col-md-3">
+                <mat-form-field >
+                    <mat-label>Select Last Depreciation Run Date</mat-label>
+                    <input matInput [matDatepicker]="dp" formControlName="lastdeprundate">
+                    <mat-datepicker-toggle matSuffix [for]="dp">
+                        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #dp></mat-datepicker>
+                  </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field >
+                    <mat-label>Reports Type</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option value="GEFU">GEFU</mat-option>
+                        <mat-option value="JW">JW</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+    <br>
+    <br>
+    <table class="table table-responsive table-bordered">
+        <thead class="table_header">
+            <tr>    
+                <th>S.No</th>
+                
+                
+                <th>Type</th>
+                <th>Excel Name</th>
+                <th>Excel Size</th>
+                <th>Created Date</th>
+                <th>Excel Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    1
+                </td>
+               
+                <td><b>FA-GEFU</b></td>
+                
+                <td>
+                    {{gefu_data?.filename}}
+                    
+                </td>
+                <td>
+                    {{gefu_data?.size}}
+                </td>
+                <td>
+                    {{gefu_data?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="success" type="button" class="btn btn-primary"  (click)="gefuprepare()"  style="border-radius: 40px;height: 40px;">
+                        PREPARE FA-GEFU EXCEL
+                            <mat-icon *ngIf="four"><mat-spinner color="accent" diameter="20">
+                            </mat-spinner></mat-icon>
+                            <mat-icon *ngIf="!four" inline=true style="color:black">download</mat-icon>
+                      </button>
+                      <br><br>
+                      <button mat-flat-button color="success" type="button" class="btn btn-primary"  (click)="gefuDownload()"  style="border-radius: 40px;height: 40px;">
+                        Download GEFU
+                            
+                      </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    2
+                </td>
+               
+                <td><b>FA-JW</b></td>
+                
+                <td>
+                    {{jw_data?.filename}}
+                    
+                </td>
+                <td>
+                    {{jw_data?.size}}
+                </td>
+                <td>
+                    {{jw_data?.created_date}}
+                </td>
+                <td>
+                    <button mat-flat-button color="success" type="button" class="btn btn-primary"  (click)="jwprepare()"  style="border-radius: 40px;height: 40px;">
+                        PREPARE FA-JW EXCEL
+                            <mat-icon *ngIf="five"><mat-spinner color="accent" diameter="20">
+                            </mat-spinner></mat-icon>
+                            <mat-icon *ngIf="!five" inline=true style="color:black">download</mat-icon>
+                      </button>
+                      <br><br>
+                      <button mat-flat-button color="success" type="button" class="btn btn-primary"  (click)="jwDownload()"  style="border-radius: 40px;height: 40px;">
+                        Download JW
+                            
+                      </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div style="margin-left: 2%;">
+    <h1 style="font-family: 'Times New Roman', Times, serif;font-size: 20px;color: blue;">FA Reports</h1>
+    <br>
+    <table class="table table-responsive table-bordered" style="width:fit-content">
+            <thead class="table_header">
+                <tr>
+                    <th>SI.No</th>
+                    <th>Report Type</th>
+                    <th>Doc Type</th>
+                    <th>Date Range</th>
+                    <th>Excel Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td>1</td>
+                <td><strong>FA Query GL Based
+                </strong></td>
+                <td>
+                    <mat-form-field>
+                        <mat-label>Select Doc Type</mat-label>
+                        <mat-select [(ngModel)]="gltype" required>
+                            <mat-option value="REG">REGULAR</mat-option>
+                            <mat-option value="CWIP">CWIP</mat-option>
+                            <mat-option value="BUC">BUC</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <tr class="row col-md-12">
+                        <div class="col-md-4">
+                        <mat-form-field >
+                            <mat-label>Fromdate</mat-label>
+                            <input matInput  [max]="previousDate" [matDatepicker]="gl_fd" [(ngModel)]="gl_fromdate" readonly (dateChange)="fromdateSelection($event.value)"><!--formControlName="formdate"-->
+                            <mat-datepicker-toggle matSuffix [for]="gl_fd">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #gl_fd></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-5" style="margin-left: 50px;">
+                        <mat-form-field>
+                            <mat-label>Todate</mat-label>
+                            <input matInput [matDatepicker]="gl_td"  [min]="select" [max]="previousDate" [(ngModel)]="gl_todate" readonly> <!--formControlName="todate"-->
+                            <mat-datepicker-toggle matSuffix [for]="gl_td">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #gl_td></mat-datepicker>
+                        </mat-form-field>
+                        </div>
+                        <button  class="btn btn-default" style="border-radius: 40px;height: 40px;" (click)="reset_faquery('gl')">X</button>
+                    </tr>
+                </td>
+                <td>
+                    <button mat-flat-button color="success" type="button" class="btn btn-primary" (click)="Downloadquery()"
+                        style="border-radius: 40px;height: 40px;">
+                        Download Query
+
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>FA-Additions Report</strong></td>
+                <td>Additions</td>
+                <td>
+                    <tr class="row col-md-12">
+                        <div class="col-md-4">
+                        <mat-form-field >
+                            <mat-label>Fromdate</mat-label>
+                            <input matInput  [max]="previousDate" [matDatepicker]="add_fd" [(ngModel)]="addition_from_date" readonly (dateChange)="add_fromdateSelection($event.value)"><!--formControlName="formdate"-->
+                            <mat-datepicker-toggle matSuffix [for]="add_fd">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #add_fd></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-5" style="margin-left: 50px;">
+                        <mat-form-field>
+                            <mat-label>Todate</mat-label>
+                            <input matInput [matDatepicker]="add_td"  [min]="select_add" [max]="previousDate_add" [(ngModel)]="addition_to_date" readonly> <!--formControlName="todate"-->
+                            <mat-datepicker-toggle matSuffix [for]="add_td">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #add_td></mat-datepicker>
+                        </mat-form-field>
+                        </div>
+                        <button  class="btn btn-default" style="border-radius: 40px;height: 40px;" (click)="reset_faquery('addition')">X</button>
+                    </tr>
+                </td>
+                <td>
+                    <button mat-flat-button color="success" type="button" class="btn btn-primary" (click)="get_addition_report()"
+                        style="border-radius: 40px;height: 40px;">
+                        Download Additions
+
+                    </button>
+                </td>
+                
+            </tr>
+            </tbody>
+    </table>
+
+</div>
+<div style="margin-left: 2%;">
+    <h1 style="font-family: 'Times New Roman', Times, serif;font-size: 20px;color: blue;">Form x Report</h1>
+    <table class="table table-responsive table-bordered" style="width:fit-content">
+        <thead class="table_header">
+            <tr>
+                <th>SI No</th>
+                <th>Name</th>
+                <!-- <th>Period</th> -->
+                <th>Update Gl closing  amount</th>
+                <!-- <button  class="btn btn-default" style="border-radius: 40px;height: 40px;" (click)="reset_faquery()">X</button> -->
+
+                <th>File details<button mat-button
+                        (click)="form_x_download('s')"><mat-icon>refresh</mat-icon></button>
+                </th>
+                <th>Exccel Download</th>
+            </tr>
+            
+        </thead>
+        <tbody>
+            <!-- <form [formGroup]="finyear_form"> -->
+            <td>1</td>
+            <td>Form X Report</td>
+            <!-- <td>
+                <mat-form-field >
+                    <mat-label>From Date</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="fin_from"
+                      
+                      [max]="fin_year"
+                      [(ngModel)]="fin_fromdate"
+                      (dateChange)="from_fin_YearSelected($event.value)"
+                      readonly
+                    />
+                    <mat-datepicker-toggle matSuffix [for]="fin_from">
+                      <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker
+                      #fin_from
+                      startView="multi-year"
+                      
+                      
+                      
+                    >
+                    </mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field style="margin-left:50px">
+                    <mat-label>To Date</mat-label>
+                    <input matInput [matDatepicker]="fin_to"  [min]="fin_minYear" [max]="fin_year" placeholder="Month and Year" [(ngModel)]="fin_todate">
+                    <mat-datepicker-toggle matSuffix [for]="fin_to">
+                        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #fin_to
+                                    startView="multi-year"
+                                    
+                                   
+                                    panelClass="example-month-picker">
+                    </mat-datepicker>
+                  </mat-form-field>
+                  
+            </td> -->
+            <td>
+                <!-- <button class="btn btn-primary"   data-toggle="modal" data-target="#gls_popup"  style="border-radius:40px; width:180px;height: 40px;"  matTooltip="Gl balance update"
+                color="primary">Update GL Closing Balance  <span class="fa fa-plus"></span> </button>  -->
+                <button mat-flat-button type="button" mat-flat-button color="primary" data-toggle="modal" data-target="#exampleModal">
+                    <mat-icon matSuffix>upload</mat-icon>Update GL Closing Balance
+                  </button>
+            </td>
+            <td>
+               {{formx_summary_name}}--{{formx_summarydate}}
+            </td>
+            
+            <td><button mat-flat-button color="success" type="button" class="btn btn-primary" (click)="form_x_download('d')"
+                style="border-radius: 40px;height: 40px;">
+                Download Form X
+            </button></td>
+        <!-- </form> -->
+        </tbody>
+    </table>
+</div>
+<div style="margin-left: 2%;">
+    <h1 style="font-family: 'Times New Roman', Times, serif;font-size: 20px;color: blue;">FA DATA UPDATED SCREEN</h1>
+        <br>
+    <form [formGroup]="data_query_form">
+        <div class="row col-12">
+            <div class="col-sm-3 col-lg-3 col-md-3">
+            <mat-form-field>
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="proces_name"  (selectionChange)="changedata()" required>
+                    <mat-option value="Update">Update</mat-option>
+                    <mat-option value="Insert">Insert</mat-option>
+                    <mat-option value="Dump">Dump</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            </div>
+
+        </div>
+        <div class="row col-12" *ngIf="table_update_enb">
+            <div class="col-sm-3 col-lg-3 col-md-3">
+               <mat-form-field >
+                <mat-label>Table</mat-label>
+                    <mat-select formControlName="table" required> 
+                        <mat-option *ngFor="let dtda of table_name_list" [value]="dtda.name" (focusout)="getfield_list_data()">{{dtda.name}}</mat-option>
+                        
+                    </mat-select>
+                </mat-form-field>
+
+            </div>
+            <div class="col-sm-3 col-lg-3 col-md-3">
+            <mat-form-field >
+                <mat-label>Field</mat-label>
+                    <mat-select formControlName="columnname" required>
+                        <mat-option *ngFor="let dtda of field_name_list" [value]="dtda.name">{{dtda.name}}</mat-option>
+                        
+                    </mat-select>
+                </mat-form-field>
+
+            </div>
+            <div class="col-sm-3 col-lg-3 col-md-3">
+                <mat-form-field>
+                    <mat-label>Value</mat-label>
+                    <input type="text" matInput required formControlName="value" />
+                </mat-form-field>
+
+            </div>
+            <div class="col-sm-3 col-lg-3 col-md-3">
+                <mat-form-field>
+                    <mat-label>ID</mat-label>
+                    <input type="number" matInput required formControlName="id" />
+                </mat-form-field>
+
+            </div>
+
+        </div>
+        <div class="row col-12" *ngIf="table_update_enb">
+            <div class="col-sm-2 col-lg-2 col-md-2">
+                <button type="button" mat-raised-button color="primary" (click)="updatedatalist()">Submit</button>
+
+            </div>
+            <div class="col-sm-2 col-lg-2 col-md-2">
+                <button type="button" mat-raised-button color="basic">Reset</button>
+
+            </div>
+        </div>
+        <div class="row col-12" *ngIf="create_field_list">
+            <div class="col-sm-3 col-lg-3 col-md-3">
+                <mat-form-field >
+                 <mat-label>Table</mat-label>
+                     <mat-select formControlName="table" required> 
+                         <mat-option *ngFor="let dtda of table_name_list" [value]="dtda.name" (focusout)="getfield_list_data_insert()">{{dtda.name}}</mat-option>
+                         
+                     </mat-select>
+                 </mat-form-field>
+ 
+             </div>
+             <div class="col-sm-6 col-lg-6 col-md-6">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-responsive">
+                        <thead class="table_header">
+                            <th>
+                                S.No
+                            </th>
+                            <th>Field </th>
+                            <th>Value</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let dta of insert_query_list_create ;let i=index">
+                                <td>{{i+1}}</td>
+                                <td>{{dta?.key}}</td>
+                                <td>
+                                    <input type="text" [(ngModel)]="dta.value"  [ngModelOptions]="{standalone: true}" [value]="dta?.value">
+                                    </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+        </div>
+        <div class="row col-12" *ngIf="create_field_list">
+            <div class="col-sm-2 col-lg-2 col-md-2">
+                <button type="button" mat-raised-button color="primary" (click)="updatedatalist_create()">Create</button>
+
+            </div>
+            <div class="col-sm-2 col-lg-2 col-md-2">
+                <button type="button" mat-raised-button color="basic">Reset</button>
+
+            </div>
+        </div>
+        <div class="row col-12" *ngIf="dump_field_list">
+            <div class="col-9 col-sm-9 col-md-9 col-lg-9">
+                <mat-form-field class="example-chip-list" style="width:60vw">
+                    <mat-chip-list #chipList aria-label="Fruit selection">
+                      <mat-chip
+                        *ngFor="let fruit of dump_select_list"
+                        [selectable]="selectable"
+                        [removable]="removable"
+                        (removed)="remove(fruit)">
+                        {{fruit}}
+                        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                      </mat-chip>
+                      <input
+                        placeholder="Table Name..."
+                        #fruitInput
+                        formControlName="dumptable"
+                        [matAutocomplete]="auto"
+                        [matChipInputFor]="chipList"
+                        
+                        [matChipInputAddOnBlur]="addOnBlur"
+                        >
+                    </mat-chip-list>
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                      <mat-option *ngFor="let dta of dump_table_list" [value]="dta">
+                        {{dta.name}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-lg-3">
+               
+            </div>
+           
+              
+        </div>
+        <div class="row col-12" *ngIf="dump_field_list">
+            <div class="col-3 col-sm-3 col-md-3 col-lg-3">
+                <button type="button" mat-raised-button color="primary" (click)="dump_select_table_list_prepare()">Prepare Dump</button>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-lg-3">
+                <button type="button" mat-raised-button color="primary" (click)="dump_select_table_list_Download()">Download</button>
+
+            </div>
+            
+            
+        </div>
+    </form>
+</div>
+
+
+
+
+<div>
+    <div class="modal" data-backdrop="static" data-keyboard="false" id="entrypopup" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #DDEFDD;">
+                    <h2 class="modal-title" id="exampleModalLongTitle">Failed Entries Summary</h2>
+                    <button type="button" class="close" #closebutton data-dismiss="modal" aria-label="Close"
+                        #closeaddpopup>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div style="font-size: 16px;">
+
+                        <div *ngIf="selectedType === 1">
+                            <form [formGroup]='entryForm' style="width: 100%;">
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <mat-form-field style="width: 250px;">
+                                            <mat-label>Barcode</mat-label>
+
+                                            <input type="text" formControlName="barcode" matInput>
+                                        </mat-form-field>
+
+                                        <button class="btn btn-outline-primary" type="button"
+                                            style="border-radius:40px; margin-left: 10px; width:40px; height: 40px;"
+                                            color="primary" (click)="entrySearch(selectedType)">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </button>
+                                        <button class="btn btn-outline-primary" type="button"
+                                            style="border-radius:40px; margin-left: 10px; width:100px;"
+                                            color="primary" (click)="entryresetasset()">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div *ngIf="selectedType === 2">
+                            <form [formGroup]='ExpenseForm' style="width: 100%;">
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <mat-form-field style="width: 250px;margin-left: 15px;">
+                                            <mat-label>CR NO</mat-label>
+
+                                            <input type="text" formControlName="crno" matInput>
+                                        </mat-form-field>
+
+                                        <button class="btn btn-outline-primary" type="button"
+                                            style="border-radius:40px; margin-left: 4px; width:40px; height: 40px;"
+                                            color="btn btn-outline-primary" (click)="entrySearch(selectedType)">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </button>
+                                        <button class="btn btn-outline-primary" type="button"
+                                            style="border-radius:40px; margin-left: 10px; width:100px;"
+                                            color="primary" (click)="expenseentryreset()">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div>
+                            <mat-radio-group [(ngModel)]="selectedType" (change)="onRadioChange($event.value)">
+                                <mat-radio-button [value]="1">Assets</mat-radio-button>
+                                <mat-radio-button [value]="2">Expense</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+
+
+                        <div style="font-size: 16px;" *ngIf="selectedType === 1">
+                            <h1>Assets Failed cases </h1>
+                            <table class="table table-bordered table-hover text-center">
+                                <thead class="table_header" style="text-align: left;">
+                                    <tr>
+                                        <th style="text-align: center;">S.No</th>
+                                        <th style="text-align: center;">Barcode</th>
+                                        <th style="text-align: center;">Crnum</th>
+                                        <th style="text-align: center;">Asset Grp ID</th>
+                                        <th style="text-align: center;">Asset Value</th>
+                                        <th style="text-align: center;">Asset Category</th>
+                                        <th style="text-align: center;">Asset Status</th>
+                                        <th style="text-align: center;">View</th>
+
+                                        <th style="text-align: center;"> <input type="checkbox" [(ngModel)]="selectAll"
+                                                (change)="toggleAllSelection($event)">
+                                            Action</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody *ngFor="let entry of entrydatas ;let i=index">
+                                    <td style="text-align: center;">{{i+1}}</td>
+                                    <td style="text-align: center;">{{entry.barcode}}</td>
+                                    <td style="text-align: center;">{{entry.crnum}}</td>
+                                    <td style="text-align: center;">{{entry?.assetgroup_id}}</td>
+                                    <td style="text-align: center;">{{entry?.assetdetails_value}}</td>
+                                    <td style="text-align: center;">{{entry.assetcat}}</td>
+                                    <td style="text-align: center;">{{entry.assetdetails_status}}</td>
+                                    <td><button mat-icon-button color="primary" (click)="expandentrydata(i)"><mat-icon
+                                                *ngIf="entry.sub_enb==false">arrow_drop_down_circle</mat-icon> <mat-icon
+                                                *ngIf="entry.sub_enb==true">arrow_drop_up</mat-icon></button></td>
+
+                                    <td style="text-align: center;"> <input type="checkbox" [(ngModel)]="entry.selected"
+                                            (change)="toggleSelection(entry)"></td>
+
+
+
+                                    <tr *ngIf="entry?.sub_enb">
+                                        <td colspan="16">
+                                            <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;">Entry
+                                                List
+                                            </h2>
+                                            <table class="table table-bordered" style="width:90%">
+                                                <thead class="table_header">
+
+                                                    <th style="text-align: center;">S No</th>
+                                                    <th style="text-align: center;">Screen</th>
+                                                    <th style="text-align: center;">Type</th>
+                                                    <th style="text-align: center;">Transaction Date</th>
+                                                    <th style="text-align: center;">Value Date</th>
+                                                    <th style="text-align: center;">Glno</th>
+                                                    <th style="text-align: center;">Acrefno</th>
+                                                    <th style="text-align: center;">Amount</th>
+                                                    <th style="text-align: center;">Status</th>
+
+                                                </thead>
+                                                <tbody *ngFor="let subdta of entry.entry_view_assetdetail;let j=index">
+
+                                                    <td style="text-align: center;">{{j+1}}</td>
+                                                    <td style="text-align: center;">{{subdta.screen}}</td>
+                                                    <td style="text-align: center;">{{subdta?.type}}</td>
+                                                    <td style="text-align: center;">{{subdta.transactiondate}}</td>
+                                                    <td style="text-align: center;">{{subdta.valuedate}}</td>
+                                                    <td style="text-align: center;">{{subdta?.glno}}</td>
+                                                    <td style="text-align: center;">{{subdta?.ackrefno}}</td>
+                                                    <td style="text-align: center;">{{subdta.amount}}</td>
+                                                    <td style="text-align: center;">{{subdta?.Status}}</td>
+
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+
+
+                                </tbody>
+                                <tr *ngIf="entrydatas?.length==0; else paginationpage">
+                                    <td colspan="9" style="text-align: center;border: none;padding: 20px;">No Records
+                                        Found...</td>
+                                </tr>
+
+
+                                <ng-template #paginationpage>
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="cursor"
+                                                style="font-size: small;text-align:right; margin-bottom:30px;float: right;">
+                                                <button mat-icon-button [disabled]="has_previous === false"
+                                                    color="primary" (click)="previousClick()">
+                                                    <mat-icon>arrow_back
+                                                    </mat-icon>
+                                                </button>
+                                                {{presentpage}}
+                                                <button mat-icon-button [disabled]="has_next === false" color="primary"
+                                                    (click)="nextClick()">
+                                                    <mat-icon>arrow_forward
+                                                    </mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+
+
+                                    </tr>
+                                </ng-template>
+                            </table>
+                            <div style="margin-left: 40%;">
+                                <button class="btn btn-outline-primary" type="button"
+                                    style="border-radius:40px; width:240px; height: 40px;text-align: center;"
+                                    (click)='repostEntry()' color="primary">Activate</button>
+                            </div>
+                        </div>
+
+
+
+                        <div style="height: 500px;overflow-y: auto;font-size: 16px;" *ngIf="selectedType === 2">
+                            <h1>Expense Failed cases</h1>
+                            <table class="table table-bordered table-hover text-center">
+                                <thead class="table_header" style="text-align: left;">
+                                    <tr>
+                                        <th style="text-align: center;">S.No</th>
+                                        <th style="text-align: center;">Cr Number</th>
+                                        <th style="text-align: center;">Expense Code</th>
+                                        <!-- <th style="text-align: center;"> </th> -->
+                                        <th style="text-align: center;">Entry Status</th>
+                                        <th style="text-align: center;">View</th>
+
+                                        <th style="text-align: center;"> <input type="checkbox" [(ngModel)]="selectAllexp"
+                                                (change)="toggleAllSelection1($event)">
+                                            Action</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody *ngFor="let expense of expensedatas ;let k=index">
+                                    <td style="text-align: center;">{{k+1}}</td>
+                                    <td style="text-align: center;">{{expense.assetdetails_id}}</td>
+                                    <td style="text-align: center;">{{expense.expense_code}}</td>
+                                    <td style="text-align: center;">{{expense.status}}</td>
+                                    <!-- <td style="text-align: center;">{{entry.view}}</td> -->
+                                    <td><button mat-icon-button color="primary" (click)="expandentrydata1(k)"><mat-icon
+                                                *ngIf="expense.sub_enb==false">arrow_drop_down_circle</mat-icon>
+                                            <mat-icon *ngIf="expense.sub_enb==true">arrow_drop_up</mat-icon></button>
+                                    </td>
+
+                                    <td style="text-align: center;"> <input type="checkbox"
+                                            [(ngModel)]="expense.selected" (change)="toggleSelection1(expense)"></td>
+
+
+
+                                    <tr *ngIf="expense?.sub_enb">
+                                        <td colspan="16">
+                                            <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;">Entry
+                                                List
+                                            </h2>
+                                            <table class="table table-bordered" style="width:90%">
+                                                <thead class="table_header">
+
+                                                    <th style="text-align: center;">S No</th>
+                                                    <th style="text-align: center;">type</th>
+                                                    <th style="text-align: center;">Transaction Date</th>
+                                                    <th style="text-align: center;">Value Date</th>
+                                                    <th style="text-align: center;">Amount</th>
+                                                    <th style="text-align: center;">Acrefno</th>
+                                                    <!-- <th style="text-align: center;">Status</th> -->
+
+                                                </thead>
+                                                <tbody *ngFor="let subdta of expense.exp_entry_list;let c=index">
+
+                                                    <td style="text-align: center;">{{c+1}}</td>
+                                                    <td style="text-align: center;">{{subdta.type}}</td>
+                                                    <td style="text-align: center;">{{subdta.transactiondate}}</td>
+                                                    <td style="text-align: center;">{{subdta.valuedate}}</td>
+                                                    <td style="text-align: center;">{{subdta.amount}}</td>
+                                                    <td style="text-align: center;">{{subdta?.ackrefno}}</td>
+                                                    <!-- <td style="text-align: center;">{{subdta?.Status}}</td> -->
+
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+
+
+                                </tbody>
+                                <tr *ngIf="expensedatas?.length==0; else pagination">
+                                    <td colspan="9" style="text-align: center;border: none;padding: 20px;">No Records
+                                        Found...</td>
+                                </tr>
+
+
+                                <ng-template #pagination>
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="cursor"
+                                                style="font-size: small;text-align:right; margin-bottom:30px;float: right;">
+                                                <button mat-icon-button [disabled]="has_previous1 === false"
+                                                    color="primary" (click)="previousClick1()">
+                                                    <mat-icon>arrow_back
+                                                    </mat-icon>
+                                                </button>
+                                                {{presentpage}}
+                                                <button mat-icon-button [disabled]="has_next1 === false" color="primary"
+                                                    (click)="nextClick1()">
+                                                    <mat-icon>arrow_forward
+                                                    </mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+
+
+                                    </tr>
+                                </ng-template>
+                            </table>
+                            <div style="margin-left: 40%;">
+                                <button class="btn btn-outline-primary" type="button"
+                                    style="border-radius:40px; width:240px; height: 40px;text-align: center;"
+                                    (click)='repostEntry1()' color="primary">Activate</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" data-backdrop="static" data-keyboard="false" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog modal-xl" role="document">
+          <div class="modal-content">
+            <div class="modal-header" style="background-color: #DDEFDD;">
+              <h2 class="modal-title" id="exampleModalLabel" >Update closing Gl balance</h2>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                
+                    <form [formGroup]="cbs_balance_form">
+                    <table class="table table-bordered">
+                        <thead class="table_header">
+                            <th>Class Type</th>
+                            <th>Branch</th>
+                            <th>Gl</th>
+                            <th>Enter the amount</th>
+                            <!-- <th>Total of class wise</th> -->
+                        </thead>
+                        <tbody formArrayName="gl_list_amount">
+                            <tr *ngFor="let gl of cbs_gl;let i=index">
+                                <td class="td_text_center" *ngIf="shouldShowCategory(i)" [attr.rowspan]="getRowSpanaclasss(i)">
+                                    {{gl?.category}}   
+                                </td>
+                                <td class="td_text_center" *ngIf="shouldShowbranch(i)" [attr.rowspan]="getRowSpanabrn(i)">
+                                    {{gl?.branch}}   
+                                </td>
+                                
+                                <td class="td_text_center">{{gl?.gl}}</td>
+                                <td>
+                                    <mat-form-field>
+                                        <mat-label>Enter the amount</mat-label>
+                                        <input matInput type="number" [formControlName]="i" (keyup)="get_amount_cat(gl,i)">
+
+                                </mat-form-field>
+
+                                </td>
+                            </tr>
+                            <tr><td colspan="4">
+                                <strong>L&B CO</strong>:{{l_b_co}}
+                                <strong>L&B Branch</strong>:{{l_b_brn}}
+                                <strong>F&F CO</strong>:{{f_f_co}}
+                                <strong>F&F Branch</strong>:{{f_f_brn}}
+                                <strong>VCH CO</strong>:{{vch_co}}
+                                <strong>VCH Branch</strong>:{{vch_brn}}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+              <button type="button" mat-flat-button color="success"  class="btn btn-primary" (click)="form_x_download('p')">Prepare Form X</button>
+            </div>
+          </div>
+        </div>
+      </div>              
+    
+</div>

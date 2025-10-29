@@ -1,0 +1,242 @@
+<br>
+
+<div>
+    <h2 style="margin-left: 40px;">
+        Repair and maintenance details
+    </h2>
+    <!-- <span *ngIf="isCancelBtn" (click)="onRMCancelClick()"> &#x2716;</span> -->
+    <button class="btn btn-outline-primary" *ngIf="isCancelBtn" (click)="onRMCancelClick()"
+style="border-radius: 40px;margin-left: 50px;" id="details-rm-0001">Back</button>
+</div>
+<div style="margin-left: 50px;margin-right: 80%;margin-top: 1%; width: 100%;">
+    <div style="margin-left: 50px;" *ngIf="isEditBtn">
+        <form [formGroup]="repairmaintenanceForm" (ngSubmit)="repairmaintenanceCreateEditForm()">
+            <table>
+                <div>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>R & M Description</mat-label>
+                                <input matInput placeholder="Description" formControlName="description"
+                                    autocomplete="off" required id="details-rm-0002">
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left:50px">
+                                <mat-label>Sanction Number</mat-label>
+                                <input matInput placeholder="Sanction Number" maxlength="10" formControlName="sanction_number"
+                                    autocomplete="off" (keypress)="numberOnly($event)" id="details-rm-0003">
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left:50px">
+                                <mat-label>R&M done by</mat-label>
+                                <mat-select formControlName="done_by" id="details-rm-0004">
+                                    <mat-option *ngFor="let Doneby of DonebyidList" [value]="Doneby.id"
+                                        (click)="DropDown(Doneby)">
+                                        {{Doneby.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td *ngIf="isECFno">
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>ECF Ref No </mat-label>
+                                <input matInput placeholder="ECF Ref No" maxlength="20" formControlName="ecf_no" autocomplete="off"
+                                (keypress)="omit_special_char($event)" id="details-rm-0005">
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td *ngIf="isAllocation">
+                            <mat-form-field style="width: 200px;margin-left:50px">
+                                <mat-label>R & M Amount Allocation</mat-label>
+                                <input matInput placeholder="R & M Amount Allocation"  maxlength="9"
+                                    formControlName="amount_allocation" autocomplete="off"
+                                    (keypress)="numberOnly($event)" id="details-rm-0006">
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>R & M Amount</mat-label>
+                                <input matInput placeholder="R & M Amount" formControlName="amount" autocomplete="off"
+                                    (keypress)="numberOnly($event)" required id="details-rm-0007">
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td>
+                            <mat-form-field style="width:200px;margin-left:50px">
+                                <mat-label>R & M Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker1" placeholder="R & M Date"
+                                    formControlName="date" id="details-rm-0008">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width:200px;margin-left:50px">
+                                <mat-label>Next painting/Renovation Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker2"
+                                    placeholder="Next painting/Renovation Date" formControlName="next_date" id="details-rm-0009">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>Remarks</mat-label>
+                                <input matInput placeholder="Remarks" formControlName="remarks" autocomplete="off"
+                                    required id="details-rm-0010">
+                            </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    </tr>
+                    <!-- <td>
+                        <mat-form-field style="width: 250px;margin-left: 60px;">
+                            <mat-label>ECF Ref No </mat-label>
+                            <input matInput placeholder="Consumer No" formControlName="cosumer_number"
+                                autocomplete="off" (keypress)="omit_special_char($event)" required id="details-rm-0011">
+                        </mat-form-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td> -->
+                </div>
+            </table>
+            <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary"
+                [disabled]="RMDetailsBtn" id="details-rm-0012">Submit</button>
+            &nbsp;
+            <button type="button" (click)="onRMCancelClick()" class="btn btn-outline-primary"
+                style="border-radius: 40px;margin-left: 10px;" id="details-rm-0013">Cancel</button>
+        </form>
+    </div>
+
+    <div class="table-responsive" style="overflow-x: hidden;" class="center">
+        <table class="table table-bordered" fixed-header style="width: 95%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no</th>
+                    <th>Description</th>
+                    <!-- <th>Sanction Number</th> -->
+                    <!-- <th>DoneBy</th> -->
+                    <th>Amount</th>
+                    <!-- <th>Amount Allocation</th> -->
+                    <th>Date</th>
+                    <!-- <th>Renovation Date</th> -->
+                    <!-- <th>Remarks</th> -->
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let repairmaintenance of repairmaintenanceList;index as i">
+                    <th scope="row">
+                        {{(this.presentrepairmaintenancepage - 1)*pageSizerepairmaintenance +i+1 }}
+                    </th>
+                    <td>{{repairmaintenance.description}}</td>
+                    <!-- <td>{{repairmaintenance.sanction_number}}</td> -->
+                    <!-- <td>{{repairmaintenance.done_by.text}}</td> -->
+                    <td>{{repairmaintenance.amount}}</td>
+                    <!-- <td>
+                    <div *ngIf="repairmaintenance.amount_allocation==null">-</div>
+                    <div *ngIf="repairmaintenance.amount_allocation != null">{{repairmaintenance.amount_allocation}}</div> 
+                    </td> -->
+                    <!-- <td>{{repairmaintenance.amount_allocation}}</td> -->
+                    <td>{{repairmaintenance.date | date: 'dd-MMM-yy' }}</td>
+                    <!-- <td>{{repairmaintenance.next_date | date: 'dd-MMM-yy'}}</td>
+                    <td>{{repairmaintenance.remarks}}</td> -->
+                    <td *ngIf="isEditBtn">
+                        <button mat-icon-button matTooltip=" Edit" [class.linkDisabled]="true"
+                            *ngIf="repairmaintenance.modify_status=='2'|| repairmaintenance.modify_status==0"
+                            [disabled]="true" class="iconbutton" color="primary"
+                            (click)="RepairMaintenanceEdit(repairmaintenance)" id="details-rm-0014">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip=" Edit" *ngIf="repairmaintenance.modify_status=='-1'"
+                            class="iconbutton" color="primary" (click)="RepairMaintenanceEdit(repairmaintenance)" id="details-rm-0015">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button mat-icon-button *ngIf=" repairmaintenance.modify_status==0" [disabled]="true"
+                            matTooltip="Delete" class="iconbutton" color="primary" [class.linkDisabled]="true"
+                            (click)="RepairmaintenanceDelete(repairmaintenance)" id="details-rm-0016">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="">delete</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Delete"
+                            *ngIf="repairmaintenance.modify_status==-1||repairmaintenance.modify_status==2"
+                            class="iconbutton" color="primary" (click)="RepairmaintenanceDelete(repairmaintenance)" id="details-rm-0017">
+                            <mat-icon class="edit-btn" aria-label="">delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="repairmaintenanceList ?.length == 0" style="margin-left: 50%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+        <div class="row" *ngIf="is_repairmaintenancepage">
+            <div class="col-sm-11" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                <button mat-icon-button [disabled]="has_previousrepairmaintenance === false" color="primary"
+                    (click)="previousClickRepairmaintenance()" id="details-rm-0018">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentrepairmaintenancepage}}
+                <button mat-icon-button [disabled]="has_nextrepairmaintenance === false" color="primary"
+                    (click)="nextClickRepairmaintenance()" id="details-rm-0019">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="table-responsive" style="overflow-x: hidden;" class="center" *ngIf="repdetmodify">
+        <table class="table table-bordered" fixed-header style="width: 95%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+                <tr>
+                    <th>S.no</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th> Status </th>
+                    <th *ngIf="isEditBtn">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let repairmaintenance of repdetailsModiData; index as i">
+                    <th scope="row">{{ i+1 }}</th>
+                    <td>{{repairmaintenance.description}}</td>
+                    <td>{{repairmaintenance.amount}}</td>
+                    <td>{{repairmaintenance.date | date: 'dd-MMM-yy' }}</td>
+                    <td>{{ repairmaintenance.modify_data}}</td>
+                    <td *ngIf="isEditBtn">
+                        <button *ngIf="repairmaintenance.modify_data != 'Delete'" mat-icon-button matTooltip=" Edit"
+                            class="iconbutton" (click)="RepairMaintenanceEdit(repairmaintenance)" color="primary" id="details-rm-0020">
+                            <mat-icon class="edit-btn" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="repairmaintenance.modify_data != 'Delete'" mat-icon-button matTooltip="Delete"
+                            class="iconbutton" (click)="RepairmaintenanceDelete(repairmaintenance)" color="primary" id="details-rm-0021">
+                            <mat-icon class="edit-btn" aria-label="Edit">delete</mat-icon>
+                        </button>
+                        <button *ngIf="repairmaintenance.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip=" Edit" class="iconbutton"
+                            (click)="RepairMaintenanceEdit(repairmaintenance)" color="primary" id="details-rm-0022">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button *ngIf="repairmaintenance.modify_data == 'Delete'" [disabled]="true" mat-icon-button
+                            [class.linkDisabled]="true" matTooltip="Delete" class="iconbutton"
+                            (click)="RepairmaintenanceDelete(repairmaintenance)" color="primary" id="details-rm-0023">
+                            <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">delete
+                            </mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- <pre>
+    <code>{{repairmaintenanceForm.value|json}}}</code>
+</pre> -->

@@ -1,0 +1,452 @@
+<div style="padding-left:25px;padding-top: 2%;padding-right: 25px;">
+
+  <form [formGroup]="leadsupload">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title style="font-weight:bold">
+          <button mat-icon-button (click)="completed.emit()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>File Upload</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row" style="margin-top: -2%;">
+          <div class="col-md-3">
+            <mat-form-field style="width:90%;margin-left: 27%;">
+              <mat-label>Source Name</mat-label>
+              <input matInput formControlName="source_name" autocomplete="off">
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <input id="sect"
+              style="border-bottom-style:none;color:black;margin-top: 10px;margin-left:45px;font-size:smaller;"
+              type="file" (change)="uploadchooses($event)" name="filedata">
+          </div>
+          <div class="col-md-3">
+            <form [formGroup]="dupColumnsForm">
+              <mat-form-field style="color:black;width: 205px;margin-left:18px;">
+                <mat-label style="color:black;font-size:small;">Find Existing Leads On</mat-label>
+                <mat-select formControlName="dupColumns" multiple [(value)]="newBookId" #select>
+                  <mat-option *ngFor="let columns of columnList" [value]="columns.key">{{columns.value}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+            </form>
+
+          </div>
+          <div class="col-sm-2" *ngIf="isShowMappingss">
+
+            <button mat-stroked-button type="button" id="buttonsSubmit" style="margin-top: 4px;"
+              (click)="uploadheader()" data-toggle="modal" data-target="#myModal">Mapping Fields</button>
+          </div>
+
+          <div class="col-sm-2" *ngIf="isShowUploadss">
+            <button mat-stroked-button type="button" id="buttonsSubmit" style="margin-top: 4px;margin-left: 26px;"
+              (click)="uploadmapping()" data-toggle="modal" data-target="#myModals">Upload</button>
+          </div>
+         
+        </div>
+
+        <div *ngIf="showmapping">
+          <div class="row">
+            <div class="col-md-3">
+              <mat-form-field style="color:black;    width: 90%;
+              margin-left: 57px;">
+                <mat-label style="color:black;font-size:small;">Templates</mat-label>
+                <mat-select matInput formControlName="templates">
+                  <mat-option *ngFor="let item of ntemplates" [value]="item.id">
+                    {{item.template_name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+         
+            <div class="col-md-3">
+              <button mat-stroked-button type="button" style="align-items:center;    margin-left: 54px;"
+                id="buttonsSubmit" (click)="uploadtempdata()">UPLOAD</button>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</div>
+
+<div style="padding-left:25px;padding-top: 2%;padding-right: 25px;" *ngIf="showMappings">
+  <form [formGroup]="matchcolumns">
+    <mat-card>
+        <div class="row">
+          <div class="col-md-6">
+              <h4>System Defined Fields</h4>
+              <div class="table-responsive">
+                <table class="table" style="    border: 1px solid lightgrey;    margin-top: 11px;">
+                  <thead>
+                    <tr>
+                      <th>Fields</th>
+                      <th>Fields in File</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of dataArrays; let i = index">
+                      <td>{{item}}</td>
+                      <td>
+                        <mat-form-field *ngIf="i === 0" class="columnstyle">
+                          <!-- <mat-label>Gender</mat-label> -->
+                          <mat-select formControlName="gender">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 1" class="columnstyle">
+                          <!-- <mat-label>Marital Status</mat-label> -->
+                          <mat-select formControlName="leadstatus">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 2" class="columnstyle">
+                          <!-- <mat-label>Date Of Birth</mat-label> -->
+                          <mat-select formControlName="dob">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 3" class="columnstyle">
+                          <!-- <mat-label>Occupation</mat-label> -->
+                          <mat-select formControlName="occupancy">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 4" class="columnstyle">
+                          <!-- <mat-label>Pincode</mat-label> -->
+                          <mat-select formControlName="code">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>  
+                        <mat-form-field *ngIf="i === 5" class="columnstyle">
+                          <!-- <mat-label>District</mat-label> -->
+                          <mat-select formControlName="district_name">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 6" class="columnstyle">
+                          <!-- <mat-label>State</mat-label> -->
+                          <mat-select formControlName="state_name">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 7" class="columnstyle">
+                          <!-- <mat-label>City</mat-label> -->
+                          <mat-select formControlName="city_name">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="i === 8" class="columnstyle">
+                          <!-- <mat-label>Phone No</mat-label> -->
+                          <mat-select formControlName="ph_no">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="i === 9" class="columnstyle">
+                          <!-- <mat-label>Mail</mat-label> -->
+                          <mat-select formControlName="mail_id">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+
+
+                        <mat-form-field *ngIf="i === 10" class="columnstyle">
+                          <!-- <mat-label>First Name</mat-label> -->
+                          <mat-select formControlName="first_name">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 11" class="columnstyle">
+                          <!-- <mat-label>Middle Name</mat-label> -->
+                          <mat-select formControlName="middle_name">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 12" class="columnstyle">
+                          <!-- <mat-label>Last Name</mat-label> -->
+                          <mat-select formControlName="last_name">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+    
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 13" class="columnstyle">
+                          <mat-select formControlName="adhaarno">
+                            <mat-option *ngFor="let option of filecolumns" [value]="option">
+                              {{option}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                          
+                        <mat-form-field *ngIf="i === 14" class="columnstyle">
+                          <!-- <mat-label>PAN No</mat-label> -->
+                          <mat-select formControlName="createddate">
+                            <mat-option *ngFor="let option of filecolumns" [value]="option">
+                              {{option}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="i === 15" class="columnstyle">
+                          <!-- <mat-label>CIF No</mat-label> -->
+                          <mat-select formControlName="cifno">
+                            <mat-option *ngFor="let item of  filecolumns" [value]="item">
+                              {{item}}
+                            </mat-option>
+                          </mat-select>
+    
+                        </mat-form-field>
+                       
+                                      
+                     
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+          </div>
+          <div class="col-md-6">
+            <h3>User Defined Fields   </h3>
+            <div class="table-responsive">
+              <table class="table" style="border: 1px solid lightgrey;">
+                <thead>
+                  <tr>
+                    <th>Fields</th>
+                    <th>Fields in File 
+                      
+                        <mat-icon matTooltip="Add" style="
+                        /* padding-top: 0px; */
+                        /* margin-top: 0%; */
+                        color: blue;"  (click)="addRow()">add_circle_outline</mat-icon>
+                    
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+
+<!--             
+                    <tr *ngFor="let row of rows.controls; let i = index">
+                      <td>
+                        <mat-form-field class="columnstyle">
+                          <mat-select [formControlName]="['customheader']">
+                            <mat-option *ngFor="let opt of droplists" [value]="opt.name">{{ opt.name }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <mat-form-field class="columnstyle">
+                          <mat-select [formControlName]="['customfield']">
+                            <mat-option *ngFor="let option of filecolumns" [value]="option">{{ option }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <button mat-icon-button (click)="removeRow(i)">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
+                    </tr> -->
+                    
+                    <!-- <form [formGroup]="leadsform"> -->
+                      <!-- <table> -->
+                        <tr *ngFor="let row of rows.controls; let i = index" [formGroup]="row">
+                          <td>
+                            <mat-form-field class="columnstyle">
+                              <mat-select formControlName="customheader">
+                                <mat-option *ngFor="let opt of droplists" [value]="opt.name">{{ opt.name }}</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                          </td>
+                          <td>
+                            <mat-form-field class="columnstyle">
+                              <mat-select formControlName="customfield">
+                                <mat-option *ngFor="let option of filecolumns" [value]="option">{{ option }}</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                          </td>
+                          <td>
+                            <button mat-icon-button (click)="removeRow(i)">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </td>
+                        </tr>
+                      <!-- </table> -->
+                      <!-- </table> -->
+                      <!-- <button type="button" (click)="addRow()">Add Row</button> -->
+                      <!-- <button type="submit">Submit</button> -->
+                    <!-- </form> -->
+                    <!-- <button type="button" (click)="addRow()">Add Row</button> -->
+
+    
+                </tbody>
+              </table>
+            </div>
+            
+          </div>
+        </div>
+    </mat-card>
+  </form>
+</div>
+
+
+
+
+
+
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <p>Choose Templates</p>
+        <div class="row">
+          <button mat-raised-button color="accent" style="margin-left:40px;margin-top: 10px;" (click)="existingTemp()"
+            tabindex="1" data-dismiss="modal">Skip</button>
+          <button mat-raised-button color="accent" style="margin-left:40px;margin-top: 10px;" (click)="newTemp()"
+            tabindex="-1" data-dismiss="modal">Manual Mapping </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal" id="myModals">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <p>Do you want to Save this as New Template for future...</p>
+        <div class="row">
+          <form [formGroup]="newTempl">
+            <mat-form-field style="width: 165px;margin-left: 25px;">
+              <mat-label>Template Name</mat-label>
+              <input matInput placeholder="template" name="template_name" formControlName="template_name"
+                autocomplete="off">
+
+
+            </mat-form-field>
+
+            <button mat-stroked-button type="button" id="buttonsSubmit" style="margin-top: 4px;margin-left: 30px;"
+              (click)="createTemplate();completed.emit();" data-dismiss="modal">Save Template</button>
+            <button mat-stroked-button type="button" id="buttonsSubmit" style="margin-top: 4px;margin-left: 30px;" (click)="completed.emit();"
+              data-dismiss="modal">Skip</button>
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="    font-size: large;
+        font-weight: bolder;"> Create New Label</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="labelGroup">
+          <div class="row">
+            <div class="col-sm-3">
+              <!-- <label for="recipient-name" class="col-form-label">Label Name:</label>
+            <input type="text" class="form-control" id="recipient-name"> -->
+              <mat-form-field>
+                <mat-label>Label Name</mat-label>
+                <input type="text" matInput autocomplete="off" formControlName="name">
+              </mat-form-field>
+
+            </div>
+            <div class="col-sm-3">
+              <!-- <label for="message-text" class="col-form-label">Label Type:</label>
+            <textarea class="form-control" id="message-text"></textarea> -->
+              <mat-form-field style="width: 95%;margin-left: 40%;">
+                <mat-label>Label Type</mat-label>
+                <!-- <input type="text" matInput autocomplete="off" 
+                  formControlName="label_type"> -->
+                <mat-select matInput formControlName="label_type">
+                  <mat-option *ngFor="let opt of droplist" [value]="opt.id">
+                    {{ opt.text }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+              <!-- <label for="message-text" class="col-form-label">Label Type:</label>
+              <textarea class="form-control" id="message-text"></textarea> -->
+              <mat-form-field style="width: 95%;margin-left: 40%;">
+                <mat-label>Label Reference</mat-label>
+                <!-- <input type="text" matInput autocomplete="off" 
+                    formControlName="ref_module"> -->
+                <mat-select matInput formControlName="ref_module">
+                  <mat-option *ngFor="let opt of reflist" [value]="opt.id">
+                    {{ opt.text }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+              <button type="button" class="btn btn-primary" style="margin-left: 35%;margin-top: 2px;"
+                (click)="addNewLabel()">Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Submit</button>
+      </div> -->
+    </div>
+  </div>
+</div>

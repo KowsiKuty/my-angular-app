@@ -1,0 +1,278 @@
+<section class="screen-padding screen-lm">
+  <div *ngIf="uploadsummary && reportcardview === false">
+    <div class="comp-header">
+      <p  routerLink="/proofing/proofingtransaction" class="comp-header-p">
+        <i class="fa fa-arrow-left back-button"></i>
+        <span>Proofing File Upload</span>
+      </p>
+    </div>
+
+    <div class="filter-aling-2">
+    
+      <div style="display: flex; gap: 10px; align-items: start;">
+      <lib-vs-search-cmp
+        class="npm-mat-edit"
+        [SearchArr]="uploadsearch"
+        [Outputtype]="searchvar"
+        (dataoutput)="fileuploadsummary($event)"
+        [ButtonArr]="filebutton"
+      >
+      </lib-vs-search-cmp>
+
+      <!-- <button
+        type="button"
+        class="btn btn-outline-success"
+        matTooltip="File Upload Create"
+        [matTooltipPosition]="'above'"
+        matTooltipClass="custom-tooltip"
+        (click)="createfileupload()"
+        style="border-radius: 40px; cursor: pointer"
+      >
+        <i class="fa fa-plus"></i>
+      </button> -->
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button
+        class="btn btn-outline-success"
+              style="border-radius: 40px"
+              (click)="verifyfile()"
+        >Verify</button>
+        <button
+        class="btn btn-outline-success"
+        style="border-radius: 40px"
+        (click)="movefile(summarylist)"
+        >Move</button>
+        <button  class="btn btn-outline-success"
+ style="border-radius: 40px"
+ (click)="status_button()">Status
+ </button>
+      </div>
+    </div>
+
+    <div
+    class="modal fade"
+    id="exampleModaldata"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="exampleModalLabel">
+            Data Moving...
+          </p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closefilepopup
+            aria-label="Close"
+            (click)="closepopupdata()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+  
+        <div class="modal-body">
+          GL No(s): <span style="font-weight: bold;">{{fileaccoutnumber}}</span>
+          <button
+          type="button"
+          (click)="refresh()"
+          matTooltip="Refresh"
+          class="btn btn-outline-success"
+          style="border-radius: 40px; margin-left: 95%"
+        >
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
+  <lib-vs-cbox-summary   [SummaryDetails]="filestatusData"
+  [SummaryApiObj]="filestatussummary"></lib-vs-cbox-summary>
+        </div>
+      </div>
+    </div>
+    </div>
+    <!-- <div class="summmary">
+      <lib-vs-cbox-summary
+        [SummaryDetails]="fileuploadsummaryData"
+        [SummaryApiObj]="fileuploadsummaryObjNew"
+      ></lib-vs-cbox-summary>
+    </div> -->
+    <div  class="comp-table t-resposive t-bdr-box">
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th class="th-nowrap">File Name</th>
+            <th class="th-nowrap">GL Number</th>
+            <th class="th-nowrap">Upload On</th>
+            <th><span style="display: block;width: 85px !important;">From</span></th>
+            <th><span style="display: block;width: 85px !important;">To</span></th>
+            <th class="th-nowrap">Data Count</th>
+            <th><span style="display: block;width: 238px !important;">Remarks</span></th>
+            <th>Select</th>
+            <th>Status</th>
+            <th>View</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let temp of summarylist; index as i">
+            <td scope="row">{{ (currentpage - 1) * 10 + i + 1 }}</td>
+            <td>{{ temp.filename }}</td>
+            <td>{{ temp.acc_num }}</td>
+            <td>{{ temp.createddate | date:'dd-MM-yyyy'  }}</td>
+            <td>{{ temp.from_date  | date:'dd-MM-yyyy' }}</td>
+            <td>{{ temp.to_date   | date:'dd-MM-yyyy'}}</td>
+            <td>{{ temp.file_count }}</td>
+            <td matTooltip="{{ temp.remarks || '' }}" matTooltipClass="custom-tooltipdark">
+              {{ temp.remarks && temp.remarks.trim() ? (temp.remarks | slice: 0 : 30) + '...' : '' }}
+            </td>
+            <td>
+              <input 
+                type="checkbox"  
+                [checked]="checkedFiles[temp.id]" 
+                (change)="onCheckboxChange($event, temp, i)" 
+                [disabled]="temp.status.status !== 'Verification_Success' && temp.status.status !== 'Upload_Success'"
+                class="example-margin"
+              />
+            </td>
+                        <td>
+              <p [ngClass]="getStatusClass(temp.status.id)">
+                {{ temp.status.status.replace('_', ' ') }}
+              </p>              
+            </td>            
+            <td>
+                  <i class="fa fa-eye td-btn" style="font-size: 20px;" aria-hidden="true" matTooltip="view"  [matTooltipPosition]="'above'"
+                  matTooltipClass="custom-tooltipdark" (click)="uploadview(temp)"></i>
+            </td>
+            <td>
+                  <i matTooltip="Download" style="font-size: 20px;"  [matTooltipPosition]="'above'"
+                  matTooltipClass="custom-tooltipdark" class="fa fa-download" aria-hidden="true" (click)="genfiledownload(temp.id)"></i>
+                        </td>
+          </tr>
+          <tr *ngIf="summarylist?.length==0" class="text-center">
+              <td colspan="5"> No Records Found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="summarylist?.length>0" class="col-sm-12" style="font-size: small;text-align: right;">
+      <button mat-icon-button [disabled]="has_previous === false" color="primary"
+          (click)="previousClickTemplate()">
+          <mat-icon>arrow_back</mat-icon>
+      </button>
+      {{currentpage}}
+      <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClickTemplate()">
+          <mat-icon>arrow_forward</mat-icon>
+      </button>
+  </div>
+  </div>
+  <div *ngIf="(trans && reportcardview === false) || reportcardview === true">
+    <div *ngIf="reportcardview === false">
+      <div class="comp-header">
+        <p  (click)="backtonormalsum()"class="comp-header-p">
+          <i class="fa fa-arrow-left back-button"></i>
+          <span>Proofing view</span>
+        </p>
+      </div>
+    </div>
+    <div *ngIf="reportcardview === true">
+      <div class="comp-header">
+        <p  (click)="backtonormalsum()" class="comp-header-p">
+          <i class="fa fa-arrow-left back-button"></i>
+          <span>Proofing Report</span>
+        </p>
+      </div>
+    </div>
+
+    <div >
+      <lib-vs-search-cmp
+        [SearchArr]="transsearch"
+        (dataoutput)="searchtransupload($event)"
+        [Downloadbutton]="true"
+        (download)="summarydownload($event)"
+        [SeparateReset]="true"
+        (ResetOutput)="summaryreset($event)"
+        [ButtonArr]="viewbutton"
+        [ResetForm]="restform"
+      >
+      </lib-vs-search-cmp>
+
+      <!-- <button
+        class="btn btn-outline-success"
+        type="submit"
+        id="downloadexcel"
+        style="border-radius: 40px"
+        matTooltip="Download View"
+        (click)="s3download(1)"
+        style="
+          border-radius: 25px;
+          margin-top: 75px;
+          margin-right: 70px;
+          cursor: pointer;
+        "
+      >
+        <i class="fa fa-eye"> </i>
+      </button> -->
+
+      <!-- <button
+        mat-fab
+        color="primary"
+        class="btn btn-outline-dark"
+        type="submit"
+        id="downloadexcel"
+        style="border-radius: 40px; margin-left: -10%; margin-bottom: 20px"
+        matTooltip="Download"
+      >
+        <span class="fa fa-download" (click)="summarydownload()"> </span>
+      </button> -->
+    </div>
+    <div class="summmary">
+      <lib-vs-cbox-summary
+        [SummaryDetails]="transsummaryData"
+        [SummaryApiObj]="transsummaryObjNew"
+      ></lib-vs-cbox-summary>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="width: fit-content;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="exampleModalLabel">
+            Proofing-File-Upload
+          </p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closeaddpopup
+            aria-label="Close"
+            (click)="closedpopup()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+        <div>
+          <app-file-upload
+            [Id]="this.id"
+            #fileupload
+            (onCancel)="backtosummary()"
+          ></app-file-upload>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div>
+    <app-proofing-s3-download ></app-proofing-s3-download>
+  </div> -->
+  <!-- <div *ngIf="uploadcreateview">
+    <app-file-upload [Id]="this.id" (onCancel)="backtosummary()"></app-file-upload>
+  </div> -->
+</section>

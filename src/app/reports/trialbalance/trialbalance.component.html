@@ -1,0 +1,1974 @@
+<mat-card class="example-card">
+<div class="col-md-12">
+    <h2>Trial Balance</h2>
+    <form [formGroup]="trialbalForm">
+      <mat-accordion >
+      <!-- <div class="row" > -->
+        <mat-expansion-panel hideToggle style="width: 100%;">
+          <mat-expansion-panel-header  (click)="click()">
+            <mat-panel-title><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>GL Trail Balance</b></mat-panel-title>
+          </mat-expansion-panel-header>
+           
+          <div class="row" >
+            <div>
+
+            </div>
+            <mat-form-field style="width: 180px;margin-left: 40px;">
+              <mat-label>Trial balance From</mat-label>
+              <input matInput [matDatepicker]="pick" formControlName="fromdate" (dateChange)="onTBGLDateChange($event.value)" readonly>
+              <mat-datepicker-toggle matSuffix [for]="pick"></mat-datepicker-toggle>
+              <mat-datepicker #pick></mat-datepicker>
+            </mat-form-field>
+            
+            <mat-form-field style="width: 180px;margin-left: 40px;">
+              <mat-label>Trial balance To</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="todate" [min]="fromDate" [max]="fromDate" readonly />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+            
+     
+            <div>            
+                <button mat-raised-button type="button" class="btn btn-primary"  (click)="forecastPrepare()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+                Prepare Excel
+                    <mat-icon *ngIf="first"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!first" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>            
+            </div>
+            <div>
+            
+                <button mat-raised-button type="button" class="btn btn-primary"  (click)="tb_report_download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+                Download
+                    <mat-icon *ngIf="third"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!third" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>          
+            </div>
+            <div>               
+                <button mat-raised-button type="button" class="btn btn-primary"
+                (click)="manualRun()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+                ManualRun
+                </button>              
+    
+            </div>
+            </div>
+          </mat-expansion-panel>
+
+            <!-- <div>                
+                <button mat-raised-button type="button" class="btn btn-primary"
+                (click)="detailmanualRun()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+                DetailManualRun
+                    <mat-icon *ngIf="third"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!third" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>
+            </div> -->
+            
+
+        <!-- </div> -->
+      </mat-accordion>
+
+
+      <mat-accordion >
+        <mat-expansion-panel hideToggle style="width: 100%;margin-top: 50px;">
+          <mat-expansion-panel-header  (click)="click()">
+            <mat-panel-title><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Detail Trail Balance</b></mat-panel-title>
+          </mat-expansion-panel-header>
+           
+          <div class="row" >
+
+            <div>
+                   
+                <mat-form-field  style="width:150px;">
+                    <mat-label>Trial balance From</mat-label>
+                    <input matInput [matDatepicker]="picker2" formControlName="fromdate"  (dateChange)="onDateChange()">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+           
+            </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <div>
+                   
+                <mat-form-field  style="width: 150px;">
+                    <mat-label>Trial balance To</mat-label>
+                    <input matInput  [matDatepicker]="picker3" formControlName="todate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+                    <mat-datepicker-toggle matSuffix [for]="picker3">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker3></mat-datepicker>
+                </mat-form-field>
+           
+            </div>
+            <div>
+            
+                <button mat-raised-button type="button" class="btn btn-primary"  (click)="dt_tbforecastPrepare()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+                Prepare Excel
+                    <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>
+            
+            </div>
+            <div>
+            
+                <button mat-raised-button type="button" class="btn btn-primary"  (click)="tb_detail_report_download()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+                Download
+                    <mat-icon *ngIf="fourth"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!fourth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>
+            
+            </div>
+            
+            <div>               
+                <button mat-raised-button type="button" class="btn btn-primary"
+                (click)="detailmanualRun()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+                DetailManualRun
+                </button>               
+            </div>
+            
+            <div>               
+                <button mat-raised-button type="button" class="btn btn-primary"
+                (click)="tb_detail_report_zipdownload()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+                Download Zipfile
+                </button>               
+            </div>&nbsp;&nbsp;
+           
+            <div >
+              <input type="file" (change)="onFileSelected($event)"formControlName="CBFile" accept=".xls,.xlsx"  style="width: 210px;margin-left: 18px;margin-top: 10px;"/>
+          
+          </div>&nbsp;&nbsp;
+          <div>
+            <button mat-raised-button type="button" class="btn btn-primary"  style="border-radius: 40px;height: 40px;" (click)="uploadFile()">
+              CB  Upload
+                 </button>
+          </div>
+     </div>
+    </mat-expansion-panel>
+    </mat-accordion >
+<mat-accordion >
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+  <mat-expansion-panel-header  (click)="click()">
+    <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Simple Trail Balance </b></mat-panel-title>
+  </mat-expansion-panel-header>
+  <div class="row" >
+
+    <div>
+           
+        <mat-form-field  style="width:150px;">
+            <mat-label>Trial balance From</mat-label>
+            <input matInput [matDatepicker]="picker11" formControlName="FROMDATE" (dateChange)="onFromDateChange($event.value)" readonly>
+            <mat-datepicker-toggle matSuffix [for]="picker11"></mat-datepicker-toggle>
+            <mat-datepicker #picker11></mat-datepicker>
+        </mat-form-field>
+   
+    </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+    <div>
+           
+        <mat-form-field  style="width: 150px;">
+            <mat-label>Trial balance To</mat-label>
+            <input matInput  [matDatepicker]="picker12" formControlName="TODATE" [min]="fromDate" [max]="fromDate" readonly />
+            <mat-datepicker-toggle matSuffix [for]="picker12">
+            </mat-datepicker-toggle>
+            <mat-datepicker #picker12></mat-datepicker>
+        </mat-form-field>
+   
+    </div>
+    <div>
+    
+        <button mat-raised-button type="button" class="btn btn-primary"  (click)="simple_TBPrepare()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+        Prepare Excel
+            <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+            </mat-spinner></mat-icon>
+            <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+        </button>
+    
+    </div>
+    <div>
+    
+        <button mat-raised-button type="button" class="btn btn-primary"  (click)="simple_TbDownload()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+        Download
+            <mat-icon *ngIf="fourth"><mat-spinner color="green" diameter="20">
+            </mat-spinner></mat-icon>
+            <mat-icon *ngIf="!fourth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+        </button>
+    
+    </div>
+  
+    </div>
+</mat-expansion-panel>
+</mat-accordion>
+    <mat-accordion >
+      <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+        <mat-expansion-panel-header  (click)="click()">
+          <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Detail Trail Balance Recon</b></mat-panel-title>
+        </mat-expansion-panel-header>
+       <div class="row">
+        <div>            
+          <button mat-raised-button type="button" class="btn btn-primary"  (click)="ReconPrepare()"  style="border-radius: 40px;height: 40px;margin-left: 10px;" (click)="ReconPrepareEX" [disabled]=  "ReconStop || ReconDownload">
+          Prepare Excel
+          
+          <mat-icon *ngIf="five"><mat-spinner color="green" diameter="20">
+          </mat-spinner></mat-icon>
+          <mat-icon *ngIf="!five" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+         
+          
+          </button>            
+      </div>
+        <div >         
+          <button mat-raised-button type="button" class="btn btn-primary"  (click)="stop()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)="ReconStop" [disabled]="!ReconStop">
+            Stop
+            
+            </button>
+        
+      </div>
+      <div>         
+        <button mat-raised-button type="button" class="btn btn-primary"  (click)="TB_Recon_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)='ReconDownload' [disabled]="!ReconDownload">
+          Recon Download
+              <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+              </mat-spinner></mat-icon>
+              <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+          </button>
+    </div>
+    </div>
+  </mat-expansion-panel>
+  </mat-accordion >
+  <mat-accordion >
+    <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+      <mat-expansion-panel-header  (click)="click()">
+        <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Simple TB With DTB Recon</b></mat-panel-title>
+      </mat-expansion-panel-header>
+     <div class="row">
+      <div>            
+        <button mat-raised-button type="button" class="btn btn-primary"  (click)="simpleReconPrepare()"  style="border-radius: 40px;height: 40px;margin-left: 10px;" (click)="simpleReconPrepareEX" [disabled]=  "simpleReconStop || simpleReconDownload">
+        Prepare Excel
+        
+        <mat-icon *ngIf="btn_spinner"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+        <mat-icon *ngIf="!btn_spinner" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+       
+        
+        </button>            
+    </div>
+      <div >         
+        <button mat-raised-button type="button" class="btn btn-primary"  (click)="simple_reconstop()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)="simpleReconStop" [disabled]="!simpleReconStop">
+          Stop
+          
+          </button>
+      
+    </div>
+    <div>           
+      <!-- <button mat-raised-button type="button" class="btn btn-primary"  (click)="SIMPLE_TB_Recon_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)='simpleReconDownload' [disabled]="!simpleReconDownload">
+        Recon Download
+            <mat-icon *ngIf="btn_spinner2"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+            <mat-icon *ngIf="!btn_spinner2" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+        </button> -->
+        <button mat-raised-button type="button" class="btn btn-primary"  (click)="closingbalPrepare()" [disabled]="closing_balPrepareEX" style="border-radius: 40px;height: 40px;margin-left: 10px;">
+          Closing Balance
+          <mat-icon *ngIf="btn_spinner_cltb"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_spinner_cltb" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+          </button>
+  </div>
+  <div>
+    <button class="btn btn-outline-primary" (click)="filedtp_summary()" style="border-radius:25px;margin-left: 10px;" matTooltip="Refresh"><i class="fa fa-refresh"></i></button>
+  </div>
+  </div>
+  <table class="table table-responsive table-bordered" style="margin-top: 10px;width: fit-content;">
+    <thead class="table_header">
+      <tr>
+        <th>SI No</th>
+        <th>Type</th>
+        <th>Excel Name</th>
+        <th>Excel Size</th>
+        <th>Created Date</th>
+        <th>Excel Download</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><b>Debit & Credit Recon</b></td>
+        <td>{{dtb_tb_summary?.filename}}</td>
+        <td>{{dtb_tb_summary?.size}}</td>
+        <td>{{dtb_tb_summary?.created_date}}</td>
+        <td><button mat-raised-button type="button" class="btn btn-primary"  (click)="SIMPLE_TB_Recon_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)='pprReconDownload'>
+          Recon Download
+          <mat-icon *ngIf="btn_spinner2"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_spinner2" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><b>Closing Balance Recon</b></td>
+        <td>{{dtb_closingbal?.filename}}</td>
+        <td>{{dtb_closingbal?.size}}</td>
+        <td>{{dtb_closingbal?.created_date}}</td>
+        <td><button mat-raised-button type="button" class="btn btn-primary"  (click)="ClosingBal__Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+          Closing Balance Download
+              <mat-icon *ngIf="btn_spinner_cltbd"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+              <mat-icon *ngIf="!btn_spinner_cltbd" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+          </button>
+        </td>
+      </tr>
+  
+    </tbody>
+  </table>
+</mat-expansion-panel>
+</mat-accordion >
+
+
+
+<mat-accordion >
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Simple DTB With PPR Recon</b></mat-panel-title>
+    </mat-expansion-panel-header>
+   <div class="row">
+    <div>            
+      <button mat-raised-button type="button" class="btn btn-primary"  (click)="PPR_ReconPrepare()"  style="border-radius: 40px;height: 40px;margin-left: 10px;" (click)="pprReconPrepareEX" [disabled]=  "pprReconStop || pprReconDownload">
+      Prepare Excel
+      <mat-icon *ngIf="btn_ppr_spinner"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+      <mat-icon *ngIf="!btn_ppr_spinner" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>    
+      </button>            
+  </div>
+    <div >         
+      <button mat-raised-button type="button" class="btn btn-primary"  (click)="PPR_reconstop()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)="pprReconStop" [disabled]="!pprReconStop">
+        Stop
+        
+        </button>
+    
+  </div>
+  <div>
+    <!-- <button (click)="filerecon_summary()"><span class="glyphicon">&#xe031;</span></button> -->
+    <button class="btn btn-outline-primary" (click)="filerecon_summary()" style="border-radius:25px;margin-left: 10px;" matTooltip="Refresh"><i class="fa fa-refresh"></i></button>
+
+    
+  </div>
+  <!-- <div>         
+    <button mat-raised-button type="button" class="btn btn-primary"  (click)="PPR_TB_Recon_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)='pprReconDownload' [disabled]="!pprReconDownload">
+      Recon Download
+          <mat-icon *ngIf="btn_ppr_spinner2"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_ppr_spinner2" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+      </button>-->
+</div> 
+<table class="table table-responsive table-bordered" style="margin-top: 10px;width: fit-content;">
+  <thead class="table_header">
+    <tr>
+      <th>SI No</th>
+      <th>Excel Name</th>
+      <th>Excel Size</th>
+      <th>Created Date</th>
+      <th>Excel Download</th>
+    </tr>
+  </thead>
+  <tbody>
+    <td>1</td>
+    <td>{{ppr_summary?.filename}}</td>
+    <td>{{ppr_summary?.size}}</td>
+    <td>{{ppr_summary?.created_date}}</td>
+    <td><button mat-raised-button type="button" class="btn btn-primary"  (click)="PPR_TB_Recon_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"(click)='pprReconDownload'>
+      Recon Download
+          <mat-icon *ngIf="btn_ppr_spinner2"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_ppr_spinner2" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+      </button></td>
+  </tbody>
+</table>
+</mat-expansion-panel>
+</mat-accordion >
+  <mat-accordion >
+    <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+      <mat-expansion-panel-header  (click)="click()">
+        <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Detail Trail Balance Correction</b></mat-panel-title>
+      </mat-expansion-panel-header>
+     <div class="row">
+      <div>
+                   
+        <mat-form-field  style="width:150px;">
+            <mat-label>Trial balance From</mat-label>
+            <input matInput [matDatepicker]="picker5" formControlName="fromdate"  (dateChange)="onDateChange()">
+            <mat-datepicker-toggle matSuffix [for]="picker5"></mat-datepicker-toggle>
+            <mat-datepicker #picker5></mat-datepicker>
+        </mat-form-field>
+   
+      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+      <div>
+           
+        <mat-form-field  style="width: 150px;">
+            <mat-label>Trial balance To</mat-label>
+            <input matInput  [matDatepicker]="picker6" formControlName="todate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+            <mat-datepicker-toggle matSuffix [for]="picker6">
+            </mat-datepicker-toggle>
+            <mat-datepicker #picker6></mat-datepicker>
+        </mat-form-field>
+   
+      </div>
+
+      <div>
+        <button mat-raised-button type="button" class="btn btn-primary"  (click)="detailtb_correction_run()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+        ManualRun
+        </button>          
+      </div>
+    </div>
+    </mat-expansion-panel>
+</mat-accordion >
+<mat-accordion >
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Bank As a Whole Recon</b></mat-panel-title>
+    </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-md-12">
+                     
+          <mat-form-field  style="width:150px;">
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="picker7" formControlName="bankreconfromdate"  (dateChange)="onDateChange()">
+              <mat-datepicker-toggle matSuffix [for]="picker7"></mat-datepicker-toggle>
+              <mat-datepicker #picker7></mat-datepicker>
+          </mat-form-field>
+             
+          <mat-form-field  style="width: 150px;margin-left:25px">
+              <mat-label>To Date</mat-label>
+              <input matInput  [matDatepicker]="picker8" formControlName="bankrecontodate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+              <mat-datepicker-toggle matSuffix [for]="picker8">
+              </mat-datepicker-toggle>
+              <mat-datepicker #picker8></mat-datepicker>
+          </mat-form-field>
+    
+          <button mat-raised-button type="button" class="btn btn-primary" [disabled]="bankrecon_btn"  (click)="bankrecon_excelPrepare()"  style="border-radius: 40px;height: 40px;margin-left:15px;">
+          Prepare Excel
+          <mat-icon *ngIf="btn_spinner_bankrecon"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_spinner_bankrecon" inline=true style="color:rgb(245, 245, 245)">download</mat-icon> 
+          </button>   
+          <button class="btn btn-outline-primary" (click)="bankrecon_summary()" style="border-radius:25px;margin-left: 10px;" matTooltip="Refresh"><i class="fa fa-refresh"></i></button>
+          <!-- <button mat-raised-button type="button" class="btn btn-primary" [disabled]="bankrecondown"  (click)="Bankrecon__Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+            Recon Download
+                <mat-icon *ngIf="btn_spinner_bankrecondow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                <mat-icon *ngIf="!btn_spinner_bankrecondow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>        -->
+        </div>
+      </div>
+      <table class="table table-responsive table-bordered" style="margin-top: 10px;width: fit-content;">
+        <thead class="table_header">
+          <tr>
+            <th>SI No</th>
+            <th>Type</th>
+            <th>Excel Name</th>
+            <th>Excel Size</th>
+            <th>Created Date</th>
+            <th>Excel Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td>1</td>
+          <td><b>Closing Balance Recon</b></td>
+          <td>{{bankrecon_data?.filename}}</td>
+          <td>{{bankrecon_data?.size}}</td>
+          <td>{{bankrecon_data?.created_date}}</td>
+          <td><button mat-raised-button type="button" class="btn btn-primary"  (click)="Bankrecon__Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+            Closing Balance Recon Download
+                <mat-icon *ngIf="btn_spinner_bankrecondow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                <mat-icon *ngIf="!btn_spinner_bankrecondow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button></td>
+        </tbody>
+      </table>
+  </mat-expansion-panel>
+</mat-accordion >
+<mat-accordion >
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>GL Level Recon</b></mat-panel-title>
+    </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-md-12">
+                     
+          <mat-form-field  style="width:150px;">
+              <mat-label>Invoice Date</mat-label>
+              <input matInput [matDatepicker]="picker122" formControlName="glreconinvoicedate"  (dateChange)="onGLRDateChange()">
+              <mat-datepicker-toggle matSuffix [for]="picker122"></mat-datepicker-toggle>
+              <mat-datepicker #picker122></mat-datepicker>
+          </mat-form-field>
+             
+        
+    
+          <button mat-raised-button type="button" class="btn btn-primary" [disabled]="glrecon_btn"  (click)="glrecon_excelPrepare()"  style="border-radius: 40px;height: 40px;margin-left:15px;">
+          Prepare Excel
+          <mat-icon *ngIf="btn_spinner_glrecon"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_spinner_glrecon" inline=true style="color:rgb(245, 245, 245)">download</mat-icon> 
+          </button>   
+          <button class="btn btn-outline-primary" (click)="glrecon_summary()" style="border-radius:25px;margin-left: 10px;" matTooltip="Refresh"><i class="fa fa-refresh"></i></button>
+          
+        </div>
+      </div>
+      <table class="table table-responsive table-bordered" style="margin-top: 10px;width: fit-content;">
+        <thead class="table_header">
+          <tr>
+            <th>SI No</th>
+            <th>Type</th>
+            <th>Excel Name</th>
+            <th>Excel Size</th>
+            <th>Created Date</th>
+            <th>Excel Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td>1</td>
+          <td><b>GL Recon</b></td>
+          <td>{{glrecon_data?.filename}}</td>
+          <td>{{glrecon_data?.size}}</td>
+          <td>{{glrecon_data?.created_date}}</td>
+          <td><button mat-raised-button type="button" class="btn btn-primary"  (click)="glrecon_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+            GL Recon Download
+                <mat-icon *ngIf="btn_spinner_glrecondow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                <mat-icon *ngIf="!btn_spinner_glrecondow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button></td>
+        </tbody>
+      </table>
+  </mat-expansion-panel>
+</mat-accordion >
+
+<mat-accordion >
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>FA Internal Recon</b></mat-panel-title>
+    </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-md-12">
+                     
+          <mat-form-field  style="width:150px;">
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="pickerfainternreconfrom" formControlName="fareconfromdate"  (dateChange)="onFADateChange()">
+              <mat-datepicker-toggle matSuffix [for]="pickerfainternreconfrom"></mat-datepicker-toggle>
+              <mat-datepicker #pickerfainternreconfrom></mat-datepicker>
+          </mat-form-field>
+             
+          <mat-form-field  style="width: 150px;margin-left:25px">
+              <mat-label>To Date</mat-label>
+              <input matInput  [matDatepicker]="pickerfainternreconto" formControlName="farecontodate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+              <mat-datepicker-toggle matSuffix [for]="pickerfainternreconto">
+              </mat-datepicker-toggle>
+              <mat-datepicker #pickerfainternreconto></mat-datepicker>
+          </mat-form-field>
+    
+          <button mat-raised-button type="button" class="btn btn-primary" [disabled]="farecon_btn"  (click)="FA_internal_excelPrepare()"  style="border-radius: 40px;height: 40px;margin-left:15px;">
+          Recon Prepare
+          <mat-icon *ngIf="btn_spinner_farecon"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_spinner_farecon" inline=true style="color:rgb(245, 245, 245)">download</mat-icon> 
+          </button>   
+          
+          <button class="btn btn-outline-primary" (click)="Fa_recon_summary()" style="border-radius:25px;margin-left: 10px;" matTooltip="Refresh"><i class="fa fa-refresh"></i></button>
+          
+        </div>
+      </div>
+      <table class="table table-responsive table-bordered" style="margin-top: 10px;width: fit-content;">
+        <thead class="table_header">
+          <tr>
+            <th>SI No</th>
+            <th>Type</th>
+            <th>Excel Name</th>
+            <th>Excel Size</th>
+            <th>Created Date</th>
+            <th>Excel Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><b>FA Internal Recon</b></td>
+            <td>{{fa_internal_recon?.filename}}</td>
+            <td>{{fa_internal_recon?.size}}</td>
+            <td>{{fa_internal_recon?.created_date}}</td>
+            <td>
+              <button mat-raised-button type="button" class="btn btn-primary" [disabled]="farecondown"  (click)="FA_internal_recon_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+              Recon Download
+                    <mat-icon *ngIf="btn_spinner_farecondow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!btn_spinner_farecondow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>
+             </td>
+          </tr>
+        </tbody>
+      </table>
+  </mat-expansion-panel>
+</mat-accordion >
+
+<mat-accordion>
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>FA With PPR Recon</b></mat-panel-title>
+    </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-md-12">
+                     
+          <mat-form-field  style="width:150px;">
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="pickerfapprfrom" formControlName="fa_ppr_fromdate"  (dateChange)="onFA_ppr_dateChange()">
+              <mat-datepicker-toggle matSuffix [for]="pickerfapprfrom"></mat-datepicker-toggle>
+              <mat-datepicker #pickerfapprfrom></mat-datepicker>
+          </mat-form-field>
+             
+          <mat-form-field  style="width: 150px;margin-left:25px">
+              <mat-label>To Date</mat-label>
+              <input matInput  [matDatepicker]="pickerfapprto" formControlName="fa_ppr_todate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+              <mat-datepicker-toggle matSuffix [for]="pickerfapprto">
+              </mat-datepicker-toggle>
+              <mat-datepicker #pickerfapprto></mat-datepicker>
+          </mat-form-field>
+          <button mat-raised-button type="button" class="btn btn-primary" [disabled]="fa_data_btn"  (click)="FA_ppr_excelPrepare()"  style="border-radius: 40px;height: 40px;margin-left:15px;">Recon Prepare
+            <mat-icon *ngIf="btn_spinner_fadata"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+            <mat-icon *ngIf="!btn_spinner_fadata" inline=true style="color:rgb(245, 245, 245)">download</mat-icon> 
+            </button> 
+          <button class="btn btn-outline-primary" (click)="Fa_recon_summary()" style="border-radius:25px;margin-left: 10px;" matTooltip="Refresh"><i class="fa fa-refresh"></i></button>
+        </div>
+      </div>
+      <table class="table table-responsive table-bordered" style="margin-top: 10px;width: fit-content;">
+        <thead class="table_header">
+          <tr>
+            <th>SI No</th>
+            <th>Type</th>
+            <th>Excel Name</th>
+            <th>Excel Size</th>
+            <th>Created Date</th>
+            <th>Excel Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+          <td>1</td>
+          <td><b>FA With PPR Recon</b></td>
+          <td>{{fa_ppr_recon?.filename}}</td>
+          <td>{{fa_ppr_recon?.size}}</td>
+          <td>{{fa_ppr_recon?.created_date}}</td>
+          <td>
+            <button mat-raised-button type="button" class="btn btn-primary" [disabled]="fadatadown"  (click)="FA_PPR__Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;"> Recon Download
+                  <mat-icon *ngIf="btn_spinner_fadatadow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                  <mat-icon *ngIf="!btn_spinner_fadatadow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button> 
+           </td>
+          </tr>
+          
+        </tbody>
+      </table>
+  </mat-expansion-panel>
+</mat-accordion >
+
+
+<mat-accordion>
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Branchwise GL Summary</b></mat-panel-title>
+    </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-md-12">
+                     
+          <mat-form-field  style="width:150px;">
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="branchglpickfrom" formControlName="branch_gl_fromdate"  (dateChange)="on_branchgl_dateChange()">
+              <mat-datepicker-toggle matSuffix [for]="branchglpickfrom"></mat-datepicker-toggle>
+              <mat-datepicker #branchglpickfrom></mat-datepicker>
+          </mat-form-field>
+             
+          <mat-form-field  style="width: 150px;margin-left:25px">
+              <mat-label>To Date</mat-label>
+              <input matInput  [matDatepicker]="branchglpickto" formControlName="branch_gl_todate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+              <mat-datepicker-toggle matSuffix [for]="branchglpickto">
+              </mat-datepicker-toggle>
+              <mat-datepicker #branchglpickto></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field  style="width:250px;margin-left:25px"> 
+            <mat-label>Branch</mat-label>
+            <input type="text" matInput formControlName="branchgl_empbranch"  autocomplete="off" [matAutocomplete]="empbranchinfo" #empbranInput (click)="employee_branchdrop()">
+            <mat-autocomplete #empbranchinfo="matAutocomplete" [displayWith]="getemployeebranchinterface" (opened)="autocompleteScrollempbranch()">
+                <mat-option *ngIf="isLoading">loading..</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let d of empbranchnamelist" [value]="d" >{{d.codename}}</mat-option>
+                </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field  style="width:250px;margin-left:25px"> 
+          <mat-label>Expense</mat-label>
+          <input type="text" matInput formControlName="branchgl_expen"  autocomplete="off" [matAutocomplete]="expense" #expInput (click)="expense_dropdown()">
+          <mat-autocomplete #expense="matAutocomplete" [displayWith]="getexpenseinterface" (opened)="autocompleteScrollexpence()">
+              <mat-option *ngIf="isLoading">loading..</mat-option>
+              <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let d of expense_list" [value]="d" >{{d.name}}</mat-option>
+              </ng-container>
+          </mat-autocomplete>
+      </mat-form-field>
+      
+      </div>
+      <div class="col-md-12">
+        <mat-form-field> 
+          <mat-label>GL No</mat-label>
+          <input type="text" matInput formControlName="branchgl_no"  autocomplete="off" [matAutocomplete]="branchglinfo" #branchglInput (click)="glilist_dropdown()">
+          <mat-autocomplete #branchglinfo="matAutocomplete" [displayWith]="getbranchglnointerface" (opened)="autocompleteScrollglno()">
+              <mat-option *ngIf="isLoading">loading..</mat-option>
+              <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let d of glno_list" [value]="d" >{{d.no}}</mat-option>
+              </ng-container>
+          </mat-autocomplete>
+      </mat-form-field>
+          <button type="button" class="btn btn-primary" (click)="branchwisegl_summary(1)" style="border-radius:40px;margin-left:15px">Load Summary</button>
+          <button type="button" class="btn btn-primary" (click)="branchwisegl_reset()" style="border-radius:40px;margin-left:15px;">Reset</button>
+          <button mat-raised-button type="button" class="btn btn-primary" [disabled]="branchgl_btn" (click)="branchgltb_excelPrepare()"  style="border-radius: 40px;height: 40px;margin-left:15px;">Prepare Excel
+            <mat-icon *ngIf="btn_spin_brangl_xl"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+            <mat-icon *ngIf="!btn_spin_brangl_xl" inline=true style="color:rgb(245, 245, 245)">download</mat-icon> 
+            </button> 
+            <button mat-raised-button type="button" class="btn btn-primary" [disabled]="brangltb_dow"  (click)="branchwisegl_tb_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+              Excel Download
+                    <mat-icon *ngIf="btn_spinner_branchglbdow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!btn_spinner_branchglbdow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>
+          </div>
+      </div>
+      <table class="table scrolltable table-bordered" style="margin-top:10px">
+        <thead class="table_header">
+          <tr>
+            <th>S NO</th>
+            <th>Date</th>
+            <th>GL NO</th>
+            <th>GL Description</th>
+            <th>Branch Code</th>
+            <th>Opening Balance</th>
+            <th>Debit</th>
+            <th>Credit</th>
+            <th>Closing Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of branchwisegl_tblist;let i=index">
+            <td style="text-align:right">{{(branchgl_page-1)*pageSize +i+1}}</td>
+            <td>{{data.Date | date:'dd-MMM-yyyy'}}</td>
+            <td>{{data.GL_No}}</td>
+            <td>{{data.GL_Description}}</td>
+            <td>{{data.Branch_Code}}</td>
+            <td style="text-align:right">{{data.Opening_Balance |  currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+            <td style="text-align:right">{{data.Debit | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+            <td style="text-align:right">{{data.Credit | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+            <td style="text-align:right">{{data.Closing_Balance | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+          </tr>
+          <tr *ngIf="branchwisegl_tblist?.length==0; else paginationbranchgl" class="NodataAlign" style="text-align: center;" class="NodataAlign"><td colspan="11">No Records Found...</td></tr>
+          <ng-template #paginationbranchgl>
+              <tr>  
+                    <td colspan="11">
+                      <div style="text-align:right">
+                            <button mat-icon-button [disabled]="prev_branchgl === false" color="primary"(click)="branchgl_previous()">
+                                 <mat-icon>arrow_back</mat-icon>
+                            </button>
+                                {{branchgl_page}}
+                            <button mat-icon-button [disabled]="next_branchgl === false" color="primary" (click)="branchgl_next()">
+                                     <mat-icon>arrow_forward</mat-icon>
+                         </button>
+                      </div>
+                    </td>  
+              </tr>
+           </ng-template> 
+          
+        </tbody>
+      </table>
+  </mat-expansion-panel>
+</mat-accordion >
+
+
+<!--PPRR-->
+<mat-accordion>
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>Branchwise GL with PPR Summary</b></mat-panel-title>
+    </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-md-12">
+                     
+          <mat-form-field  style="width:150px;">
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="branchglpprpickfrom" formControlName="branch_withppr_fromdate"  (dateChange)="on_branchgl_dateChange()">
+              <mat-datepicker-toggle matSuffix [for]="branchglpprpickfrom"></mat-datepicker-toggle>
+              <mat-datepicker #branchglpprpickfrom></mat-datepicker>
+          </mat-form-field>
+             
+          <mat-form-field  style="width: 150px;margin-left:25px">
+              <mat-label>To Date</mat-label>
+              <input matInput  [matDatepicker]="branchglpprpickto" formControlName="branch_withppr_todate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+              <mat-datepicker-toggle matSuffix [for]="branchglpprpickto">
+              </mat-datepicker-toggle>
+              <mat-datepicker #branchglpprpickto></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field  style="width:250px;margin-left:25px"> 
+            <mat-label>Branch</mat-label>
+            <input type="text" matInput formControlName="branch_withppr_empbranch"  autocomplete="off" [matAutocomplete]="pprempbranchinfo" #pprempbranInput (click)="ppremployee_branchdrop()">
+            <mat-autocomplete #pprempbranchinfo="matAutocomplete" [displayWith]="getemployeebranchinterface" (opened)="pprautocompleteScrollempbranch()">
+                <mat-option *ngIf="isLoading">loading..</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let d of pprempbranchnamelist" [value]="d" >{{d.codename}}</mat-option>
+                </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field  style="width:250px;margin-left:25px"> 
+          <mat-label>Expense</mat-label>
+          <input type="text" matInput formControlName="branch_withppr_expen"  autocomplete="off" [matAutocomplete]="pprexpense" #pprexpInput (click)="pprexpense_dropdown()">
+          <mat-autocomplete #pprexpense="matAutocomplete" [displayWith]="getexpenseinterface" (opened)="pprautocompleteScrollexpence()">
+              <mat-option *ngIf="isLoading">loading..</mat-option>
+              <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let d of pprexpense_list" [value]="d" >{{d.name}}</mat-option>
+              </ng-container>
+          </mat-autocomplete>
+      </mat-form-field>
+      
+      </div>
+      <div class="col-md-6">
+        <mat-form-field> 
+          <mat-label>GL No</mat-label>
+          <input type="text" matInput formControlName="branch_withppr_glno"  autocomplete="off" [matAutocomplete]="pprbranchglinfo" #pprbranchglInput (click)="ppr_glilist_dropdown()">
+          <mat-autocomplete #pprbranchglinfo="matAutocomplete" [displayWith]="ppr_getbranchglnointerface" (opened)="ppr_autocompleteScrollglno()">
+              <mat-option *ngIf="isLoading">loading..</mat-option>
+              <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let d of ppr_glno_list" [value]="d" >{{d.no}}</mat-option>
+              </ng-container>
+          </mat-autocomplete>
+      </mat-form-field>
+          <button type="button" class="btn btn-primary" (click)="branchwiseglppr_summary(1)" style="border-radius:40px;margin-left:15px">Load Summary</button>
+          <button type="button" class="btn btn-primary" (click)="branchwiseglppr_reset()" style="border-radius:40px;margin-left:15px;">Reset</button>
+        </div>
+        <div class="col-md-5" style="margin-top: 10px;">   
+        <span *ngIf="ppr_branch" class="custom_border" style="margin-left:10px;font-size: large;"><b>Branch: </b>{{ppr_brn}}</span><span class="custom_border" *ngIf="ppr_gl_hide"
+          style="margin-left: 25px;font-size: large;"><b>GL No: </b>{{pprgl_no}}</span>
+          </div>
+      </div>
+     
+        <!-- Spinner -->
+        
+      <table class="table scrolltable table-bordered" style="margin-top:10px">
+        <thead class="table_header">
+          <tr>
+            <th>S NO</th>
+            <th>View</th>
+            <th>Date</th>
+            <th *ngIf="gl_col_hide">GL NO</th>
+            <th>GL Description</th>
+            <th *ngIf="brn_col_hide" >Branch Code</th>
+            <th>Opening Balance</th>
+            <th>Debit</th>
+            <th>Credit</th>
+            <th>Closing Balance</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let data of branchwiseglppr_tblist;let i=index">
+          <tr >
+            <td  [ngClass]="{ 'highlight': selected_id_color === i }"style="text-align:right">{{(branchglppr_page-1)*ppr_pagesize +i+1}}</td>
+            
+                <td [ngClass]="{ 'highlight': selected_id_color === i}">
+                  <button mat-icon-button color="primary" (click)="expand_getenable(i,data)"><mat-icon *ngIf="data.enb==false">arrow_drop_down_circle</mat-icon> <mat-icon *ngIf="data.enb==true">arrow_drop_up</mat-icon></button>
+                </td>
+              
+                <td [ngClass]="{ 'highlight': selected_id_color === i }">{{data.Date | date:'dd-MMM-yyyy'}}</td>
+                <td  *ngIf="gl_col_hide" [ngClass]="{ 'highlight': selected_id_color === i }">{{data.GL_No}}</td>
+                <td [ngClass]="{ 'highlight': selected_id_color === i }">{{data.GL_Description}}</td>
+                <td *ngIf="brn_col_hide" [ngClass]="{ 'highlight': selected_id_color === i }">{{data.Branch_Code}}</td>
+                <td style="text-align:right" [ngClass]="{ 'highlight': selected_id_color === i }">{{data.Opening_Balance |  currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+                <td style="text-align:right" [ngClass]="{ 'highlight': selected_id_color === i }">{{data.Debit | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+                <td style="text-align:right" [ngClass]="{ 'highlight': selected_id_color === i }">{{data.Credit | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+                <td style="text-align:right" [ngClass]="{ 'highlight': selected_id_color === i }">{{data.Closing_Balance | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+                <button mat-icon-button color="primary" (click)="branch_wise_download(data)" [disabled]="ispprLoading">
+                  <mat-icon *ngIf="data?.enb_down"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                  <span class="material-icons">
+                    file_download
+                  </span>
+                </button>
+                
+              </tr>
+              <tr  *ngIf="data['enb']">
+                <td colspan="16" class="spinner-container" *ngIf="custom_spinner">
+                  <div class="spinner-overlay" >
+                    <div class="spinner"></div>
+                  </div>
+                </td>
+                <td colspan="16" *ngIf="!custom_spinner">
+                 
+                    <!-- <h2 style="color: blue;font-family: 'Times New Roman', Times, serif;"></h2> -->
+                    <table class="table table-bordered" style="width:90%">
+                        <thead class="table_header">
+                            <tr>
+                                
+                                <th>SI No</th>
+                                <th>Date</th>
+                                <th>Ref No</th>
+                                <th>Entry Gid</th>
+                                <th>Type</th>
+                                <th>CC Code</th>
+                                <th>Amount</th>
+                               
+                               
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of pprdata_list ;let j=index">
+                                <td style="text-align: center;">{{(pprdata_present_page-1)*ppr_pagesize +j+1}}</td>
+                                <td style="text-align: center;">{{data?.date}}</td>
+                                <td style="text-align: center;">{{data?.ref_no}}</td>
+                                <td style="text-align: center;">{{data?.entry_gid}}</td>
+                                <td style="text-align: center;">{{data?.type}}</td>
+                                <td style="text-align: center;">{{data?.cc_code}}</td>
+                                <td style="text-align: center;">{{data?.amount  | number:'1.2-2'}}</td>
+                                
+                            </tr>
+                        
+                        <tr *ngIf="pprdata_list?.length==0; else ppr_pagination" class="NodataAlign" style="text-align: center;" class="NodataAlign"><td colspan="11">No Records Found...</td></tr>
+                        <ng-template #ppr_pagination>
+                            <tr>  
+                              <td colspan="2"><span><b>Total:</b></span>{{total_count_inp}}</td>
+                                  <td colspan="11">
+                                    <div style="text-align:right">
+                                          <button mat-icon-button [disabled]="pprdata_has_previous === false" color="primary"(click)="pprdatagl_previous(data)">
+                                               <mat-icon>arrow_back</mat-icon>
+                                          </button>
+                                              {{pprdata_present_page}}
+                                          <button mat-icon-button [disabled]="pprdata_has_next === false" color="primary" (click)="pprdatagl_next(data)">
+                                                   <mat-icon>arrow_forward</mat-icon>
+                                       </button>
+                                    </div>
+                                  </td>  
+                            </tr>
+                         </ng-template> 
+                        </tbody>
+                    </table>
+               </td>
+            </tr>
+              
+           
+          
+          
+        </tbody>
+        <tr *ngIf="branchwiseglppr_tblist?.length==0; else paginationbranchglppr" class="NodataAlign"
+          style="text-align: center;" class="NodataAlign">
+          <td colspan="11">No Records Found...</td>
+        </tr>
+          <ng-template #paginationbranchglppr>
+              <tr>  
+                    <td colspan="11">
+                      <div style="text-align:right">
+                            <button mat-icon-button [disabled]="prev_branchglppr === false" color="primary"(click)="branchglppr_previous()">
+                                 <mat-icon>arrow_back</mat-icon>
+                            </button>
+                                {{branchglppr_page}}
+                            <button mat-icon-button [disabled]="next_branchglppr === false" color="primary" (click)="branchglppr_next()">
+                                     <mat-icon>arrow_forward</mat-icon>
+                         </button>
+                      </div>
+                    </td>  
+              </tr>
+           </ng-template> 
+      </table>
+  </mat-expansion-panel>
+</mat-accordion >
+
+<!-- NTB with PPR Recon Report -->
+
+ <mat-accordion >
+        <mat-expansion-panel hideToggle style="width: 100%;margin-top: 50px;">
+          <mat-expansion-panel-header  (click)="click()">
+            <mat-panel-title><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>NTB with PPR Recon Report</b></mat-panel-title>
+          </mat-expansion-panel-header>
+           
+          <div class="row" >
+
+            <div>
+                   
+                <mat-form-field  style="width:150px;">
+                    <mat-label>From Date</mat-label>
+                    <input matInput [matDatepicker]="pickerk" formControlName="ntb_fromdate" (dateChange)="onntbDateChange($event.value)" readonly>
+                    <mat-datepicker-toggle matSuffix [for]="pickerk"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerk></mat-datepicker>
+                </mat-form-field>
+           
+            </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <div>
+                   
+                <mat-form-field  style="width: 150px;">
+                    <mat-label>To Date</mat-label>
+                    <input matInput  [matDatepicker]="picker9" formControlName="ntb_todate" [min]="ntbfromDate"  readonly />
+                    <mat-datepicker-toggle matSuffix [for]="picker9">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker9></mat-datepicker>
+                </mat-form-field>
+           
+            </div>
+            <div>
+            
+                <button mat-raised-button type="button" class="btn btn-primary"  (click)="ntb_tbforecastPrepare()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+                Prepare Excel
+                    <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>
+            
+            </div>
+            <div>
+            
+                <button mat-raised-button type="button" class="btn btn-primary"  (click)="ntb_detail_report_download()"  style="border-radius: 40px;height: 40px;margin-left: 25px;">
+                Download
+                    <mat-icon *ngIf="fourth"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!fourth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>
+            
+            </div>
+               <div>
+                            <button type="button" style="border-radius: 40px;margin-left: 25px;"
+                                class="btn btn-outline-primary" (click)="reset_ntb()">Reset</button>
+                        </div>
+     </div>
+    </mat-expansion-panel>
+    </mat-accordion >
+
+<mat-accordion >
+  <mat-expansion-panel  style="width: 100%;margin-top: 50px;" hideToggle>
+    <mat-expansion-panel-header  (click)="click()">
+      <mat-panel-title ><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon><b>TB Closing Balance Report</b></mat-panel-title>
+    </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-md-12">
+                     
+          <mat-form-field  style="width:150px;">
+              <mat-label>Date</mat-label>
+              <input matInput [matDatepicker]="picker13" formControlName="bankreconfromdate"  (dateChange)="onDateChange()">
+              <mat-datepicker-toggle matSuffix [for]="picker13"></mat-datepicker-toggle>
+              <mat-datepicker #picker13></mat-datepicker>
+          </mat-form-field>
+    
+          <button mat-raised-button type="button" class="btn btn-primary" [disabled]="tbClosing_btn"  (click)="tbClosing_excelPrepare()"  style="border-radius: 40px;height: 40px;margin-left:15px;">
+          Prepare Excel
+          <mat-icon *ngIf="btn_spinner_tbClosing"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_spinner_tbClosing" inline=true style="color:rgb(245, 245, 245)">download</mat-icon> 
+          </button>   
+          <button class="btn btn-outline-primary" (click)="TBclosing_summary()" style="border-radius:25px;margin-left: 10px;" matTooltip="Refresh"><i class="fa fa-refresh"></i></button>
+          <!-- <button mat-raised-button type="button" class="btn btn-primary" [disabled]="bankrecondown"  (click)="Bankrecon__Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+            Recon Download
+                <mat-icon *ngIf="btn_spinner_bankrecondow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                <mat-icon *ngIf="!btn_spinner_bankrecondow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>        -->
+        </div>
+      </div>
+      <table class="table table-responsive table-bordered" style="margin-top: 10px;width: fit-content;">
+        <thead class="table_header">
+          <tr>
+            <th>SI No</th>
+            <th>Type</th>
+            <th>Excel Name</th>
+            <th>Excel Size</th>
+            <th>Created Date</th>
+            <th>Excel Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td>1</td>
+          <td><b>Closing Balance</b></td>
+          <td>{{TBclosing_data?.filename}}</td>
+          <td>{{TBclosing_data?.size}}</td>
+          <td>{{TBclosing_data?.created_date}}</td>
+          <td><button mat-raised-button type="button" class="btn btn-primary"  (click)="tbClosing__Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+            Closing Balance Download
+                <mat-icon *ngIf="btn_spinner_tbClosing"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                <mat-icon *ngIf="!btn_spinner_tbClosing" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button></td>
+        </tbody>
+      </table>
+  </mat-expansion-panel>
+</mat-accordion >
+
+        <!-- <div class="row" style="margin-top:50px;">
+
+            <div>
+                
+                <mat-form-field  style="width:180px">
+                    <mat-label>Trial balance From</mat-label>
+                    <input matInput [matDatepicker]="picker4" formControlName="fromdate"  (dateChange)="onDateChange()">
+                    <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                    <mat-datepicker #picker4></mat-datepicker>
+                </mat-form-field>
+        
+            </div>
+
+            <div>
+                
+                <mat-form-field  style="width: 180px;">
+                    <mat-label>Trial balance To</mat-label>
+                    <input matInput  [matDatepicker]="picker5" formControlName="todate" [min]="latest_date | date:'yyyy-MMM-dd'"   />
+                    <mat-datepicker-toggle matSuffix [for]="picker5">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker5></mat-datepicker>
+                </mat-form-field>
+        
+            </div>
+            <div>
+            
+                <button mat-raised-button type="button" class="btn btn-primary"  (click)="tb_new_detail_report_download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+                Download
+                    <mat-icon *ngIf="fifth"><mat-spinner color="green" diameter="20">
+                    </mat-spinner></mat-icon>
+                    <mat-icon *ngIf="!fifth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+                </button>
+            
+            </div>
+        </div>  -->
+  </form>
+    
+  
+    <form [formGroup]="searchForm"  class="mt-4 p-3 border rounded"><!--(ngSubmit)="searchFormData()"-->
+        <div class="row">
+    <!-- Normal Section -->
+       <ng-container  *ngIf="isNormal()">
+        <div class="form-group"style="margin-left: 40px;">
+          <mat-form-field >
+            <mat-label>Select TB</mat-label>
+            <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()" required>
+              <mat-option value="Trial Balance">Trial Balance</mat-option>
+              <!-- <mat-option value="DATERANGE">DATERANGE</mat-option> -->
+              <mat-option value="Detail Trial Balance">Detail Trial Balance</mat-option>
+              <mat-option value="Ledger Trail Balance">Ledger Trail Balance</mat-option>
+              <mat-option value="Simple Trial Balance">Simple Trial Balance</mat-option>
+              <mat-option value="GL Trial Balance">GL Trial Balance</mat-option>
+              <mat-option value="Tran GL TB">Tran GL TB</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="form-group"style="margin-left: 40px;">
+          <mat-form-field >
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="fromDate" id="fromDate" readonly>
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="form-group"style="margin-left: 40px;">
+          <mat-form-field >
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="toDate" id="toDate"  readonly>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+     
+        <div class="form-group" style="margin-left: 40px;">
+          <mat-form-field>
+            <mat-label>Branch name</mat-label>
+            <mat-chip-list #chipList>
+                <mat-chip *ngFor="let branch of chipSelectedBranch" [selectable]=true [removable]=true
+                    (removed)="removeEmployee(branch)">
+                    {{branch.code+' - '+branch.name}}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input #branchInput [formControl]="branchControl" [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList" 
+                    [matChipInputAddOnBlur]=true >
+            </mat-chip-list>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="BranchSelected($event)"
+                (opened)="autocompletebranch()">
+                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let branch of opts" [value]="branch">
+                    {{branch.code+' - '+branch.name}}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
+        </div>
+        
+   
+    <div class="form-group" style="margin-left: 40px;" >
+      <mat-form-field>
+        <mat-label>GL NO</mat-label>
+        <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="glnochecker" #glnoInput formControlName="GlNo" style="width: 300px;" />
+        <mat-autocomplete #glnochecker="matAutocomplete" #gl [displayWith]="glnointreface" (opened)="autocompleteglno()">
+            <mat-option *ngIf="isLoading">Loading..</mat-option>
+        <ng-container *ngIf="!isLoading">
+            <mat-option title=" {{ gl.no }}"*ngFor="let gl of gl_no" [value]="gl" >
+                {{ gl.no }}
+            </mat-option>
+        </ng-container>
+        </mat-autocomplete>
+    </mat-form-field>
+    </div>
+  
+    <div class="form-group" style="margin-left: 40px;" >
+      <button class="btn btn-outline-success" *ngIf="!loadsummary" (click)="fetchTableData(1)" [disabled]="creatable"
+        style="border-radius: 90px; margin-left: 3%; width: 40px;" color="primary">
+        <i class="fa fa-search" matTooltip="Search" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="form-group"  style="margin-left: 40px;">   
+      <button mat-raised-button type="button" class="btn btn-primary"  (click)="reportExcelDownload()"  style="border-radius: 40px;height: 40px;">
+      Report Excel
+          <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+          </mat-spinner></mat-icon>
+          <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+      </button>
+  
+  </div>
+  <div class="form-group" style="margin-left: 30px;">
+  
+      <button mat-raised-button type="button" class="btn btn-primary"  (click)="tb_new_detail_report_download()"  style="border-radius: 40px;height: 40px;">
+      Download
+          <mat-icon *ngIf="fourth"><mat-spinner color="green" diameter="20">
+          </mat-spinner></mat-icon>
+          <mat-icon *ngIf="!fourth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+      </button>
+  
+  </div>
+  <div class="form-group" style="margin-left: 30px;" >
+  
+    <button mat-raised-button type="button" *ngIf="loadsummary" class="btn btn-primary" (click)="fetchTableData(1)"  style="border-radius: 40px;height: 40px;">
+    Load Summary
+    </button>
+
+</div>&nbsp;&nbsp;
+<div class="form-group" style="margin-left: 40px;">
+  <button class="btn btn-outline-success" type="clear" [disabled]="creatable" style="border-radius: 40px; "
+    color="primary" (click)="resetForm()">Clear</button>
+</div>
+<div  class="form-group" style="margin-left: 40px;width: 210px;">
+    <input type="file" (change)="onFileSelected($event)"formControlName="CBFile" accept=".xls,.xlsx"  style="width: 210px;"/>
+</div>&nbsp;&nbsp;
+ <div>
+
+  <button mat-raised-button type="button" class="btn btn-primary"  style="border-radius: 40px;height: 40px;" (click)="uploadFile()">
+   CB Upload
+     </button>
+ </div>
+      </ng-container>
+      </div>
+
+      <!-- Ledger TB -->
+       
+      <div class="row">
+        <ng-container *ngIf="isLedgertb()">
+          <div class="col-md-12">
+            <mat-form-field style="width: 200px;">
+              <mat-label>Select TB</mat-label>
+              <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()" required>
+                <mat-option value="Trial Balance">Trial Balance</mat-option>
+                <mat-option value="Detail Trial Balance">Detail Trial Balance</mat-option>
+                <mat-option value="Ledger Trail Balance">Ledger Trail Balance</mat-option>
+                <mat-option value="Simple Trial Balance">Simple Trial Balance</mat-option>
+                <mat-option value="GL Trial Balance">GL Trial Balance</mat-option>
+                <mat-option value="Tran GL TB">Tran GL TB</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field  style="width: 200px;margin-left: 25px;">
+              <mat-label>From Date</mat-label>
+              <input matInput  [matDatepicker]="ledgerpickerfrom" [matDatepickerFilter]="FilterFromDate" (dateChange)="onDateChangefromledger($event)" formControlName="from_ledger">
+              <mat-datepicker-toggle matSuffix [for]="ledgerpickerfrom">
+              </mat-datepicker-toggle>
+              <mat-datepicker #ledgerpickerfrom></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field  style="width: 200px;margin-left: 25px;">
+            <mat-label>To Date</mat-label>
+            <input matInput  [matDatepicker]="ledgerpickerto" formControlName="to_ledger"  [matDatepickerFilter]="FilterToDate"  (dateChange)="onDateChangetoledger($event)"  >
+            <mat-datepicker-toggle matSuffix [for]="ledgerpickerto">
+            </mat-datepicker-toggle>
+            <mat-datepicker #ledgerpickerto></mat-datepicker>
+        </mat-form-field>
+
+
+            <!-- <mat-form-field style="width:200px;margin-left: 25px;">
+              <mat-label>From Year</mat-label>
+              <mat-select formControlName="from_ledger">
+                <mat-option *ngFor="let y of Years" [value]="y">{{y}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field style="width:200px;margin-left: 25px;">
+              <mat-label>From Month</mat-label>
+              <mat-select formControlName="from_month_ledger">
+                  <mat-option *ngFor="let m of months" [value]="m">{{m.name}}</mat-option>
+              </mat-select>
+          </mat-form-field>
+
+          <mat-form-field style="width:200px;margin-left: 25px;">
+            <mat-label>To Year</mat-label>
+            <mat-select formControlName="to_year_ledger">
+              <mat-option *ngFor="let y of Years" [value]="y">{{y}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field style="width:200px;margin-left: 25px;">
+            <mat-label>To Month</mat-label>
+            <mat-select formControlName="to_month_ledger">
+                <mat-option *ngFor="let m of months" [value]="m">{{m.name}}</mat-option>
+            </mat-select>
+        </mat-form-field> -->
+        <button type="button" class="btn btn-outline-primary" (click)="fetch_Ledgersummary(1)" style="border-radius:40px;margin-left:15px;">Load Summary</button>
+        <button type="button" class="btn btn-outline-primary" (click)="ledger_reset()" style="border-radius:40px;margin-left:10px;">Reset</button>
+        <button mat-raised-button type="button" class="btn btn-primary" [disabled]="ledgertb_btn"  (click)="Ledgertb_excelPrepare()"  style="border-radius: 40px;height: 40px;margin-left:15px;">
+          Recon Prepare
+          <mat-icon *ngIf="btn_spinner_ledgertb"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+          <mat-icon *ngIf="!btn_spinner_ledgertb" inline=true style="color:rgb(245, 245, 245)">download</mat-icon> 
+          </button> 
+
+          <button mat-raised-button type="button" class="btn btn-primary" [disabled]="ledgertb_dow"  (click)="Ledger_tb_Download()"  style="border-radius: 40px;height: 40px;margin-left: 10px;">
+            Recon Download
+                  <mat-icon *ngIf="btn_spinner_ledtbdow"><mat-spinner color="green" diameter="20"></mat-spinner></mat-icon>
+                  <mat-icon *ngIf="!btn_spinner_ledtbdow" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+              </button>
+
+          </div>
+        </ng-container>
+      </div>
+     
+       <!-- DATERANGE Section -->
+        <!-- <div class="row">
+          
+        <ng-container  *ngIf="isDateRangeSelected()">
+          <div class="form-group"style="margin-right: 30px;">
+            <mat-form-field >
+              <mat-label>Select Option</mat-label>
+              <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()">
+                <mat-option value="NORMAL">NORMAL</mat-option>
+                <mat-option value="DATERANGE">DATERANGE</mat-option>
+                <mat-option value="DETAILS">DETAILS</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="form-group" style="margin-right: 30px;">
+            <mat-form-field  >
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="fromDate" id="fromDate"  readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="form-group"style="margin-right: 30px;" >
+            <mat-form-field>
+              <mat-label>To Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="toDate" id="toDate"  readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="form-group" style="margin-right: 30px;">
+            <button class="btn btn-outline-success" (click)="fetchTableData(1)" [disabled]="creatable"
+              style="border-radius: 90px; margin-left: 3%; width: 40px;" color="primary">
+              <i class="fa fa-search" matTooltip="Search" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="form-group" style="margin-right: 30px;">   
+            <button mat-raised-button type="button" class="btn btn-primary"  (click)="reportExcelDownload()"  style="border-radius: 40px;height: 40px;">
+            Report Excel
+                <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>
+        
+        </div>
+        <div class="form-group" style="margin-right: 30px;">
+        
+            <button mat-raised-button type="button" class="btn btn-primary"  (click)="tb_detail_report_download()"  style="border-radius: 40px;height: 40px;">
+            Download
+                <mat-icon *ngIf="fourth"><mat-spinner color="green" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!fourth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>
+        
+        </div>&nbsp;&nbsp;
+          <div class="form-group"style="margin-right: 30px;">
+            <button class="btn btn-outline-success" type="clear" [disabled]="creatable" style="border-radius: 40px; "
+              color="primary" (click)="resetForm()">Clear</button>
+          </div>
+        
+        </ng-container>
+        </div> -->
+             <!-- Tran TB GL -->
+          <div class="row">
+            <ng-container  *ngIf="trangltbsummary()">
+              <div class="col-md-12">
+                <mat-form-field style="width: 200px;margin-left: 40px;">
+                  <mat-label>Select TB</mat-label>
+                  <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()" required>
+                    <mat-option value="Trial Balance">Trial Balance</mat-option>
+                    <mat-option value="Detail Trial Balance">Detail Trial Balance</mat-option>
+                    <mat-option value="Ledger Trail Balance">Ledger Trail Balance</mat-option>
+                    <mat-option value="Simple Trial Balance">Simple Trial Balance</mat-option>
+                    <mat-option value="GL Trial Balance">GL Trial Balance</mat-option>
+                    <mat-option value="Tran GL TB">Tran GL TB</mat-option>
+                  </mat-select>
+                </mat-form-field>
+            
+                <mat-form-field style="width: 200px;margin-left: 40px;">
+                  <mat-label>From Date</mat-label>
+                  <input matInput [matDatepicker]="picker1" formControlName="fromDate" id="fromDate"  required>
+                  <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+            
+                <mat-form-field style="width: 200px;margin-left: 40px;">
+                  <mat-label>To Date</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="toDate" id="toDate"  required>
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              
+            <button class="btn btn-primary"  *ngIf="!loadsummary" (click)="fetchTableData(1)" [disabled]="creatable"
+              style="border-radius: 90px; margin-left:40px; width: 40px;" color="primary">
+              <i class="fa fa-search" matTooltip="Search" aria-hidden="true"></i>
+            </button>
+        
+            <button mat-raised-button type="button" class="btn btn-primary"  (click)="preparetrangltb()"  style="border-radius: 40px;height: 40px;margin-left: 40px;">
+            Prepare Excel
+                <mat-icon *ngIf="stb_sumprepare_spinner"><mat-spinner color="green" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!stb_sumprepare_spinner" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>        
+      
+            <button mat-raised-button type="button" class="btn btn-primary"  (click)="trangldownload()"  style="border-radius: 40px;height: 40px;margin-left: 40px;">
+            Download
+                <mat-icon *ngIf="stb_sumdown_spinner"><mat-spinner color="green" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!stb_sumdown_spinner" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>
+
+        
+          <button mat-raised-button type="button" *ngIf="loadsummary" class="btn btn-primary" (click)="fetchTableData(1)"  style="border-radius: 40px;height: 40px;margin-left:40px">
+          Load Summary
+          </button>
+      
+
+        <button class="btn btn-primary" type="clear" [disabled]="creatable" style="border-radius: 40px;margin-left: 40px; "
+           (click)="resetForm()">Clear</button>
+      </div>
+            </ng-container>
+        </div>
+        <!-- DETAILS Section -->
+        <div class="row">
+        <ng-container *ngIf="isDetails()">
+          
+              <mat-form-field style="width: 200px;margin-left: 40px;">
+                <mat-label>Select TB</mat-label>
+                <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()" required>
+                  <mat-option value="Trial Balance">Trial Balance</mat-option>
+                  <!-- <mat-option value="DATERANGE">DATERANGE</mat-option> -->
+                  <mat-option value="Detail Trial Balance">Detail Trial Balance</mat-option>
+                  <mat-option value="Ledger Trail Balance">Ledger Trail Balance</mat-option>
+                  <mat-option value="Simple Trial Balance">Simple Trial Balance</mat-option>
+                  <mat-option value="GL Trial Balance">GL Trial Balance</mat-option>
+                  <mat-option value="Tran GL TB">Tran GL TB</mat-option>
+                </mat-select>
+              </mat-form-field>
+           
+            <mat-form-field  style="width:180px;margin-left: 40px;" >
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="fromDate" id="fromDate"  readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          
+            <mat-form-field style="width:180px;margin-left: 40px;" >
+              <mat-label>To Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="toDate" id="toDate"  readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        
+            <mat-form-field style="margin-left: 40px;" >
+              <mat-label>Branch name</mat-label>
+              <mat-chip-list #chipList>
+                  <mat-chip *ngFor="let branch of chipSelectedBranch" [selectable]=true [removable]=true
+                      (removed)="removeEmployee(branch)">
+                      {{branch.name}}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                  <input #branchInput [formControl]="branchControl" [matAutocomplete]="auto"
+                      [matChipInputFor]="chipList" 
+                      [matChipInputAddOnBlur]=true>
+              </mat-chip-list>
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="BranchSelected($event)"
+                  (opened)="autocompletebranch()">
+                     <mat-option *ngIf="isLoading">Loading..</mat-option>
+                <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let branch of opts" [value]="branch">
+                    {{branch.code+' - '+branch.name}}
+                </mat-option>
+              </ng-container>
+                  
+              </mat-autocomplete>
+          </mat-form-field>
+         
+          
+            <mat-form-field style="margin-left: 40px;"  >
+              <mat-label>SubCat</mat-label>
+              <input class="toolbar-search" type="text" #subcatinput matInput [matAutocomplete]="subcat" formControlName="subcatName"  autocomplete="off"  style="width: 300px;margin-left: 40px;">
+              <mat-autocomplete #subcat="matAutocomplete" [displayWith]="subcatintreface" (opened)="autocompletesubcat()">
+                  <mat-option *ngIf="isLoading">Loading..</mat-option>
+                  <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let sub of subcatList;" [value]="sub">{{ sub.
+                  microsubcatcode+' - '+sub.name
+                   }}</mat-option>
+                  </ng-container>
+              </mat-autocomplete>
+          </mat-form-field>
+         <div>
+            <mat-form-field style="margin-left: 40px;"  >
+              <mat-label>CC</mat-label>
+              <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="checker" #ccInput formControlName="ccName" style="width: 300px;margin-left: 40px;" />
+              <mat-autocomplete #checker="matAutocomplete" #CC [displayWith]="apcctintreface" (opened)="autocompleteCC()">
+                  <mat-option *ngIf="isLoading">Loading..</mat-option>
+              <ng-container *ngIf="!isLoading">
+                  <mat-option title="{{cc.microcccode+' - '+cc.name}}"*ngFor="let cc of ccList" [value]="cc" >
+                      {{cc.microcccode+' - '+cc.name}}
+                  </mat-option>
+              </ng-container>
+              </mat-autocomplete>
+          </mat-form-field>
+        
+          <button class="btn btn-outline-success"  *ngIf="!loadsummary" (click)="fetchTableData(1)" [disabled]="creatable"
+            style="border-radius: 90px; margin-left: 3%; width: 40px;margin-left: 40px;" color="primary">
+            <i class="fa fa-search" matTooltip="Search" aria-hidden="true"></i>
+        </button>
+     
+         <button mat-raised-button type="button" class="btn btn-primary"  (click)="reportExcelDownload()"   style="border-radius: 40px;height: 40px;margin-left: 40px;">
+          Report Excel
+              <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+              </mat-spinner></mat-icon>
+              <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+          </button>
+      
+      
+      
+          <button mat-raised-button type="button" class="btn btn-primary"  (click)="tb_new_detail_report_download()"  style="border-radius: 40px;height: 40px;margin-left: 40px;">
+          Download
+              <mat-icon *ngIf="fourth"><mat-spinner color="green" diameter="20">
+              </mat-spinner></mat-icon>
+              <mat-icon *ngIf="!fourth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+          </button>
+      
+      
+
+        <button mat-raised-button type="button" *ngIf="loadsummary" class="btn btn-primary"    (click)="fetchTableData(1)"  style="border-radius: 40px;height: 40px;margin-left: 40px;">
+        Load Summary
+        </button>
+    
+
+          <button class="btn btn-outline-success" type="clear" [disabled]="creatable" style="border-radius: 40px;margin-left: 40px;margin-bottom:0px;"
+            color="primary" (click)="resetForm()">Clear</button>  
+       
+          <input type="file" (change)="onFileSelected($event)"formControlName="CBFile" accept=".xls,.xlsx"  style="width: 210px;margin-left: 40px;margin-bottom: 30px;"/>
+    
+      
+        <button mat-raised-button type="button" class="btn btn-primary"  style="border-radius: 40px;height: 40px;" (click)="uploadFile()">
+         CB Upload
+           </button>
+          </div>
+        </ng-container>
+        </div>
+   
+
+        <!-- SIMPLE TB -->
+        <div class="row">
+                       <ng-container  *ngIf="isSimpleTB()">
+              <div class="form-group"style="margin-left: 40px;">
+                <mat-form-field >
+                  <mat-label>Select TB</mat-label>
+                  <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()" required>
+                    <mat-option value="Trial Balance">Trial Balance</mat-option>
+                    <mat-option value="Detail Trial Balance">Detail Trial Balance</mat-option>
+                    <mat-option value="Ledger Trail Balance">Ledger Trail Balance</mat-option>
+                    <mat-option value="Simple Trial Balance">Simple Trial Balance</mat-option>
+                    <mat-option value="GL Trial Balance">GL Trial Balance</mat-option>
+                    <mat-option value="Tran GL TB">Tran GL TB</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="form-group"style="margin-left: 40px;">
+                <mat-form-field >
+                  <mat-label>Transaction Date</mat-label>
+                  <input matInput [matDatepicker]="picker1" formControlName="fromDate" id="fromDate" (dateChange)="ondateChange_stb($event.value)" readonly>
+                  <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <!-- <div class="form-group"style="margin-left: 40px;">
+                <mat-form-field >
+                  <mat-label>To Date</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="toDate" [min]="fromDate_stbsummary" [max]="fromDate_stbsummary"  id="toDate"  readonly>
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </div> -->
+           
+              <div class="form-group" style="margin-left: 40px;">
+                <mat-form-field>
+                  <mat-label>Branch name</mat-label>
+                  <mat-chip-list #chipList>
+                      <mat-chip *ngFor="let branch of chipSelectedBranch" [selectable]=true [removable]=true
+                          (removed)="removeEmployee(branch)">
+                          {{branch.code+' - '+branch.name}}
+                          <mat-icon matChipRemove>cancel</mat-icon>
+                      </mat-chip>
+                      <input #branchInput [formControl]="branchControl" [matAutocomplete]="auto"
+                          [matChipInputFor]="chipList" 
+                          [matChipInputAddOnBlur]=true >
+                  </mat-chip-list>
+                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="BranchSelected($event)"
+                      (opened)="autocompletebranch()">
+                      <mat-option *ngIf="isLoading">Loading..</mat-option>
+                      <ng-container *ngIf="!isLoading">
+                      <mat-option *ngFor="let branch of opts" [value]="branch">
+                          {{branch.code+' - '+branch.name}}
+                      </mat-option>
+                    </ng-container>
+                  </mat-autocomplete>
+              </mat-form-field>
+              </div>
+              
+         
+          <div class="form-group" style="margin-left: 40px;" >
+            <mat-form-field>
+              <mat-label>GL NO</mat-label>
+              <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="glnochecker" #glnoInput formControlName="GlNo" style="width: 300px;" />
+              <mat-autocomplete #glnochecker="matAutocomplete" #gl [displayWith]="glnointreface" (opened)="autocompleteglno()">
+                  <mat-option *ngIf="isLoading">Loading..</mat-option>
+              <ng-container *ngIf="!isLoading">
+                  <mat-option title=" {{ gl.no }}"*ngFor="let gl of gl_no" [value]="gl" >
+                      {{ gl.no }}
+                  </mat-option>
+              </ng-container>
+              </mat-autocomplete>
+          </mat-form-field>
+          </div>
+        
+          <div class="form-group" style="margin-left: 40px;" >
+            <button class="btn btn-outline-success" *ngIf="!loadsummary" (click)="fetchTableData(1)" [disabled]="creatable"
+              style="border-radius: 90px; margin-left: 3%; width: 40px;" color="primary">
+              <i class="fa fa-search" matTooltip="Search" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="form-group"  style="margin-left: 40px;">   
+            <button mat-raised-button type="button" class="btn btn-primary"  (click)="simple_TrailBalPrepare()"  style="border-radius: 40px;height: 40px;">
+            Prepare Excel
+                <mat-icon *ngIf="second"><mat-spinner color="green" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!second" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>
+        
+        </div>
+        <div class="form-group" style="margin-left: 30px;">
+        
+            <button mat-raised-button type="button" class="btn btn-primary"  (click)="simple_TbDownload()"  style="border-radius: 40px;height: 40px;">
+            Download
+                <mat-icon *ngIf="fourth"><mat-spinner color="green" diameter="20">
+                </mat-spinner></mat-icon>
+                <mat-icon *ngIf="!fourth" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+            </button>
+        
+        </div>
+        <div class="form-group" style="margin-left: 30px;" >
+        
+          <button mat-raised-button type="button" *ngIf="loadsummary" class="btn btn-primary" (click)="fetchTableData(1)"  style="border-radius: 40px;height: 40px;">
+          Load Summary
+          </button>
+      
+      </div>&nbsp;&nbsp;
+      <div class="form-group" style="margin-left: 40px;">
+        <button class="btn btn-outline-success" type="clear" [disabled]="creatable" style="border-radius: 40px; "
+          color="primary" (click)="resetForm()">Clear</button>
+      </div>
+      <!-- <div  class="form-group" style="margin-left: 40px;width: 210px;">
+          <input type="file" (change)="onFileSelected($event)"formControlName="CBFile" accept=".xls,.xlsx"  style="width: 210px;"/>
+      </div>&nbsp;&nbsp;
+       <div>
+      
+        <button mat-raised-button type="button" class="btn btn-primary"  style="border-radius: 40px;height: 40px;" (click)="uploadFile()">
+         CB Upload
+           </button>
+       </div> -->
+            </ng-container>
+        </div>
+
+
+       <!-- GL TB -->
+    <div class="row">
+       <ng-container *ngIf="isGl()">
+        <mat-form-field style="width: 200px;margin-left: 40px;">
+          <mat-label>Select TB</mat-label>
+          <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()" required>
+            <mat-option value="Trial Balance">Trial Balance</mat-option>
+            <mat-option value="Detail Trial Balance">Detail Trial Balance</mat-option>
+            <mat-option value="Ledger Trail Balance">Ledger Trail Balance</mat-option>
+            <mat-option value="Simple Trial Balance">Simple Trial Balance</mat-option>
+            <mat-option value="GL Trial Balance">GL Trial Balance</mat-option>
+            <mat-option value="Tran GL TB">Tran GL TB</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        
+        
+        <!-- <mat-form-field style="width:180px;margin-left: 40px;">
+          <mat-label>Trial balance From</mat-label>
+          <input matInput [matDatepicker]="pick" formControlName="fromdate" (dateChange)="onDateChange()">
+          <mat-datepicker-toggle matSuffix [for]="pick"></mat-datepicker-toggle>
+          <mat-datepicker #pick></mat-datepicker>
+        </mat-form-field>
+        
+        
+        
+        
+        <mat-form-field style="width: 180px;margin-left: 40px;">
+          <mat-label>Trial balance To</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="todate" [min]="latest_date | date:'yyyy-MMM-dd'" />
+          <mat-datepicker-toggle matSuffix [for]="picker1">
+          </mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+         -->
+        
+             
+         <mat-form-field style="width: 180px;margin-left: 40px;">
+          <mat-label> From Date</mat-label>
+          <input matInput [matDatepicker]="pick" formControlName="fromDate" (dateChange)="onGLDateChange($event.value)" readonly>
+          <mat-datepicker-toggle matSuffix [for]="pick"></mat-datepicker-toggle>
+          <mat-datepicker #pick></mat-datepicker>
+        </mat-form-field>
+        
+        <mat-form-field style="width: 180px;margin-left: 40px;">
+          <mat-label> To Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="toDate" [min]="fromDate" [max]="fromDate" readonly />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        
+ 
+
+        <mat-checkbox style="margin-left:20px;margin-top:20px" [(ngModel)]="GLtb_checked" (change)="gltb_checkboxchange($event)">Fin Year</mat-checkbox>
+        <button mat-raised-button type="button" class="btn btn-primary" (click)="GLPrepare()"
+          style="border-radius: 40px;height: 40px;margin-left: 40px;">
+          Prepare Excel
+          <mat-icon *ngIf="first"><mat-spinner color="green" diameter="20">
+            </mat-spinner></mat-icon>
+          <mat-icon *ngIf="!first" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+        </button>
+        
+        
+        <button mat-raised-button type="button" class="btn btn-primary" (click)="GLtb_report_download()"
+          style="border-radius: 40px;height: 40px;margin-left: 40px;">
+          Download
+          <mat-icon *ngIf="third"><mat-spinner color="green" diameter="20">
+            </mat-spinner></mat-icon>
+          <mat-icon *ngIf="!third" inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+        </button>
+        
+        <button mat-raised-button type="button" class="btn btn-primary" (click)="manualRun()"
+          style="border-radius: 40px;height: 40px;margin-left: 40px;">
+          ManualRun
+        </button>
+        
+        <button mat-raised-button type="button" *ngIf="loadsummary" class="btn btn-primary" (click)="fetchTableData(1)"  style="border-radius: 40px;height: 40px;margin-left: 40px;">
+          Load Summary
+          </button>
+        </ng-container>
+        </div>
+           
+    </form>
+
+    <div *ngIf="summary_table">
+      <table class="table scrolltable table-bordered">
+    <thead class="table_header">
+          <tr>
+            <th>S NO</th>
+            <ng-container *ngIf="isNormal()">
+              <th>Invoice Date</th>
+              <th>Branch Code</th>
+              <th>Branch Name</th>
+              <th>GL NO</th>
+              <th>Opening Balance</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Closing Balance</th>
+            </ng-container>
+            <!-- <ng-container *ngIf="isDateRangeSelected()">
+           
+              <th>Opening Balance</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Closing Balance</th>
+              <th>Count</th>
+            </ng-container> -->
+            <ng-container *ngIf="isDetails()">
+              <th>Invoice Date</th>
+              <th>GL NO</th>
+              <th>Branch Code</th>
+              <th>Branch Name</th>
+              <th>SubCat</th>
+              <th>CC</th>
+              <th>Opening Balance</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Closing Balance</th>
+            </ng-container>
+
+            <ng-container *ngIf="isSimpleTB()">
+              <th>Invoice Date</th>
+              <th>Branch Code</th>
+              <th>Branch Name</th>
+              <th>GL NO</th>
+              <th>Opening Balance</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Closing Balance</th>
+            </ng-container>
+
+            <ng-container *ngIf="trangltbsummary()">
+            <th>GL NO</th>
+            <th>GL Description</th>
+            <th>Branch</th>
+            <th>Opening Balance</th>
+            <th>Debit</th>
+            <th>Credit</th>
+            <th>Closing Balance</th>
+            </ng-container>
+            <ng-container *ngIf="isGl()">
+              <th>Date</th>
+              <th>Branch Code</th>
+              <th>Branch Name</th>
+              <th>GL NO</th>
+              <th>Opening Balance</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Closing Balance</th>
+            </ng-container>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of tableData; let i = index">
+            <td>{{ (present_page - 1)*pageSize+i+1}}</td>
+            <ng-container *ngIf="isNormal()">
+              <td>{{ data.invoice_date }}</td>
+              <td>{{ data.Branch_Code}}</td>
+              <td>{{ data.Branch_name }}</td>
+              <td>{{ data.glno }}</td>
+              <td>{{ data.opening_balance |currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+
+              <td>{{ data.debit |currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+              <td>{{ data.credit |currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+              <td>{{ data.closing_balance|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+            </ng-container>
+            <!-- <ng-container *ngIf="isDateRangeSelected()">
+            
+              <td>{{ data.opening_balance.toExponential() | number:'1.2-2' }}</td>
+
+              <td>{{ data.debit }}</td>
+              <td>{{ data.credit }}</td>
+              <td>{{ data.closing_balance.toExponential() | number:'1.2-2' }}</td>
+              <td>{{ data.count }}</td>
+            </ng-container> -->
+            <ng-container *ngIf="isDetails()">
+              <td>{{ data.invoice_date }}</td>
+              <td>{{ data.glno }}</td>
+              <td>{{ data.Branch_Code }}</td>
+              <td>{{ data.Branch_name }}</td>
+              <td>{{ data.subcatunique_no }}</td>
+              <td>{{ data.ccunique_no }}</td>
+              <td>{{ data.opening_balance|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.debit|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.credit|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.closing_balance|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+            </ng-container>
+
+            <ng-container *ngIf="isSimpleTB()">
+              <td>{{ data.invoice_date }}</td>
+              <td>{{ data.Branch_Code }}</td>
+              <td>{{ data.Branch_name }}</td>
+              <td>{{ data.glno }}</td>
+              <td>{{ data.opening_balance|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.debit|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.credit|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.closing_balance|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+            </ng-container>
+            <ng-container *ngIf="trangltbsummary()">
+             <td>{{data?.glno}}</td>
+            <td>{{data?.gl_description}}</td>
+            <td>{{data?.Branch}}</td>
+            <td>{{data?.opening_balance}}</td>
+            <td>{{data?.debit}}</td>
+            <td>{{data?.credit}}</td>
+            <td>{{data?.closing_balance}}</td>
+            </ng-container>
+            <ng-container *ngIf="isGl()">
+              <td>{{ data.invoice_date }}</td>
+              <td>{{ data.Branch_Code }}</td>
+              <td>{{ data.Branch_name }}</td>
+              <td>{{ data.glno }}</td>
+              <td>{{ data.opening_balance|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.debit|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.credit|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+              <td>{{ data.closing_balance|currency: 'INR':'symbol':'1.2-2':'en-IN' }}</td>
+            </ng-container>
+          </tr>
+          <tr *ngIf="tableData?.length == 0">
+            <td  colspan="9" class="a">No Records Found...</td>
+          </tr>
+          <tr>
+            <td class="text-center align-items-center" colspan="11"> 
+              <div class="col-sm-15 pagestyle " >
+                <button mat-icon-button [disabled]="!has_previous" color="primary" (click)="previousClick()" >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{ present_page }}
+                <button mat-icon-button [disabled]="!has_next" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Ledger Summary-->
+    <div *ngIf="ledger_summary">
+      <table class="table scrolltable table-bordered">
+    <thead class="table_header">
+          <tr>
+            <th>S NO</th>
+            <th>GL</th>
+            <th>Opening Balance</th>
+            <th>Debit</th>
+            <th>Credit</th>
+            <th>Closing Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of ledger_tblist;let i=index">
+            <td style="text-align:right">{{(ledger_page-1)*pageSize +i+1}}</td>
+            <td>{{data.gl_name}}</td>
+            <td style="text-align:right">{{data.opening_balance |  currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+            <td style="text-align:right">{{data.debit | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+            <td style="text-align:right">{{data.credit | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+            <td style="text-align:right">{{data.closing_balance | currency: 'INR':'symbol':'1.2-2':'en-IN'}}</td>
+          </tr>
+          <tr *ngIf="ledger_tblist?.length==0; else paginationledger" class="NodataAlign" style="text-align: center;" class="NodataAlign"><td colspan="6">No Records Found...</td></tr>
+          <ng-template #paginationledger>
+              <tr>  
+                    <td colspan="6">
+                      <div style="text-align:right">
+                            <button mat-icon-button [disabled]="prev_ledger === false" color="primary"(click)="Ledger_previous()">
+                                 <mat-icon>arrow_back</mat-icon>
+                            </button>
+                                {{ledger_page}}
+                            <button mat-icon-button [disabled]="next_ledger === false" color="primary" (click)="Ledger_next()">
+                                     <mat-icon>arrow_forward</mat-icon>
+                         </button>
+                      </div>
+                    </td>  
+              </tr>
+           </ng-template> 
+          
+        </tbody>
+      </table>
+    </div>
+ 
+  
+</div>
+</mat-card>

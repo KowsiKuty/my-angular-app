@@ -1,0 +1,120 @@
+<div style="width:100%">
+    <mat-card style="margin-top: 13px;margin-left: 20px;margin-right: 20px;margin-bottom: 20px;">
+        <h1 style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;">Mail Template Creation</h1>
+
+        <form [formGroup]="mailtcrform" style="margin-left:2%;" >
+            <div class="row col-md-12">
+                <div class="col-md-4">
+                    <mat-form-field style="width: 18rem;margin-left: 8px; ">
+                        <mat-label>Template Name</mat-label>
+                        <input matInput formControlName="temp_name" autocomplete="off">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-4">
+                    <mat-form-field  style="width: 22rem; margin-left: 8px;" (click)="getmailtype()">
+
+                        <input #suppInput type="text" placeholder="Process" aria-label="Process"
+                            placeholder="Choose Process" matInput formControlName="temp_type"
+                            [matAutocomplete]="suppliertype" >
+                        <mat-autocomplete #suppliertype="matAutocomplete" 
+                            [displayWith]="displayFnsupplier" (opened)="supplierScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supp of Supplierlist" [value]="supp" matTooltip="{{supp.mail_type}}">
+                                    {{supp.mail_type}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-4">
+                    <mat-form-field  style="width: 18rem; margin-left: 8px;" (click)="getcolumntype()">
+
+                        <input #columnInput type="text" placeholder="Column Name" aria-label=""
+                            placeholder="Column Name " matInput formControlName="column_name"
+                            [matAutocomplete]="columntype" >
+                        <mat-autocomplete #columntype="matAutocomplete" 
+                            [displayWith]="displayFncolumn_type" (opened)="columntypeScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let na of Columnlist" (focusout)='selectedcolumname(na)' [value]="na" matTooltip="{{na.column_name}}">
+                                    {{na.column_name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field> 
+                </div>
+                <div class="col-md-4">
+                    <mat-form-field  style="width: 22rem; margin-left: 8px;" (click)="getcolumntype()">
+
+                        <input #columnInput type="text" placeholder="Supplier" aria-label="Display Name"
+                            placeholder="Display Name " matInput formControlName="column_name_n"
+                            [matAutocomplete]="columntype_n" >
+                        <mat-autocomplete #columntype_n="matAutocomplete" 
+                            [displayWith]="displayFncolumn_type_n"   (opened)="columntypeScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let supp of Columnlist" (focusout)='selectedisplayname(supp)' [value]="supp" matTooltip="{{supp.display_name}}">
+                                    {{supp.display_name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-outline-success" 
+                         style="border-radius: 20px;margin-left: 20px;margin-top: 10px;margin-bottom: 5px;cursor: pointer ;" color="primary" (click)="create_click()"><span
+                           class="fa fa-plus"></span>Add</button>
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-4">
+                    <mat-form-field style="width: 18rem;margin-left: 8px; ">
+                        <mat-label>To Address</mat-label>
+                        <input matInput formControlName="toadd" autocomplete="off" (click)="displaynamechng('toadd')">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-4">
+                    <mat-form-field style="width: 22rem;margin-left: 8px; ">
+                        <mat-label>CC Address</mat-label>
+                        <input matInput formControlName="ccadd" autocomplete="off" (click)="displaynamechng('ccadd')">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-9">
+                    <mat-form-field style="width: 100%;margin-left: 8px; ">
+                        <mat-label>Subject</mat-label>
+                        <input matInput formControlName="subject" autocomplete="off" (click)="displaynamechng('subject')">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-11">
+                    <div [ngxSummernote]="config"
+                        (blur)="onBlur();displaynamechng('content_flag')"
+                        (summernoteInit)="summernoteInit($event)"
+                        formControlName="content" >
+                    </div>
+                </div>
+
+            </div>
+            <div  class=" row col-md-12" style="margin-bottom: 2%;">
+                <div class="col-md-4"></div>
+                    <div class="col-md-1" style="text-align: center;margin-left: 11px">
+                        <button type="button" class="btn btn-outline-primary" [routerLink]='"/master/mailtempsum"'
+                            style="border-radius:40px;height: 44px; margin-top: 12px;"
+                            >Back</button>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button"
+                        class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;"
+                         (click)="save_template()">Save</button>
+                    </div>
+                <div class="col-md-4"></div>
+            </div>
+        </form>
+    </mat-card>
+</div>

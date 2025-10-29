@@ -1,0 +1,4412 @@
+<div class="Container" style="margin-left: 20px">
+  <div class="nav nav-tabs" style="margin-top: 1%">
+    <span
+      class="nav-item nav-link"
+      data-toggle="tab"
+      (click)="subModuleData(sub)"
+      role="tab"
+      [class.inactive-tab]="!isActiveTab(sub)"
+      *ngFor="let sub of prpoPRList"
+    >
+      {{ sub.name }}
+    </span>
+  </div>
+</div>
+
+<div *ngIf="isPrCreateScreenTab">
+  <app-pr-maker
+    (onSubmit)="PRCreateSubmit()"
+    (onCancel)="PRCreateCancel()"
+  ></app-pr-maker>
+</div>
+
+<div *ngIf="isPrApproverScreenTab">
+  <app-prapprover
+    (onSubmit)="PRApproveSubmit()"
+    (onCancel)="PRApproveCancel()"
+    (prapproverlistEmit)="Alert($event)"
+  ></app-prapprover>
+  <!-- BUG <ID:7420> -->
+  <!-- <app-prapprover [fileid]="this.filekey" (onSubmit)="PRApproveSubmit()" (onCancel)="PRApproveCancel()"></app-prapprover> -->
+</div>
+
+<div *ngIf="isBrCreateScreenTab">
+  <app-branchrequest-maker
+    (onSubmit)="BRCreateSubmit()"
+    (onCancel)="BRCreateCancel()"
+  ></app-branchrequest-maker>
+</div>
+
+<div *ngIf="isBrApproverScreenTab">
+  <app-branchrequest-approver
+    (onSubmit)="BRApproveSubmit()"
+    (onCancel)="BRApproveCancel()"
+  ></app-branchrequest-approver>
+</div>
+
+<div *ngIf="isPrmakerTab">
+  <!-- <div style="margin-left: 3%;"> -->
+  <h2 style="margin-left: 3%;margin-top:10px">Purchase Requests</h2>
+  <form [formGroup]="PRSummarySearch">
+    <div class="col-md-12">
+      <div class="row mr-3 ml-3">
+        <div class="col">
+          <mat-form-field class="example-full-width"            style="width: 200px;"
+          >
+            <!-- <input class="toolbar-search" type="text" matInput autocomplete="off"
+                            formControlName="prheader_status" (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PR Status</mat-placeholder> -->
+
+            <mat-label>PR Status</mat-label>
+            <mat-select formControlName="prheader_status">
+              <mat-option
+                *ngFor="let status of statuslist"
+                [value]="status.text"
+              >
+                {{ status.text }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- BUG ID:4529 -->
+
+        <!-- <div class="col-md-3">
+    <div *ngIf="PRSummarySearch.value.prheader_status != 'DRAFT'">
+        <mat-form-field class="example-full-width" style="margin-left: 50px;">
+<input class="toolbar-search" type="text" matInput autocomplete="off" formControlName="no"
+(keypress)="only_numalpha($event)">
+<mat-placeholder>PR Number</mat-placeholder>
+</mat-form-field>
+</div>
+</div> -->
+
+        <div class="col">
+          <mat-form-field class="example-full-width"             style="width: 200px;"
+          >
+            <mat-label>PR Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker1"
+              placeholder="PR Date"
+              formControlName="date"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <!-- BUG ID:4529 -->
+
+        <div class="col">
+          <mat-form-field
+            style="width: 200px;"
+            (click)="getprbranch()"
+          >
+            <mat-label>Branch Code / Name</mat-label>
+            <input
+              #branchInput
+              placeholder="Select Branch Code"
+              matInput
+              formControlName="branch_id"
+              [matAutocomplete]="branch"
+            />
+            <mat-autocomplete
+              [panelWidth]="400"
+              #branch="matAutocomplete"
+              [displayWith]="displayFnbranch"
+              (opened)="autocompletebranchScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <!-- BUG ID:7807 -->
+              <mat-option
+                *ngIf="is_admin"
+                id="all-option"
+                [value]="{ id: -1, value: -1 }"
+                >ALL</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let branch of branchList; let first = first"
+                  [value]="branch"
+                >
+                  {{ branch.code }}-{{ branch.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col">
+          <!-- <mat-form-field >
+            <mat-label>Product Type</mat-label>
+            <mat-select formControlName="product_type">
+              <mat-option
+                *ngFor="let types of Lists"
+                [value]="types.id"
+                (click)="product_type = types.id"
+
+              >
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+          <mat-form-field (click)="getProductTypes()">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types" (click)="product_type = types.id">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field
+            style="width: 200px;"
+            (click)="getproduct()"
+          >
+            <mat-label>Product Name</mat-label>
+            <input
+              #itemInput
+              placeholder="Select Product"
+              matInput
+              formControlName="product_id"
+              [matAutocomplete]="item"
+            />
+            <mat-autocomplete
+              #item="matAutocomplete"
+              [displayWith]="displayFnitem"
+              (opened)="autocompleteitemScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let item of productList"
+                  [value]="item"
+                  (click)="productclick(item)"
+                >
+                  {{ item.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+            <!-- <button
+              type="button"
+              matSuffix
+              class="close"
+              (click)="resetAfterProductChange('', 'removeProd')"
+            >
+              X
+            </button> -->
+          </mat-form-field>
+        </div>
+        <!-- </td> -->
+        <!-- //BUG ID:4529 -->
+        <!-- <div > -->
+          <div class="col" *ngIf="PRSummarySearch.value.prheader_status === 'DRAFT'">
+            <!-- <td *ngIf="PRSummarySearch.value.prheader_status === 'DRAFT'"> -->
+            <!-- <td> -->
+            <mat-form-field
+              style="width: 250px; "
+              (click)="getprcommodity()"
+            >
+              <mat-label>Commodity Name</mat-label>
+              <input
+                #comInput
+                placeholder="Select Commodity"
+                matInput
+                formControlName="commodity_id"
+                [matAutocomplete]="com"
+              />
+              <mat-autocomplete
+                #com="matAutocomplete"
+                [displayWith]="displayFncom"
+                (opened)="autocompletecomScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let com of commodityList" [value]="com"
+                    >{{ com.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        <!-- </div> -->
+        <!-- </td> -->
+
+        <!-- //BUG ID:4529 -->
+        <!-- <td> -->
+        <div class="col">
+          <mat-form-field
+            style="width: 200px;"
+            (click)="getprsupplier()"
+          >
+            <mat-label>Supplier Name</mat-label>
+            <input
+              matInput
+              #supplierInput
+              placeholder="Select supplier"
+              formControlName="supplier_id"
+              [matAutocomplete]="supplier"
+            />
+            <mat-autocomplete
+              [panelWidth]="400"
+              #supplier="matAutocomplete"
+              [displayWith]="displayFnsupplier"
+              (opened)="autocompletesupplierScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let supplier of supplierList"
+                  [value]="supplier"
+                >
+                  {{ supplier.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col">
+          <mat-form-field
+            style="width: 200px;"
+            (click)="getprpca()"
+            title="{{ mep_name ? mep_name : '' }}"
+          >
+            <mat-label>PCA Number</mat-label>
+            <input
+              matInput
+              #PCAInput
+              placeholder="Select PCA Number"
+              formControlName="mepno"
+              [matAutocomplete]="pcano"
+            />
+            <mat-autocomplete
+              [panelWidth]="400"
+              #pcano="matAutocomplete"
+              [displayWith]="displayFnPCANo"
+              (opened)="autocompletepcaScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let pca of PCAList"
+                  [value]="pca"
+                  (click)="pcaId(pca)"
+                >
+                  {{ pca.mepno }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- //BUG ID:4529 -->
+        <!-- <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: 50px;">
+                                <mat-label>PR Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker1" placeholder="PR Date"
+                                    formControlName="date">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                            </div> -->
+        <div class="col">
+          <div *ngIf="PRSummarySearch.value.prheader_status != 'DRAFT'">
+            <mat-form-field
+              class="example-full-width"
+            >
+              <input
+                class="toolbar-search"
+                type="text"
+                matInput
+                autocomplete="off"
+                formControlName="no"
+                (keypress)="only_numalpha($event)"
+              />
+              <mat-placeholder>PR Number</mat-placeholder>
+            </mat-form-field>
+          </div>
+        </div>
+        <!-- //BUG ID:4529 -->
+
+        <div class="col">
+          <div *ngIf="PRSummarySearch.value.prheader_status != 'DRAFT'">
+            <mat-form-field
+              class="example-full-width"
+            >
+              <input
+                class="toolbar-search"
+                type="text"
+                matInput
+                autocomplete="off"
+                formControlName="amount"
+                (input)="AmountCalculation($event,PRSummarySearch,'amount')"
+              />
+              <mat-placeholder>PR Amount</mat-placeholder>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="col mt-2">
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+            (click)="getPRsummary('')"
+            style="border-radius: 40px;"
+            color="primary"
+            matTooltip="Search Data"
+          >
+            <i class="fa fa-search" aria-hidden="true"></i>
+             <!-- <mat-icon>search</mat-icon> -->
+          </button>
+        <!-- </div> -->
+        &nbsp;&nbsp;
+        <!-- <div class="col"> -->
+          <button
+            class="btn btn-outline-secondary"
+            (click)="reset()"
+            type="submit"
+            style="border-radius: 40px;"
+            color="primary"
+            matTooltip="Reset"
+          >
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+           <!-- <mat-icon>update</mat-icon> -->
+
+          </button>
+        &nbsp;&nbsp;
+
+        <!-- </div> -->
+        <button
+        style="border-radius: 40px; cursor: pointer"
+        type="button"
+        class="btn btn-outline-success"
+        matTooltip="Export to Excel"
+        (click)="makerexceldownload()"
+      >
+        <span class="fa fa-download"></span>
+         <!-- <mat-icon>get_app</mat-icon> -->
+      </button>
+      &nbsp;&nbsp;
+
+        <!-- <div class="col"> -->
+          <button
+            type="button"
+            class="btn btn-outline-info"
+            (click)="addpr()"
+            style="border-radius: 40px;"
+            matTooltip="Add PR"
+          >
+            <span class="fa fa-plus"></span>
+             <!-- <mat-icon>add</mat-icon> -->
+          </button>
+
+        <!-- </div> -->
+
+        <!-- <div class="col"> -->
+          <!-- [disabled]="prSummaryExport" -->
+          
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div
+    *ngIf="showCommon"
+  >
+  <div class="fluid table-responsive tableStyle">
+    <!-- <div class="table-responsive"> -->
+    <table class="table table-bordered table-hover">
+      <thead class="table_header">
+        <tr fixed-header>
+          <th>S.No</th>
+          <!-- <th>Type</th> -->
+          <th>PR No</th>
+          <th>PR Date</th>
+          <!-- <th>Commodity Name</th> -->
+          <!-- <th>Supplier Name</th> -->
+          <th>Raiser Branch</th>
+          <th>PR Raised By</th>
+          <th>PR Amount</th>
+          <th>PR Status</th>
+          <th>Cancel Status</th>
+          <th>PCA</th>
+          <th>Attachments</th>
+          <th>PR PDF View</th>
+          <th>View</th>
+          <th>Tran History</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prsummary of prSummaryList; index as i">
+          <td>{{ (presentpage - 1) * pageSize + i + 1 }}</td>
+          <!-- <td>{{ prsummary.flag }}</td> -->
+          <!-- //BUG ID:7809 -->
+          <td
+            *ngIf="prsummary.po_no"
+            data-toggle="modal"
+            data-target="#prpomodal"
+            style="color: blue"
+            (click)="getpo(prsummary)"
+          >
+            {{ prsummary?.no }}
+          </td>
+          <td *ngIf="!prsummary.po_no">{{ prsummary?.no }}</td>
+          <td>{{ prsummary?.date | date : "dd-MM-yyyy" }}</td>
+          <!-- <td>{{prsummary?.commodity_id.name}}</td> -->
+          <!-- <td>{{ prsummary?.supplier }}</td> -->
+          <td>
+            {{ prsummary?.branch_id.code + " -- " + prsummary?.branch_id.name }}
+          </td>
+          <td>{{ prsummary?.created_by?.full_name }}</td>
+          <td class="rightalign">
+            {{ prsummary?.totalamount | amountPipeCustom }}
+          </td>
+          <td>{{ prsummary?.prheader_status }}</td>
+          <td>
+            <span *ngIf="prsummary.cancel === 0"> No </span>
+            <span *ngIf="prsummary.cancel === 1"> Yes </span>
+          </td>
+          <td>{{ prsummary?.mepno }} -- {{ prsummary?.mepname }}</td>
+          <td>
+            <!-- <span
+              class="fa fa-download"
+              aria-hidden="true"
+              (click)="HeaderFilesPRdownload(prsummary)"
+              data-toggle="modal"
+              data-target=".bd-examplepopHeaderfiles-modal-lg"
+            ></span> -->
+            <mat-icon aria-hidden="true"
+              (click)="HeaderFilesPRdownload(prsummary)"
+              data-toggle="modal"
+              data-target=".bd-examplepopHeaderfiles-modal-lg">get_app</mat-icon>
+          </td>
+
+          <td>
+            <!-- <span class="material-icons" (click)="PRPDf(prsummary)">
+              picture_as_pdf</span
+            > -->
+            <mat-icon (click)="PRPDf(prsummary)">library_books</mat-icon>
+          </td>
+          <td>
+            <button
+              mat-icon-button
+              matTooltip="View"
+              class="iconbutton"
+              color="primary"
+              mat-button
+              data-toggle="modal"
+              data-target="#PRDetailModal"
+            >
+              <!-- <span
+                class="material-icons"
+                style="color: gray"
+                (click)="getprdetails(prsummary)"
+                (click)="dataOnHeader(prsummary)"
+              >
+                visibility
+              </span> -->
+              <mat-icon  style="color: gray"
+                (click)="getprdetails(prsummary)"
+                (click)="dataOnHeader(prsummary)">visibility</mat-icon>
+            </button>
+            <!-- //  BUG ID:7421 -->
+
+            <!-- <button type="button" *ngIf="prsummary.prdetails_bfile_id !=-1" class="buttonsize btn btn-outline-success"
+                                (click)="summaryexceldwn(prsummary.prdetails_bfile_id)" style="border-radius:40px;margin-left: 50px;">
+                                <span class="fa fa-download"></span> Download</button> -->
+            <!-- <button  *ngIf="prsummary.prdetails_bfile_id !=-1"  mat-icon-button matTooltip="download" class="iconbutton" color="primary" mat-button> -->
+            <!-- <button    mat-icon-button matTooltip="download" class="iconbutton" color="primary" mat-button>
+                               <span class="material-icons" style="color: gray" (click)="summaryexceldwn(prsummary.prdetails_bfile_id)" >file_download</span>
+                                </button> -->
+            <!-- <span class="fa fa-download"></span> Download</button> -->
+            <!-- ///// -->
+            <div
+              *ngIf="prsummary.prheader_status === 'RETURNED'; else enablecon"
+            >
+              <button
+                mat-icon-button
+                matTooltip=" Edit"
+                class="iconbutton"
+                color="primary"
+                (click)="predit(prsummary)"
+                title="PR Edit"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+            <div *ngIf="prsummary.prheader_status === 'DRAFT'">
+              <button
+                mat-icon-button
+                matTooltip=" Edit"
+                class="iconbutton"
+                color="primary"
+                (click)="predit(prsummary)"
+                title="PR Edit"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+
+            <ng-template #enablecon>
+              <div *ngIf="prsummary.prheader_status === 'PENDING_FOR_APPROVAL'">
+                <button
+                  mat-icon-button
+                  matTooltip=" Edit"
+                  class="iconbutton"
+                  title="PR Status"
+                >
+                  <mat-icon style="color: gray">edit</mat-icon>
+                </button>
+              </div>
+            </ng-template>
+          </td>
+
+          <td>
+            <button
+              mat-icon-button
+              matTooltip="history"
+              class="iconbutton"
+              color="primary"
+              mat-button
+              data-toggle="modal"
+              data-target="#PRHistoryModal"
+            >
+              <!-- <span
+                class="material-icons"
+                style="color: gray"
+                (click)="gettranhistory(prsummary)"
+              >
+                description
+              </span> -->
+              <mat-icon  style="color: gray" (click)="gettranhistory(prsummary)">description</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div
+      *ngIf="prSummaryList?.length == 0; else paginationPR"
+      class="NodataAlign"
+      style="display: flex;align-items: center;justify-content: center;"
+    >
+      No Records Found...
+    </div>
+    <div class="row" *ngIf="prsumm1" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+        <p
+        class=" totalcount"
+
+        >
+          Total Count: {{ totalcount }}
+        </p>
+      </div>
+    </div>
+    <ng-template #paginationPR>
+      <div
+        class="col-sm-12"
+        style="font-size: small; text-align: right; margin-bottom: 5%"
+      >
+        <button
+          mat-icon-button
+          [disabled]="has_previous === false"
+          color="primary"
+          (click)="getPRsummary('previous')"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        {{ presentpage }}
+        <button
+          mat-icon-button
+          [disabled]="has_next === false"
+          color="primary"
+          (click)="getPRsummary('next')"
+        >
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- // FOR DRAFT BUG ID:4529  -->
+  <div
+    *ngIf="showdraft"
+    class="table-responsive"
+    style="margin-top: 2%; margin-left: 50px; width: 94%"
+  >
+    <table class="table scrolltable table-bordered" fixed-header>
+      <thead>
+        <tr class="table_header" fixed-header>
+          <th>S.No</th>
+          <th>Draft PR No</th>
+          <th>PR Date</th>
+          <th>Branch</th>
+          <th>Commodity</th>
+          <th>PCA</th>
+          <th>PR Raised By</th>
+          <th>PR Amount</th>
+          <th>Supplier Name</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prsummary of prSummaryList; index as i">
+          <!-- {{prsummary}} -->
+          <td>{{ (presentpage - 1) * pageSize + i + 1 }}</td>
+          <td>{{ prsummary?.no}}</td>
+          <td>{{ prsummary?.date | date : "dd-MM-yyyy" }}</td>
+          <td>
+            {{ prsummary?.branch_id.code + " -- " + prsummary?.branch_id.name }}
+          </td>
+
+          <td>{{ prsummary?.commodity_id.name }}</td>
+          <td>{{ prsummary?.mepno }} -- {{ prsummary?.mepname }}</td>
+          <td>{{ prsummary?.created_by?.full_name }}</td>
+          <td class="rightalign">
+            {{
+              prsummary.amount == "--"
+                ? "--"
+                : (prsummary.amount | amountPipeCustom)
+            }}
+          </td>
+          <!-- <td>{{prsummary.supplier==undefined ? '--':prsummary.supplier}}</td> -->
+          <!-- <td>{{prsummary.supplier==undefined ? '--':prsummary.supplier}}</td> -->
+          <!-- <td>{{(prsummary.supplier_id | json)== '{}' ?'--':prsummary.supplier_id.name}}</td> -->
+          <!-- <td>{{prsummary?.supplier_id?.name}}</td>  -->
+          <td>{{ prsummary?.supplier_id?.name }}</td>
+
+          <!-- <td>{{prsummary?.prheader_status}}</td> -->
+
+          <td>
+            <div>
+              <button
+                mat-icon-button
+                matTooltip=" Edit"
+                class="iconbutton"
+                color="primary"
+                (click)="predit(prsummary)"
+                title="PR Edit"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      *ngIf="prSummaryList?.length == 0; else paginationPR"
+      class="NodataAlign"
+    >
+      No Records Found...
+    </div>
+    <div class="row" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+        <p
+        class=" totalcount"
+
+        >
+          Total Count: {{ totalcount }}
+        </p>
+      </div>
+    </div>
+    <ng-template #paginationPR>
+      <div
+        class="col-sm-12"
+        style="font-size: small; text-align: right; margin-bottom: 5%"
+      >
+        <button
+          mat-icon-button
+          [disabled]="has_previous === false"
+          color="primary"
+          (click)="getPRsummary('previous')"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        {{ presentpage }}
+        <button
+          mat-icon-button
+          [disabled]="has_next === false"
+          color="primary"
+          (click)="getPRsummary('next')"
+        >
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <div
+    class="modal fade bd-example-modal-xl"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    id="PRDetailModal"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="Container">
+          <div class="modal-header" style="background-color: #ddefdd">
+            <h2 style="text-align: center">PR Details</h2>
+
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div style="margin-left: 3%">
+            <table>
+              <tr>
+                <td><b> Type: </b>{{ typedata }}</td>
+                <td><b> DTS :</b>{{ dtsdata }}</td>
+                <td>
+                  <b style="margin-left: 55px"> Batch PR No. :</b> {{ prnodata }} &nbsp;
+                  &nbsp;
+                </td>
+                <!-- <td>
+                  <b style="margin-left: 55px"> Quotation No. :</b> {{ Quotation_no }} &nbsp;
+                  &nbsp;
+                </td> -->
+              </tr>
+              <tr>
+                <td><b> Raised by:</b> {{ prraised }}&nbsp;&nbsp;</td>
+                <td><b> Commodity Name:</b> {{ prcommodity }}</td>
+                <td>
+                  <b style="margin-left: 55px"> Date:</b>
+                  {{ prdate | date : "dd-MM-yyyy" }}
+                </td>
+                <td>
+                    <button
+                  class="btn btn-sm btn-outline-secondary"
+                  data-toggle="modal"
+                  style="border-radius: 40px; margin-right: 20px"
+                  data-target=".jus_note"
+                >
+                  <!-- <span               class="material-icons"
+              > -->
+                  <span class="fa fa-file-text"></span>
+
+                  Justification Note
+                </button>
+                </td>
+                <!-- //7421 -->
+                <!-- <td><button    mat-icon-button matTooltip="download" class="iconbutton" color="primary" mat-button>
+                                    <span class="material-icons" style="color: gray" (click)="summaryexceldwn()" >file_download</span>
+                                     </button></td>  -->
+                <td *ngIf="this.prdetailsbfileid != -1">
+                  <button
+                    type="button"
+                    class="buttonsize btn btn-outline-success"
+                    (click)="summaryexceldwn()"
+                    style="
+                      border-radius: 60px;
+                      margin-left: 30px;
+                      margin-right: 30px;
+                    "
+                  >
+                    <!-- <span class="fa fa-download"></span> -->
+                     <mat-icon>get_app</mat-icon>
+                     Download
+                  </button>
+                </td>
+                <!-- ///7421 -->
+              </tr>
+            </table>
+          </div>
+
+          <!-- BUG ID:4529 -->
+
+          <div
+            class="table-responsive tableStyle"
+          >
+            <div class="tablescroll">
+              <table class="table scrolltable table-bordered" fixed-header>
+                <thead>
+                  <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>PR No</th>
+                    <!-- <th>Product Category</th> -->
+                    <th>Product Type</th> 
+                    <th>Product Name</th>
+                    <th *ngIf="Service">Description</th>
+                    <th *ngIf="Service">Detailed Description</th>
+                    <th matTooltip="New/Replacement">PR For</th>
+                    <th>Request Product For</th>
+                    <th>Request Asset Details</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Configuration</th>
+                    <th>Supplier Name</th>
+                    <th>Quotation No</th>
+                    <th>UOM</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Amount</th>
+                    <th>Download Attachments</th>
+                    <!-- bug id:9379 -->
+                    <th>Delivery Details</th>
+                    <!-- <th>View File</th> -->
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <ng-container
+                    *ngFor="let prdetails of prdetailsList; index as i"
+                  >
+                    <!-- <tr *ngFor="let  prdetails of prdetailsList; index as i"> -->
+                    <tr>
+                      <td>
+                        {{ (presentpageprdetail - 1) * pageSize + i + 1 }}
+                      </td>
+                      <td>{{ prdetails?.ref_no }}</td>
+                      <!-- <td>{{prdetails.product_id.productcategory_id.name}}
+                                        </td>-->
+                      <td>{{prdetails?.product_type?.name}}</td> 
+                      <td>{{ prdetails?.product_name }}</td>
+                      <td *ngIf="Service">
+                        {{prdetails?.item_name}}
+                        <!-- <mat-icon></mat-icon> -->
+                      </td>
+                      <td *ngIf="Service">
+                        <button type="button" class="none">
+                          <span
+                            class="fa fa-newspaper-o"
+                            data-toggle="modal"
+                            data-target=".service_des"                            
+                            style="margin: 10px; font-size: 20px"
+                          ></span>
+                        </button>
+                      </td>
+
+
+                      <div
+                      class="modal fade service_des"
+                      tabindex="-1"
+                      role="dialog"
+                      aria-labelledby="myExtraLargeModalLabel"
+                      aria-hidden="true"
+                      >
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header" style="background: #ddefdd">
+                            <!-- <h2  *ngIf="!Services" class="modal-title" id="exampleModalLongTitle">
+                              Note Pad
+                            </h2> -->
+                            <h2 class="modal-title" id="exampleModalLongTitle">
+                              Service Detail Description
+                            </h2>
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <br />
+                          <div style="margin-left: 50px; width: 90%; height: 70%">
+                            <div>
+                              <div
+                                [ngxSummernote]="config"
+                                [ngxSummernoteDisabled]="editorDisabled"
+                                (blur)="onBlur()"
+                                (mediaDelete)="onDelete($event)"
+                                (summernoteInit)="summernoteInit($event,i)"
+                              >
+                              <!-- {{prdetails?.specification}} -->
+                                <!-- <div
+                                [ngxSummernote]="config"
+                                [ngxSummernoteDisabled]="editorDisabled"
+                                (blur)="onBlur()"
+                                (mediaDelete)="onDelete($event)"
+                                (summernoteInit)="summernoteInit($event)"
+                                formControlName="notepad"
+                              ></div> -->
+                                <!-- <div
+                              id="summernote"
+                              [ngxSummernote]="config"
+                              [ngxSummernoteDisabled]="editorDisabled"
+                              formControlName="notepad"
+                            ></div> -->
+                              </div>
+                            </div>
+                          </div>
+                          <br />
+                          <!-- <div class="modal-footer">
+                            <button
+                              type="button"
+                              style="border-radius: 40px; margin-left: 10px"
+                              class="btn btn-outline-primary"
+                              data-dismiss="modal"
+                            >
+                              Save
+                            </button>
+                          </div> -->
+                        </div>
+                      </div>
+                      </div>
+
+
+                      <td>
+                        <ng-container
+                          *ngIf="prdetails?.pr_request == 1; else replace"
+                        >
+                          <span>New</span>
+                        </ng-container>
+                        <ng-template #replace>
+                          <button type="button" class="none">
+                            <span
+                              class="fa fa-money"
+                              title="Replacement Asset Details"
+                              data-toggle="collapse"
+                              data-target="#assetDetails"
+                              (click)="assetDetails(prdetails?.id)"
+                              
+                              style="margin: 10px; font-size: 20px"
+                            ></span>
+                          </button>
+                        </ng-template>
+                      </td>
+                      <td>{{ prdetails?.req_for_product_name }}</td>
+                      <td>
+                        
+                        <button type="button" class="none">
+                          <!-- <span
+                            class="fa fa-bookmark"
+                            title="Replacement Asset Details"
+                            data-toggle="collapse"
+                            data-target="#assetDetails"
+                            (click)="assetDetailsnew( prdetails?.id)"
+                            
+                            style="margin: 10px; font-size: 20px"
+                          ></span> -->
+                          <mat-icon title="Replacement Asset Details"
+                            data-toggle="collapse"
+                            data-target="#assetDetails"
+                            (click)="assetDetailsnew( prdetails?.id)"
+                            
+                            style="margin: 10px; font-size: 20px">bookmark</mat-icon>
+                        </button>
+                      </td>
+                      <td>{{ (Service == false) ? prdetails?.item_name : "--" }}</td>
+                      <td>{{ (Service == false) ? prdetails?.model_name : "--"}}</td>
+                      <td>{{ (Service == false) ? prdetails?.specification : "--" }}</td>
+                      <td>{{ prdetails?.supplier_id.name }}</td>
+                      <td>{{ prdetails?.quotation?.supplier_quot}}</td>
+                      <td>{{ prdetails?.uom }}</td>
+                      <td>{{ prdetails?.qty }}</td>
+                      <td>{{ prdetails?.unitprice | amountPipeCustom }}</td>
+                      <!-- <td>
+                        {{
+                          prdetails?.qty * prdetails?.unitprice
+                            | amountPipeCustom
+                        }}
+                      </td> -->
+                      <td>
+                        {{
+                          prdetails?.amount | amountPipeCustom
+                        }}
+                      </td>
+                      <td style="cursor: pointer; margin-top: 0%; width: 50%">
+                        <!-- <i class="fa fa-download"></i> -->
+                         <mat-icon>get_app</mat-icon>
+                        <br/>
+                        <div
+                          *ngIf="prdetails?.file_data?.length == 0; else filePR"
+                          class="NodataAlign"
+                        >
+                          No Records Found...
+                        </div>
+                        <ng-template #filePR>
+                          <p
+                            *ngFor="let a of prdetails?.file_data; index as i"
+                            title="{{ a.file_name }}"
+                            (click)="fileDownloads(a.file_id, a.file_name)"
+                            class="btn-btn-link"
+                          >
+                            {{ i + 1 }}. {{ a.file_name }}<br />
+                          </p>
+                          <br />
+                        </ng-template>
+                      </td>
+                      <td (click)="prdetails.expanded = !prdetails.expanded">
+                        <button
+                          type="button"
+                          class="btn btn-default"
+                          mat-button
+                          (click)="delivaryDetailsPatch(prdetails, i)"
+                          (click)="delivaryDetailsPatchbulk(1, i)"
+                        >
+                          <!-- <span class="material-icons"> local_shipping </span> -->
+                           <mat-icon>shopping_cart</mat-icon>
+                        </button>
+                      </td>
+                      <!-- <td>
+                                            <button  *ngIf="prdetails.expanded" type="button" class="btn btn-default" mat-button
+                                            (click)="delivaryDetailsPatch(prdetails,i)" (click)="delivaryDetailsPatchbulk(1)" >
+                                            <span class="material-icons">
+                                                local_shipping
+                                            </span>
+                                        </button>
+                                            
+
+                                            <button *ngIf="!prdetails.expanded"  type="button" class="btn btn-default" mat-button
+                                            (click)="delivaryDetailsPatch(prdetails,i)" >
+                                            <span class="material-icons">
+                                                local_shipping
+                                            </span>
+                                        </button>
+                                            
+                                        </td> -->
+
+                      <!-- <td style="margin-left:-1%">
+                                            <div *ngIf="prdetails.file_data?.length==0; else fileactionPR"
+                                                class="NodataAlign">No
+                                                Records Found...</div>
+                                            <ng-template #fileactionPR>
+                                                <p class="btn btn-link"
+                                                    *ngFor="let a of prdetails.file_data ;index as i;"
+                                                    style="margin-left:-1%" data-target="#my-modalpopupimage" data-toggle="modal"
+                                                    (click)="commentPopup(a.file_id,a.file_name)">
+                                                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                                    <br>
+                                                    (Note:Only image file can be viewed)
+                                                </p>
+                                            </ng-template>
+                                        </td> -->
+                      <div
+                        *ngIf="showimagepopup"
+                        id="my-modalpopupimage"
+                        class="modal fade"
+                        aria-labelledby="my-modalLabel"
+                        aria-hidden="true"
+                        tabindex="-1"
+                        role="dialog"
+                      >
+                        <!-- <div class="modal-dialog modal-xl" data-dismiss="modal" -->
+                        <div
+                          class="modal-dialog"
+                          data-dismiss="modal"
+                          style="width: 60%; height: 80%"
+                        >
+                          <div class="modal-content">
+                            <div class="modal-body">
+                              <img
+                                src="{{ jpgUrls }}"
+                                class="img-responsive"
+                                style="width: 100%"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </tr>
+
+                    <ng-container>
+                      <!-- Delivery Details -->
+
+                      <tr *ngIf="prdetails.expanded">
+                        <td colspan="13">
+                          <!-- Colspan should match the number of columns in the main table -->
+                          <div class="table-responsive">
+                            <table class="table scrolltable table-bordered">
+                              <!-- Delivery Details Table Header -->
+                              <thead>
+                                <tr class="table_header">
+                                  <th>S.No</th>
+                                  <th>BS</th>
+                                  <th>CC</th>
+                                  <th>Branch Name</th>
+                                  <th>Qty</th>
+                                </tr>
+                              </thead>
+                              <!-- Delivery Details Table Body -->
+                              <tbody>
+                                <tr
+                                  *ngFor="
+                                    let ccbs of prdetails?.cbs;
+                                    index as i
+                                  "
+                                >
+                                  <td>
+                                    {{ (presentpg - 1) * pgSize + i + 1 }}
+                                  </td>
+                                  <td>{{ ccbs.bs }}</td>
+                                  <td>{{ ccbs.cc }}</td>
+                                  <td>{{ ccbs.branch_id.fullname }}</td>
+                                  <td>{{ ccbs.qty }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <!-- </td> -->
+                          <div
+                            class="row align-items-center"
+                            *ngIf="isdelivery[i]"
+                            style="width: 85%"
+                          >
+                            <div
+                              class="col-sm-6"
+                              style="font-size: small; text-align: left"
+                            >
+                              <p
+                                style="
+                                  color: black;
+                                  font-size: 18px;
+                                  font-weight: 500;
+                                "
+                              >
+                                Total Count:
+                                {{ this.prdetailsList[i].totalcountt }}
+                              </p>
+                            </div>
+                            <div
+                              class="col-sm-6 text-right"
+                              style="
+                                font-size: small;
+                                margin-left: 512px;
+                                margin-top: -53px;
+                              "
+                            >
+                              <button
+                                mat-icon-button
+                                [disabled]="hasprevious === false"
+                                color="primary"
+                                (click)="salesweightpreviousClick(i)"
+                              >
+                                <mat-icon>arrow_back</mat-icon>
+                              </button>
+                              {{ presentpg }}
+                              <button
+                                mat-icon-button
+                                [disabled]="hasnext === false"
+                                color="primary"
+                                (click)="salesweightnextClick(i)"
+                              >
+                                <mat-icon>arrow_forward</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-container>
+                    <ng-container>
+                        <tr *ngIf="prdetails.showAssetDetails">
+                            <td colspan="13" class="pad">
+                              <div class="table-responsive">
+                                <table class="table scrolltable table-bordered fonts">
+                                  <thead>
+                                    <tr class="table_header">
+                                      <th>S.No</th>
+                                      <th>Asset ID</th>
+                                      <th>Serial No</th>
+                                      <th>Product</th>
+                                      <th>Make</th>
+                                      <th>Model</th>
+                                      <th>Specification</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let a of prdetails.assetArrayPR; index as i">
+                                      <td>{{ i + 1 }}</td>
+                                      <td>{{ a.asset_id }}</td>
+                                      <td>{{ a.serial_no }}</td>
+                                      <td>{{ a.product_name }}</td>
+                                      <td>{{ a.item_name }}</td>
+                                      <td>{{ a.model_name }}</td>
+                                      <td>
+                                        <ng-container *ngIf="a.specification && a.specification !== '--'; else showEmpty">
+                                          <ng-container *ngFor="let specKey of getSpecificationKeys(a.specification)">
+                                            {{ specKey }}: {{ a.specification[specKey] }}<br />
+                                          </ng-container>
+                                        </ng-container>
+                                        <ng-template #showEmpty>{{ a.specification }}</ng-template>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="prdetails.assetArrayPR.length == 0">
+                                        <td colspan="7" class="text-center">
+                                            No Records Found!
+                                        </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </td>
+                          </tr>
+                    </ng-container>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+            <div class="row" *ngIf="prView" style="width: 85%">
+              <!-- style="
+                  margin-bottom: 5%;
+                  font-size: small;
+                  text-align: left;
+                  right: -225px;
+                " -->
+              <div
+                class="col-sm-3 MarginLeftBottomprpoTotal PrMar"
+                
+              >
+                <p
+               class=" totalcountt"
+                >
+                  Total Count: {{ totalcount }}
+                </p>
+              </div>
+              <div
+                class="col-sm-6 text-right"
+                style="font-size: small; margin-left: 631px; margin-top: -90px"
+              >
+                <button
+                  mat-icon-button
+                  [disabled]="has_previousdetail == false"
+                  color="primary"
+                  (click)="previousClickdetail()"
+                >
+                  <mat-icon>arrow_back </mat-icon>
+                </button>
+                {{ presentpageprdetail }}
+                <button
+                  mat-icon-button
+                  [disabled]="has_nextdetail == false"
+                  color="primary"
+                  (click)="nextClickdetail()"
+                >
+                  <mat-icon>arrow_forward </mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade bd-example-modal-xl"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    id="PRHistoryModal"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="Container">
+          <div class="modal-header" style="background-color: #ddefdd">
+            <h2 class="modal-title">View Transaction History</h2>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div
+            class="table-responsive"
+            style="margin-top: 2%; margin-left: 33px; width: 94%"
+          >
+            <table class="table scrolltable table-bordered" fixed-header>
+              <thead>
+                <tr class="table_header" fixed-header>
+                  <th>S.No</th>
+                  <th>PR Header No</th>
+                  <th>Transaction Date</th>
+                  <th>Status</th>
+                  <th>Raiser Name</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let tran of PrTranHistoryList; index as i">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ tran?.ref_id.no }}</td>
+                  <td>{{ tran?.created_date | date : "medium" }}</td>
+                  <td>{{ tran?.comments }}</td>
+                  <td>{{ tran?.from_user_id.full_name }}</td>
+                  <td>{{ tran?.remarks }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+           <!-- style="
+                margin-bottom: 5%;
+                font-size: small;
+                text-align: left;
+                right: -225px;
+              " -->
+          <div class="row" style="width: 85%">
+            <div
+              class="col-sm-3 MarginLeftBottomprpoTotal">
+              <p
+                class="totalcount "
+              >
+                Total Count: {{ totalcount }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showHeaderimagepopup"
+    class="modal fade bd-examplepopHeaderfiles-modal-lg"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myLargeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title">Attachments</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <table
+          class="table table-bordered"
+          fixed-header
+          style="
+            margin-left: 50px;
+            width: 90%;
+            margin-top: 2%;
+            overflow-x: hidden;
+          "
+        >
+          <thead class="table_header">
+            <tr>
+              <th>S.no</th>
+              <th>Attachment Name</th>
+              <th>Download Attachment</th>
+              <!-- <th>View File</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let file of fileListHeader; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ file?.file_name }}</td>
+              <td>
+                <a (click)="fileDownloadheader(file.file_id, file.file_name)"
+                  ><i class="fa fa-download" style="color: green"> </i
+                ></a>
+              </td>
+              <!-- <td style="margin-left:-1%">
+                                <p class="btn btn-link" style="margin-left:-1%" data-target="#my-modal"
+                                    data-toggle="modal" (click)="commentPopupHeaderFiles(file.file_id,file.file_name)">
+                                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                    <br>
+                                    (Note:Only image file can be viewed)
+                                </p>
+                            </td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showimageHeader"
+    id="my-modal"
+    class="modal fade"
+    aria-labelledby="my-modalLabel"
+    aria-hidden="true"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div
+      class="modal-dialog modal-xl"
+      data-dismiss="modal"
+      style="width: 60%; height: 80%"
+    >
+      <div class="modal-content">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="modal-body">
+          <img src="{{ jpgUrls }}" class="img-responsive" style="width: 100%" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PR Approval Summary -->
+<div *ngIf="isPrapproverTab">
+  <!-- <div class="Container" style="margin-left: 40px;"> -->
+  <h2 style="margin-left: 3%;margin-top:10px">Purchase Request Approval Summary</h2>
+  <!-- <div class="table-responsive" style="margin-top: 1%;width: 90%; -ms-overflow-style: none;">
+            <div style="margin-left: 3%;"> -->
+  <form [formGroup]="PRApproverSearch">
+    <div class="col-md-12">
+      <div class="row mr-3 ml-3">
+        <div class="col">
+          <mat-form-field class="example-full-width"             style="width: 200px;"
+          >
+            <!-- <input class="toolbar-search" type="text" matInput autocomplete="off"
+                            formControlName="prheader_status" (keypress)="only_numalpha($event)">
+                        <mat-placeholder>PR Status</mat-placeholder> -->
+
+            <mat-label>PR Status</mat-label>
+            <mat-select formControlName="prheader_status">
+              <mat-option
+                *ngFor="let status of statuslist"
+                [value]="status.text"
+              >
+                {{ status.text }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- BUG ID:4529 -->
+
+        <!-- <div class="col-md-3">
+    <div *ngIf="PRSummarySearch.value.prheader_status != 'DRAFT'">
+        <mat-form-field class="example-full-width" style="margin-left: 50px;">
+<input class="toolbar-search" type="text" matInput autocomplete="off" formControlName="no"
+(keypress)="only_numalpha($event)">
+<mat-placeholder>PR Number</mat-placeholder>
+</mat-form-field>
+</div>
+</div> -->
+
+        <div class="col">
+          <mat-form-field class="example-full-width"             style="width: 200px;"
+          >
+            <mat-label>PR Date</mat-label>
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker1"
+              placeholder="PR Date"
+              formControlName="date"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <!-- BUG ID:4529 -->
+
+        <div class="col">
+          <mat-form-field
+          style="width: 200px;"
+          (click)="getprappbranch()"
+        >
+          <mat-label>Branch Code</mat-label>
+          <input
+            #branchInput
+            placeholder="Select Branch Code"
+            matInput
+            formControlName="branch_id"
+            [matAutocomplete]="branch"
+          />
+          <mat-autocomplete
+            [panelWidth]="400"
+            #branch="matAutocomplete"
+            [displayWith]="displayFnbranch"
+            (opened)="autocompletebranchScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let branch of branchList" [value]="branch">
+                {{ branch.code }}-{{ branch.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+        </div>
+
+        <div class="col">
+          <!-- <mat-form-field style="width:200px">
+            <mat-label>Product Type</mat-label>
+            <mat-select formControlName="product_type">
+              <mat-option
+                *ngFor="let types of Lists"
+                [value]="types.id"
+                (click)="product_type = types.id"
+              >
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+           <mat-form-field (click)="getProductTypes()"  style="width:200px">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types"  (click)="product_type = types.id">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field
+            style="width: 200px;"
+            (click)="getappproduct()"
+          >
+            <mat-label>Product Name</mat-label>
+            <input
+              #itemInput
+              placeholder="Select Product"
+              matInput
+              formControlName="product_id"
+              [matAutocomplete]="item"
+            />
+            <mat-autocomplete
+              #item="matAutocomplete"
+              [displayWith]="displayFnitem"
+              (opened)="autocompleteitemScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let item of productList"
+                  [value]="item"
+                  (click)="productclick(item)"
+                >
+                  {{ item.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+            <!-- <button
+              type="button"
+              matSuffix
+              class="close"
+              (click)="resetAfterProductChange('', 'removeProd')"
+            >
+              X
+            </button> -->
+          </mat-form-field>
+        </div>
+        <!-- </td> -->
+        <!-- //BUG ID:4529 -->
+        <!-- <div > -->
+        
+        <!-- </div> -->
+        <!-- </td> -->
+
+        <!-- //BUG ID:4529 -->
+        <!-- <td> -->
+        <div class="col">
+          <mat-form-field
+          style="width: 200px; "
+          (click)="getprappsupplier()"
+        >
+          <mat-label>Supplier Name</mat-label>
+          <input
+            matInput
+            #supplierInput
+            placeholder="Select supplier"
+            formControlName="supplier_id"
+            [matAutocomplete]="supplier"
+          />
+          <mat-autocomplete
+            [panelWidth]="400"
+            #supplier="matAutocomplete"
+            [displayWith]="displayFnsupplier"
+            (opened)="autocompletesupplierScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let supplier of supplierList"
+                [value]="supplier"
+              >
+                {{ supplier.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+        </div>
+
+        <div class="col">
+          <mat-form-field
+          style="width: 200px;"
+          (click)="getprapppca()"
+          title="{{ mep_name ? mep_name : '' }}"
+        >
+          <mat-label>PCA Number</mat-label>
+          <input
+            matInput
+            #PCAInput
+            placeholder="Select PCA Number"
+            formControlName="mepno"
+            [matAutocomplete]="pcano"
+          />
+          <mat-autocomplete
+            [panelWidth]="400"
+            #pcano="matAutocomplete"
+            [displayWith]="displayFnPCANo"
+            (opened)="autocompletepcaScroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let pca of PCAList"
+                [value]="pca"
+                (click)="pcaId(pca)"
+              >
+                {{ pca.mepno }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+        </div>
+        <!-- //BUG ID:4529 -->
+        <!-- <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: 50px;">
+                                <mat-label>PR Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker1" placeholder="PR Date"
+                                    formControlName="date">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                            </div> -->
+    
+        <!-- //BUG ID:4529 -->
+        <div class="col">
+          <mat-form-field
+          class="example-full-width"
+        >
+          <input
+            class="toolbar-search"
+            type="text"
+            matInput
+            autocomplete="off"
+            formControlName="no"
+            (keypress)="only_numalpha($event)"
+          />
+          <mat-placeholder>PR Number</mat-placeholder>
+        </mat-form-field>
+        </div>
+        <div class="col">
+            <mat-form-field
+              class="example-full-width"
+            >
+              <input
+                class="toolbar-search"
+                type="text"
+                matInput
+                autocomplete="off"
+                formControlName="amount"
+                (input)="AmountCalculation($event,PRApproverSearch,'amount')"
+              />
+              <!-- (keypress)="numberOnly($event)" -->
+              <mat-placeholder>PR Amount</mat-placeholder>
+            </mat-form-field>
+          </div>
+
+        <div class="col mt-2">
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+            (click)="getPRAppsummary('')"
+            style="border-radius: 40px;"
+            color="primary"
+            matTooltip="Search Data"
+          >
+            <i class="fa fa-search" aria-hidden="true"></i>
+             <!-- <mat-icon>search</mat-icon> -->
+          </button>
+        <!-- </div> -->
+        &nbsp;&nbsp;
+        <!-- <div class="col"> -->
+          <button
+            class="btn btn-outline-secondary"
+            (click)="resetapp()"
+            type="submit"
+            style="border-radius: 40px;"
+            color="primary"
+            matTooltip="Reset"
+          >
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+           <!-- <mat-icon>update</mat-icon> -->
+
+          </button>
+        &nbsp;&nbsp;
+
+        <!-- </div> -->
+        <button
+        style="border-radius: 40px; cursor: pointer"
+        type="button"
+        class="btn btn-outline-success"
+        matTooltip="Export to Excel"
+        (click)="checkerexceldownload()"
+        >
+        <span class="fa fa-download"></span>
+         <!-- <mat-icon>get_app</mat-icon> -->
+      </button>
+      <!-- &nbsp;&nbsp; -->
+
+        <!-- <div class="col"> -->
+          <!-- <button
+            type="button"
+            class="btn btn-outline-info"
+            (click)="addpr()"
+            style="border-radius: 40px;"
+            matTooltip="Add PR"
+          >
+            <span class="fa fa-plus"></span>
+          </button> -->
+
+        <!-- </div> -->
+
+        <!-- <div class="col"> -->
+          <!-- [disabled]="prSummaryExport" -->
+          
+        </div>
+      </div>
+    </div>
+ 
+  </form>
+
+  <!-- </div> -->
+  <div
+    class="table-responsive"
+    style="margin-top: 2%; width: 95%; margin-left: 50px"
+  >
+    <table class="table scrolltable table-bordered" fixed-header>
+      <thead>
+        <tr class="table_header" fixed-header>
+          <th>S.No</th>
+          <th>PR No</th>
+          <th>PR date</th>
+          <!-- <th>Commodity</th> -->
+          <th>Raiser Branch</th>
+          <!-- <th>Supplier Name</th> -->
+          <th>PR Raised By</th>
+          <th>PR Status</th>
+          <th>Amount</th>
+          <th>PCA</th>
+          <th>Attachments</th>
+          <th>PR PDF View</th>
+          <th>Action</th>
+          <th>Tran History</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let prapprove of approverlist; index as i">
+          <td>{{ (presentpageapp - 1) * pageSize + i + 1 }}</td>
+          <td>{{ prapprove?.no }}</td>
+          <td>{{ prapprove?.date | date : "dd-MM-yyyy" }}</td>
+          <!-- <td>{{prapprove?.commodity_id?.name}}</td> -->
+          <td>
+            {{
+              prapprove?.branch_id?.code + " -- " + prapprove?.branch_id?.name
+            }}
+          </td>
+          <!-- <td>{{ prapprove?.supplier }}</td> -->
+          <td>{{ prapprove?.created_by?.full_name }}</td>
+          <td>{{ prapprove?.prheader_status }}</td>
+          <td>{{ prapprove?.totalamount | amountPipeCustom }}</td>
+          <td>{{ prapprove?.mepno }} -- {{ prapprove?.mepname }}</td>
+          <td>
+            <!-- <span
+              class="fa fa-download"
+              aria-hidden="true"
+              (click)="HeaderFilesPRdownloadapp(prapprove)"
+              data-toggle="modal"
+              data-target=".bd-examplepopHeaderfilesapp-modal-lg"
+            ></span> -->
+            <mat-icon aria-hidden="true"
+              (click)="HeaderFilesPRdownloadapp(prapprove)"
+              data-toggle="modal"
+              data-target=".bd-examplepopHeaderfilesapp-modal-lg">get_app</mat-icon>
+          </td>
+          <td>
+            <!-- <span class="material-icons" (click)="PRPDDf(prapprove)">
+              picture_as_pdf</span
+            > -->
+            <mat-icon (click)="PRPDDf(prapprove)">library_books</mat-icon>
+          </td>
+          <td>
+            <button
+              mat-icon-button
+              matTooltip="View"
+              class="iconbutton"
+              color="primary"
+              (click)="approver(prapprove)"
+            >
+              <!-- <span class="material-icons" style="color: gray">
+                visibility
+              </span> -->
+              <mat-icon  style="color: gray">visibility</mat-icon>
+            </button>
+          </td>
+          <td>
+            <button
+              mat-icon-button
+              matTooltip="history"
+              class="iconbutton"
+              color="primary"
+              mat-button
+              data-toggle="modal"
+              data-target="#PRApproverHistoryModal"
+            >
+              <!-- <span
+                class="material-icons"
+                style="color: gray"
+                (click)="gettranhistoryapp(prapprove)"
+              >
+                description
+              </span> -->
+              <mat-icon style="color: gray"
+                (click)="gettranhistoryapp(prapprove)">description</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div
+      *ngIf="approverlist?.length == 0; else showpaginationClose"
+      style="text-align: center"
+    >
+      No Records Found...
+    </div>
+    <div class="row" *ngIf="prsumm" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+        <p
+        class=" totalcount"
+
+        >
+          Total Count: {{ totalcount }}
+        </p>
+      </div>
+    </div>
+    <ng-template #showpaginationClose>
+      <div
+        class="cursor"
+        style="font-size: small; text-align: right; margin-bottom: 100px"
+      >
+        <button
+          mat-icon-button
+          [disabled]="has_previousapp === false"
+          color="primary"
+          (click)="getPRAppsummary('previous')"
+        >
+          <mat-icon>arrow_back </mat-icon>
+        </button>
+        {{ presentpageapp }}
+        <button
+          mat-icon-button
+          [disabled]="has_nextapp === false"
+          color="primary"
+          (click)="getPRAppsummary('next')"
+        >
+          <mat-icon>arrow_forward </mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </div>
+  <!-- </div> -->
+  <!-- </div> -->
+  <div
+    class="modal fade bd-example-modal-xl"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    id="PRApproverHistoryModal"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="Container">
+          <div class="modal-header" style="background-color: #ddefdd">
+            <h2 class="modal-title">View Transaction History</h2>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div
+            class="table-responsive"
+            style="margin-top: 2%; margin-left: 33px; width: 94%"
+          >
+            <table class="table scrolltable table-bordered" fixed-header>
+              <thead>
+                <tr class="table_header" fixed-header>
+                  <th>S.No</th>
+                  <th>PR Header No</th>
+                  <th>Transaction Date</th>
+                  <th>Status</th>
+                  <th>Raiser Name</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="
+                    let prapptransummary of PrTranHistoryListapp;
+                    index as i
+                  "
+                >
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ prapptransummary?.ref_id?.no }}</td>
+                  <td>
+                    {{ prapptransummary?.created_date | date : "medium" }}
+                  </td>
+                  <td>{{ prapptransummary?.comments }}</td>
+                  <td>{{ prapptransummary?.from_user_id?.full_name }}</td>
+                  <td>{{ prapptransummary?.remarks }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- style="
+                margin-bottom: 5%;
+                font-size: small;
+                text-align: left;
+                right: -225px;
+              " -->
+          <div class="row" style="width: 85%">
+            <div
+              class="col-sm-3 MarginLeftBottomprpoTotal"
+              
+            >
+              <p
+              class=" totalcount"
+
+              >
+                Total Count: {{ totalcount }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showHeaderimagepopupapp"
+    class="modal fade bd-examplepopHeaderfilesapp-modal-lg"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myLargeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title">Header Files</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <table
+          class="table table-bordered"
+          fixed-header
+          style="
+            margin-left: 50px;
+            width: 90%;
+            margin-top: 2%;
+            overflow-x: hidden;
+          "
+        >
+          <thead class="table_header">
+            <tr>
+              <th>S.no</th>
+              <th>File Name</th>
+              <th>Download File</th>
+              <!-- <th>View File</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let file of fileListHeader; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ file?.file_name }}</td>
+              <td>
+                <a (click)="fileDownloadheaderapp(file.file_id, file.file_name)"
+                  ><i class="fa fa-download" style="color: green"> </i
+                ></a>
+              </td>
+              <!-- <td style="margin-left:-1%">
+                                <p class="btn btn-link" style="margin-left:-1%" data-target="#my-modal"
+                                    data-toggle="modal"
+                                    (click)="commentPopupHeaderFilesapp(file.file_id,file.file_name)">
+                                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                    <br>
+                                    (Note:Only image file can be viewed)
+                                </p>
+                            </td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showimageHeaderapp"
+    id="my-modal"
+    class="modal fade"
+    aria-labelledby="my-modalLabel"
+    aria-hidden="true"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div
+      class="modal-dialog modal-xl"
+      data-dismiss="modal"
+      style="width: 60%; height: 80%"
+    >
+      <div class="modal-content">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="modal-body">
+          <img src="{{ jpgUrls }}" class="img-responsive" style="width: 100%" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isBrmakerTab">
+  <h2 style="margin-left: 3%;margin-top:10px">Branch Indent Request Maker Summary</h2>
+  <form [formGroup]="BRSummarySearch">
+    <div class="col-md-12">
+      <div class="row mr-3 ml-3">
+        <div class="col">
+          <div *ngIf="BRSummarySearch.value">
+            <mat-form-field
+              style="width: 200px;"
+              (click)="getbrbranch()"
+            >
+              <mat-label>Branch Code / Name</mat-label>
+              <input
+                #branchInput
+                placeholder="Select Branch Code"
+                matInput
+                formControlName="branch_id"
+                [matAutocomplete]="branch"
+              />
+              <mat-autocomplete
+                [panelWidth]="400"
+                #branch="matAutocomplete"
+                [displayWith]="displayFnbranch"
+                (opened)="autocompletebranchScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <mat-option
+                  *ngIf="is_admin"
+                  id="all-option"
+                  [value]="{ id: -1, value: -1 }"
+                  >ALL</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let branch of branchList; let first = first"
+                    [value]="branch"
+                  >
+                    {{ branch.code }}-{{ branch.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+              <!-- <button
+                type="button"
+                matSuffix
+                class="close"
+                (click)="resetBranchChange('', 'removebranch')"
+              >
+                X
+              </button> -->
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="col">
+          <div *ngIf="BRSummarySearch.value">
+            <mat-form-field
+              style="width: 200px;"
+              (click)="getbrcommodity()"
+            >
+              <mat-label>Commodity Name</mat-label>
+              <input
+                #comInput
+                placeholder="Select Commodity"
+                matInput
+                formControlName="commodity_id"
+                [matAutocomplete]="com"
+              />
+              <mat-autocomplete
+                #com="matAutocomplete"
+                [displayWith]="displayFncom"
+                (opened)="autocompletecomScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let com of commodityList"
+                    [value]="com"
+                    (click)="resetAfterCommodityChange(com)"
+                    >{{ com.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+              <!-- <button
+                type="button"
+                matSuffix
+                class="close"
+                (click)="resetCommodityChange('', 'removecom')"
+              >
+                X
+              </button> -->
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="col">
+          <!-- <mat-form-field style="width: 200px">
+            <mat-label>Product Type</mat-label>
+            <mat-select formControlName="product_type">
+              <mat-option
+                *ngFor="let types of Lists"
+                [value]="types.id"
+                (click)="product_type = types.id"
+              >
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+           <mat-form-field (click)="getProductTypes()"  style="width:200px">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types"  (click)="product_type = types.id">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field
+            style="width: 200px;"
+            (click)="getbrproduct()"
+          >
+            <mat-label>Product Name</mat-label>
+            <input
+              #itemInput
+              placeholder="Select Product"
+              matInput
+              formControlName="product_id"
+              [matAutocomplete]="item"
+            />
+            <mat-autocomplete
+              #item="matAutocomplete"
+              [displayWith]="displayFnitem"
+              (opened)="autocompleteitemScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let item of productList"
+                  [value]="item"
+                  (click)="productclick(item)"
+                >
+                  {{ item.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+            <!-- <button
+              type="button"
+              matSuffix
+              class="close"
+              (click)="resetAfterProductChange('', 'removeProd')"
+            >
+              X
+            </button> -->
+          </mat-form-field>
+        </div>
+
+        <div class="col">
+          <mat-form-field style="width: 200px">
+            <mat-label>Quantity</mat-label>
+            <input
+              matInput
+              formControlName="qty"
+              type="number"
+              autocomplete="off"
+            />
+          </mat-form-field>
+        </div>
+</div>
+
+        <!-- <div class="col-md-12"> -->
+          <div class="row mr-3 ml-3">
+            <div class="col-md-12 text-right">
+              <button
+                class="btn btn-outline-primary"
+                type="submit"
+                (click)="getBRsummary(1)"
+                style="border-radius: 40px;"
+                color="primary"
+                matTooltip="Search Data"
+              >
+                <i class="fa fa-search" aria-hidden="true"></i>
+                 <!-- <mat-icon>search</mat-icon> -->
+              </button>
+            <!-- </div> -->
+            &nbsp;&nbsp;
+            <!-- <div class="col-md-3"> -->
+              <button
+                class="btn btn-outline-secondary"
+                (click)="resetbr()"
+                type="submit"
+                matTooltip="Reset"
+                style="border-radius: 40px;"
+                color="primary"
+              >
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+                 <!-- <mat-icon>update</mat-icon> -->
+              </button>
+            <!-- </div> -->
+            &nbsp;&nbsp;
+            <button
+            style="
+              border-radius: 40px;
+              cursor: pointer;
+            "
+            type="button"
+            class="btn btn-outline-success"
+            (click)="brmakerexceldownload()"
+          >
+            <span class="fa fa-download"></span>
+             <!-- <mat-icon>get_app</mat-icon> -->
+          </button>
+          &nbsp; &nbsp;
+
+            <!-- <div class="col-md-3"> -->
+              <button
+                type="button"
+                class="btn btn-outline-info"
+                (click)="addbr()"
+                matTooltip="Add BPR"
+                style="border-radius: 40px;"
+              >
+                <span class="fa fa-plus"></span>
+                 <!-- <mat-icon>add</mat-icon> -->
+              </button>
+             
+            </div>
+          </div>
+        <!-- </div> -->
+       
+    </div>
+  </form>
+
+  <div
+    *ngIf="showAll"
+    class="table-responsive"
+    style="margin-top: 2%; width: 95%; margin-left: 50px"
+  >
+    <table class="table scrolltable table-bordered" fixed-header>
+      <thead>
+        <tr class="table_header" fixed-header>
+          <th>S.No</th>
+          <th>BIR No</th>
+          <th>Branch Code/Name</th>
+          <th>Commodity</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Status</th>
+          <th style="width:100px">View</th>
+          <th>Attachments</th>
+          <th>Transaction History</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let brsummary of brSummaryList; index as i">
+          <td>{{ (presentpageapp - 1) * pageSize + i + 1 }}</td>
+          <td>{{ brsummary?.no}}</td>
+          <td>
+            {{ brsummary?.branch_id.code + "--" + brsummary?.branch_id.name }}
+          </td>
+          <td>{{ brsummary?.commodity_id.name }}</td>
+          <td>{{ brsummary?.product_id.name }}</td>
+          <td>{{ brsummary?.qty }}</td>
+          <td>{{ brsummary?.branch_request_status }}</td>
+          <td>
+            <button
+              mat-icon-button
+              matTooltip="View"
+              class="iconbutton"
+              color="primary"
+              mat-button
+              data-toggle="modal"
+              data-target="#BRDetailModal"
+            >
+              <!-- <span
+                class="material-icons"
+                style="color: gray"
+                (click)="getbrdetails(brsummary)"
+              >
+                visibility
+              </span> -->
+              <mat-icon style="color: gray"
+                (click)="getbrdetails(brsummary)">visibility</mat-icon>
+            </button>
+            <!-- <span > -->
+              <button
+              *ngIf="brsummary?.branch_request_status === 'PENDING' || brsummary?.branch_request_status === 'RETURNED'"
+                mat-icon-button
+                matTooltip=" Edit"
+                class="iconbutton"
+                color="success"
+                (click)="bredit(brsummary, 1)"
+                title="BR Edit"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            <!-- </span> -->
+            <!-- <span > -->
+              <!-- <button
+              *ngIf="brsummary?.prheader_status === 'RETURNED'"
+                mat-icon-button
+                matTooltip=" Edit"
+                class="iconbutton"
+                color="success"
+                (click)="bredit(brsummary, 1)"
+                title="BR Edit"
+              >
+                <mat-icon>edit</mat-icon>
+              </button> -->
+            <!-- </span> -->
+          </td>
+          <td style="text-align: center">
+            <!-- <span
+              class="fa fa-download"
+              aria-hidden="true"
+              (click)="HeaderFilesBRdownload(brsummary)"
+              data-toggle="modal"
+              data-target="#exampleModal"
+            ></span> -->
+            <mat-icon   aria-hidden="true"
+              (click)="HeaderFilesBRdownload(brsummary)"
+              data-toggle="modal"
+              data-target="#exampleModal">get_app</mat-icon>
+          </td>
+          <td>
+            <button
+              mat-icon-button
+              matTooltip="history"
+              class="iconbutton"
+              color="primary"
+              mat-button
+              data-toggle="modal"
+              data-target="#BRHistoryModal"
+            >
+              <!-- <span
+                class="material-icons"
+                style="color: gray; margin-left: 32px"
+                (click)="getBRtranhistory(brsummary)"
+              >
+                description
+              </span> -->
+              <mat-icon  class="material-icons"
+                style="color: gray; margin-left: 32px"
+                (click)="getBRtranhistory(brsummary)">description</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      *ngIf="brSummaryList?.length == 0; else showpaginationClose"
+      style="text-align: center"
+    >
+      No Records Found...
+    </div>
+    <div class="row" *ngIf="brmakert" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+      
+      </div>
+    </div>
+    <ng-template #showpaginationClose>
+      <div
+        class="cursor"
+        style="font-size: small; margin-bottom: 100px;display: flex;
+    align-items: center;
+    justify-content: space-between;"
+      >
+      <div>
+          <p
+        class=" totalcount"
+
+        >
+          Total Count: {{ totalcount }}
+        </p>
+      </div>
+       <div>
+         <button
+          mat-icon-button
+          [disabled]="has_previousapp === false"
+          color="primary"
+          (click)="changePagepre()"
+        >
+          <mat-icon>arrow_back </mat-icon>
+        </button>
+        {{ presentpageapp }}
+        <button
+          mat-icon-button
+          [disabled]="has_nextapp === false"
+          color="primary"
+          (click)="changePagenext()"
+        >
+          <mat-icon>arrow_forward </mat-icon>
+        </button>
+       </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <div
+    class="modal fade bd-example-modal-xl"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    id="BRDetailModal"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="Container">
+          <div class="modal-header" style="background-color: #ddefdd">
+            <h2 style="text-align: center">Branch Request Details</h2>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <mat-accordion>
+         
+            <mat-expansion-panel
+              [expanded]="panelOpenState"
+              (opened)="panelOpenState = true"
+              (closed)="panelOpenState = false"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title> Branch Indent Details </mat-panel-title>
+                <!-- <mat-panel-description>
+                                  Currently I am {{panelOpenState ? 'open' : 'closed'}}
+                                </mat-panel-description> -->
+              </mat-expansion-panel-header>
+
+              <div style="margin-left: 3%; margin-top: 20px">
+                <table>
+                  <tr>
+                    <td class="col-md-6">
+                      <b>Branch:</b>&nbsp;{{ branchhid }}
+                    </td>
+                    <td class="col-md-6">
+                      <b style="margin-left: 100px">Commodity:</b>&nbsp;
+                      {{ commodityy }}
+                    </td>
+                  </tr>
+                  <br />
+                  <tr>
+                    <td class="col-md-6">
+                      <b>Type:</b> &nbsp;{{ productType }}
+                    </td>
+                    <td class="col-md-6">
+                      <b style="margin-left: 100px">Product:</b> &nbsp;{{ productt }}
+                    </td>
+                    
+                  </tr>
+                  <br />
+                  <tr>
+                    <td class="col-md-6">
+                      <b>UOM : </b>&nbsp;{{ uommm }}
+                    </td>
+                    <td class="col-md-6">
+                      <b style="margin-left: 100px">Remarks : </b>&nbsp;{{ remakrs }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-md-6">
+                      <b style="margin-left: -14px">Request Product For :</b> &nbsp;{{ product_forreq }}
+                    </td>
+                    <!-- <td class="col-md-6">
+                      <b style="margin-left: 100px">Remarks:</b> &nbsp;{{
+                        remakrs
+                      }}
+                    </td> -->
+                  </tr>
+                </table>
+              </div>
+
+              <div style="margin-top: 25px">
+                <div class="col-md-12">
+                  <div class="row" [formGroup]="ViewBR">
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>Branch Code / Name</mat-label>
+                        <input
+                          placeholder="Branch Code/ Name"
+                          matInput
+                          formControlName="branch"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>BS</mat-label>
+                        <input
+                          placeholder="BS"
+                          matInput
+                          formControlName="bs"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>CC</mat-label>
+                        <input
+                          placeholder="CC"
+                          matInput
+                          formControlName="cc"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                    <!-- <div>
+                                <mat-form-field style="width: 252px; margin-left: 14px;">
+                                    <mat-label>UOM</mat-label>
+                                    <input placeholder="UOM" matInput formControlName="uom" readonly>
+                                </mat-form-field>
+                            </div> -->
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>Quanity</mat-label>
+                        <input
+                          placeholder="Quantity"
+                          matInput
+                          formControlName="quantity"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>Request Asset Details </mat-panel-title>
+              <!-- <mat-panel-description>
+                                Type your name and age
+                              </mat-panel-description> -->
+            </mat-expansion-panel-header>
+            <!-- <div class="row">
+                          <div class="col-md-4">
+                            <form [formGroup]="assetForm">
+                              <mat-form-field appearance="outline" class="width">
+                                <mat-label>Asset ID</mat-label>
+                                <div class="input-wrapper">
+                                <input
+                                  matInput 
+                                  type="text"
+                                  formControlName="asset_id"
+                                  placeholder="Enter an Asset ID"
+                                  (input)="toUpperCase($event)"
+                                  />
+                                  <i class="fa fa-times-circle cancel" role="button" (click)="resetAsset()"></i>
+                                   </div>
+                              </mat-form-field>
+                            </form>
+                          </div>
+                          <div class="col-md-8 text-right pr-5 mt-2">
+                            <button class="btn btn-outline-success" (click)="addAsset()">
+                              <span class="fa fa-plus"></span>
+                            </button>
+                          </div>
+                        </div> -->
+            <div class="table-responsive tableStyle">
+              <table class="table table-hover">
+                <thead class="table_header">
+                  <tr>
+                    <td>S.No</td>
+                    <td>Asset ID</td>
+                    <td>Serial No</td>
+                    <td>Product</td>
+                    <td>Make</td>
+                    <td>Model</td>
+                    <td>Specification</td>
+                    <!-- <td>Action</td> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of assetArrayy; index as i">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ a.asset_id }}</td>
+                    <td>{{ a.serial_no }}</td>
+                    <td>{{ a.product_name }}</td>
+                    <td>{{ a.item_name }}</td>
+                    <td>{{ a.model_name }}</td>
+                    <td>
+                      <ng-container
+                        *ngIf="
+                          a.specification && a.specification !== '--';
+                          else showEmpty
+                        "
+                      >
+                        <ng-container
+                          *ngFor="
+                            let specKey of getSpecificationKeys(
+                              a.specification
+                            )
+                          "
+                        >
+                          {{ specKey }}: {{ a.specification[specKey] }}<br />
+                        </ng-container>
+                      </ng-container>
+                      <!-- Template to display "--" if specification is empty -->
+                      <ng-template #showEmpty>{{
+                        a.specification
+                      }}</ng-template>
+                    </td>
+                    <!-- <td>
+                                  <mat-icon role="button" class="gray" (click)="deleteAsset(a,i)">delete</mat-icon>
+                                </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+            <mat-expansion-panel
+            *ngIf="isReplacement"
+            [expanded]="isReplacement"
+            (opened)="isReplace = true"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title> Replacement Asset Details </mat-panel-title>
+              <!-- <mat-panel-description>
+                                Type your name and age
+                              </mat-panel-description> -->
+            </mat-expansion-panel-header>
+            <!-- <div class="row">
+                          <div class="col-md-4">
+                            <form [formGroup]="assetForm">
+                              <mat-form-field appearance="outline" class="width">
+                                <mat-label>Asset ID</mat-label>
+                                <div class="input-wrapper">
+                                <input
+                                  matInput 
+                                  type="text"
+                                  formControlName="asset_id"
+                                  placeholder="Enter an Asset ID"
+                                  (input)="toUpperCase($event)"
+                                  />
+                                  <i class="fa fa-times-circle cancel" role="button" (click)="resetAsset()"></i>
+                                   </div>
+                              </mat-form-field>
+                            </form>
+                          </div>
+                          <div class="col-md-8 text-right pr-5 mt-2">
+                            <button class="btn btn-outline-success" (click)="addAsset()">
+                              <span class="fa fa-plus"></span>
+                            </button>
+                          </div>
+                        </div> -->
+            <div class="table-responsive tableStyle">
+              <table class="table table-hover">
+                <thead class="table_header">
+                  <tr>
+                    <td>S.No</td>
+                    <td>Asset ID</td>
+                    <td>Serial No</td>
+                    <td>Product</td>
+                    <td>Make</td>
+                    <td>Model</td>
+                    <td>Specification</td>
+                    <!-- <td>Action</td> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of assetArray; index as i">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ a.asset_id }}</td>
+                    <td>{{ a.serial_no }}</td>
+                    <td>{{ a.product_name }}</td>
+                    <td>{{ a.item_name }}</td>
+                    <td>{{ a.model_name }}</td>
+                    <td>
+                      <ng-container
+                        *ngIf="
+                          a.specification && a.specification !== '--';
+                          else showEmpty
+                        "
+                      >
+                        <ng-container
+                          *ngFor="
+                            let specKey of getSpecificationKeys(
+                              a.specification
+                            )
+                          "
+                        >
+                          {{ specKey }}: {{ a.specification[specKey] }}<br />
+                        </ng-container>
+                      </ng-container>
+                      <!-- Template to display "--" if specification is empty -->
+                      <ng-template #showEmpty>{{
+                        a.specification
+                      }}</ng-template>
+                    </td>
+                    <!-- <td>
+                                  <mat-icon role="button" class="gray" (click)="deleteAsset(a,i)">delete</mat-icon>
+                                </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+          </mat-accordion>
+          <!-- <div class="row" class="mt-2" *ngIf="isReplacement">
+                        <div class="col-md-11 text-right">
+                            <mat-chip-list>
+                                <mat-chip>Replacement</mat-chip>
+                            </mat-chip-list>
+                        </div>
+                    </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade bd-example-modal-xl"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    id="BRHistoryModal"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="Container">
+          <div class="modal-header" style="background-color: #ddefdd">
+            <h2 class="modal-title">View Transaction History</h2>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div
+            class="table-responsive"
+            style="margin-top: 2%; margin-left: 50px; width: 94%"
+          >
+            <table class="table scrolltable table-bordered" fixed-header>
+              <thead>
+                <tr class="table_header" fixed-header>
+                  <th>S.No</th>
+                  <th>Transaction Date</th>
+                  <th>Raiser Name</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaction of BrTranHistoryList; index as i">
+                  <td>{{ i + 1 }}</td>
+                  <td style="text-align: center">
+                    {{ transaction?.created_date | date : "medium" }}
+                  </td>
+                  <td style="text-align: center">
+                    {{ transaction?.from_user_id.full_name }}
+                  </td>
+                  <td style="text-align: center">
+                    {{ transaction?.comments }}
+                  </td>
+                  <td style="text-align: center">{{ transaction?.remarks }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- style="
+                margin-bottom: 5%;
+                font-size: small;
+                text-align: left;
+                right: -225px;
+              " -->
+          <div class="row" style="width: 85%">
+            <div
+              class="col-sm-3 MarginLeftBottomprpoTotal"
+              
+            >
+              <p
+              class=" totalcount Mar15BranchIndent"
+
+              >
+                Total Count: {{ totalcount }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showHeaderbrimagepopup"
+    id="exampleModal"
+    class="modal fade bd-examplepopgrnHeaderfiles-modal-lg"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myLargeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title">Files</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <table
+          class="table table-bordered"
+          fixed-header
+          style="
+            margin-left: 50px;
+            width: 90%;
+            margin-top: 2%;
+            overflow-x: hidden;
+          "
+        >
+          <thead class="table_header">
+            <tr>
+              <th>S.NO</th>
+              <th>File Name</th>
+              <th>Download File</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let file of fileList; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ file.file_name }}</td>
+              <td>
+                <a
+                  ><i
+                    class="fa fa-download"
+                    style="color: green"
+                    (click)="fileDownloadheaderBR(file.file_id, file.file_name)"
+                  >
+                  </i
+                ></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isBrapproverTab">
+  <h2 style="margin-left: 3%;margin-top:10px">Branch Indent Request Approver Summary</h2>
+  <form [formGroup]="BRApproverSearch">
+    <div class="col-md-12">
+      <div class="row mr-3 ml-3">
+        <div class="col">
+          <div *ngIf="BRApproverSearch.value">
+            <mat-form-field
+              style="width: 200px;"
+              (click)="getbrappbranch()"
+            >
+              <mat-label>Branch Code / Name</mat-label>
+              <input
+                #branchInput
+                placeholder="Select Branch Code"
+                matInput
+                formControlName="branch_id"
+                [matAutocomplete]="branch"
+              />
+              <mat-autocomplete
+                [panelWidth]="400"
+                #branch="matAutocomplete"
+                [displayWith]="displayFnbranch"
+                (opened)="autocompletebranchScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <mat-option id="all-option" [value]="{ id: -1, value: -1 }"
+                  >ALL</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let branch of branchList; let first = first"
+                    [value]="branch"
+                  >
+                    {{ branch.code }}-{{ branch.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+              <!-- <button
+                type="button"
+                matSuffix
+                class="close"
+                (click)="resetBranchChange('', 'removebranch')"
+              >
+                X
+              </button> -->
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="col">
+          <div *ngIf="BRApproverSearch.value">
+            <mat-form-field
+              style="width: 200px; "
+              (click)="getbrappcommodity()"
+            >
+              <mat-label>Commodity Name</mat-label>
+              <input
+                #comInput
+                placeholder="Select Commodity"
+                matInput
+                formControlName="commodity_id"
+                [matAutocomplete]="com"
+              />
+              <mat-autocomplete
+                #com="matAutocomplete"
+                [displayWith]="displayFncom"
+                (opened)="autocompletecomScroll()"
+              >
+                <mat-option *ngIf="isLoading" class="is-loading"
+                  >Loading...</mat-option
+                >
+                <ng-container *ngIf="!isLoading">
+                  <mat-option
+                    *ngFor="let com of commodityList"
+                    [value]="com"
+                    (click)="resetAfterCommodityChange(com)"
+                    >{{ com.name }}
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+              <!-- <button
+                type="button"
+                matSuffix
+                class="close"
+                (click)="resetCommodityChange('', 'removecom')"
+              >
+                X
+              </button> -->
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="col">
+          <!-- <mat-form-field style="width: 200px">
+            <mat-label>Product Type</mat-label>
+            <mat-select formControlName="product_type">
+              <mat-option
+                *ngFor="let types of Lists"
+                [value]="types.id"
+                (click)="product_type = types.id"
+              >
+                {{ types.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+           <mat-form-field (click)="getProductTypes()"  style="width:200px">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types"  (click)="product_type = types.id">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field
+            style="width: 200px;"
+            (click)="getbrappproduct()"
+          >
+            <mat-label>Product Name</mat-label>
+            <input
+              #itemInput
+              placeholder="Select Product"
+              matInput
+              formControlName="product_id"
+              [matAutocomplete]="item"
+            />
+            <mat-autocomplete
+              #item="matAutocomplete"
+              [displayWith]="displayFnitem"
+              (opened)="autocompleteitemScroll()"
+            >
+              <mat-option *ngIf="isLoading" class="is-loading"
+                >Loading...</mat-option
+              >
+              <ng-container *ngIf="!isLoading">
+                <mat-option
+                  *ngFor="let item of productList"
+                  [value]="item"
+                  (click)="productclick(item)"
+                >
+                  {{ item.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+            <!-- <button
+              type="button"
+              matSuffix
+              class="close"
+              (click)="resetAfterProductChange('', 'removeProd')"
+            >
+              X
+            </button> -->
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field style="width: 200px">
+            <mat-label>Quantity</mat-label>
+            <input
+              matInput
+              formControlName="qty"
+              type="number"
+              autocomplete="off"
+            />
+          </mat-form-field>
+        </div>
+</div>
+<div class="row mr-3 ml-3">
+        <div class="col-md-12 text-right">
+          <!-- <div> -->
+            <button
+              class="btn btn-outline-primary"
+              type="submit"
+              (click)="getBRAppsummary(1)"
+              style="border-radius: 40px;"
+              color="primary"
+              matTooltip="Search Data"
+            >
+              <i class="fa fa-search" aria-hidden="true"></i>
+               <!-- <mat-icon>search</mat-icon> -->
+            </button>
+            &nbsp;&nbsp;
+          <!-- </div>
+          <div> -->
+            <button
+              class="btn btn-outline-secondary"
+              (click)="resetap()"
+              type="submit"
+              style="
+                border-radius: 40px;
+              
+              "
+              color="primary"
+              matTooltip="Reset"
+            >
+              <i class="fa fa-refresh" aria-hidden="true"></i>
+               <!-- <mat-icon>update</mat-icon> -->
+            </button>
+            &nbsp;&nbsp;
+          <!-- </div>
+          <div> -->
+            <button
+              style="
+                border-radius: 40px;
+               
+                cursor: pointer;
+              "
+              type="button"
+              matTooltip="Exportto Excel"
+              class="btn btn-outline-success"
+              (click)="brappmakerexceldownload()"
+            >
+              <span class="fa fa-download"></span>
+               <!-- <mat-icon>get_app</mat-icon> -->
+            </button>
+          </div>
+        </div>
+    </div>
+  </form>
+  <div
+    *ngIf="this.showApp"
+    class="table-responsive"
+    style="margin-top: 2%; width: 95%; margin-left: 50px"
+  >
+    <table class="table scrolltable table-bordered" fixed-header>
+      <thead>
+        <tr class="table_header" fixed-header>
+          <th>S.No</th>
+          <th>BIR No</th>
+          <th>Branch Code/Name</th>
+          <th>Commodity</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Status</th>
+          <th>View</th>
+          <th>Approve</th>
+          <th>Return</th>
+          <th>Reject</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let brappsummary of brAppSummaryList; index as i">
+          <td>{{ (presentpageapp - 1) * pageSize + i + 1 }}</td>
+          <td>{{ brappsummary?.no }}</td>
+          <td>
+            {{
+              brappsummary?.branch_id.code + "--" + brappsummary?.branch_id.name
+            }}
+          </td>
+          <td>{{ brappsummary?.commodity_id.name }}</td>
+          <td>{{ brappsummary?.product_id.name }}</td>
+          <td>{{ brappsummary?.qty }}</td>
+          <td>{{ brappsummary?.branch_request_status }}</td>
+          <td>
+            <button
+              mat-icon-button
+              matTooltip="View"
+              class="iconbutton"
+              color="primary"
+              mat-button
+              data-toggle="modal"
+              data-target="#BRAppModal"
+            >
+              <!-- <span
+                class="material-icons"
+                style="color: gray"
+                (click)="getbrappdetails(brappsummary)"
+                (click)="databrapp(brappsummary)"
+              >
+                visibility
+              </span> -->
+              <mat-icon  class="material-icons"
+                style="color: gray"
+                (click)="getbrappdetails(brappsummary)"
+                (click)="databrapp(brappsummary)">visibility</mat-icon>
+            </button>
+          </td>
+          <td>
+            <div>
+              <button
+                class="btn btn-success"
+                type="button"
+                style="border-radius: 40px"
+                data-toggle="modal"
+                data-target="#approved"
+                (click)="approveid(brappsummary)"
+              >
+                Approve
+              </button>
+            </div>
+          </td>
+          <td>
+            <div>
+              <button
+                class="btn btn-success"
+                type="button"
+                style="border-radius: 40px"
+                data-toggle="modal"
+                data-target="#returned"
+                (click)="returnid(brappsummary)"
+              >
+                Return
+              </button>
+            </div>
+          </td>
+          <td>
+            <div>
+              <button
+                class="btn btn-success"
+                type="button"
+                style="border-radius: 40px"
+                data-toggle="modal"
+                data-target="#rejected"
+                (click)="rejectid(brappsummary)"
+              >
+                Reject
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      *ngIf="brAppSummaryList?.length == 0; else showpaginationClose"
+      style="text-align: center"
+    >
+      No Records Found...
+    </div>
+    <div class="row" *ngIf="brappt" style="width: 85%">
+      <div
+        class="col-sm-3"
+        style="
+          margin-bottom: 5%;
+          font-size: small;
+          text-align: left;
+          right: -225px;
+        "
+      >
+        <!-- <p
+        class=" totalcount"
+
+        >
+          Total Count: {{ totalcount }}
+        </p> -->
+      </div>
+    </div>
+    <ng-template #showpaginationClose>
+      <div
+        class="cursor"
+        style="font-size: small;display: flex;align-items: center;justify-content: space-between; margin-bottom: 100px"
+      >
+       <p
+        class=" totalcount"
+
+        >
+          Total Count: {{ totalcount }}
+        </p>
+       <div>
+         <button
+          mat-icon-button
+          [disabled]="has_previousapp === false"
+          color="primary"
+          (click)="changePagepree()"
+        >
+          <mat-icon>arrow_back </mat-icon>
+        </button>
+        {{ presentpageapp }}
+        <button
+          mat-icon-button
+          [disabled]="has_nextapp === false"
+          color="primary"
+          (click)="changePagenextt()"
+        >
+          <mat-icon>arrow_forward </mat-icon>
+        </button>
+       </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <div
+    class="modal bd-fileupload-modal-lg"
+    id="approved"
+    tabindex="-1"
+    role="dialog"
+    data-backdrop="static"
+    data-keyboard="false"
+    aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Approve</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="ApproveBR">
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field style="width: 100%; cursor: not-allowed;" appearance="outline">
+                  <mat-label>Remarks</mat-label>
+                  <input
+                    matInput
+                    placeholder="Remarks"
+                    formControlName="remarks"
+                    autocomplete="off "
+                    readonly
+                
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            #closebutton
+            type="button"
+            class="btn btn-secondary"
+            style="border-radius: 10px; margin-left: 10px"
+            data-dismiss="modal"
+          >
+            Close
+          </button>
+          <div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              style="border-radius: 10px; margin-left: 10px"
+              (click)="approve()"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    #approved
+    class="modal bd-fileupload-modal-lg"
+    id="returned"
+    tabindex="-1"
+    role="dialog"
+    data-backdrop="static"
+    data-keyboard="false"
+    aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Return</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="ReturnBR">
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field style="width: 100%" appearance="outline">
+                  <mat-label>Remarks</mat-label>
+                  <input
+                    matInput
+                    placeholder="Remarks"
+                    formControlName="remarks"
+                    autocomplete="off "
+                    
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            #closerdbutton
+            type="button"
+            class="btn btn-secondary"
+            style="border-radius: 10px; margin-left: 10px"
+            data-dismiss="modal"
+          >
+            Close
+          </button>
+          <div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              style="border-radius: 10px; margin-left: 10px"
+              (click)="return()"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    #approved
+    class="modal bd-fileupload-modal-lg"
+    id="rejected"
+    tabindex="-1"
+    role="dialog"
+    data-backdrop="static"
+    data-keyboard="false"
+    aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reject</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="RejectBR">
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field style="width: 100%" appearance="outline">
+                  <mat-label>Remarks</mat-label>
+                  <input
+                    matInput
+                    placeholder="Remarks"
+                    formControlName="remarks"
+                    autocomplete="off "
+                  
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            #closertbutton
+            type="button"
+            class="btn btn-secondary"
+            style="border-radius: 10px; margin-left: 10px"
+            data-dismiss="modal"
+          >
+            Close
+          </button>
+          <div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              style="border-radius: 10px; margin-left: 10px"
+              (click)="reject()"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade bd-example-modal-xl"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myExtraLargeModalLabel"
+    aria-hidden="true"
+    id="BRAppModal"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="Container">
+          <div class="modal-header" style="background-color: #ddefdd">
+            <h2 style="text-align: center">Branch Request Details</h2>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <br />
+          <mat-accordion>
+         
+            <mat-expansion-panel
+              [expanded]="panelOpenState"
+              (opened)="panelOpenState = true"
+              (closed)="panelOpenState = false"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title> Branch Indent Details </mat-panel-title>
+                <!-- <mat-panel-description>
+                                  Currently I am {{panelOpenState ? 'open' : 'closed'}}
+                                </mat-panel-description> -->
+              </mat-expansion-panel-header>
+
+              <div style="margin-left: 3%; margin-top: 20px">
+                <table>
+                  <tr>
+                    <td class="col-md-6">
+                      <b style="margin-left: -14px">Branch:</b>&nbsp;{{
+                        branchhid
+                      }}
+                    </td>
+                    <td class="col-md-6">
+                      <b style="margin-left: 100px">Commodity:</b>&nbsp;
+                      {{ commodityy }}
+                    </td>
+                  </tr>
+                  <br />
+                  <tr>
+                    <td class="col-md-6">
+                      <b style="margin-left: -14px">Type:</b> &nbsp;{{ productType }}
+                    </td>
+                    <td class="col-md-6">
+                      <b style="margin-left: 100px">Product:</b> &nbsp;{{
+                        productt
+                      }}
+                    </td>
+                  
+                  </tr>
+                  <br />
+                  <tr>
+                    <td class="col-md-6">
+                      <b style="margin-left: -14px">UOM :</b> &nbsp;{{ uomm }}
+                    </td>
+                    <td class="col-md-6">
+                      <b style="margin-left: 100px">Remarks:</b> &nbsp;{{
+                        remakrs
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-md-6">
+                      <b style="margin-left: -14px">Request Product For :</b> &nbsp;{{ product_forreq }}
+                    </td>
+                    <!-- <td class="col-md-6">
+                      <b style="margin-left: 100px">Remarks:</b> &nbsp;{{
+                        remakrs
+                      }}
+                    </td> -->
+                  </tr>
+                </table>
+              </div>
+
+              <div style="margin-top: 25px">
+                <div class="col-md-12">
+                  <div class="row" [formGroup]="ViewBRApp">
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>Branch Code / Name</mat-label>
+                        <input
+                          placeholder="Branch Code/ Name"
+                          matInput
+                          formControlName="branch"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>BS</mat-label>
+                        <input
+                          placeholder="BS"
+                          matInput
+                          formControlName="bs"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>CC</mat-label>
+                        <input
+                          placeholder="CC"
+                          matInput
+                          formControlName="cc"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                    <!-- <div>
+                                <mat-form-field style="width: 252px; margin-left: 14px;">
+                                    <mat-label>UOM</mat-label>
+                                    <input placeholder="UOM" matInput formControlName="uom" readonly>
+                                </mat-form-field>
+                            </div> -->
+                    <div class="col-md-3">
+                      <mat-form-field style="width: 252px; margin-left: 14px">
+                        <mat-label>Quanity</mat-label>
+                        <input
+                          placeholder="Quantity"
+                          matInput
+                          formControlName="quantity"
+                          readonly
+                        />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel
+            *ngIf="isReplacement"
+            [expanded]="isReplacement"
+            (opened)="isReplace = true"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title> Replacement Asset Details </mat-panel-title>
+              <!-- <mat-panel-description>
+                                Type your name and age
+                              </mat-panel-description> -->
+            </mat-expansion-panel-header>
+            <!-- <div class="row">
+                          <div class="col-md-4">
+                            <form [formGroup]="assetForm">
+                              <mat-form-field appearance="outline" class="width">
+                                <mat-label>Asset ID</mat-label>
+                                <div class="input-wrapper">
+                                <input
+                                  matInput 
+                                  type="text"
+                                  formControlName="asset_id"
+                                  placeholder="Enter an Asset ID"
+                                  (input)="toUpperCase($event)"
+                                  />
+                                  <i class="fa fa-times-circle cancel" role="button" (click)="resetAsset()"></i>
+                                   </div>
+                              </mat-form-field>
+                            </form>
+                          </div>
+                          <div class="col-md-8 text-right pr-5 mt-2">
+                            <button class="btn btn-outline-success" (click)="addAsset()">
+                              <span class="fa fa-plus"></span>
+                            </button>
+                          </div>
+                        </div> -->
+            <div
+              class="table-responsive tableStyle"
+              *ngIf="assetArray.length >= 1"
+            >
+              <table class="table table-hover">
+                <thead class="table_header">
+                  <tr>
+                    <td>S.No</td>
+                    <td>Asset ID</td>
+                    <td>Serial No</td>
+                    <td>Product</td>
+                    <td>Make</td>
+                    <td>Model</td>
+                    <td>Specification</td>
+                    <!-- <td>Action</td> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of assetArray; index as i">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ a.asset_id }}</td>
+                    <td>{{ a.serial_no }}</td>
+                    <td>{{ a.product_name }}</td>
+                    <td>{{ a.item_name }}</td>
+                    <td>{{ a.model_name }}</td>
+                    <td>
+                      <ng-container
+                        *ngIf="
+                          a.specification && a.specification !== '--';
+                          else showEmpty
+                        "
+                      >
+                        <ng-container
+                          *ngFor="
+                            let specKey of getSpecificationKeys(
+                              a.specification
+                            )
+                          "
+                        >
+                          {{ specKey }}: {{ a.specification[specKey] }}<br />
+                        </ng-container>
+                      </ng-container>
+                      <!-- Template to display "--" if specification is empty -->
+                      <ng-template #showEmpty>{{
+                        a.specification
+                      }}</ng-template>
+                    </td>
+                    <!-- <td>
+                                  <mat-icon role="button" class="gray" (click)="deleteAsset(a,i)">delete</mat-icon>
+                                </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+          <mat-expansion-panel
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>Request Asset Details </mat-panel-title>
+              <!-- <mat-panel-description>
+                                Type your name and age
+                              </mat-panel-description> -->
+            </mat-expansion-panel-header>
+            <!-- <div class="row">
+                          <div class="col-md-4">
+                            <form [formGroup]="assetForm">
+                              <mat-form-field appearance="outline" class="width">
+                                <mat-label>Asset ID</mat-label>
+                                <div class="input-wrapper">
+                                <input
+                                  matInput 
+                                  type="text"
+                                  formControlName="asset_id"
+                                  placeholder="Enter an Asset ID"
+                                  (input)="toUpperCase($event)"
+                                  />
+                                  <i class="fa fa-times-circle cancel" role="button" (click)="resetAsset()"></i>
+                                   </div>
+                              </mat-form-field>
+                            </form>
+                          </div>
+                          <div class="col-md-8 text-right pr-5 mt-2">
+                            <button class="btn btn-outline-success" (click)="addAsset()">
+                              <span class="fa fa-plus"></span>
+                            </button>
+                          </div>
+                        </div> -->
+            <div class="table-responsive tableStyle">
+              <table class="table table-hover">
+                <thead class="table_header">
+                  <tr>
+                    <td>S.No</td>
+                    <td>Asset ID</td>
+                    <td>Serial No</td>
+                    <td>Product</td>
+                    <td>Make</td>
+                    <td>Model</td>
+                    <td>Specification</td>
+                    <!-- <td>Action</td> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of assetArrayy; index as i">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ a.asset_id }}</td>
+                    <td>{{ a.serial_no }}</td>
+                    <td>{{ a.product_name }}</td>
+                    <td>{{ a.item_name }}</td>
+                    <td>{{ a.model_name }}</td>
+                    <td>
+                      <ng-container
+                        *ngIf="
+                          a.specification && a.specification !== '--';
+                          else showEmpty
+                        "
+                      >
+                        <ng-container
+                          *ngFor="
+                            let specKey of getSpecificationKeys(
+                              a.specification
+                            )
+                          "
+                        >
+                          {{ specKey }}: {{ a.specification[specKey] }}<br />
+                        </ng-container>
+                      </ng-container>
+                      <!-- Template to display "--" if specification is empty -->
+                      <ng-template #showEmpty>{{
+                        a.specification
+                      }}</ng-template>
+                    </td>
+                    <!-- <td>
+                                  <mat-icon role="button" class="gray" (click)="deleteAsset(a,i)">delete</mat-icon>
+                                </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="default"
+  type="line-scale-party"
+>
+  <p style="color: white">Please Wait.</p>
+</ngx-spinner>
+
+<!-- BUG ID:7809 -->
+<div
+  class="modal fade"
+  id="prpomodal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="prpomodalLabel"
+  aria-hidden="true"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog modal-xl" role="document">
+    <!-- <div class="modal-dialog modal-xl"> -->
+
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold" id="prpomodalLabel">
+          PO Raised
+        </h4>
+        <button
+          type="button"
+          #closebttn
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <h4 style="text-align: left; margin-left: 50px; font-weight: bold">
+              PR No : {{ prno }}
+            </h4>
+          </div>
+          <div class="col-6">
+            <span
+              style="margin-left: 500px"
+              class="fa fa-download"
+              aria-hidden="true"
+              (click)="download()"
+              [class.disabled]="PoList?.length == 0"
+            ></span>
+          </div>
+        </div>
+
+        <div
+          class="table-responsive"
+          style="margin-top: 2%; width: 95%; margin-left: 50px"
+        >
+          <table class="table scrolltable table-bordered">
+            <thead>
+              <tr class="table_header">
+                <th>S.No</th>
+                <th>Number</th>
+                <th>Supplier Name</th>
+                <th>Branch</th>
+                <th>Raised By</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let po of PoList; index as i">
+                <!-- <td> {{(presentpage - 1)*pgsize +i+1 }} </td> -->
+                <td>{{ i + 1 }}</td>
+                <!-- <td (click)="po?.expanded = !po?.expanded" (click)="getpr(po,1)"> {{ po?.no }}</td> -->
+                <!-- <td (click)="toggleAndGetData(po, 1)"> {{ po?.no }}</td> -->
+                <!-- *ngIf="po.grn_no" -->
+                <td
+                  data-toggle="modal"
+                  data-target="#grnmodal"
+                  style="color: blue"
+                  (click)="getprpo(po)"
+                >
+                  {{ po?.no }}
+                </td>
+                <!-- <td *ngIf="!po.grn_no">{{po?.no}}</td> -->
+                <td>{{ po?.supplierbranch_id?.name }}</td>
+                <td>{{ po?.branch_id?.fullname }}</td>
+                <td>{{ po?.created_by?.full_name }}</td>
+                <td>{{ po?.date | date : "dd-MM-yyyy" }}</td>
+                <td class="rightalign">{{ po.amount | amountPipeCustom }}</td>
+                <td>{{ po?.poheader_status }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="PoList?.length == 0">No Records Found...</div>
+          <!-- <ng-template>
+                        <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="getPRsummary('previous')">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{presentpage}}
+                            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="getPRsummary('next')">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </ng-template> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <ng-container> -->
+<!-- Delivery Details -->
+<!-- <tr *ngIf="po?.expanded"> -->
+<!-- <tr> -->
+<!-- <td colspan="8"> Colspan should match the number of columns in the main table -->
+<!-- <tr>
+        <div class="table-responsive">
+    <table class="table scrolltable table-bordered">
+        <thead>
+            <tr class="table_header">
+                <th> S.No</th>
+                <th> Number</th>
+                <th> Invoice Number</th>
+                <th> Branch</th>
+                <th> Raised By</th>
+                <th>Quantity</th>
+                <th> Date</th>
+                <th> Status</th>
+                <th> Payment Ref No</th>
+                <th> Payment Released</th>
+                <th>Payment Remaining</th>   
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let grn of grnList; index as i">
+                 <td> {{(presentpage - 1)*pgsize +i+1 }} </td> -->
+<!-- <td>{{i+1}}</td>
+                <td>{{ grn?.code }}</td>
+                <td>{{ grn?.invoiceno}}</td>
+                <td>{{ grn?.branch}}</td>
+                <td>{{grn?.created_by}}</td>
+                <td>{{grn?.quantity}}</td>
+                <td>{{ grn?.date | date:'dd-MM-yyyy'}}</td>
+                <td>{{grn?.grn_status}}</td>
+                <td>{{grn?.apreferences_no}}</td>
+                <td>{{grn?.paid_popayment}}</td>
+                <td>{{grn?.payment_remaining}}</td>    
+        </tbody>
+    </table>
+</div> -->
+<!-- </td> -->
+<!-- <div class="row">
+<div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+<button mat-icon-button [disabled]="hasprevious === false" color="primary"
+(click)="haspreviousgrn()">
+<mat-icon >arrow_back</mat-icon>
+</button>
+{{presentpg}}
+<button mat-icon-button [disabled]="hasnextgrn === false" color="primary"
+(click)="grnnextClick()">
+<mat-icon >arrow_forward</mat-icon>
+</button>
+</div>
+</div> -->
+<!-- </tr> -->
+
+<!-- </ng-container> -->
+<div
+  class="modal fade"
+  id="grnmodal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="grnmodalLabel"
+  aria-hidden="true"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog modal-xl" role="document">
+    <!-- <div class="modal-dialog modal-xl"> -->
+
+    <div class="modal-content1">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold" id="grnmodalLabel">
+          GRN Raised
+        </h4>
+
+        <button
+          type="button"
+          #closebttn
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <h4 style="text-align: left; margin-left: 50px; font-weight: bold">
+              PO No : {{ prno }}
+            </h4>
+          </div>
+          <div class="col-6">
+            <span
+              class="fa fa-download"
+              style="margin-left: 500px"
+              aria-hidden="true"
+              (click)="download()"
+              [class.disabled]="PrList?.length == 0"
+            ></span>
+          </div>
+        </div>
+        <div
+          class="table-responsive"
+          style="margin-top: 2%; width: 95%; margin-left: 50px"
+        >
+          <table class="table scrolltable table-bordered">
+            <thead>
+              <tr class="table_header">
+                <th>S.No</th>
+                <th>Number</th>
+                <th>Invoice Number</th>
+                <th>Branch</th>
+                <th>Raised By</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Payment Ref No</th>
+                <th>Payment Released</th>
+                <th>Payment Remaining</th>
+                <th>Payment Date</th>
+                <th>File</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let po of PrList; index as i">
+                <!-- <td> {{(presentpage - 1)*pgsize +i+1 }} </td> -->
+                <td>{{ i + 1 }}</td>
+                <td>{{ po?.code }}</td>
+                <td>{{ po?.invoiceno }}</td>
+                <td>{{ po?.branch }}</td>
+                <td>{{ po?.created_by }}</td>
+                <td>{{ po?.quantity }}</td>
+                <td>{{ po?.date | date : "dd-MM-yyyy" }}</td>
+                <td>{{ po?.grn_status }}</td>
+                <td>{{ po?.apreferences_no }}</td>
+                <td>{{ po?.paid_popayment }}</td>
+                <td>{{ po?.payment_remaining }}</td>
+                <td>{{ po?.payment_date }}</td>
+                <td style="text-align: center">
+                  <span
+                    class="fa fa-download"
+                    aria-hidden="true"
+                    (click)="GRNRaised(po)"
+                    data-toggle="modal"
+                    data-target="#filemodal"
+                  ></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="PrList?.length == 0">No Records Found...</div>
+          <!-- <ng-template>
+                        <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="getPRsummary('previous')">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{presentpage}}
+                            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="getPRsummary('next')">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </ng-template> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="showgrnraisedpopup"
+    id="filemodal"
+    class="modal fade bd-examplepopbrHeaderfiles-modal-lg"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myLargeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #ddefdd">
+          <h2 class="modal-title">Files</h2>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <table
+          class="table table-bordered"
+          fixed-header
+          style="
+            margin-left: 50px;
+            width: 90%;
+            margin-top: 2%;
+            overflow-x: hidden;
+          "
+        >
+          <thead class="table_header">
+            <tr>
+              <th>S.NO</th>
+              <th>File Name</th>
+              <th>Download File</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let file of grnrList; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ file.file_name }}</td>
+              <td>
+                <a
+                  ><i
+                    class="fa fa-download"
+                    style="color: green"
+                    (click)="fileDownloadGRN(file.file_name)"
+                  >
+                  </i
+                ></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button
+  type="button"
+  class="d-none"
+  id="openModalButton"
+  data-toggle="modal"
+  data-target="#showWarn"
+></button>
+
+<div
+  class="modal fade custom-modal"
+  id="showWarn"
+  tabindex="-1"
+  data-backdrop="static"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Review Required</h3>
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button> -->
+      </div>
+      <div class="modal-body">
+        <h4>
+          <p>
+            This PR Request includes Replacement Asset details,
+           </p>
+          <p>
+            Please Review and Approve!.
+          </p> 
+        </h4>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-success"
+          data-dismiss="modal"
+        >
+          Proceed
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form [formGroup]="justificationC">
+
+ <div *ngIf="showEditor"
+        class="modal fade jus_note"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myExtraLargeModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header" style="background: #ddefdd">
+              <h2
+                class="modal-title"
+                id="exampleModalLongTitle"
+              >
+                Justification Note
+              </h2>
+             
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <br />
+            <div style="margin-left: 50px; width: 90%; height: 70%">
+              <div>
+                <div
+                  [ngxSummernote]="config"
+                  [ngxSummernoteDisabled]="editorDisabled"
+                  (blur)="onBlur()"
+                  (mediaDelete)="onDelete($event)"
+                  (summernoteInit)="summernoteInitt($event)"
+                  formControlName="justification"
+                >
+                  <!-- <div
+              [ngxSummernote]="config"
+              [ngxSummernoteDisabled]="editorDisabled"
+              (blur)="onBlur()"
+              (mediaDelete)="onDelete($event)"
+              (summernoteInit)="summernoteInit($event)"
+              formControlName="notepad"
+            ></div> -->
+                  <!-- <div
+            id="summernote"
+            [ngxSummernote]="config"
+            [ngxSummernoteDisabled]="editorDisabled"
+            formControlName="notepad"
+          ></div> -->
+                </div>
+              </div>
+            </div>
+            <br />
+            <!-- <div class="modal-footer">
+              <button
+                type="button"
+                style="border-radius: 40px; margin-left: 10px"
+                class="btn btn-outline-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div> -->
+          </div>
+        </div>
+      </div>
+</form>

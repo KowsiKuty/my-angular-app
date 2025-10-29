@@ -1,0 +1,140 @@
+<div style="margin-left:2%">
+    <br>
+    <h2>LOS Log Summary</h2>
+    <form [formGroup]="losSummaryForm" class="example-form">
+        <div class="row">
+            <div class="col-md-2">
+                <mat-form-field class="example-full-width" >
+                    <input #name placeholder="Choose Application" matInput formControlName="application_no" [matAutocomplete]="autosupp">
+                    <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let app of applno" [value]="app" matTooltip="{{app.ApplNo}}">
+                                            {{app.ApplNo}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-2">
+                <mat-form-field class="example-full-width" style="margin-left: 35px;"  (click)="getraiserdropdown()">
+                            <mat-label>Raiser Name</mat-label>
+                            <input #raiserInput matInput
+                                formControlName="raiser_id" [matAutocomplete]="raisertyperole" 
+                                placeholder="Choose Raiser">
+                            <!-- <mat-icon matSuffix class="maticonsize">unfold_more</mat-icon> -->
+                            <mat-autocomplete [panelWidth]="400" #raisertyperole="matAutocomplete"
+                                [displayWith]="displayFnraiserrole" (opened)="raiserScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let data of Raiserlist" [value]="data" matTooltip = "{{data.full_name}}">
+                                        {{data.full_name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+            </div>
+            <div class="col-md-2">
+                <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                    <mat-label>Start Date</mat-label>
+                    <input matInput [matDatepicker]="Invoice_Date" formControlName="from_date">
+                    <mat-datepicker-toggle matSuffix [for]="Invoice_Date"></mat-datepicker-toggle>
+                    <mat-datepicker #Invoice_Date></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-2">
+                <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                    <mat-label>End Date</mat-label>
+                    <input matInput [matDatepicker]="Invoice_Dates" formControlName="to_date">
+                    <mat-datepicker-toggle matSuffix [for]="Invoice_Dates"></mat-datepicker-toggle>
+                    <mat-datepicker #Invoice_Dates></mat-datepicker>
+                </mat-form-field>
+            </div>
+    
+
+
+
+            <div class="col-md-1">
+
+                <button class="btn btn-outline-primary" type="submit" (click)="searchLogSummary()"
+                    style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                        aria-hidden="true"></i></button>
+
+            </div>
+            <div class="col-md-1" style="margin-left: -3%;">
+
+                <button class="btn btn-outline-primary" (click)="reset()" style="border-radius:40px;"
+                    color="primary">Reset</button>
+
+            </div>
+            <div class="col-md-1" style="margin-left: -2%;">
+
+                <button type="button" style="border-radius:40px;" class="btn btn-outline-success"
+                    (click)="exceldownload()">
+                    <i matTooltip="Download Excel" class="fa fa-download"></i>
+                </button>
+
+            </div>
+        </div>
+
+        <h2>LOS Log Summary</h2>
+        <div class="table-responsive">
+            <table class="table table scrolltable table-bordered">
+                <thead class="table_header" fixed-header>
+                    <tr>
+                        <th>S.No
+                            <!-- <span  (click)="search('DESC')"><i
+                                        class="fa fa-arrow-down"></i></span>
+                                <span (click)="search('ASC')"><i
+                                        class="fa fa-arrow-up"></i></span> -->
+                        </th>
+                        <th>Application Number</th>
+                        <th class="w-25">Raiser</th>
+                        <!-- <th>Branch Code</th> -->
+                        <th>Created Date</th>
+                        <th>Status</th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let los of los_summary_data; index as i">
+                        <td align="center">{{(this.presentpage - 1)*lospagesize +i+1 }}</td>
+                        <td align="center">
+                            {{los.ApplNo}}</td>
+                        <td align="center">
+                            <div *ngIf="los.rasier_name === null || los.rasier_name === ''">
+
+                            </div>
+                            <div *ngIf="los.rasier_name !== null">
+                                {{ los.rasier_code}}-{{los.rasier_name}}
+                            </div>
+                        </td>
+
+                        <td align="center">{{los.created_date|date:'dd-MMM-yyyy'}}</td>
+                        <td align="center"> {{los.status}}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="los_summary_data ?.length == 0" style="margin-left: 42%;">
+                <h3>Sorry data not found!.. </h3>
+            </div>
+            <div *ngIf="isLosSummaryPagination">
+                <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                    <button type="button" mat-mini-fab color="primary" [disabled]="has_previous === false"
+                        style="border-radius:200px;margin-left: 15px;" (click)="previousClicklos()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    &nbsp;&nbsp; {{presentpage}}
+                    <button type="button" mat-mini-fab color="primary" [disabled]="has_next === false"
+                        style="border-radius:200px;margin-left: 15px;" (click)="nextClicklos()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

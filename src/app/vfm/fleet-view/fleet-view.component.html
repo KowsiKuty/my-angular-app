@@ -1,0 +1,1568 @@
+<div class="float-container">
+    <div class="float-child" style="font-size:2vw;font-family:'Times New Roman', Times, serif;">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vehicle Details</div>
+    </div>
+    <button type="button" data-toggle="modal" *ngIf="viewscreen" class="btn btn-outline-success"
+            (click)="changes_view()" style="margin-left:10px">
+            Modification View</button>
+            <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 10px;margin-top: 10px;"
+      (click)="backButton()">Back</button>
+      
+    <div *ngIf="isapprove" style="float:right">
+    <button style="margin-right: 15px;margin-top: 10px;" class="btn btn-outline-success" type="button" data-toggle="modal"
+    data-target="#approveModal">
+        Approve </button>
+    <button class="btn btn-outline-danger" type="button" data-toggle="modal"
+        data-target="#rejectModal" style="margin-top: 10px;">
+        Reject</button>
+        </div>
+        <button style="float:right" class="btn btn-outline-success" *ngIf="isPendingChecker" type="button" data-toggle="modal"
+    data-target="#checkerModal" style="margin-top: 10px;margin-left: 15px;">
+        Submit to Checker </button>
+        <button style="float:right;margin-right: 15px;margin-top: 10px;" class="btn btn-outline-success" *ngIf="ismodify" type="button" (click)="modify()">
+        Modify </button>
+    <div style="margin-left: 50px;margin-top: 4%;">
+        <div>            
+        <table width="100%">
+            <tbody>
+                <tr>
+                    <td width="20%" valign="top">      
+                        <table width="100%;" style="font-size:14px;">          
+                            <tbody>
+                                <tr>        
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Vehicle : <span
+                                            style="color: black;margin-left: 9%;">{{ vehicleData?.vehicle_no }} </span></p>
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Vehicle Model: <span
+                                            style="color: black;margin-left: 3%;">{{ vehicleData?.vehicle_model }}</span></p>
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Ownership Type: <span
+                                            style="color: black;margin-left: 1%;">{{ vehicleData?.ownership_type.text}} </span></p>
+                                    
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td width="25%" valign="top">
+                        <table width="100%;" style="font-size:14px;">
+                            <tbody>
+                                <tr>
+                                  
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Fuel Type: <span
+                                        style="color: black;margin-left: 8%;"> {{ vehicleData?.fuel_type.text}}</span>
+                                </p>
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Branch Name: <span
+                                            style="color: black;margin-left: 4%;">{{ vehicleData?.branch.name}}</span>
+                                    </p>
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Incharge Name: <span
+                                            style="color: black;margin-left: 2%;">{{ vehicleData?.incharge.name}}</span></p>
+                                    <p *ngIf="isvendorList" style="color: #808080; margin: 0px 0 4px;"> Vendor Name: <span
+                                            style="color: black;margin-left: 4%;">{{ vehicleData?.vendor.name}}</span>
+                                    </p>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td *ngIf="isownList" width="20%" valign="top">
+                        <table width="100%;" style="font-size:14px;">
+                            <tbody>
+                                <tr>
+                                  
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Usage Type :  <span
+                                            style="color: black;margin-left: 3%;">{{ vehicleData?.usage_type.text}}</span></p>
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Engine No : <span
+                                            style="color: black;margin-left: 6%;">{{ vehicleData?.engine_no}}</span>
+                                    </p>
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Chassis No :<span
+                                            style="color: black;margin-left: 5%;">{{ vehicleData?.chassis_no}}</span></p>
+                                   
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td *ngIf="isownList" width="15%" valign="top">
+                        <table width="100%;" style="font-size:14px;">
+                            <tbody>
+                                <tr>
+                                  
+                                    <p style="color: #808080; margin: 0px 0 4px;">Pc Applicable:  <span
+                                            style="color: black;margin-left: 7%;">{{ vehicleData?.pc_applicable}}</span></p>
+                                    <p style="color: #808080; margin: 0px 0 4px;"> Fc Applicable : <span
+                                            style="color: black;margin-left: 6%;">{{ vehicleData?.fc_applicable}}</span>
+                                    </p>
+                                    <p *ngIf="ispc" style="color: #808080; margin: 0px 0 4px;"> Pc End Date :<span
+                                            style="color: black;margin-left: 9%;">{{ vehicleData?.pc_end_date| date:'dd-MMM-yyyy'}}</span></p>
+                                    <p *ngIf="isfc"style="color: #808080; margin: 0px 0 4px;"> Fc End Date: <span
+                                            style="color: black;margin-left: 9%;"> {{ vehicleData?.fc_end_date| date:'dd-MMM-yyyy'}}</span>
+                                    </p>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div>
+            <span class="drop-down">
+                <div>
+                    <mat-form-field style="margin-right: 20px;">
+                        <mat-select [(ngModel)]="dropDownTag" (selectionChange)="onDropDownChange($event)">
+                            <mat-option *ngFor="let dropValue of dropDownValue" value="{{dropValue.text}}">
+                                {{dropValue.text}} </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+            </span> 
+            <span *ngIf="isedit" style="font-size:1.5vw">{{btnName}}
+                <button type="button" class="btn btn-outline-success"
+                    style="border-radius: 40px;float: right;margin-right: 7%;margin-top: 13px;"
+                    (click)="addForm(btnName)"><span class="fa fa-plus"></span> {{btnName}} </button>
+            </span>
+            </div>
+            <div>
+                <div class="table-responsive" *ngIf="dropDownTag == 'Vehicle Insurance'" class="center">
+                    <h1>Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Policy No </th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Premium Amount</th>
+                                <th>Insured Value </th>
+                                <th>Vendor</th>
+                                <th *ngIf="isedit">Claim Add</th>
+                                <th>Claim Summary</th>
+                                <th>Claim Changes View Summary</th>
+                                <th *ngIf="isedit">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let fleet of fleetList; index as i">
+                                <td> {{(presentpage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.policy_no }}</td>
+                                <td>{{ fleet.start_date}}</td>
+                                <td>{{ fleet.end_date}}</td>
+                                <td>{{ fleet.premium_amount}}</td>
+                                <td>{{ fleet.insurance_value}}</td>
+                                <td>{{ fleet.vendor_id?.name}}</td>
+                               
+                                <!-- <td *ngIf="isedit">
+                                    <button type="button" class="btn btn-outline-success"
+                                    (click)="claimadd(fleet.id,fleet.start_date,fleet.end_date,fleet.insurance_value)" data-toggle="modal"
+                                    data-target="#claimModal"><span class="fa fa-plus"></span></button>
+                                </td> -->
+                                <!-- ////5018 -->
+                                <td *ngIf="isedit && !ismodifysum">
+                                    <button type="button" class="btn btn-outline-success"
+                                    (click)="claimadd(fleet.id,fleet.start_date,fleet.end_date,fleet.insurance_value)" data-toggle="modal"
+                                    data-target="#claimModal"><span class="fa fa-plus"></span></button>
+                                </td>
+                                <td *ngIf="isedit && ismodifysum && fleet.modify_status.id==-1">
+                                    <button type="button" class="btn btn-outline-success"
+                                    (click)="claimadd(fleet.id,fleet.start_date,fleet.end_date,fleet.insurance_value)" data-toggle="modal"
+                                    data-target="#claimModal"><span class="fa fa-plus"></span></button>
+                                </td>
+                                <td *ngIf="isedit && ismodifysum && fleet.modify_status.id==0">
+                                    <button type="button" class="btn btn-outline-success"
+                                    (click)="claimadd(fleet.id,fleet.start_date,fleet.end_date,fleet.insurance_value)" data-toggle="modal"
+                                    data-target="#claimModal" [disabled]="true"><span class="fa fa-plus"></span></button>
+                                </td>
+<!-- /////////////////////// -->
+                                <td> <button type="button" class="btn btn-outline-success"
+                                     (click)="claimsummary(fleet.id)" data-toggle="modal"
+                                    data-target="#claimsumModal"><span class="fa fa-eye create"></span></button>
+                                </td>
+                                <td> <button type="button" class="btn btn-outline-success"
+                                   
+                                    (click)="claimChangesViewSummary()" data-toggle="modal"
+                                    data-target="#claimChangesView"><span class="fa fa-eye create"></span></button>
+                                </td>
+                                <!-- <td *ngIf="isedit">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="insuranceEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon><br>
+                                </button>
+                                </td> -->
+                                                                    <!-- //BUG ID:5018 -->
+
+
+                                <td *ngIf="isedit && !ismodifysum">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                   (click)="insuranceEdit(fleet.id)">
+                                  <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon><br>
+                                </button>
+
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="vinsurancedltcreate(fleet.id,i)">
+                                <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                                </td>
+
+                                <td *ngIf="isedit && ismodifysum && fleet.modify_status.id==-1">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="insuranceEdit(fleet.id)" >
+                                    <mat-icon style="color:blue;" aria-label="Edit">edit</mat-icon><br>
+                                </button>
+                               <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="vinsurancedltcreate(fleet.id,i)" 
+                               >                
+                                <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                                </td>          
+                                <td *ngIf="isedit && ismodifysum && fleet.modify_status.id !=-1">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="insuranceEdit(fleet.id)" [disabled]="true" >
+                                    <mat-icon style="color:grey;" aria-label="Edit">edit</mat-icon><br>
+                                </button>
+                               <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="vinsurancedltcreate(fleet.id,i)" 
+                                 [disabled]="true" >                
+                                <mat-icon style="color:grey;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                                </td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="fleetList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isfleetList">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                            (click)="pre_previousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="pre_nextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="ismodifysum">
+                  <div class="table-responsive" *ngIf="dropDownTag == 'Vehicle Insurance'" class="center">
+                    <h1> Modification Summary</h1>
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Policy No </th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Premium Amount</th>
+                            <th>Insured Value </th>
+                            <th>Vendor</th>
+                            <th>Status</th>
+                            <th>Claim Add</th>
+                            <th>Claim Summary</th>
+                            <th *ngIf="isedit">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let fleet of insuranceList; index as i">
+                            <td> {{(insurancepresentpage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.policy_no }}</td>
+                            <td>{{ fleet.start_date}}</td>
+                            <td>{{ fleet.end_date}}</td>
+                            <td>{{ fleet.premium_amount}}</td>
+                            <td>{{ fleet.insurance_value}}</td>
+                            <td>{{ fleet.vendor_id.name}}</td>
+                            <td>{{ fleet.modify_status.text }}</td>
+
+                            <td *ngIf="isedit &&  fleet.modify_status.text != 'Deleted' ">
+                                <button type="button" class="btn btn-outline-success"                                   
+                                (click)="claimadd(fleet.id,fleet.start_date,fleet.end_date,fleet.insurance_value)" data-toggle="modal"
+                                data-target="#claimModal"><span class="fa fa-plus"></span></button>
+                            </td>
+                            <td *ngIf="isedit &&  fleet.modify_status.text == 'Deleted' ">
+                                <button type="button" class="btn btn-outline-success"                                   
+                                (click)="claimadd(fleet.id,fleet.start_date,fleet.end_date,fleet.insurance_value)" data-toggle="modal"
+                                data-target="#claimModal" [disabled]="true"><span class="fa fa-plus"></span></button>
+                            </td>
+
+                            <td> <button type="button" class="btn btn-outline-success"                               
+                                (click)="claimmodifysummary(fleet.id)" data-toggle="modal"
+                                data-target="#claimsumModalmodify"><span class="fa fa-eye create"></span></button>
+                            </td>
+                            <!-- <td *ngIf="isedit">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="insuranceEdit(fleet.id)">
+                                <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                            </td> 
+                        BUG ID:5018-->
+                           <td *ngIf="isedit &&  fleet.modify_status.text != 'Deleted' ">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="insuranceEdit(fleet.id)">
+                                <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="vinsurancedlt(fleet.id,i)">
+                                <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                            </td>
+                            <td *ngIf="isedit && fleet.modify_status.text == 'Deleted' ">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" [disabled]="true"
+                                (click)="insuranceEdit(fleet.id)">
+                                <mat-icon style="color: gray;" aria-label="Edit" >edit</mat-icon>
+                            </button>
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton"  color="primary" (click)="vinsurancedlt(fleet.id,i)" [disabled]="true">
+                                <mat-icon style="color:gray;" aria-label="Delete" >delete</mat-icon>  
+                                </button>
+                            </td>
+                                                    </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="insuranceList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isinsuranceList">
+                    <button mat-icon-button [disabled]="insurancehas_previous === false" color="primary"
+                        (click)="insurancepre_previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{insurancepresentpage}}
+                    <button mat-icon-button [disabled]="insurancehas_next === false" color="primary" (click)="insurancepre_nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+            </div>
+
+            <!-- //Vehicle Fasttag Summary -->
+            <div class="table-responsive" *ngIf="dropDownTag == 'Vehicle Fastag'" class="center">
+             <h1>Summary</h1>
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Recharged Amount </th>
+                            <th>Recharged Date </th>
+                            <th *ngIf="isedit">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let fleet of fasttagList; index as i">
+                            <td> {{(fasttagdetailpage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.recharged_amount }}</td>
+                            <td>{{ fleet.recharged_date}}</td>
+
+                                <td *ngIf="isedit && !ismodifysum">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="fasttagEdit(fleet.id)">
+                                <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                                                 <!-- //BUG ID:5018 -->
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="fasttagedltcreate(fleet.id,i)">
+                                <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                            </td>    
+                            
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status.id==-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="fasttagEdit(fleet.id)">
+                                <mat-icon style="color:blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                                                 <!-- //BUG ID:5018 -->
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="fasttagedlt(fleet.id,i)">
+                                <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                            </td>    
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status.id !=-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="fasttagEdit(fleet.id)" [disabled]="true">
+                                <mat-icon style="color:grey;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                                                 <!-- //BUG ID:5018 -->
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="fasttagedlt(fleet.id,i)"
+                                [disabled]="true">
+                                <mat-icon style="color:grey;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                            </td>    
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="fasttagList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="row" *ngIf="isfastDetails">
+                    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                        <button mat-icon-button [disabled]="previous_fastDetails === false" color="primary"
+                            (click)="previosfastDetails()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{fasttagdetailpage}}
+                        <button mat-icon-button [disabled]="next_fastDetails === false" color="primary"
+                            (click)="nextfastDetails()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- //vehicle Fasttag Modification Summary -->
+            <div *ngIf="ismodifysum">
+                <div class="table-responsive" *ngIf="dropDownTag == 'Vehicle Fastag'" class="center">
+                    <h1>Modification Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Recharged Amount </th>
+                                <th>Recharged Date </th>
+                                <th>Status</th>
+                                <th *ngIf="isedit">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let fleet of fasttagmodifyList; index as i">
+                                <td> {{(fasttagmodifypage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.recharged_amount }}</td>
+                                <td>{{ fleet.recharged_date}}</td>      
+                                <td>{{ fleet.modify_status.text }}</td>
+
+                                <!-- <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="fasttagEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                </td> -->
+                                <!-- BUG ID:5018 -->
+                                <td *ngIf="isedit && fleet.modify_status.text != 'Deleted'"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="fasttagEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="fasttagedlt(fleet.id,i)">
+                                    <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                    </button>
+                                </td>
+
+                                <td *ngIf="isedit && fleet.modify_status.text == 'Deleted' ">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" [disabled]="true"
+                                    (click)="fasttagEdit(fleet.id)">
+                                    <mat-icon style="color: gray;" aria-label="Edit" >edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton"  color="primary" (click)="fasttagedlt(fleet.id,i)" [disabled]="true">
+                                    <mat-icon style="color:gray;" aria-label="Delete" >delete</mat-icon>  
+                                    </button>
+                                </td>
+                                
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="fasttagmodifyList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="row" *ngIf="isfastmodify">
+                        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                            <button mat-icon-button [disabled]="previous_fastmodify === false" color="primary"
+                                (click)="previosfastmodify()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{fasttagmodifypage}}
+                            <button mat-icon-button [disabled]="next_fastmodify === false" color="primary"
+                                (click)="nextfastmodify()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            <div>
+                <!-- //trip Details -->
+                <div class="table-responsive" *ngIf="dropDownTag == 'Trip Details'" class="center">
+                    <h1> Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Driver </th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>From Place </th>
+                                <th>To Place </th>
+                                <th>Reason </th>
+                                <th>Start ODO </th>
+                                <th>End ODO </th>
+                                <th>Booked By </th>
+                                <th>Booked Type </th>
+                                <!-- <th>Booked For </th> -->
+                                <th>Fuel Filled  </th>
+                                <th>Mileage Run </th>
+                                <th *ngIf="isedit">Action</th>
+                            </tr>
+                        </thead>    
+                        <tbody>
+                            <tr *ngFor="let fleet of vehicletripList; index as i">
+                                <td>{{ (vehicletrippage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.driver }}</td>
+                                <td>{{ fleet.start_date| date:'dd-MMM-yyyy'}}</td>
+                                <td>{{ fleet.end_date| date:'dd-MMM-yyyy'}}</td>
+                                <td>{{ fleet.from_place}}</td>
+                                <td>{{ fleet.to_place}}</td>
+                                <td>{{ fleet.reason}}</td>
+                                <td>{{ fleet.start_odo}}</td>
+                                <td>{{ fleet.end_odo}}</td>
+                                <td>{{ fleet.booked_by.name}}</td>
+                                <td>{{ fleet.booked_for_type.text}}</td>
+                                <!-- <td>{{ fleet.booked_for.name}}</td> -->
+                                <td>{{ fleet.fuel_filled}}</td>
+                                <td>{{ fleet.mileage_run}}</td>
+                                
+                                <!-- <td *ngIf="isedit">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicleTripEdit(fleet.id)">
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button> -->
+                                <!-- BUG <ID:5018> -->
+                                    
+                                <td *ngIf="isedit && !ismodifysum">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                   (click)="vehicleTripEdit(fleet.id)">
+                                  <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon><br>
+                                </button>
+
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="tripdtlltcreate(fleet.id,i)">
+                                <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                                </td>
+
+                                <td *ngIf="isedit && ismodifysum && fleet.modify_status.id==-1">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicleTripEdit(fleet.id)" >
+                                    <mat-icon style="color:blue;" aria-label="Edit">edit</mat-icon><br>
+                                </button>
+                               <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="tripdtllt(fleet.id,i)" 
+                               >                
+                                <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                                </td>
+                                <td *ngIf="isedit && ismodifysum && fleet.modify_status.id !=-1">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicleTripEdit(fleet.id)" [disabled]="true">
+                                    <mat-icon style="color:grey;" aria-label="Edit">edit</mat-icon><br>
+                                </button>
+                               <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="tripdtllt(fleet.id,i)" 
+                               [disabled]="true">                
+                                <mat-icon style="color:grey;" aria-label="Delete">delete</mat-icon>  
+                                </button>
+                                </td>            
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="vehicletripList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="row" *ngIf="istripDetails">
+                        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                            <button mat-icon-button [disabled]="previous_tripDetails === false" color="primary"
+                                (click)="previousTripDetails()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{vehicletrippage}}
+                            <button mat-icon-button [disabled]="next_tripDetails === false" color="primary"
+                                (click)="nextTripDetails()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- //Trip Details Modification Summary -->
+            <div *ngIf="ismodifysum">
+                <div class="table-responsive" *ngIf="dropDownTag == 'Trip Details'" class="center">
+                    <h1>Modification Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Driver </th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>From Place </th>
+                                <th>To Place </th>
+                                <th>Reason </th>
+                                <th>Start ODO </th>
+                                <th>End ODO </th>
+                                <th>Booked By </th>
+                                <th>Booked Type </th>
+                                <!-- <th>Booked For </th> -->
+                                <th>Fuel Filled  </th>
+                                <th>Mileage Run </th>
+                                <th>Status </th>
+                                <th *ngIf="isedit">Action</th>
+                            </tr>
+                        </thead>    
+                        <tbody>
+                            <tr *ngFor="let fleet of vehicletripmodifyList; index as i">
+                                <td>{{ (vehicletripmodifypage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.driver }}</td>
+                                <td>{{ fleet.start_date| date:'dd-MMM-yyyy'}}</td>
+                                <td>{{ fleet.end_date| date:'dd-MMM-yyyy'}}</td>
+                                <td>{{ fleet.from_place}}</td>
+                                <td>{{ fleet.to_place}}</td>
+                                <td>{{ fleet.reason}}</td>
+                                <td>{{ fleet.start_odo}}</td>
+                                <td>{{ fleet.end_odo}}</td>
+                                <td>{{ fleet.booked_by.name}}</td>
+                                <td>{{ fleet.booked_for_type.text}}</td>
+                                <!-- <td>{{ fleet.booked_for.name}}</td> -->
+                                <td>{{ fleet.fuel_filled}}</td>
+                                <td>{{ fleet.mileage_run}}</td>
+                                <td>{{ fleet.modify_status.text }}</td>
+
+                                <td *ngIf="isedit && fleet.modify_status.text != 'Deleted'">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicleTripEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                <!-- //BUG ID:5018 -->
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="tripdtllt(fleet.id,i)">
+                                    <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                    </button>
+                                </td>
+                                
+                                <td *ngIf="isedit && fleet.modify_status.text == 'Deleted' ">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" [disabled]="true"
+                                    (click)="vehicleTripEdit(fleet.id)">
+                                    <mat-icon style="color: gray;" aria-label="Edit" >edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton"  color="primary" (click)="tripdtllt(fleet.id,i)" [disabled]="true">
+                                    <mat-icon style="color:gray;" aria-label="Delete" >delete</mat-icon>  
+                                    </button>
+                                </td>
+                                
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="vehicletripmodifyList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="row" *ngIf="istripmodify">
+                        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                            <button mat-icon-button [disabled]="previous_tripmodify === false" color="primary"
+                                (click)="previousTripmodify()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{vehicletripmodifypage}}
+                            <button mat-icon-button [disabled]="next_tripmodify === false" color="primary"
+                                (click)="nextTripmodify()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--BUG ID:5018 //Vehicle Service History -->
+            <div class="table-responsive" *ngIf="dropDownTag == 'Vehicle Service History'" class="center">
+                <h1>Summary</h1>
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Service By</th>
+                            <th>Type</th>
+                            <th>Service Date</th>
+                            <th>Next Service Date</th>
+                            <th>Service Cost</th>
+                            <th>Vehicle ODO</th>
+                            <th *ngIf="isedit">Action</th>
+                        </tr>
+                    </thead>    
+                    <tbody>
+                        <tr *ngFor="let fleet of vehicleserviceList; index as i">
+                            <td>{{ (vehicleservicepage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.service_by.name }}</td>
+                            <td>{{ fleet.type.text}}</td>
+                            <td>{{ fleet.service_date}}</td>
+                            <td>{{ fleet.next_service_date}}</td>
+                            <td>{{ fleet.service_cost}}</td>
+                            <td>{{ fleet.vehicle_odo}}</td>
+                            
+                            <!-- <td *ngIf="isedit">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicleServiceEdit(fleet.id)">
+                              <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button> -->
+                            <!-- BUG ID:5018 -->
+                                <td *ngIf="isedit && !ismodifysum">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                               (click)="vehicleServiceEdit(fleet.id)">
+                              <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="ServiceHisdltcreate(fleet.id,i)">
+                            <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>
+
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status.id==-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicleServiceEdit(fleet.id)" >
+                                <mat-icon style="color:blue;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+                           <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="ServiceHisdlt(fleet.id,i)">                
+                            <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>     
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status.id !=-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicleServiceEdit(fleet.id)" [disabled]="true">
+                                <mat-icon style="color:grey;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+                           <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="ServiceHisdlt(fleet.id,i)" 
+                           [disabled]="true">                
+                            <mat-icon style="color:grey;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>         
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="vehicleserviceList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="row" *ngIf="isvehicleserviceDetails">
+                    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                        <button mat-icon-button [disabled]="previous_serviceDetails === false" color="primary"
+                            (click)="previousserviceDetails()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{vehicleservicepage}}
+                        <button mat-icon-button [disabled]="next_serviceDetails === false" color="primary"
+                            (click)="nextserviceDetails()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- //VEHICLE SERVICE MODIFICATION SUMMARY -->
+            <div *ngIf="ismodifysum">
+                <div class="table-responsive" *ngIf="dropDownTag == 'Vehicle Service History'" class="center">
+                    <h1>Modification Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                            <th>Service By</th>
+                            <th>Type</th>
+                            <th>Service Date</th>
+                            <th>Next Service Date</th>
+                            <th>Service Cost</th>
+                            <th>Vehicle ODO</th>
+                                <th>Status</th>
+                                <th *ngIf="isedit">Action</th>
+                            </tr>
+                        </thead>    
+                        <tbody>
+                            <tr *ngFor="let fleet of vehicleservicemodifyList; index as i">
+                                <td>{{ (vehicleservicemodifypage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.service_by.name }}</td>
+                            <td>{{ fleet.type.text}}</td>
+                            <td>{{ fleet.service_date}}</td>
+                            <td>{{ fleet.next_service_date}}</td>
+                            <td>{{ fleet.service_cost}}</td>
+                            <td>{{ fleet.vehicle_odo}}</td>
+                                <td>{{ fleet.modify_status.text }}</td>
+
+                                <!-- <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicleServiceEdit(fleet.id)">
+                                     <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                </td> -->
+                                                                <!-- //BUG ID:5018 -->
+                                <td *ngIf="isedit && fleet.modify_status.text != 'Deleted'">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicleServiceEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="ServiceHisdlt(fleet.id,i)">
+                                    <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                    </button>
+                                </td>
+                                
+                                <td *ngIf="isedit && fleet.modify_status.text == 'Deleted' ">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" [disabled]="true"
+                                    (click)="vehicleServiceEdit(fleet.id)">
+                                    <mat-icon style="color: gray;" aria-label="Edit" >edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton"  color="primary" (click)="ServiceHisdlt(fleet.id,i)" [disabled]="true">
+                                    <mat-icon style="color:gray;" aria-label="Delete" >delete</mat-icon>  
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="vehicleservicemodifyList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="row" *ngIf="isvehicleservicemodifyDetails">
+                        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                            <button mat-icon-button [disabled]="previous_servicemodifyDetails === false" color="primary"
+                                (click)="previousservicemodifyDetails()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{vehicleservicemodifypage}}
+                            <button mat-icon-button [disabled]="next_servicemodifyDetails === false" color="primary"
+                                (click)="nextservicemodifyDetails()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <!-- //VFM DOCUMENTS -->
+            <div class="table-responsive" *ngIf="dropDownTag == 'VFM Documents'" class="center">
+                <h1>Summary</h1>
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>File Name </th>
+                            <th>Ref Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let fleet of vehicledocumentList; index as i">
+                            <td>{{ (vehicledocumentepage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.file_name }}</td>
+                            <td>{{ fleet.ref_type.text}}</td>
+                            <td><button class="btn btn-outline-primary" type="submit"
+                                style="border-radius:40px;margin-left: 15px;" color="primary"
+                                (click)="vehicleDocumentEdit(fleet.file_id,fleet.file_name)">
+                                <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+                              </button>
+                              <button  *ngIf="isdown" type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 25px;"
+                              color="primary" (click)="fileDeleted(fleet.file_id)">
+                                    <i matTooltip="Delete" class="fa fa-trash" aria-hidden="true"></i>
+                              </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="vehicledocumentList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="row" *ngIf="isdocumentDetails">
+                    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                        <button mat-icon-button [disabled]="previous_documentDetails === false" color="primary"
+                            (click)="previousdocumentDetails()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{vehicledocumentepage}}
+                        <button mat-icon-button [disabled]="next_documentDetails === false" color="primary"
+                            (click)="nextdocumentDetails()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div *ngIf="ismodifysum">
+                <div class="table-responsive" *ngIf="dropDownTag == 'VFM Documents'" class="center">
+                    <h1>Modification Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>File Name </th>
+                                <th>Ref Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let fleet of vehicledocumentmodifyList; index as i">
+                                <td>{{ (vehicledocumentemodifypage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.file_name }}</td>
+                                <td>{{ fleet.ref_type.text}}</td>
+
+                                <td><button class="btn btn-outline-primary" type="submit"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"
+                                    (click)="vehicleDocumentEdit(fleet.file_id,fleet.file_name)">
+                                    <i matTooltip="Download" class="fa fa-download" aria-hidden="true"></i>
+                                  </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="vehicledocumentmodifyList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="row" *ngIf="isdocumentmodifyDetails">
+                        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                            <button mat-icon-button [disabled]="previous_documentmodifyDetails === false" color="primary"
+                                (click)="previousdocumentmodifyDetails()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{vehicledocumentemodifypage}}
+                            <button mat-icon-button [disabled]="next_documentmodifyDetails === false" color="primary"
+                                (click)="nextdocumentmodifyDetails()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- //ASSET DETAILS -->
+            <div class="table-responsive" *ngIf="dropDownTag == 'Asset Details'" class="center">
+                <h1>Summary</h1>
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Asset Id</th>
+                            <th>Purchase Value</th>
+                            <th>Capitalised Value</th>
+                            <th>Asset Life</th>
+                            <th>WDV</th>
+                            <th>Sale Value</th>
+                            <th *ngIf="isedit">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let fleet of vehicledetailList; index as i">
+                            <td>{{ (vehicledetailpage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.asset_id}}</td>
+                            <td>{{ fleet.purchase_value }}</td>
+                            <td>{{ fleet.capitalised_value}}</td>
+                            <td>{{ fleet.asset_life}}</td>
+                            <td>{{ fleet.wdv}}</td>
+                            <td>{{ fleet.sale_value}}</td>
+                            <!-- <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicledetailEdit(fleet.id)">
+                                
+                                <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                            </td> -->
+                            <!-- BUG ID:5018 -->
+                            <td *ngIf="isedit && !ismodifysum">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                               (click)="vehicledetailEdit(fleet.id)">
+                              <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="assetdtldltcreate(fleet.id,i)">
+                            <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>
+
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status?.id==-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicledetailEdit(fleet.id)">
+                                <mat-icon style="color:blue;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+                           <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="assetdtldlt(fleet.id,i)">                
+                            <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>  
+
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status?.id !=-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicledetailEdit(fleet.id)" [disabled]="true">
+                                <mat-icon style="color:grey;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+                           <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="assetdtldlt(fleet.id,i)" 
+                           [disabled]="true">                
+                            <mat-icon style="color:grey;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>  
+                            <!-- ////        -->
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="vehicledetailList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isvehicleList">
+                    <button mat-icon-button [disabled]="has_previous1 === false" color="primary"
+                        (click)="vehiclepreviousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{vehicledetailpage}}
+                    <button mat-icon-button [disabled]="has_next1 === false" color="primary" (click)="vehiclenextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- //Asset Detail Modification Summary -->
+            <div *ngIf="ismodifysum">
+                <div class="table-responsive" *ngIf="dropDownTag == 'Asset Details'" class="center">
+                    <h1>Modification Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                            <th>Asset Id</th>
+                            <th>Purchase Value</th>
+                            <th>Capitalised Value</th>
+                            <th>Asset Life</th>
+                            <th>WDV</th>
+                            <th>Sale Value</th>
+                                <th>Status</th>
+                                <th *ngIf="isedit">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let fleet of vehicledetailmodifyList; index as i">
+                                <td>{{ (vehicledetailmodifypage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.asset_id}}</td>
+                                <td>{{ fleet.purchase_value }}</td>
+                                <td>{{ fleet.capitalised_value}}</td>
+                                <td>{{ fleet.asset_life}}</td>
+                                <td>{{ fleet.wdv}}</td>
+                                <td>{{ fleet.sale_value}}</td>
+                                <td>{{ fleet.modify_status.text }}</td>
+
+                                <!-- <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicledetailEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                </td> -->
+                     
+                                        <!-- //BUG ID:5018 -->
+                                <td *ngIf="isedit && fleet.modify_status.text != 'Deleted'">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicledetailEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="assetdtldlt(fleet.id,i)">
+                                    <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                    </button>
+                                </td>
+                                
+                                <td *ngIf="isedit && fleet.modify_status.text == 'Deleted' ">
+                                    <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" [disabled]="true"
+                                    (click)="vehicledetailEdit(fleet.id)">
+                                    <mat-icon style="color: gray;" aria-label="Edit" >edit</mat-icon>
+                                </button>
+                                <button mat-icon-button matTooltip="Delete" class="iconbutton"  color="primary" (click)="assetdtldlt(fleet.id,i)" [disabled]="true">
+                                    <mat-icon style="color:gray;" aria-label="Delete" >delete</mat-icon>  
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="vehicledetailmodifyList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isvehiclemodifyList">
+                        <button mat-icon-button [disabled]="has_previousmodify === false" color="primary"
+                            (click)="vehiclepreviousmodifyClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{vehicledetailmodifypage}}
+                        <button mat-icon-button [disabled]="has_nextmodify === false" color="primary" 
+                        (click)="vehiclenextmodifyClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- //MOnthly run detail Summary -->
+            <div class="table-responsive" *ngIf="dropDownTag == 'Monthly Run Detail'" class="center">
+                <h1>Summary</h1>
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Year</th>
+                            <th>Month</th>
+                            <th>Monthly ODO</th>
+                            <th>Total Fuel</th>
+                            <th *ngIf="isedit">Action</th>
+                        </tr>
+                    </thead>    
+                    <tbody>
+                        <tr *ngFor="let fleet of vehiclerunList; index as i">
+                            <td>{{ (vehiclerunpage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.year }}</td>
+                            <td>{{ fleet.month.text}}</td>
+                            <td>{{ fleet.monthly_odo}}</td>
+                            <td>{{ fleet.total_fuel}}</td>
+                            <!-- <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicleRunEdit(fleet.id)">
+                                 <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                            </td> -->
+                            <!-- BUG ID:5018 -->
+                            <td *ngIf="isedit && !ismodifysum">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                               (click)="vehicleRunEdit(fleet.id)">
+                              <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+
+                            <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="monthlyrundltcreate(fleet.id,i)">
+                            <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>
+
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status.id==-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicleRunEdit(fleet.id)">
+                                <mat-icon style="color:blue;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+                           <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="monthlyrundlt(fleet.id,i)">                
+                            <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>  
+                            <td *ngIf="isedit && ismodifysum && fleet.modify_status.id !=-1">
+                                <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="vehicleRunEdit(fleet.id)" [disabled]="true">
+                                <mat-icon style="color:grey;" aria-label="Edit">edit</mat-icon><br>
+                            </button>
+                           <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="monthlyrundlt(fleet.id,i)" 
+                           [disabled]="true">                
+                            <mat-icon style="color:grey;" aria-label="Delete">delete</mat-icon>  
+                            </button>
+                            </td>  
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="vehiclerunList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="row" *ngIf="isvehiclerunDetails">
+                    <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                        <button mat-icon-button [disabled]="previous_runDetails === false" color="primary"
+                            (click)="previousrunDetails()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+                        {{vehiclerunpage}}
+                        <button mat-icon-button [disabled]="next_runDetails === false" color="primary"
+                            (click)="nextrunDetails()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="ismodifysum">
+                <div class="table-responsive" *ngIf="dropDownTag == 'Monthly Run Detail'" class="center">
+                    <h1>Modification Summary</h1>
+                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" style="text-align: left;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Year</th>
+                                <th>Month</th>
+                                <th>Monthly ODO</th>
+                                <th>Total Fuel</th>
+                                <th>Status</th>
+                                <th *ngIf="isedit">Action</th>
+                            </tr>
+                        </thead>    
+                        <tbody>
+                            <tr *ngFor="let fleet of vehiclerunmodifyList; index as i">
+                                <td>{{ (vehiclerunmodifypage - 1)*pagesize +i+1 }} </td>
+                                <td>{{ fleet.year }}</td>
+                                <td>{{ fleet.month.text}}</td>
+                                <td>{{ fleet.monthly_odo}}</td>
+                                <td>{{ fleet.total_fuel}}</td>
+                                <td>{{ fleet.modify_status.text }}</td>
+                                <!-- <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                    (click)="vehicleRunEdit(fleet.id)">
+                                    
+                                    <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                </button>
+                                </td> -->
+                                
+                                        <!-- //BUG ID:5018 -->
+                                        <td *ngIf="isedit && fleet.modify_status.text != 'Deleted' ">
+                                            <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                            (click)="vehicleRunEdit(fleet.id)">
+                                            
+                                            <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button matTooltip="Delete" class="iconbutton" color="primary" (click)="monthlyrundlt(fleet.id,i)">
+                                            <mat-icon style="color:blue;" aria-label="Delete">delete</mat-icon>  
+                                            </button>
+                                        </td>
+                                        
+                                        <td *ngIf="isedit && fleet.modify_status.text == 'Deleted' ">
+                                            <button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" [disabled]="true"
+                                            (click)="vehicleRunEdit(fleet.id)">
+                                            <mat-icon style="color: gray;" aria-label="Edit" >edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button matTooltip="Delete" class="iconbutton"  color="primary" (click)="monthlyrundlt(fleet.id,i)" [disabled]="true">
+                                            <mat-icon style="color:gray;" aria-label="Delete" >delete</mat-icon>  
+                                            </button>
+                                        </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="vehiclerunmodifyList ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div class="row" *ngIf="isvehiclerunmodifyDetails">
+                        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+                            <button mat-icon-button [disabled]="previous_runmodifyDetails === false" color="primary"
+                                (click)="previousrunmodifyDetails()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{vehiclerunmodifypage}}
+                            <button mat-icon-button [disabled]="next_runmodifyDetails === false" color="primary"
+                                (click)="nextrunmodifyDetails()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+        <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Reject</h4>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <from [formGroup]="rejectFrom">
+                    <mat-form-field style="width: 175px; ">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput placeholder="Remarks" autocomplete="off" formControlName="comments">
+                    </mat-form-field>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-primary" type="submit" data-dismiss="modal" (click)="rejectRemarks()"
+                            style="border-radius:40px;margin-left: 10px;">
+                            Submit</button>
+                        <button class="btn btn-outline-success" type="button" data-toggle="modal"
+                            data-target="#rejectModal">
+                            Cancel </button>
+                        
+                    </div>
+                </from>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="approveModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Approve</h4>
+            <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <from [formGroup]="approveFrom">
+                <mat-form-field style="width: 175px; ">
+                    <mat-label>Remarks</mat-label>
+                    <input matInput placeholder="Remarks" autocomplete="off" formControlName="comments">
+                </mat-form-field>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" type="submit" data-dismiss="modal" (click)="approveRemarks()"
+                    style="border-radius:40px;margin-left: 10px;">
+                    Submit</button>
+                    <button class="btn btn-outline-success" type="button" data-toggle="modal"
+                        data-target="#approveModal">
+                        Cancel </button>
+                   
+                </div>
+            </from>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="modal fade" id="checkerModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Submit To Checker</h4>
+            <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <from [formGroup]="checkerFrom">
+                <mat-form-field style="width: 175px; ">
+                    <mat-label>Remarks</mat-label>
+                    <input matInput placeholder="Remarks" autocomplete="off" formControlName="comments">
+                </mat-form-field>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" type="submit" data-dismiss="modal" (click)="checkerRemarks()"
+                    style="border-radius:40px;margin-left: 10px;">
+                    Submit</button>
+                    <button class="btn btn-outline-success" type="button" data-toggle="modal"
+                        data-target="#checkerModal">
+                        Cancel </button>
+                   
+                </div>
+            </from>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="modal fade" id="claimModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Claim Details</h4>
+            <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <from [formGroup]="claimForm">
+                <table>
+                    <tr>
+                        <td>
+                <mat-form-field style="width:250px;">
+                    <mat-label>Claim Date</mat-label>
+                    <input matInput readonly [matDatepicker]="picker1" placeholder="Start Date"
+                    formControlName="claim_date" [min]="startdate" [max]="enddate">
+                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+                </td>
+                <td>
+                <mat-form-field style="width: 250px;margin-left: 60px;">
+                    <mat-label>Claim Amount </mat-label>
+                    <input matInput placeholder="Claim Amount" type="number" min="0" (change)="claimamt($event)" (keypress)="numberOnly1($event)" formControlName="claim_amount" autocomplete="off"
+                         required>
+                </mat-form-field> 
+                </td>
+               
+                </tr>
+               <tr>
+                <td>
+                    <mat-form-field style="width: 250px;">
+                        <mat-label>Settled Amount </mat-label>
+                        <input matInput placeholder="Settled Amount" type="number" min="0"  (keypress)="numberOnly1($event)" formControlName="settled_amount" autocomplete="off"
+                             required>
+                    </mat-form-field> 
+                    </td>
+                <td>
+                    <mat-form-field style="width: 250px;margin-left: 60px;">
+                        <mat-label>Reason</mat-label>
+                        <input matInput placeholder="Reason" maxlength="250" formControlName="reason" autocomplete="off"
+                             >
+                    </mat-form-field> 
+                    </td>
+                    </tr>
+                </table>
+                    <div style="text-align: center;" class="btn-bottom" *ngIf="issubmitbtn">
+                        <button class="btn btn-outline-primary" type="submit" (click)="claimsubmit()"
+                        style="border-radius:40px;margin-left: 10px;">
+                        Submit</button>
+                    <button class="btn btn-outline-success" type="button" data-toggle="modal"
+                        data-target="#claimModal">
+                        Cancel </button>
+                   
+                        </div>
+                        <div style="text-align: center;" class="btn-bottom" *ngIf="iseditbtn">
+                            <button class="btn btn-outline-primary" type="submit" (click)="claimedit()"
+                            style="border-radius:40px;margin-left: 10px;">
+                            Submit</button>
+                    <button class="btn btn-outline-success" type="button" data-toggle="modal"
+                        data-target="#claimModal">
+                        Cancel </button>
+                   
+                        </div>
+                
+            </from>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="modal fade" id="claimsumModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Summary</h4>
+            <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive" class="center">
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Claim Date</th>
+                            <th>Settled Amount</th>
+                            <th>Claim Amount </th>
+                            <th>Reason</th>
+                            <th *ngIf="isedit">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let fleet of claimList; index as i">
+                            <td> {{(claimpresentpage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.claim_date| date:'dd-MMM-yyyy'}}</td>
+                            <td>{{ fleet.settled_amount}}</td>
+                            <td>{{ fleet.claim_amount}}</td>
+                            <td>{{ fleet.reason}}</td>
+                            <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="claiminsuranceEdit(fleet.id)" data-dismiss="modal" data-toggle="modal"
+                                data-target="#claimModal">
+                                
+                                <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="claimList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isclaimList">
+                    <button mat-icon-button [disabled]="claimhas_previous === false" color="primary"
+                        (click)="claim_previousClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{claimpresentpage}}
+                    <button mat-icon-button [disabled]="claimhas_next === false" color="primary" (click)="claim_nextClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="modal fade" id="claimsumModalmodify" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Summary</h4>
+            <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive" class="center">
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Claim Date</th>
+                            <th>Settled Amount</th>
+                            <th>Claim Amount </th>
+                            <th>Reason</th>
+                            <th *ngIf="isedit">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let fleet of claimmodifyList; index as i">
+                            <td> {{(claimpresentmodifypage - 1)*pagesize +i+1 }} </td>
+                            <td>{{ fleet.claim_date| date:'dd-MMM-yyyy'}}</td>
+                            <td>{{ fleet.settled_amount}}</td>
+                            <td>{{ fleet.claim_amount}}</td>
+                            <td>{{ fleet.reason}}</td>
+                            <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="claiminsuranceEdit(fleet.id)" data-dismiss="modal" data-toggle="modal"
+                                data-target="#claimModal">
+                                
+                                <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="claimmodifyList ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isclaimmodifyList">
+                    <button mat-icon-button [disabled]="claimhas_modifyprevious === false" color="primary"
+                        (click)="claim_previousmodifyClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{claimpresentmodifypage}}
+                    <button mat-icon-button [disabled]="claimhas_modifynext === false" color="primary" (click)="claim_nextmodifyClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+
+<div class="modal fade" id="claimChangesView" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title  w-100 font-weight-bold" id="rejectModalLabel">Summary</h4>
+            <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive" class="center">
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                    <thead class="table_header" style="text-align: left;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Claim Date</th>
+                            <th>Settled Amount</th>
+                            <th>Claim Amount </th>
+                            <th>Reason</th>
+                            <!-- <th *ngIf="isedit">Action</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let c of claim_data; index as i">
+                            <!-- <td> {{(claimpresentmodifypage - 1)*pagesize +i+1 }} </td> -->
+                            <td>{{ i + 1}}</td>
+                            <td>{{ c.new_data.claim_date| date:'dd-MMM-yyyy'}}</td>
+                            <td>{{ c.new_data.settled_amount}}</td>
+                            <td>{{ c.new_data.claim_amount}}</td>
+                            <td>{{ c.new_data.reason}}</td>
+                            <!-- <td *ngIf="isedit"><button mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary"
+                                (click)="claiminsuranceEdit(fleet.id)" data-dismiss="modal" data-toggle="modal"
+                                data-target="#claimModal">
+                                
+                                <mat-icon style="color: blue;" aria-label="Edit">edit</mat-icon>
+                            </button>
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="claim_data ?.length == 0" style="margin-left: 42%;">
+                    <h3>Sorry data not found!.. </h3>
+                </div>
+                <!-- <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isclaimmodifyList">
+                    <button mat-icon-button [disabled]="claimhas_modifyprevious === false" color="primary"
+                        (click)="claim_previousmodifyClick()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    {{claimpresentmodifypage}}
+                    <button mat-icon-button [disabled]="claimhas_modifynext === false" color="primary" (click)="claim_nextmodifyClick()">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div> -->
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+

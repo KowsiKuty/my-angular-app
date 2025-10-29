@@ -1,0 +1,236 @@
+<br>
+<h2 style="margin-left: 40px;">
+    Vehicle Master 
+</h2>
+<div class="main-content">
+    <div>
+        <form [formGroup]="vehicleForm">
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Vehicle No</mat-label>
+                            <input matInput placeholder="Vehicle No" autocomplete="off" formControlName="vehicle_no" >
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Vehicle Model</mat-label>
+                            <input matInput placeholder="Vehicle Model" autocomplete="off" formControlName="vehicle_model" >
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Ownership Type</mat-label>
+                            <mat-select formControlName="ownership_type">
+                                <mat-option *ngFor="let ower of ownerShipData" (click)="permitupdate(ower.text)" [value]="ower.id">
+                                    {{ower.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                
+                </tr>
+                
+               
+               <tr>
+                <td>
+                       
+                    <mat-form-field class="input-style">
+                        <mat-label>Department</mat-label>
+                        <input type="text"  placeholder="Select Department" formControlName="department_id" matInput [matAutocomplete]="departmentid">
+                      <mat-autocomplete #departmentid ="matAutocomplete" (opened)="depautocompleteid()" [displayWith]="displayWithdept">
+                        <!-- <mat-option *ngFor="let dept of deptlist" (click)="departmentval(dept.id)" [value]="dept"> -->
+                            <!-- //4862 -->
+                            <mat-option title="{{dept.name}}"  *ngFor="let dept of deptlist" (click)="departmentval(dept.id)" [value]="dept">
+                            <!-- ({{dept.code}})-{{dept.name}} -->
+                            <!-- //4861 -->
+                            {{dept.name}}   
+
+                        </mat-option>
+                      </mat-autocomplete>
+                        </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field  floatLabel="always" class="input-style2">
+                        <mat-label>Branch
+                        </mat-label>
+                        <input type="text" #inputassetid placeholder="Select Branch" matInput
+                            [matAutocomplete]="assetid" formControlName="branch_id" required>
+                        <mat-autocomplete #assetid ="matAutocomplete" (opened)="autocompleteid()" [displayWith]="displayWithBranch">
+                            <mat-option *ngFor="let branch of branchlist" (click)="branchname(branch.id)"
+                                [value]= "branch">
+                                ({{branch.code}})-{{branch.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="input-style2">
+                        <mat-label>Premise</mat-label>
+                        <input type="text" #premiseassetid placeholder="Select Premise" formControlName="premise_id" matInput [matAutocomplete]="premiseid">
+                        <mat-autocomplete #premiseid ="matAutocomplete" (opened)="premiseautocompleteid()" [displayWith]="displayWithPremise">
+                          <mat-option *ngFor="let premise of premiselist" (click)="premiseval(premise.id)" [value]="premise">
+                            ({{premise.code}})-{{premise.name}}
+                          </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+               </tr>
+              
+                <tr *ngIf="isownership">
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Engine No</mat-label>
+                            <input matInput placeholder="Engine No" autocomplete="off" formControlName="engine_no" >
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Chassis No</mat-label>
+                            <input matInput placeholder="Chassis No" autocomplete="off" formControlName="chassis_no" >
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>User Type</mat-label>
+                            <mat-select  formControlName="user_type">
+                                <mat-option *ngFor="let type of usertypeList" (click)="excecutive(type.text)" [value]="type.id">
+                                    {{type.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr *ngIf="isownership">
+                    <td  *ngIf="isexcecutive">
+                       
+                        <mat-form-field class="input-style1">
+                            <mat-label>Employee</mat-label>
+                            <input type="text" #permitinputassetid placeholder="Select Employee" (click)="inchargeval()" matInput [matAutocomplete]="permitassetid"
+                            formControlName="employee_id">
+                          <mat-autocomplete #permitassetid ="matAutocomplete" (opened)="permitautocompleteid()" [displayWith]="displayWithEmployee">
+                            <mat-option *ngFor="let permit of permittedlist" (click)="emp(permit.id,permit.designation)" [value]="permit">
+                              {{permit.full_name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                            </mat-form-field>
+                    </td>
+                    <td  *ngIf="isexcecutive">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Designation</mat-label>
+                            <input matInput placeholder="Designation" autocomplete="off" [disabled]="true" [value]="designation">
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Fuel Type</mat-label>
+                            <mat-select formControlName="fuel_type">
+                                <mat-option *ngFor="let usage of fuelTypeList" [value]="usage.id">
+                                    {{usage.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                   
+                  
+                
+                    <td>
+                       
+                        <mat-form-field class="input-style2">
+                            <mat-label>Incharge</mat-label>
+                            <input type="text" #permitinputassetid placeholder="Select Incharge" (click)="inchargeval()" matInput [matAutocomplete]="permitassetid"
+                            formControlName="incharge">
+                          <mat-autocomplete #permitassetid ="matAutocomplete" (opened)="permitautocompleteid()" [displayWith]="displayWithIncharge">
+                            <mat-option *ngFor="let permit of permittedlist" (click)="incharge(permit.id)" [value]="permit">
+                              {{permit.full_name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                            </mat-form-field>
+                    </td>
+                    <td *ngIf="isvendorList"> 
+                        <mat-form-field  class="input-style2" floatLabel="always">
+                            <mat-label>Vendor</mat-label>
+                            <input matInput #emp placeholder="Select Vendor" [matAutocomplete]="autocomplete1"
+                                formControlName="vendor_id" />
+    
+                            <mat-autocomplete #autocomplete1="matAutocomplete" (opened)="autocompleteemps()" #autocompleteemp [displayWith]="displayWithVendor">
+                                <mat-option *ngFor="let val of branchemployee"
+                                    (click)="employeenameselect(val.id)" [value]='val'>
+                                    {{val.name}}
+    
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+               
+                <tr *ngIf="isownership">
+                   
+                    <td>
+                       
+                            <mat-label>Pc Applicable</mat-label>
+                            <mat-radio-group aria-label="Select an option" formControlName="pc_applicable"
+                                                class="tp-radio-group">
+                                                <mat-radio-button *ngFor="let n of radiocheck" [value]="n.display"
+                                                (click)="pcvalue(n.value)" style="margin-left: 10px;">
+                                                {{n.display}}
+                                            </mat-radio-button>
+                                            </mat-radio-group>
+                        
+                    </td>
+                    <td *ngIf="ispc">
+                        <mat-form-field  class="input-style2">
+                            <mat-label>Pc End Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker1" placeholder="Pc End Date"
+                                formControlName="pc_end_date">
+                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                 
+                </tr>
+                <tr *ngIf="isownership">
+                   
+                    <td>
+                       
+                            <mat-label>Fc Applicable</mat-label>
+                            <mat-radio-group aria-label="Select an option" formControlName="fc_applicable"
+                            class="tp-radio-group">
+                            <mat-radio-button *ngFor="let n of radiocheck1" [value]="n.display"
+                                                (click)="fcvalue(n.value)" style="margin-left: 10px;">
+                                                {{n.display}}
+                                            </mat-radio-button>
+                        </mat-radio-group>
+                     
+                    </td>
+                    <td *ngIf="isfc">
+                        <mat-form-field  class="input-style2">
+                            <mat-label>Fc End Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker2" placeholder="Fc End Date"
+                                formControlName="fc_end_date">
+                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                 
+                </tr>
+              
+            </table>
+            <div class="btn-bottom" *ngIf="issubmitbtn">
+                <button type="submit" class="btn btn-outline-primary" [disabled]="isSumbitbtn" (click)="submitForm()">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-outline-primary" (click)="back()">Cancel</button>
+            </div>
+            <div class="btn-bottom" *ngIf="iseditbtn">
+                <button type="submit" class="btn btn-outline-primary" (click)="Editform()">Submit</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-outline-primary" (click)="back()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- <pre>
+    {{premiseIdentificationForm.value | json}}
+</pre> -->

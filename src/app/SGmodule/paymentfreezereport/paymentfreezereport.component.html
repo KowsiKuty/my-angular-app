@@ -1,0 +1,1153 @@
+
+<div style="margin-left: 50px;margin-top: 3%;">
+    <h2 style="margin-left: 1px;">
+        System Generated Bill
+    </h2>
+    <div>
+        <form [formGroup]="paymentfreeze" style="margin-left: 2%;">
+        
+        <div *ngIf="isShowForm">  
+            <mat-form-field style="width: 200px;" class="input-style" (click)="brachname()">
+                            
+                        <mat-label>Branch </mat-label>
+                                <input placeholder="Branch " matInput formControlName="branch_id" #branchContactInput
+                                    [matAutocomplete]="branchtype"  (click)="clearPremisesAndAgency()" required>
+                                <mat-autocomplete #branchtype="matAutocomplete"  [displayWith]="displaybranch"
+                                (opened)="autocompletebranchnameScroll()">
+                                    <mat-option *ngIf="isLoadingbranch" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoadingbranch">
+                                        <mat-option *ngFor="let brach of branchlist"  (focusout)="branchFocusOut(brach)"
+                                            [value]="brach" >
+                                            ({{brach.code}}) {{brach.name+ " " }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                    </mat-form-field>
+                    
+                    
+                    <mat-form-field style="width: 200px;margin-left: 4%;" class="input-style" (click)="primiesname()">
+                            
+                        <mat-label>Premises </mat-label>
+                                <input placeholder="Premises " matInput formControlName="premise_id" #PremiseContactInput
+                                    [matAutocomplete]="primestype"  required>
+                                <mat-autocomplete #primestype="matAutocomplete"  [displayWith]="displayprimes"
+                                (opened)="autocompletePremisenameScroll()">
+                                    <mat-option *ngIf="isLoadingprimes" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoadingprimes">
+                                        <mat-option *ngFor="let primes of primeslist"  (focusout)="premiseFocusOut(primes)"
+                                            [value]="primes" >
+                                            ({{primes.code}}) {{primes.name+ " " }}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field style="width: 345px;margin-left: 4%;" class="input-style" (click)="vendorname()">
+                                
+                        <mat-label style="    font-size: 17px;"> Agency</mat-label>
+                        <input placeholder="Agency" matInput formControlName="vendor_id" #VendorContactInput
+                            [matAutocomplete]="producttype"  required>
+                        <mat-autocomplete #producttype="matAutocomplete"  [displayWith]="displayvendor">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let vendor of empvendorlist" 
+                                    [value]="vendor" >
+                                    ({{vendor.code}}) {{vendor.name+ " " }}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                        </mat-form-field>
+                            
+            <mat-form-field style="width: 137px;margin-left: 4%;" class="input-style"  >
+                <input matInput [matDatepicker]="dp" placeholder="Month and Year" formControlName="monthdate" readonly [formControl]="monthdate">
+                <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                <mat-datepicker #dp
+                                startView="multi-year"
+                                (yearSelected)="chosenYearHandler($event)"
+                                (monthSelected)="chosenMonthHandler($event, dp)"
+                                panelClass="example-month-picker">
+                </mat-datepicker>
+            </mat-form-field>
+
+            <button type="submit" style="border-radius: 40px; margin-left: 5%;" (click)="montlyDraft(paymentfreeze.value)" 
+            class="btn btn-outline-primary" color ="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <!-- <button class="btn btn-outline-primary" type="submit"  style="border-radius:40px; margin-left: 2%;" (click)="formreset()"
+            color="primary">Reset</button> -->
+        </div> 
+        
+        
+        <div *ngIf="isShowEditForm">  
+            <mat-form-field style="width: 200px;" class="input-style"> 
+                        <mat-label>Branch</mat-label>
+                        <input placeholder="Branch " matInput formControlName="branch_id" #branchContactInput
+                        [matAutocomplete]="branchtype" [readonly] = "true"  required>
+                    <mat-autocomplete #branchtype="matAutocomplete"  [displayWith]="displaybranch">
+                        <mat-option *ngIf="isLoadingbranch" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoadingbranch">
+                            <mat-option *ngFor="let brach of branchlist" 
+                                [value]="brach" >
+                               {{brach.code}}-{{brach.name}} 
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                        <!-- <input matInput [readonly] = "true" formControlName="branch_id"> -->
+            </mat-form-field>
+                    
+                    
+            <mat-form-field style="width: 200px;margin-left: 4%;" class="input-style">
+                        <mat-label>Premises</mat-label>
+                        <input placeholder="Premises " [readonly] = "true" matInput formControlName="premise_id" #PremiseContactInput
+                        [matAutocomplete]="primestype"  required>
+                    <mat-autocomplete #primestype="matAutocomplete"  [displayWith]="displayprimes">
+                        <mat-option *ngIf="isLoadingprimes" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoadingprimes">
+                            <mat-option *ngFor="let primes of primeslist" 
+                                [value]="primes" >
+                                {{primes.code}}-{{primes.name}} 
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                        <!-- <input matInput [readonly] = "true" formControlName="premise_id"> -->
+            </mat-form-field>
+
+            <mat-form-field style="width: 345px;margin-left: 4%;" class="input-style">
+                                
+                <mat-label style="    font-size: 17px;"> Agency</mat-label>
+                <input placeholder="Agency" matInput formControlName="vendor_id" [readonly] = "true" #VendorContactInput
+                    [matAutocomplete]="producttype"  required>
+                <mat-autocomplete #producttype="matAutocomplete"  [displayWith]="displayvendor">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let vendor of empvendorlist" 
+                            [value]="vendor" >
+                            ({{vendor.code}}) {{vendor.name+ " " }}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+                </mat-form-field>
+                            
+            <mat-form-field style="width: 137px;margin-left: 4%;" class="input-style"  >
+                <input matInput [readonly] = "true" formControlName="monthdate">
+            </mat-form-field>
+        </div>
+            
+        
+
+
+            
+        </form>
+
+    </div>
+    <div class="table-responsive">
+        <table border="1" class="table table-bordered my-table table-sm" style="
+            width: 83%;margin-top: 2%;margin-bottom: 3%;" fixed-header>
+            <thead class="table_header" style="text-align: center;">
+              <tr>
+                <th rowspan="2" style="text-align: center;width: 5%;  padding-bottom: 3%;">S.No</th>
+                <th rowspan="2" style="     width: 24%;padding-bottom: 3%;
+                text-align: center">Type of Wages / Allowance</th>
+                <th colspan="2" style="text-align: center;width: 20%;">Incidents/Attendance</th>
+                <!-- <th colspan="2" style="text-align: center;">Amount</th> -->
+                <th colspan="2" style="text-align: center;">Total</th>
+                   
+              </tr>
+              <tr>
+                  <th>Armed(Count-{{ daat[0]?.incidents_data?.armemp_count }})</th>
+                  <th>Unarmed(Count-{{ daat[0]?.incidents_data?.unarmemp_count }})</th>
+                  <!-- <th>Armed</th>
+                  <th>Unarmed</th> -->
+                  <th>Armed</th>
+                  <th>Unarmed</th>
+              </tr>
+          
+            </thead>
+            <tbody  style="text-align: center;" >
+                <tr>
+                    <td>
+                      1
+                    </td>
+                    <td style="text-align: left;">
+                      {{'Total Attendance ' | titlecase}}
+                    </td>
+                       
+                    <td>
+                        {{daat[0]?.incidents_data?.present_armemp}}
+                    </td>
+                    <td>
+                        {{daat[0]?.incidents_data?.present_unarmemp}}
+                    </td>
+                    <!-- <td>
+                        --
+                    </td>
+                    <td>
+                        --
+                    </td> -->
+                    <td>
+                        --
+                    </td>
+                    <td>
+                        --
+                    </td>
+                    
+                  </tr>
+              <tr>
+                <td>
+                  2
+                </td>
+                <td style="text-align: left;">
+                  {{'Minimum Wages ' | titlecase}}
+                </td>
+                <td>
+                   --
+                </td>
+                <td>
+                   --
+                </td>
+                <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.wages | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                </td>
+                <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.wages | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                </td> -->
+                <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.wages | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                </td>
+                <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.wages | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  3
+                </td>
+                <td style="text-align: left;">
+                    {{'Variable Dearness Allowance ' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.variable_dearn_allowance | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.variable_dearn_allowance | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.variable_dearn_allowance | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.variable_dearn_allowance | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+              <tr>
+                <td>
+                 4
+                </td>
+                <td style="text-align: left;">
+                    {{'Weekly Off ' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.weekly_off | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.weekly_off | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.weekly_off | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.weekly_off | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+              <tr>
+                <td>
+                5
+                </td>
+                <td style="text-align: left;">
+                   {{' Minimum Wages Total' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.minimum_wages_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.minimum_wages_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.minimum_wages_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.minimum_wages_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+
+              <tr *ngFor="let view of ViewSummary;let i=index">
+                <td>
+                    A{{i+1}}
+                </td>
+                <td style="text-align: left;">
+                    {{view.name}}
+                </td>
+                <td>
+                    --
+                </td>
+                <td>
+                    --
+                </td>
+                <!-- <td *ngFor="let amttotal of view['armedchargestotal'];let j=index">
+                    {{amttotal.amount}}
+                </td>
+                <td *ngFor="let amt1total of view['unarmedchargestotal'];let j=index">
+                  {{amt1total.amount}}
+                </td> -->
+                
+                <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">
+                        <span *ngFor="let amttotal of view['armedchargestotal'];let j=index">
+                          {{amttotal.amount | number:'1.2-2'}}
+                        </span>
+                      </span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">
+                        <span *ngFor="let amt1total of view['unarmedchargestotal'];let j=index">
+                          {{amt1total.amount | number:'1.2-2'}}
+                        </span>
+                      </span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+            </tr>
+
+            <tr>
+                <td>
+                6
+                </td>
+                <td style="text-align: left;">
+                   {{' Holiday Wages' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.holiday_wages | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.holiday_wages | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+
+              <tr >
+                <td>
+                  7
+                </td>
+                <td style="text-align: left;">
+                    {{'Overtime Wages' | titlecase}}
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.ot_armemp+"(Hour)"}}
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.ot_unarmemp+"(Hour)"}}
+                </td>
+               <!-- <td>
+                <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.ot_wages | number:'1.2-2'}}</span>
+                <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+             </td>
+             <td>
+                <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.ot_wages | number:'1.2-2'}}</span>
+                <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+             </td> -->
+               <td>
+                {{daat[0]?.penalty_data?.ot_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+               {{daat[0]?.penalty_data?.ot_unarmemp | number:'1.2-2'}}
+                </td>
+              </tr>
+              <tr >
+                <td>
+                8
+                </td>
+                <td style="text-align: left;">
+                    {{'Levy : Non uniform ' | titlecase}}<span>({{daat[0]?.penalty?.nonuniform?.shift==null ? "Rs."+daat[0]?.penalty?.nonuniform?.amount : daat[0]?.penalty?.nonuniform?.shift+"-Shift"}})</span>
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.nonuniform_armemp}}
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.nonuniform_unarmemp}}
+                </td>
+                <!-- <td>
+                    {{daat[0]?.penalty_data?.nonuniform_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.nonuniform_unarmemp | number:'1.2-2'}}
+                </td> -->
+                <td>
+                    {{daat[0]?.penalty_data?.nonuniform_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.nonuniform_unarmemp | number:'1.2-2'}}
+                </td>
+              </tr>
+              <tr >
+                <td>
+                 9
+                </td>
+                <td style="text-align: left;">
+                    {{'Levy : Sleeping ' | titlecase}}<span>({{daat[0]?.penalty?.sleeping?.shift==null ? "Rs."+daat[0]?.penalty?.sleeping?.amount : daat[0]?.penalty?.sleeping?.shift+"-Shift"}})</span>
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.sleep_armemp}}
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.sleep_unarmemp}}
+                </td>
+                <!-- <td>
+                 {{daat[0]?.penalty_data?.sleep_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.sleep_unarmemp | number:'1.2-2'}}
+                </td> -->
+                <td>
+                    {{daat[0]?.penalty_data?.sleep_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.sleep_unarmemp | number:'1.2-2'}}
+                </td>
+              </tr>
+              <tr >
+                <td>
+                  10
+                </td>
+                <td style="text-align: left;">
+                    {{'Levy : Alcoholic ' | titlecase}}<span>({{daat[0]?.penalty?.alcoholic?.shift==null ? "Rs."+daat[0]?.penalty?.alcoholic?.amount : daat[0]?.penalty?.alcoholic?.shift+"-Shift"}})</span>
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.alcoholic_armemp}}
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.alcoholic_unarmemp}}
+                </td>
+                <!-- <td>
+                 {{daat[0]?.penalty_data?.alcoholic_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.alcoholic_unarmemp | number:'1.2-2'}}
+                </td> -->
+                <td>
+                    {{daat[0]?.penalty_data?.alcoholic_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.alcoholic_unarmemp | number:'1.2-2'}}
+                </td>
+              </tr>
+              <tr >
+                <td>
+                  11
+                </td>
+                <td style="text-align: left;">
+                    {{'Levy : Unplanned leave ' | titlecase}}<span>({{daat[0]?.penalty?.unplanned?.shift==null ? "Rs."+daat[0]?.penalty?.unplanned?.amount : daat[0]?.penalty?.unplanned?.shift+"-Shift"}})</span>
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.unplanleave_armemp}}
+                </td>
+                <td>
+                    {{daat[0]?.incidents_data?.unplanleave_unarmemp}}
+                </td>
+                <!-- <td>
+                 {{daat[0]?.penalty_data?.unplanleave_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.unplanleave_unarmemp | number:'1.2-2'}}
+                </td> -->
+                <td>
+                    {{daat[0]?.penalty_data?.unplanleave_armemp | number:'1.2-2'}}
+                </td>
+                <td>
+                    {{daat[0]?.penalty_data?.unplanleave_unarmemp | number:'1.2-2'}}
+                </td>
+              </tr>
+        
+              <tr>
+                <td>
+                 12
+                </td>
+                <td style="text-align: left;">
+                    {{'EPF %' | uppercase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.epf | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.epf | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.epf | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.epf | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+              <tr>
+                <td>
+                  13
+                </td>
+                <td style="text-align: left;">
+                    {{'ESI %' | uppercase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.esi | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.esi | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.esi | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.esi | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+              <!-- //MEDICAL INSURANCE -->
+                <tr>
+                <td>
+                  14
+                </td>
+                <td style="text-align: left;">
+                    {{'Medical Insurance %'}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.medical_insurance | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.medical_insurance | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+               <!-- ////// -->
+              <tr>
+                <td>
+                15
+                </td>
+                <td style="text-align: left;">
+                   {{'Gun Allowance ' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.gun_allowances | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.gun_allowances | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.gun_allowances | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.gun_allowances | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+           
+                  <tr>
+                    <td>
+                  16
+                    </td>
+                    <td style="text-align: left;">
+                        {{'Administrative charges ' | titlecase}}
+                    </td>
+                    <td>
+                        --
+                     </td>
+                     <td>
+                        --
+                     </td>
+                     <!-- <td>
+                        <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.administrative_charges | number:'1.2-2'}}</span>
+                        <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                     </td>
+                     <td>
+                        <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.administrative_charges | number:'1.2-2'}}</span>
+                        <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                     </td> -->
+                     <td>
+                        <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.administrative_charges  | number:'1.2-2'}}</span>
+                        <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                     </td>
+                     <td>
+                        <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.administrative_charges | number:'1.2-2'}}</span>
+                        <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                     </td>
+                  </tr>
+                  
+             <tr >
+                <td>
+                  17
+                </td>
+                <td style="text-align: left;">
+                    {{'Total Bill' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.total_bill | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.total_bill | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.total_bill | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.total_bill | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+            </tr>
+            <tr >
+                <td>
+                  18
+                </td>
+                <td style="text-align: left;">
+                    {{'Total Bill (Rounded off)' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.totalbill_roundoff | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.totalbill_roundoff | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.totalbill_roundoff | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.totalbill_roundoff | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+            </tr>
+           
+              <tr>
+                  
+                <td>
+                  19
+                </td>
+                <td style="text-align: left;">
+                    {{'Goods & Service Tax(SGST)' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.sgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.sgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.sgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.sgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+              <tr>
+                <td>
+                  20
+                </td>
+                <td style="text-align: left;">
+                    {{'Goods & Service Tax(CGST)' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.cgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.cgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.cgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.cgst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+              <tr>
+                <td>
+                  21
+                </td>
+                <td style="text-align: left;">
+                    {{'Goods & Service Tax(IGST)' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.igst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.igst | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+              <tr>
+                <td>
+                  22
+                </td>
+                <td style="text-align: left;">
+                    {{'Grand Total ' | titlecase}}
+                </td>
+                <td>
+                    --
+                 </td>
+                 <td>
+                    --
+                 </td>
+                 <!-- <td>
+                    <span *ngIf="daat[0]?.armed_miniwages != null">{{daat[0]?.armed_miniwages?.grand_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages != null">{{daat[0]?.unarmed_miniwages?.grand_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages == null"> -- </span>
+                 </td> -->
+                 <td>
+                    <span *ngIf="daat[0]?.armed_miniwages_total != null">{{daat[0]?.armed_miniwages_total?.grand_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.armed_miniwages_total == null"> -- </span>
+                 </td>
+                 <td>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total != null">{{daat[0]?.unarmed_miniwages_total?.grand_total | number:'1.2-2'}}</span>
+                    <span *ngIf="daat[0]?.unarmed_miniwages_total == null"> -- </span>
+                 </td>
+              </tr>
+                  
+              
+            </tbody>
+          
+            </table>
+            <h3 style="margin-left: 67%;font-weight: bold;">Total Bill Amount -- {{Totalbillamount | number:'1.2-2'}}</h3>
+           
+            <div style="
+        justify-content: center;
+        margin-bottom: 2%;">
+             <button *ngIf="isShowBackButton" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 41%;margin-bottom: 3%;margin-top: -2%;"
+             (click)="backToInvoiceView()">Back</button>
+        </div>
+        <!-- <table border="1" class="table table-bordered my-table" style="
+        width: 60%;
+        margin-left: 5%;margin-bottom: 3%;" fixed-header>
+            <thead class="table_header">
+              <tr>
+                <th colspan="2" style="text-align: center;width: 37%;">As Per System</th>
+                
+                <th rowspan="2" style="text-align: center;">SECURITY GUARDS</th>
+                <th rowspan="2" style="text-align: center;">ARMED GUARDS</th>
+                <th rowspan="2" style="text-align: center;"> Net Amount (Security:{{Securitycount}}, <br>Armed :{{Armedcount }} )</th>    
+              </tr>
+              <tr>
+                <th>S.No</th>
+                
+                <th>Type Of Wages / Allowance</th>
+                  
+              </tr>
+          
+            </thead>
+            <tbody style="text-align: left;">
+              <tr>
+                <td>
+                  1
+                </td>
+                <td>
+                  {{'Minimum Wages For 90 Duties' | titlecase}}
+                </td>
+
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.wages : data?.wages[1]?.data?.wages ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.wages : data?.wages[1]?.data?.wages ) | number:'1.2-2' }}</span>
+                </td>
+                <td>
+                    <span >{{ (data?.total_amount?.wages)  | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  2
+                </td>
+                <td>
+                    {{'Variable Dearness Allowance ' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.variable_dearn_allowance : data?.wages[1]?.data?.variable_dearn_allowance ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.variable_dearn_allowance : data?.wages[1]?.data?.variable_dearn_allowance ) | number:'1.2-2' }}</span>
+                </td>
+                
+                <td>
+                    <span >{{data?.total_amount?.variable_dearn_allowance | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+              <tr style="font-weight: bold;">
+                <td>
+                  3
+                </td>
+                <td>
+                    {{'SubTotal 1' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.sub_total1: data?.wages[1]?.data?.sub_total1 ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.sub_total1 : data?.wages[1]?.data?.sub_total1 ) | number:'1.2-2' }}</span>
+                </td>
+            
+                <td>
+                    <span >{{data?.total_amount?.sub_total1 | number:'1.2-2' }}</span>
+                </td>
+               
+              </tr>
+              <tr>
+                <td>
+                  4
+                </td>
+                <td>
+                    {{'Weekly Off ' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.weekly_off : data?.wages[1]?.data?.weekly_off ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.weekly_off : data?.wages[1]?.data?.weekly_off ) | number:'1.2-2' }}</span>
+                </td>
+                
+                <td>
+                    <span >{{data?.total_amount?.weekly_off | number:'1.2-2' }}</span>
+                </td>
+                
+              </tr>
+              <tr style="font-weight: bold;">
+                <td>
+                  5
+                </td>
+                <td>
+                    {{'Total Minimum Wages' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.minimum_wages_total : data?.wages[1]?.data?.minimum_wages_total ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.minimum_wages_total : data?.wages[1]?.data?.minimum_wages_total ) | number:'1.2-2' }}</span>
+                </td>
+                
+                <td>    <span >{{data?.total_amount?.total_minimumwages | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+              <tr >
+                <td>
+                  6
+                </td>
+                <td>
+                    {{'EPF ' | uppercase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.epf : data?.wages[1]?.data?.epf) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.epf : data?.wages[1]?.data?.epf ) | number:'1.2-2' }}</span>
+                </td>
+                
+                <td>
+                    <span >{{data?.total_amount?.epf | number:'1.2-2' }}</span>
+                </td>
+               
+              </tr>
+              <tr>
+                <td>
+                  7
+                </td>
+                <td>
+                    {{'ESI ' | uppercase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.esi : data?.wages[1]?.data?.esi) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.esi : data?.wages[1]?.data?.esi ) | number:'1.2-2' }}</span>
+                </td>
+                
+                <td>
+                    <span >{{data?.total_amount?.esi | number:'1.2-2' }}</span>
+                </td>
+                
+              </tr>
+              <tr>
+                <td>
+                  8
+                </td>
+                <td>
+                    {{'Gun Allowance ' | titlecase}}
+                 </td>
+                 <td>
+                     <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.gun_allowances : data?.wages[1]?.data?.gun_allowances) | number:'1.2-2' }}</span>
+                 
+                 </td>
+                 <td>
+                     <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.gun_allowances : data?.wages[1]?.data?.gun_allowances ) | number:'1.2-2' }}</span>
+                 </td>
+                
+                 <td>
+                     <span >{{data?.total_amount?.gun_allowances | number:'1.2-2' }}</span>
+                 </td>
+              </tr>
+              <tr style="font-weight: bold;">
+                <td>
+                9
+                </td>
+                <td>
+                    {{'SubTotal 2' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.sub_total2 : data?.wages[1]?.data?.sub_total2) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.sub_total2 : data?.wages[1]?.data?.sub_total2 ) | number:'1.2-2' }}</span>
+                </td>
+               
+             
+                <td>
+                    <span >{{data?.total_amount?.sub_total2 | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+             
+                  <tr>
+                    <td>
+                      10
+                    </td>
+                    <td>
+                        {{'Administrative charges ' | titlecase}}
+                    </td>
+                    <td>
+                        <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.administrative_charges: data?.wages[1]?.data?.administrative_charges) | number:'1.2-2' }}</span>
+                    
+                    </td>
+                    <td>
+                        <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.administrative_charges : data?.wages[1]?.data?.administrative_charges) | number:'1.2-2' }}</span>
+                    </td>
+                   
+                 
+                    <td>
+                        <span >{{data?.total_amount?.administrative_charges | number:'1.2-2' }}</span>
+                    </td>
+                  </tr>
+                
+             <tr style="font-weight: bold;">
+                <td>
+                  11
+                </td>
+                <td>
+                    {{'Total Bill' | titlecase}}
+                </td>
+
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.total_bill: data?.wages[1]?.data?.total_bill) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.total_bill : data?.wages[1]?.data?.total_bill) | number:'1.2-2' }}</span>
+                </td>
+                
+                <td>
+                    <span >{{data?.total_amount?.total_bill | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+              
+              <tr>
+                <td>
+                  12
+                </td>
+                <td>
+                    {{'Goods & Service Tax(SGST)' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.sgst : data?.wages[1]?.data?.sgst ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.sgst : data?.wages[1]?.data?.sgst) | number:'1.2-2' }}</span>
+                </td>
+                
+                
+                <td>
+                    <span >{{data?.total_amount?.sgst | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  13
+                </td>
+                <td>
+                    {{'Goods & Service Tax(CGST)' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.cgst : data?.wages[1]?.data?.cgst ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.cgst : data?.wages[1]?.data?.cgst ) | number:'1.2-2' }}</span>
+                </td>
+              
+                <td>
+                    <span >{{data?.total_amount?.cgst | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+              <tr style="font-weight: bold;">
+                <td>
+                  14
+                </td>
+                <td>
+                    {{'Grand Total ' | titlecase}}
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==2 ? data?.wages[0]?.data?.grand_total : data?.wages[1]?.data?.grand_total ) | number:'1.2-2' }}</span>
+                
+                </td>
+                <td>
+                    <span >{{(data?.wages[0]?.type==1 ? data?.wages[0]?.data?.grand_total : data?.wages[1]?.data?.grand_total ) | number:'1.2-2' }}</span>
+                </td>
+             
+                <td>
+                    <span >{{data?.total_amount?.grand_total | number:'1.2-2' }}</span>
+                </td>
+              </tr>
+                  
+              
+            </tbody>
+          
+          </table> -->
+
+    </div>
+    
+
+
+
+
+
+
+</div>

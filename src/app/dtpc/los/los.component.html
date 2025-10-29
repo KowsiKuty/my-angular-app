@@ -1,0 +1,2232 @@
+<div>
+    <nav>
+        <div class="nav nav-tabs" style="margin-top: 1%;">
+            <span class="nav-item nav-link" data-toggle="tab" (click)="losSubModule(sub)" role="tab"
+                *ngFor="let sub of Los_Sub_Menu_List">
+                {{sub.name}}
+            </span>
+        </div>
+    </nav>
+
+
+    <span *ngIf="isLOSViewform">
+        <app-los-details (onCancel)="losViewCancel()">
+        </app-los-details>
+    </span>
+
+
+
+    <span *ngIf="isLOSBranchViewform">
+        <app-los-branch-details (onCancel)="losViewBranchCancel()">
+        </app-los-branch-details>
+    </span>
+
+
+
+    <span *ngIf="isLOSInvoiceCreateform">
+        <app-create-los (onSubmit)="losInvoiceCreateSubmit()" (onCancel)="losInvoiceCreateCancel()">
+        </app-create-los>
+    </span>
+
+    <span *ngIf="isLOSInvoiceEditform">
+        <app-create-los (onSubmit)="losInvoiceEditSubmit()" (onCancel)="losInvoiceEditCancel()">
+        </app-create-los>
+    </span>
+
+    <span *ngIf="isLOSInvoiceViewform">
+        <app-los-invoice-approval-view (onCancel)="losInvoiceViewCancel()" (onSubmit)="losReportViewCancel()" (onView)="losRectifyViewCancel()">
+        </app-los-invoice-approval-view>
+    </span>
+
+
+
+    <span *ngIf="isLOSInvoiceApprovalViewform">
+        <app-los-approve-reject-screen (onSubmit)="losInvoiceApprovalSubmit()" (onCancel)="losInvoiceApprovalCancel()">
+        </app-los-approve-reject-screen>
+    </span>
+    <span *ngIf="applicationpush">
+        <app-los-app-push>
+        </app-los-app-push>
+    </span>
+
+    <!-- <span *ngIf="isLOSInvoiceApprovalViewform">
+        <app-los-approve-reject-screen (onCancel)="losInvoiceApprovalViewCancel()">
+        </app-los-approve-reject-screen>
+    </span> -->
+
+
+
+
+    <div *ngIf="isLOSReportSummaryform">
+        <!-- <app-los-invoice-summary (onSubmit)="losInvoiceSubmit()" (onCancel)="losInvoiceCancel()">
+        </app-los-invoice-summary> -->
+        <div style="margin-left:2%">
+            <br>
+            <h2>LOS Report Summary Search</h2>
+            <form [formGroup]="losInvoiceReportSummaryForm" class="example-form">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="width: 200px;margin-left:-5%">
+                                <input #name placeholder="Choose Application" matInput formControlName="application_no"
+                                    [matAutocomplete]="autosupp">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let app of applno" [value]="app" matTooltip="{{app.ApplNo}}">
+                                            {{app.ApplNo}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                    formControlName="ecf_number" (keypress)="only_numalpha($event)">
+                                <mat-placeholder>ECF Number</mat-placeholder>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Number" formControlName="invoice_number"
+                                    autocomplete="off" >
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Choose Vendor</mat-label>
+                                <input #name placeholder=" Choose Vendor" matInput formControlName="vendor"
+                                    [matAutocomplete]="autosupp" (keypress)="only_numalpha($event)">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayVendor">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let suppliername of supplierNameData" [value]="suppliername">
+                                            {{suppliername.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div> -->
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Charge Type</mat-label>
+                                <mat-select formControlName="invoice_charge_type">
+                                    <mat-option *ngFor="let charge of chargeTypeList" [value]="charge.charge_type">
+                                        {{charge.charge_type}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>From Date</mat-label>
+                                <input matInput [matDatepicker]="from_date" formControlName="from_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="from_date"></mat-datepicker-toggle>
+                                <mat-datepicker #from_date></mat-datepicker>
+                            </mat-form-field>
+                        </div> -->
+                        <!-- color="accent" appearance="fill" -->
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: -5%;width: 200px;" class="example-full-width">
+                                <mat-label>Invoice Date</mat-label>
+                                <input matInput [matDatepicker]="Invoice_Date" formControlName="Invoice_Date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="Invoice_Date"></mat-datepicker-toggle>
+                                <mat-datepicker #Invoice_Date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Total Amount"
+                                    formControlName="invoice__total_amount" autocomplete="off"
+                                    (keypress)="numberOnly($event)">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            
+                                <mat-form-field
+                                style="width:200px;margin-left:3%;">
+    
+                                <mat-label>Branch</mat-label>
+                                <input #branchInput placeholder="Select branch" matInput formControlName="Branchcode"
+                                    [matAutocomplete]="branchtype">
+                                <mat-autocomplete #branchtype="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbranchrep"
+                                    (opened)="branchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Status</mat-label>
+                                <mat-select formControlName="Status">
+                                    <mat-option *ngFor="let list of statuslist"
+                                        [value]="list.name">
+                                        {{list.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: -5%;width: 200px;" class="example-full-width">
+                                <mat-label>Approved/Rejected Date</mat-label>
+                                <input matInput [matDatepicker]="updated_date" formControlName="updated_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="updated_date"></mat-datepicker-toggle>
+                                <mat-datepicker #updated_date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field
+                                style="width:200px;margin-left:3%;">
+    
+                                <mat-label>Behalfof Branch</mat-label>
+                                <input #bbranchrepInput placeholder="Select Behalfof branch" matInput formControlName="behalf_branch"
+                                    [matAutocomplete]="bbranchtypeforrep">
+                                <mat-autocomplete #bbranchtypeforrep="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbbranchrep"
+                                    (opened)="reportbranchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div>
+
+                        <div class="col-md-1">
+                            <div style="margin-left: -100%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit"
+                                    (click)="reportsearch_loan_data('')" style="border-radius:40px;margin-left: 15px;"
+                                    color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-md-1">
+                            <div style="margin-left: 3%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                                        aria-hidden="true" (click)="search_loan_data()"></i></button>&nbsp;&nbsp;&nbsp; -->
+                        <!-- <button mat-mini-fab color="primary" aria-label="Example icon button with a menu icon"
+                                    (click)="search_loan_data()" [disableRipple]="true">
+                                    <mat-icon>search</mat-icon>
+                                </button> -->
+                        <!-- </div>
+                        </div> -->
+
+
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button type="button" style="border-radius:40px;margin-left:-117px;"
+                                    class="btn btn-outline-primary" (click)="clear_reportform()">
+                                    Reset</button>&nbsp;&nbsp;&nbsp;
+                                <!-- <button mat-mini-fab color="warn" aria-label="Example icon button with a menu icon"
+                                    (click)="clear_form()" [disableRipple]="true">
+                                    <mat-icon>search</mat-icon>
+                                </button> -->
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button type="button" style="border-radius:40px;margin-left: 5px;"
+                                    class="btn btn-outline-success" (click)="create_los('','Y')">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                               
+                            </div>
+                            
+                        </div> -->
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button  type="button"  style="border-radius:40px;margin-left: -185px;"
+                                class="btn btn-outline-success" (click)="replosexceldownload()"
+                               >
+                                <!-- <span></span>Export  -->
+                                <i matTooltip="Download Excel" class="fa fa-download"></i>
+                            </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+
+                <h2>LOS Report Summary</h2>
+                <div   style="margin-top: 2%;width: 100%;">
+                    <table class="table table-bordered table-responsive" fixed-header>
+                        <thead>
+                            <tr class="table_header" fixed-header >
+                                <th>S.No
+                                    <span  (click)="reportsearch_loan_data('DESC')"><i
+                                        class="fa fa-arrow-down"></i></span>
+                                <span (click)="reportsearch_loan_data('ASC')"><i
+                                        class="fa fa-arrow-up"></i></span>
+                                </th>
+                                <th>Application No</th>
+                                <th>ECF Number</th>
+                                <!-- <th>Branch Code</th> -->
+                                <th>Branch</th>
+                                <th>Behalfof Branch</th>
+                                <th>Invoice No</th>
+                                <!-- <th>Vendor Name</th> -->
+                                <th>Charge Type</th>
+                                <th>Invoice Date</th>
+                                <!-- <th>Invoice Amount</th>
+                                <th>Invoice GST Amount</th> -->
+                                <th>Invoice Total Amount</th>
+                                <th>Status</th>
+                                <th>AP Status</th>
+                                <th>UTR No</th>
+                                <th>View</th>
+                                <th>Transaction History</th>
+                                <th>Cover Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let los of los_invoice_report_summary_data; index as i" >
+                                <td> {{(this.reportpresentpage - 1)*losreportpagesize +i+1 }} </td>
+                                <td>{{los.Loan_Application}}</td>
+                                <!-- <td (click)="view_los_data(los)" style="cursor: pointer;color:blue;"> {{los.ApplNo}}</td> -->
+                                <td>
+                                    <div *ngIf="los.Ecf_No === null || los.Ecf_No === ''">
+                                        -
+                                    </div>
+                                    <div *ngIf="los.Ecf_No !== null">
+                                        {{los?.Ecf_No}}
+                                    </div>
+                                
+                                </td>
+                                <!-- <td>{{los?.Branchcode}}</td> -->
+                                <td>{{los?.Branchcode}}-{{los?.Branchname}}</td>
+                                <td>{{los?.behalfbranch}}</td>
+                                <td >{{ los?.Invoice_No}}</td>
+                                <!-- <td align="center">{{ los.Vendor.name}}</td> -->
+                                <td >{{ los?.Invoice_Charge_type}}</td>
+                                <td style="text-align: center;white-space: nowrap;"
+                                  >
+                                    {{ los?.Invoice_Date}}</td>
+                                <!-- <td >{{ los?.Invoice_Amt | number:'1.2-2'}}</td>
+                                <td >{{ los?.Gst_Amt | number:'1.2-2'}}</td> -->
+                                <td >{{ los?.Invoice_Total_Amt | number:'1.2-2'}}</td>
+                                <td>{{ los?.Status}}</td>
+                                <td>{{ los?.AP_Status}}</td>
+                                <td>{{los?.utrno}}</td>
+                                <td >
+
+                                    <div class="example-button-row">
+                                        <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                            (click)="repInvoiceviewdata(los,'rep')" style="color: green;margin-top: -60%;">
+                                            <mat-icon>visibility</mat-icon>
+                                            <!-- <mat-icon>library_books</mat-icon> -->
+                                        </button>
+                                        
+                                        <!-- <button mat-icon-button color="primary">
+                                            <mat-icon class="mat-18">visibility
+                                            </mat-icon>
+                                        </button> -->
+                                        <!-- (click)="edit_los(los,'N')"  [routerLink]='"/createLos"'-->
+
+                                        <button mat-icon-button matTooltip="Edit" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status === 'Draft'">
+                                            <mat-icon class="mat-18" (click)="edit_los(los,'Y')">update
+                                            </mat-icon>
+                                        </button>
+
+                                        <!-- <button mat-icon-button matTooltip="description" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status != 'Draft'">
+                                            <mat-icon class="mat-18" (click)="Downloadfilefunction()">description
+                                            </mat-icon>
+                                        </button>  {{i+1}}. {{file.file_name }} -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                            (click)="gettranshistory(los?.inv_header_id?.id)" style="color: green;margin-top: -60%;"
+                                             data-target="#tranpopups" data-toggle="modal">
+                                            <!-- <mat-icon>visibility</mat-icon> -->
+                                            <mat-icon>library_books</mat-icon>
+                                        </button>
+                                </td>
+                                <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                                    <div data-target="#my-modal" data-toggle="modal"
+                                        *ngFor="let los of los_invoice_summary_data.file_data ;index as i;" title="{{los.file_name }}"
+                                        (click)="commentPopup(file.id,file.file_name )" class=" btn-link"><i class="fa fa-download"></i>
+                                        {{i+1}}. {{los.file_name }}
+                                    </div>
+                                </td> -->
+                                <td *ngIf="los.Status=='APPROVED'">
+                                    <!-- <span class="material-icons" (click)="download(los)">download</span> -->
+
+                                    <button type="button" class="btn btn-outline-success"
+                                        (click)="download(los)"
+                                        style="border-radius: 40px;margin-left: 3%;" matTooltip="Download CoverNote">
+                                        <span class="fa fa-download"></span>
+                                        </button>
+                                </td>
+                                <td *ngIf="los.Status!='APPROVED'">
+                                    -
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="los_invoice_report_summary_data ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+
+                    <!-- <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div> -->
+                    <!-- <div *ngIf="isLosInvoiceSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="LOSinvoicehas_previous === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="LOSinvoicepreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{LOSinvoicepresentpage}}
+                            <button type="button" mat-mini-fab color="primary" [disabled]="LOSinvoicehas_next === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="LOSinvoicenextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div> -->
+
+                    <div *ngIf="isLosReportSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="has_losreportprevious === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="ReportpreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{reportpresentpage}}
+                            <button type="button" mat-mini-fab color="primary" [disabled]="has_losreportnext === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="ReportnextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div *ngIf="showPopupImages" id="my-modal" class="modal fade" aria-labelledby="exampleModalLabel"
+            aria-hidden="true" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title w-100" id="exampleModalLabel">
+                            Attachment View
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">
+                                ×
+                            </span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="{{jpgUrls}}">
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+            <p style="color: white">Loading... </p>
+        </ngx-spinner>
+    </div>
+
+    <div *ngIf="isLOSRectifyform">
+        <!-- <app-los-invoice-summary (onSubmit)="losInvoiceSubmit()" (onCancel)="losInvoiceCancel()">
+        </app-los-invoice-summary> -->
+        <div style="margin-left:2%">
+            <br>
+            <h2>LOS Rectification Search</h2>
+            <form [formGroup]="losInvoiceRectifySummaryForm" class="example-form">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: -4%;width: 200px;" class="example-full-width">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                    formControlName="ecf_number" (keypress)="only_numalpha($event)">
+                                <mat-placeholder>ECF Number</mat-placeholder>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Number" formControlName="invoice_number"
+                                    autocomplete="off" >
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Choose Vendor</mat-label>
+                                <input #name placeholder=" Choose Vendor" matInput formControlName="vendor"
+                                    [matAutocomplete]="autosupp" (keypress)="only_numalpha($event)">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayVendor">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let suppliername of supplierNameData" [value]="suppliername">
+                                            {{suppliername.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div> -->
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Charge Type</mat-label>
+                                <mat-select formControlName="invoice_charge_type">
+                                    <mat-option *ngFor="let charge of chargeTypeList" [value]="charge.charge_type">
+                                        {{charge.charge_type}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>From Date</mat-label>
+                                <input matInput [matDatepicker]="from_date" formControlName="from_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="from_date"></mat-datepicker-toggle>
+                                <mat-datepicker #from_date></mat-datepicker>
+                            </mat-form-field>
+                        </div> -->
+                        <!-- color="accent" appearance="fill" -->
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Invoice Date</mat-label>
+                                <input matInput [matDatepicker]="Invoice_Date" formControlName="Invoice_Date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="Invoice_Date"></mat-datepicker-toggle>
+                                <mat-datepicker #Invoice_Date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: -4%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Total Amount"
+                                    formControlName="invoice__total_amount" autocomplete="off"
+                                    (keypress)="numberOnly($event)">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            
+                                <mat-form-field
+                                style="width:200px;margin-left:3%;">
+    
+                                <mat-label>Branch</mat-label>
+                                <input #branchInput placeholder="Select branch" matInput formControlName="Branchcode"
+                                    [matAutocomplete]="branchtype">
+                                <mat-autocomplete #branchtype="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbranchrep"
+                                    (opened)="branchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Status</mat-label>
+                                <mat-select formControlName="Status">
+                                    <mat-option *ngFor="let list of statuslist"
+                                        [value]="list.name">
+                                        {{list.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <mat-form-field>
+                                <mat-label>Approved/Rejected Date</mat-label>
+                                <input matInput [matDatepicker]="updated_date" formControlName="updated_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="updated_date"></mat-datepicker-toggle>
+                                <mat-datepicker #updated_date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3" *ngIf="isonbehalf == true">
+                            <mat-form-field
+                                style="width:200px;margin-left:-4%;">
+    
+                                <mat-label>Behalfof Branch</mat-label>
+                                <input #bbranchrepInput placeholder="Select Behalfof branch" matInput formControlName="behalf_branch"
+                                    [matAutocomplete]="bbranchtypeforrep">
+                                <mat-autocomplete #bbranchtypeforrep="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbbranchrep"
+                                    (opened)="reportbranchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="width: 200px;margin-left: -4%;">
+                                <input #name placeholder="Choose Application" matInput formControlName="App_No"
+                                    [matAutocomplete]="autosupp">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let app of applno" [value]="app" matTooltip="{{app.ApplNo}}">
+                                            {{app.ApplNo}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <!-- <mat-form-field style="margin-left: -4%;width: 200px;" class="example-full-width">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                    formControlName="App_No" (keypress)="only_numalpha($event)">
+                                <mat-placeholder>Application No</mat-placeholder>
+                            </mat-form-field> -->
+                        </div>
+
+                        <div class="col-md-1">
+                            <div style="margin-left: -100%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit"
+                                    (click)="rectifysearch_loan_data('')" style="border-radius:40px;margin-left: 15px;"
+                                    color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-md-1">
+                            <div style="margin-left: 3%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                                        aria-hidden="true" (click)="search_loan_data()"></i></button>&nbsp;&nbsp;&nbsp; -->
+                        <!-- <button mat-mini-fab color="primary" aria-label="Example icon button with a menu icon"
+                                    (click)="search_loan_data()" [disableRipple]="true">
+                                    <mat-icon>search</mat-icon>
+                                </button> -->
+                        <!-- </div>
+                        </div> -->
+
+
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button type="button" style="border-radius:40px;margin-left:-90%;"
+                                    class="btn btn-outline-primary" (click)="clear_rectifyform()">
+                                    Reset</button>&nbsp;&nbsp;&nbsp;
+                                <!-- <button mat-mini-fab color="warn" aria-label="Example icon button with a menu icon"
+                                    (click)="clear_form()" [disableRipple]="true">
+                                    <mat-icon>search</mat-icon>
+                                </button> -->
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button type="button" style="border-radius:40px;margin-left: 5px;"
+                                    class="btn btn-outline-success" (click)="create_los('','Y')">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                               
+                            </div>
+                            
+                        </div> -->
+                        <!-- <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button  type="button"  style="border-radius:40px;margin-left: 15px;"
+                                class="btn btn-outline-success" (click)="replosexceldownload()"
+                               >
+                               
+                                <i matTooltip="Download Excel" class="fa fa-download"></i>
+                            </button>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+                <br><br>
+
+                <h2>LOS Rectification Summary</h2>
+                <div   style="margin-top: 2%;width: 100%;">
+                    <table class="table table-bordered" fixed-header>
+                        <thead>
+                            <tr class="table_header" fixed-header >
+                                <th>S.No
+                                    <!-- <span  (click)="reportsearch_loan_data('DESC')"><i
+                                        class="fa fa-arrow-down"></i></span>
+                                <span (click)="reportsearch_loan_data('ASC')"><i
+                                        class="fa fa-arrow-up"></i></span> -->
+                                </th>
+                                <th>Application No</th>
+                                <th>ECF Number</th>
+                                <th>Branch</th>
+                                <th>Behalfof Branch</th>
+                                <!-- <th>Invoice No</th> -->
+                                <!-- <th>Vendor Name</th> -->
+                                <th>Charge Type</th>
+                                <!-- <th>Invoice Date</th> -->
+                                <!-- <th>Invoice Amount</th>
+                                <th>Invoice GST Amount</th> -->
+                                <th>Invoice Total Amount</th>
+                                <th>Status</th>
+                                <th>AP Status</th>
+                                <!-- <th>Legal Fee</th>
+                                <th>Value Fee</th> -->
+                                <th>View</th>
+                                <!-- <th>Transaction History</th>
+                                <th>Cover Note</th>  -->
+                            </tr>
+                            
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let los of los_invoice_report_summary_data; index as i" >
+                                <td> {{(this.reportpresentpage - 1)*losreportpagesize +i+1 }} </td>
+                                <td  style="cursor: pointer;color:blue;"> {{los.Loan_Application}}</td>
+                                <td>
+                                    <div *ngIf="los.Ecf_No === null || los.Ecf_No === ''">
+                                        -
+                                    </div>
+                                    <div *ngIf="los.Ecf_No !== null">
+                                        {{los?.Ecf_No}}
+                                    </div>
+                                
+                                </td>
+                                <!-- <td>{{los?.Branchcode}}</td> -->
+                                <td>{{los?.Branchcode}} - {{los?.Branchname}}</td>
+                                <td>{{los?.behalfbranch}}</td>
+                                <!-- <td >{{ los?.Invoice_No}}</td> -->
+                                <!-- <td align="center">{{ los.Vendor.name}}</td> -->
+                                <td >{{ los?.Invoice_Charge_type}}</td>
+                                <!-- <td style="text-align: center;white-space: nowrap;"
+                                  >
+                                    {{ los?.Invoice_Date}}</td> -->
+                                <!-- <td >{{ los?.Invoice_Amt | number:'1.2-2'}}</td>
+                                <td >{{ los?.Gst_Amt | number:'1.2-2'}}</td> -->
+                                <td >{{ los?.Invoice_Total_Amt | number:'1.2-2'}}</td>
+                                <td>{{ los?.Status}}</td>
+                                <td>{{ los?.AP_Status}}</td>
+                             
+                                <!-- <td >
+
+                                    <div class="example-button-row">
+                                        <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                            (click)="repInvoiceviewdata(los,'rep')" style="color: green;margin-top: -60%;">
+                                            <mat-icon>visibility</mat-icon>
+                                            
+                                        </button> -->
+                                        
+                                        <!-- <button mat-icon-button color="primary">
+                                            <mat-icon class="mat-18">visibility
+                                            </mat-icon>
+                                        </button> -->
+                                        <!-- (click)="edit_los(los,'N')"  [routerLink]='"/createLos"'-->
+
+                                        <!-- <button mat-icon-button matTooltip="Edit" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status === 'Draft'">
+                                            <mat-icon class="mat-18" (click)="edit_los(los,'Y')">update
+                                            </mat-icon>
+                                        </button> -->
+
+                                        <!-- <button mat-icon-button matTooltip="description" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status != 'Draft'">
+                                            <mat-icon class="mat-18" (click)="Downloadfilefunction()">description
+                                            </mat-icon>
+                                        </button>  {{i+1}}. {{file.file_name }} -->
+                                    <!-- </div>
+                                </td> -->
+                                <!-- <td>
+                                    <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                            (click)="gettranshistory(los?.id)" style="color: green;margin-top: -60%;"
+                                             data-target="#tranpopups" data-toggle="modal">
+                                            
+                                            <mat-icon>library_books</mat-icon>
+                                        </button>
+                                </td> -->
+                                <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                                    <div data-target="#my-modal" data-toggle="modal"
+                                        *ngFor="let los of los_invoice_summary_data.file_data ;index as i;" title="{{los.file_name }}"
+                                        (click)="commentPopup(file.id,file.file_name )" class=" btn-link"><i class="fa fa-download"></i>
+                                        {{i+1}}. {{los.file_name }}
+                                    </div>
+                                </td> -->
+                                <!-- <td *ngIf="los.Status=='APPROVED'">
+                                   
+
+                                    <button type="button" class="btn btn-outline-success"
+                                        (click)="download(los)"
+                                        style="border-radius: 40px;margin-left: 3%;" matTooltip="Download CoverNote">
+                                        <span class="fa fa-download"></span>
+                                        </button>
+                                </td>
+                                <td *ngIf="los.Status!='APPROVED'">
+                                    -
+                                </td> -->
+                                <!-- <td>-</td>
+                                <td>-</td> -->
+                                <td>
+                                    <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                    (click)="rectInvoiceviewdata(los,'rect')" style="color: green;margin-top: -60%;">
+                                    <mat-icon>visibility</mat-icon>
+                                    
+                                </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="los_invoice_report_summary_data ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+
+                    <!-- <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div> -->
+                    <!-- <div *ngIf="isLosInvoiceSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="LOSinvoicehas_previous === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="LOSinvoicepreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{LOSinvoicepresentpage}}
+                            <button type="button" mat-mini-fab color="primary" [disabled]="LOSinvoicehas_next === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="LOSinvoicenextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div> -->
+
+                    <div *ngIf="isLosReportSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="has_losreportprevious === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="ReportpreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{reportpresentpage}}
+                            <button type="button" mat-mini-fab color="primary" [disabled]="has_losreportnext === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="ReportnextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div *ngIf="showPopupImages" id="my-modal" class="modal fade" aria-labelledby="exampleModalLabel"
+            aria-hidden="true" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title w-100" id="exampleModalLabel">
+                            Attachment View
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">
+                                ×
+                            </span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="{{jpgUrls}}">
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+            <p style="color: white">Loading... </p>
+        </ngx-spinner>
+    </div>
+
+
+
+    <div *ngIf="isLOSSummaryform">
+        <!-- <app-los-summary (onSubmit)="losSubmit()" (onCancel)="losCancel()">
+        </app-los-summary>(click)="myclick(app)" -->
+        <div style="margin-left:2%">
+            <br>
+            <h2>LOS Summary Search</h2>
+            <form [formGroup]="losSummaryForm" class="example-form">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: -5%;">
+                                <input #name placeholder="Choose Application" matInput formControlName="application_no"
+                                    [matAutocomplete]="autosupp">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let app of applno" [value]="app" matTooltip="{{app.ApplNo}}">
+                                            {{app.ApplNo}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                                <input #name placeholder="Choose Branch" matInput formControlName="branch"
+                                    [matAutocomplete]="auto">
+                                <mat-autocomplete #auto="matAutocomplete" [panelWidth]="275" [displayWith]="displaybranch">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of branap" [value]="branch" matTooltip=" {{branch.name}}--{{branch.code}}">
+                                            {{branch.name}}--{{branch.code}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Status</mat-label>
+                                <mat-select formControlName="statustype">
+                                    <mat-option *ngFor="let s of statustypelist" [value]="s">
+                                        {{s.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- <div class="col-md-3">
+                            <mat-form-field
+                                style="width:200px;margin-left:3%;">
+    
+                                <mat-label>Branch</mat-label>
+                                <input #branchInput placeholder="Select branch" matInput formControlName="Branchcode"
+                                    [matAutocomplete]="branchtypeforapp">
+                                <mat-autocomplete #branchtypeforapp="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbranchapp"
+                                    (opened)="appbranchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div> -->
+
+
+
+                        <div class="col-md-1">
+                            <div style="margin-left: -100%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit" (click)="search('')"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"><i
+                                        class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button class="btn btn-outline-primary" (click)="reset()"
+                                    style="border-radius:40px;margin-left: -115px;" color="primary">Reset</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button  type="button"  style="border-radius:40px;margin-left: -165px;"
+                                class="btn btn-outline-success" (click)="exceldownload()"
+                               >
+                               <i matTooltip="Download Excel" class="fa fa-download"></i>
+                            </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2>LOS Summary</h2>
+                <br>
+                <div class="table-responsive">
+                    <table class="table table scrolltable table-bordered">
+                        <thead class="table_header" fixed-header>
+                            <tr>
+                                <th>S.No
+                                    <span  (click)="search('DESC')"><i
+                                        class="fa fa-arrow-down"></i></span>
+                                <span (click)="search('ASC')"><i
+                                        class="fa fa-arrow-up"></i></span>
+                                </th>
+                                <th>Application Number</th>
+                                <th class="w-25">Branch</th>
+                                <!-- <th>Branch Code</th> -->
+                                <th>Legal Base Amount</th>
+                                <th>Legal Balance Amount</th>
+                                <th>Valuation Base Amount</th>
+                                <th>Valuation Balance Amount</th>
+                                <th>Transaction Date</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let los of los_summary_data; index as i">
+                                <td align="center"> {{(this.lospresentpage - 1)*lospagesize +i+1 }} </td>
+                                <td align="center" (click)="view_los_data(los)" style="cursor: pointer;color:blue;">
+                                    {{los.ApplNo}}</td>
+                                <td align="center">
+                                    <div *ngIf="los.BranchName === null || los.BranchName === ''">
+                                       
+                                    </div>
+                                    <div *ngIf="los.BranchName !== null">
+                                        {{ los.BranchCode}}-{{los.BranchName}}
+                                    </div>
+                                </td>
+                                <!-- <td align="center">{{ los.BranchCode}}</td> -->
+                                <td>{{los.ChargeType_lamt}}</td>
+                               
+                                <ng-container *ngIf="los?.balanceamt?.length === 1; then showOneData; else showMultipleData">
+                                </ng-container>
+                                
+                                <ng-template #showOneData>
+                                  <ng-container *ngFor="let bal of los?.balanceamt">
+                                    <!-- Display the "LEGAL_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'LEGAL_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+
+                                    
+                                
+                                    <!-- If "LEGAL_FEE" is not present, display '-' in its column -->
+                                    <td *ngIf="bal?.charge_type !== 'LEGAL_FEE'">
+                                      <!-- - -->
+                                      <ng-container *ngFor="let bal of los?.chargetype">
+                                     <div *ngIf="bal?.ChargeType == 'LEGAL_FEE'">
+                                      {{bal?.Amount | number: '1.2-2'}}
+                                    </div>
+                                    </ng-container>
+                                    </td>
+                                
+                                   
+                                  </ng-container>
+                                </ng-template>
+                                
+                                <ng-template #showMultipleData>
+                                  <ng-container *ngIf="los?.balanceamt?.length === 0; then showNoData; else showMultipleFees">
+                                  </ng-container>
+                                </ng-template>
+                                
+                                <ng-template #showNoData>
+                                  <!-- Display data for los?.balanceamt?.length === 0 -->
+                                 
+                                  
+                                  <td>{{los.ChargeType_lamt}}</td>
+                                </ng-template>
+                                
+                                <ng-template #showMultipleFees>
+                                  <!-- Display data for los?.balanceamt?.length > 1 -->
+                                  <ng-container *ngFor="let bal of los?.balanceamt">
+                                    <!-- Display the "LEGAL_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'LEGAL_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+                                   
+                                   
+                                  </ng-container>
+                                </ng-template>
+                                 
+                                <td>{{los.ChargeType_vamt}}</td>
+
+                                <ng-container *ngIf="los?.balanceamt?.length === 1; then showOnesData; else showMultiplesData">
+                                </ng-container>
+                                
+                                <ng-template #showOnesData>
+                                  <ng-container *ngFor="let bal of los?.balanceamt">
+                                   
+                                    <!-- Display the "VALU_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'VALU_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+                                
+                                  
+                                    <!-- If "VALU_FEE" is not present, display '-' in its column -->
+                                    <td *ngIf="bal?.charge_type !== 'VALU_FEE'">
+                                      <!-- - -->
+                                      <ng-container *ngFor="let bal of los?.chargetype">
+                                        <div *ngIf="bal?.ChargeType == 'VALU_FEE'">
+                                         {{bal?.Amount | number: '1.2-2'}}
+                                       </div>
+                                       </ng-container>
+                                    </td>
+                                  </ng-container>
+                                </ng-template>
+                                
+                                <ng-template #showMultiplesData>
+                                  <ng-container *ngIf="los?.balanceamt?.length === 0; then showNosData; else showMultiplesFees">
+                                  </ng-container>
+                                </ng-template>
+                                
+                                <ng-template #showNosData>
+                                  <!-- Display data for los?.balanceamt?.length === 0 -->
+                                 
+                                  <td>{{los.ChargeType_vamt}}</td>
+                                 
+                                </ng-template>
+                                
+                                <ng-template #showMultiplesFees>
+                                  <!-- Display data for los?.balanceamt?.length > 1 -->
+                                  <ng-container *ngFor="let bal of los?.balanceamt">
+                                    <!-- Display the "LEGAL_FEE" column -->
+                                  
+                                   
+                                    <!-- Display the "VALU_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'VALU_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+                                  </ng-container>
+                                </ng-template>
+                                <td>{{los.TxnDate|date:'dd-MMM-yyyy'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="los_summary_data ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div *ngIf="isLosSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary" [disabled]="has_losprevious === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="previousClicklos()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{lospresentpage}}
+                            <button type="button" mat-mini-fab color="primary" [disabled]="has_losnext === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="nextClicklos()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+            <p style="color: white">Loading... </p>
+        </ngx-spinner>
+
+    </div>
+    <div *ngIf="isLOSProvisionReportform">
+        <div>
+            <br>
+            <h2>
+                LOS Provision Report 
+            </h2>
+            <div   style="margin-top: 2%;width: 100%;">
+                    <table class="table table-bordered" fixed-header>
+                        <thead>
+                            <tr class="table_header" fixed-header >
+                            <th>
+                                S.NO
+                            </th>
+                            <th>
+                                Prepare Report
+                            </th>
+                            <th>
+                                Download
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td>
+                            1
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-success" style="border-radius:40px">
+                                Prepare LOS Report 
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-success" style="border-radius:40px" (click)="provisionreport()">
+                                Download LOS Report
+                            </button>
+                        </td>    
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+        </div>
+    </div>
+
+    <div *ngIf="isLOSBranchSummaryform">
+        <!-- <app-los-branch-summary (onSubmit)="losBranchSubmit()" (onCancel)="losBranchCancel()">
+        </app-los-branch-summary> -->
+        <div style="margin-left:2%">
+            <br>
+            <h2>LOS Branch Summary Search</h2>
+            <form [formGroup]="losBranchSummaryForm" class="example-form">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: -5%; ">
+                                <input #name placeholder="Choose Application" matInput formControlName="application_no"
+                                    [matAutocomplete]="autosupp">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="branchdisplayFn">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let app of bapplno" [value]="app" matTooltip="{{app.ApplNo}}">
+                                            {{app.ApplNo}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                                <input #losbranchInput placeholder="Choose Branch" matInput formControlName="branch"
+                                    [matAutocomplete]="branchauto">
+                                <mat-autocomplete #branchauto="matAutocomplete" [panelWidth]="275" [displayWith]="displaylosbranch"
+                                (opened)="losbranchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of branap" [value]="branch" matTooltip=" {{branch.name}}--{{branch.code}}">
+                                            {{branch.name}}--{{branch.code}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: 3%;">
+                                <input #name placeholder="Branch" matInput
+                                    formControlName="branch" [value]="branchpatch" [readonly]="true">                       
+                            </mat-form-field>
+                        </div> -->
+                        <div class="col-md-1">
+                            <div style="margin-left: -100%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit" (click)="branchsearch_data('')"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"><i
+                                        class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button class="btn btn-outline-primary" (click)="branchremove()"
+                                    style="border-radius:40px;margin-left: -115px;" color="primary">Reset</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button  type="button"  style="border-radius:40px;margin-left: -165px;"
+                                class="btn btn-outline-success" (click)="branchexceldownload()"
+                               >
+                               <i matTooltip="Download Excel" class="fa fa-download"></i>
+                            </button>
+                            </div>
+                        </div>
+                        <!-- <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button mat-mini-fab color="basic" (click)="create_los()">
+                                    <mat-icon>person_add</mat-icon>
+                                </button>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+                <h2>LOS Branch Summary</h2>
+                <div class="table-responsive">
+                    <table class="table table scrolltable table-bordered">
+                        <thead class="table_header" fixed-header>
+                            <tr>
+                                <th>S.No
+                                    <span  (click)="branchsearch_data('DESC')"><i
+                                        class="fa fa-arrow-down"></i></span>
+                                    <span (click)="branchsearch_data('ASC')"><i
+                                        class="fa fa-arrow-up"></i></span>
+                                </th>
+                                
+                                <th>Application Number</th>
+                                <th class="w-25">Branch</th>
+                                <!-- <th>Branch Code</th> -->
+                                <th>Legal Balance Amount</th>
+                                <th>Valuation Balance Amount</th>
+                                <!-- <th>CustomerID</th>
+                                <th>BusinessUnit</th>
+                                <th class="w-25">DrAcctName</th>
+                                <th>DrAcctNo</th>
+                                <th class="w-25">TaxDate</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let los of los_branchsummary_data; index as i">
+                                <td align="center"> {{(this.losbranchpresentpage - 1)*losbranchpagesize +i+1 }} </td>
+                                <td align="center" (click)="view_branchlos_data(los)"
+                                    style="cursor: pointer;color:blue;"> {{los.ApplNo}}</td>
+                                <td align="center">
+                                    <div *ngIf="los.BranchName === null || los.BranchName === ''">
+                                       
+                                    </div>
+                                    <div *ngIf="los.BranchName !== null">
+                                        {{ los.BranchCode}}-{{los.BranchName}}
+                                    </div>
+                                </td>
+                                <!-- <td align="center">{{ los.BranchName}}</td> -->
+                                <!-- <td align="center">{{ los.BranchCode}}</td> -->
+                                <ng-container *ngIf="los?.balanceamt?.length === 1; then showOneData; else showMultipleData">
+                                </ng-container>
+                                
+                                <ng-template #showOneData>
+                                  <ng-container *ngFor="let bal of los?.balanceamt">
+                                    <!-- Display the "LEGAL_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'LEGAL_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+                                
+                                    <!-- Display the "VALU_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'VALU_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+                                
+                                    <!-- If "LEGAL_FEE" is not present, display '-' in its column -->
+                                    <td *ngIf="bal?.charge_type !== 'LEGAL_FEE'">
+                                      -
+                                    </td>
+                                
+                                    <!-- If "VALU_FEE" is not present, display '-' in its column -->
+                                    <td *ngIf="bal?.charge_type !== 'VALU_FEE'">
+                                      -
+                                    </td>
+                                  </ng-container>
+                                </ng-template>
+                                
+                                <ng-template #showMultipleData>
+                                  <ng-container *ngIf="los?.balanceamt?.length === 0; then showNoData; else showMultipleFees">
+                                  </ng-container>
+                                </ng-template>
+                                
+                                <ng-template #showNoData>
+                                  <!-- Display data for los?.balanceamt?.length === 0 -->
+                                  <td>-</td>
+                                  <td>-</td>
+                                </ng-template>
+                                
+                                <ng-template #showMultipleFees>
+                                  <!-- Display data for los?.balanceamt?.length > 1 -->
+                                  <ng-container *ngFor="let bal of los?.balanceamt">
+                                    <!-- Display the "LEGAL_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'LEGAL_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+                                
+                                    <!-- Display the "VALU_FEE" column -->
+                                    <td *ngIf="bal?.charge_type === 'VALU_FEE'">
+                                      {{ bal?.Amount }}
+                                    </td>
+                                  </ng-container>
+                                </ng-template>
+                                
+                                
+                                
+                                <!-- <td align="center">
+                                    <div *ngIf="los.CustomerID === null || los.CustomerID === ''">
+                                        -
+                                    </div>
+                                    <div *ngIf="los.CustomerID !== null">
+                                        {{los.CustomerID}}
+                                    </div>
+                                </td> -->
+                                <!-- <td align="center">{{ los.CustomerID}}</td> -->
+                                <!-- <td align="center">
+                                    <div *ngIf="los.BusinessUnit === null || los.BusinessUnit === ''">
+                                        -
+                                    </div>
+                                    <div *ngIf="los.BusinessUnit !== null">
+                                        {{los.BusinessUnit}}
+                                    </div>
+                                </td> -->
+                                <!-- <td align="center">{{ los.BusinessUnit}}</td> -->
+                                <!-- <td align="center">{{ los.DrAcctName}}</td>
+                                <td align="center">
+                                    <div *ngIf="los.DrAcctNo === null || los.DrAcctNo === ''">
+                                        -
+                                    </div>
+                                    <div *ngIf="los.DrAcctNo !== null">
+                                        {{los.DrAcctNo}}
+                                    </div>
+                                </td> -->
+                                <!-- <td align="center">{{los.DrAcctNo}}</td> -->
+                                <!-- <td align="center">{{los.TxnDate}}</td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="los_branchsummary_data ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+                    <div *ngIf="isLosBranchSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="has_losbranchprevious === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="branchpreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{losbranchpresentpage}}
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="has_losbranchnext === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="branchnextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div> -->
+                </div>
+            </form>
+        </div>
+        <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+            <p style="color: white">Loading... </p>
+        </ngx-spinner>
+    </div>
+
+
+    <div *ngIf="isLOSInvoiceSummaryform">
+        <!-- <app-los-invoice-summary (onSubmit)="losInvoiceSubmit()" (onCancel)="losInvoiceCancel()">
+        </app-los-invoice-summary> -->
+        <div style="margin-left:2%">
+            <br>
+            <h2>LOS Invoice Summary Search</h2>
+            <form [formGroup]="losInvoiceSummaryForm" class="example-form">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: -5%; width: 200px;">
+                                <input #name placeholder="Choose Application" matInput formControlName="application_no"
+                                [matAutocomplete]="autosupp">
+                            <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                </mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let app of applno" [value]="app" matTooltip="{{app.ApplNo}}">
+                                        {{app.ApplNo}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                    formControlName="ecf_number" (keypress)="only_numalpha($event)">
+                                <mat-placeholder>ECF Number</mat-placeholder>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Number" formControlName="invoice_number"
+                                    autocomplete="off" >
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Choose Vendor</mat-label>
+                                <input #name placeholder=" Choose Vendor" matInput formControlName="vendor"
+                                    [matAutocomplete]="autosupp" (keypress)="only_numalpha($event)">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayVendor">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let suppliername of supplierNameData" [value]="suppliername">
+                                            {{suppliername.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div> -->
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Charge Type</mat-label>
+                                <mat-select formControlName="invoice_charge_type">
+                                    <mat-option *ngFor="let charge of chargeTypeList" [value]="charge.charge_type">
+                                        {{charge.charge_type}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>From Date</mat-label>
+                                <input matInput [matDatepicker]="from_date" formControlName="from_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="from_date"></mat-datepicker-toggle>
+                                <mat-datepicker #from_date></mat-datepicker>
+                            </mat-form-field>
+                        </div> -->
+                        <!-- color="accent" appearance="fill" -->
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: -5%;width: 200px;" class="example-full-width">
+                                <mat-label>Invoice Date</mat-label>
+                                <input matInput [matDatepicker]="Invoice_Date" formControlName="Invoice_Date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="Invoice_Date"></mat-datepicker-toggle>
+                                <mat-datepicker #Invoice_Date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Total Amount"
+                                    formControlName="invoice__total_amount" autocomplete="off"
+                                    (keypress)="numberOnly($event)">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Status</mat-label>
+                                <mat-select formControlName="Status">
+                                    <mat-option *ngFor="let list of statuslist"
+                                        [value]="list.name">
+                                        {{list.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Approved/Rejected Date</mat-label>
+                                <input matInput [matDatepicker]="updated_date" formControlName="updated_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="updated_date"></mat-datepicker-toggle>
+                                <mat-datepicker #updated_date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                       
+
+                        <div class="col-md-3" *ngIf="isonbehalf == true">
+                            <mat-form-field
+                                style="width:200px;margin-left:-5%;">
+    
+                                <mat-label>Behalfof Branch</mat-label>
+                                <input #behalfbranchInput placeholder="Select Behalfof branch" matInput formControlName="behalfbranch"
+                                    [matAutocomplete]="losbehalfbranch">
+                                <mat-autocomplete #losbehalfbranch="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbbranchlos"
+                                    (opened)="belalfbranchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div>
+
+                        <!-- <div class="col-md-3">
+                            
+                                <mat-form-field
+                                style="width:200px;margin-left:3%;">
+    
+                                <mat-label>Branch</mat-label>
+                                <input #branchInput placeholder="Select branch" matInput formControlName="Branchcode"
+                                    [matAutocomplete]="branchtype">
+                                <mat-autocomplete #branchtype="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbranch"
+                                    (opened)="branchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div> -->
+
+                        <div class="col-md-1">
+                            <div style="margin-left: -150%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit"
+                                    (click)="Invoicesearch_loan_data('')" style="border-radius:40px;margin-left: 50px;"
+                                    color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-md-1">
+                            <div style="margin-left: 3%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit"
+                                    style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                                        aria-hidden="true" (click)="search_loan_data()"></i></button>&nbsp;&nbsp;&nbsp; -->
+                        <!-- <button mat-mini-fab color="primary" aria-label="Example icon button with a menu icon"
+                                    (click)="search_loan_data()" [disableRipple]="true">
+                                    <mat-icon>search</mat-icon>
+                                </button> -->
+                        <!-- </div>
+                        </div> -->
+
+
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button type="button" style="border-radius:40px;margin-left:-180px;"
+                                    class="btn btn-outline-primary" (click)="clear_LOSInvoiceform()">
+                                    Reset</button>&nbsp;&nbsp;&nbsp;
+                                <!-- <button mat-mini-fab color="warn" aria-label="Example icon button with a menu icon"
+                                    (click)="clear_form()" [disableRipple]="true">
+                                    <mat-icon>search</mat-icon>
+                                </button> -->
+                            </div>
+                        </div>
+
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button type="button" style="border-radius:40px;margin-left: -165px;"
+                                    class="btn btn-outline-success" (click)="create_los('','Y')">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                                <div class="example-button-container">
+                                    <button  type="button"  style="border-radius:40px;margin-left: -55px;"
+                                    class="btn btn-outline-success" (click)="losexceldownload()"
+                                   >
+                                   <i matTooltip="Download Excel" class="fa fa-download"></i>
+                                </button>
+                                </div>
+                                <!-- <button mat-mini-fab color="basic" (click)="create_los('','Y')">
+                                    <mat-icon>person_add</mat-icon>
+                                </button> -->
+                            </div>
+                            
+                        </div>
+                        <!-- <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button  type="button"  style="border-radius:40px;margin-left: 15px;"
+                                class="btn btn-outline-success" (click)="losexceldownload()"
+                               >
+                               <i matTooltip="Download Excel" class="fa fa-download"></i>
+                            </button>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+                <br><br>
+
+                <h2>LOS Invoice Summary</h2>
+                <div   style="margin-top: 2%;width: 100%;">
+                    <table class="table table-bordered table-responsive" fixed-header>
+                        <thead>
+                            <tr class="table_header" fixed-header >
+                                <th>S.No
+                                    <span  (click)="Invoicesearch_loan_data('DESC')"><i
+                                        class="fa fa-arrow-down"></i></span>
+                                <span (click)="Invoicesearch_loan_data('ASC')"><i
+                                        class="fa fa-arrow-up"></i></span>
+                                </th>
+                                <th>Application No</th>
+                                <th>ECF Number</th>
+                                <!-- <th>Branch Code</th> -->
+                                <th>Branch</th>
+                                <th *ngIf="isonbehalf == true">Behalfof Branch</th>
+                                <th>Invoice No</th>
+                                <!-- <th>Vendor Name</th> -->
+                                <th>Charge Type</th>
+                                <th>Invoice Date</th>
+                                <!-- <th>Invoice Amount</th>
+                                <th>Invoice GST Amount</th> -->
+                                <th>Invoice Total Amount</th>
+                                <th>Status</th>
+                                <th>AP Status</th>
+                                <th>UTR No</th>
+                                <th>View</th>
+                               <th>Transaction History</th>
+                                <th>Cover Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let los of los_invoice_summary_data; index as i" >
+                                <td> {{(this.losmakerpresentpage - 1)*losmakerpagesize +i+1 }} 
+                                  
+                                </td>
+                                <td>{{los?.Loan_Application}}</td>
+                                <!-- <td (click)="view_los_data(los)" style="cursor: pointer;color:blue;"> {{los.ApplNo}}</td> -->
+                                <td>
+                                    <div *ngIf="los.Ecf_No === null || los.Ecf_No === ''">
+                                        -
+                                    </div>
+                                    <div *ngIf="los.Ecf_No !== null">
+                                        {{los?.Ecf_No}}
+                                    </div>
+                                
+                                </td>
+                                <!-- <td>{{los?.Branchcode}}</td> -->
+                                <td>{{los?.Branchcode}}-{{los?.Branchname}}</td>
+                                <td *ngIf="isonbehalf == true">{{los?.behalfbranch}}</td>
+                                <td >{{ los?.Invoice_No}}</td>
+                                <!-- <td align="center">{{ los.Vendor.name}}</td> -->
+                                <td >{{ los?.Invoice_Charge_type}}</td>
+                                <td style="text-align: center;white-space: nowrap;"
+                                  >
+                                    {{ los?.Invoice_Date}}</td>
+                                <!-- <td >{{ los?.Invoice_Amt | number:'1.2-2'}}</td>
+                                <td >{{ los?.Gst_Amt | number:'1.2-2'}}</td> -->
+                                <td >{{ los?.Invoice_Total_Amt | number:'1.2-2'}}</td>
+                                <td>{{ los?.Status}}</td>
+                                <td>{{ los?.AP_Status}}</td>
+                                <td>{{los?.utrno}}</td>
+                                <td >
+
+                                    <div class="example-button-row">
+                                        <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                            (click)="Invoiceviewdata(los,'inv')" style="color: green;margin-top: -60%;">
+                                            <mat-icon>visibility</mat-icon>
+                                            <!-- <mat-icon>library_books</mat-icon> -->
+                                        </button>
+                                        
+                                        <!-- <button mat-icon-button color="primary">
+                                            <mat-icon class="mat-18">visibility
+                                            </mat-icon>
+                                        </button> -->
+                                        <!-- (click)="edit_los(los,'N')"  [routerLink]='"/createLos"'-->
+
+                                        <button mat-icon-button matTooltip="Edit" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status === 'Draft'">
+                                            <mat-icon class="mat-18" (click)="edit_los(los,'Y')">update
+                                            </mat-icon>
+                                        </button>
+
+                                        <!-- <button mat-icon-button matTooltip="description" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status != 'Draft'">
+                                            <mat-icon class="mat-18" (click)="Downloadfilefunction()">description
+                                            </mat-icon>
+                                        </button>  {{i+1}}. {{file.file_name }} -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                            (click)="gettranshistory(los?.inv_header_id?.id)" style="color: green;margin-top: -60%;"
+                                             data-target="#tranpopups" data-toggle="modal">
+                                            <!-- <mat-icon>visibility</mat-icon> -->
+                                            <mat-icon>library_books</mat-icon>
+                                        </button>
+                                </td>
+                                <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                                    <div data-target="#my-modal" data-toggle="modal"
+                                        *ngFor="let los of los_invoice_summary_data.file_data ;index as i;" title="{{los.file_name }}"
+                                        (click)="commentPopup(file.id,file.file_name )" class=" btn-link"><i class="fa fa-download"></i>
+                                        {{i+1}}. {{los.file_name }}
+                                    </div>
+                                </td> -->
+                                <td *ngIf="los.Status=='APPROVED'">
+                                    <!-- <span class="material-icons" (click)="download(los)">download</span> -->
+                                    <button type="button" class="btn btn-outline-success"
+                                        (click)="download(los)"
+                                        style="border-radius: 40px;margin-left: 3%;" matTooltip="Download CoverNote">
+                                        <span class="fa fa-download"></span>
+                                        </button>
+                                </td>
+                                <td *ngIf="los.Status!='APPROVED'">
+                                    -
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="los_invoice_summary_data ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+
+                    <!-- <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                        <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div> -->
+                    <div *ngIf="isLosInvoiceSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="has_losmakerprevious === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="LOSinvoicepreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{losmakerpresentpage}}
+                            <button type="button" mat-mini-fab color="primary" [disabled]="has_losmakernext === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="LOSinvoicenextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div *ngIf="showPopupImages" id="my-modal" class="modal fade" aria-labelledby="exampleModalLabel"
+            aria-hidden="true" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title w-100" id="exampleModalLabel">
+                            Attachment View
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">
+                                ×
+                            </span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="{{jpgUrls}}">
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+            <p style="color: white">Loading... </p>
+        </ngx-spinner>
+    </div>
+
+
+    <div *ngIf="isLOSInvoiceApprovalSummaryform">
+        <!-- <app-los-invoice-approval (onSubmit)="losInvoiceApprovalSubmit()" (onCancel)="losInvoiceApprovalCancel()">
+        </app-los-invoice-approval> -->
+
+        <div style="margin-left:2%">
+            <br>
+            <h2>LOS Invoice Approval Summary Search</h2>
+            <form [formGroup]="losInvoiceApprovalSummaryForm" class="example-form">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="width: 200px;margin-left: -5%;">
+                                <input #name placeholder="Choose Application" matInput formControlName="application_no"
+                                    [matAutocomplete]="autosupp">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let app of applno" [value]="app" matTooltip="{{app.ApplNo}}">
+                                            {{app.ApplNo}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                    formControlName="ecf_number" (keypress)="only_numalpha($event)">
+                                <mat-placeholder>ECF Number</mat-placeholder>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Number" formControlName="invoice_number"
+                                    autocomplete="off" >
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Choose Vendor</mat-label>
+                                <input #name placeholder=" Choose Vendor" matInput formControlName="vendor"
+                                    [matAutocomplete]="autosupp" (keypress)="only_numalpha($event)">
+                                <mat-autocomplete #autosupp="matAutocomplete" [displayWith]="displayVendor">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                    </mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let suppliername of supplierNameData" [value]="suppliername">
+                                            {{suppliername.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div> -->
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Charge Type</mat-label>
+                                <mat-select formControlName="invoice_charge_type">
+                                    <mat-option *ngFor="let charge of ApprovalchargeTypeList"
+                                        [value]="charge.charge_type">
+                                        {{charge.charge_type}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>From Date</mat-label>
+                                <input matInput [matDatepicker]="from_date" formControlName="from_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="from_date"></mat-datepicker-toggle>
+                                <mat-datepicker #from_date></mat-datepicker>
+                            </mat-form-field>
+                        </div> -->
+                        <!-- color="accent" appearance="fill" -->
+                        <div class="col-md-3" >
+                            <mat-form-field style="margin-left: -5%;width: 200px;" class="example-full-width">
+                                <mat-label>Invoice Date</mat-label>
+                                <input matInput [matDatepicker]="Invoice_Date" formControlName="Invoice_Date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="Invoice_Date"></mat-datepicker-toggle>
+                                <mat-datepicker #Invoice_Date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <input matInput placeholder="Invoice Total Amount"
+                                    formControlName="invoice__total_amount" autocomplete="off"
+                                    (keypress)="numberOnly($event)">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field
+                                style="width:200px;margin-left:3%;">
+    
+                                <mat-label>Branch</mat-label>
+                                <input #branchInput placeholder="Select branch" matInput formControlName="Branchcode"
+                                    [matAutocomplete]="branchtypeforapp">
+                                <mat-autocomplete #branchtypeforapp="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbranchapp"
+                                    (opened)="appbranchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: 3%;width: 200px;" class="example-full-width">
+                                <mat-label>Status</mat-label>
+                                <mat-select formControlName="Status">
+                                    <mat-option *ngFor="let list of statuslist"
+                                        [value]="list.name">
+                                        {{list.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field style="margin-left: -5%;width: 200px;" class="example-full-width">
+                                <mat-label>Approved/Rejected Date</mat-label>
+                                <input matInput [matDatepicker]="updated_date" formControlName="updated_date"
+                                    (keypress)="numberOnly($event)">
+                                <mat-datepicker-toggle matSuffix [for]="updated_date"></mat-datepicker-toggle>
+                                <mat-datepicker #updated_date></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3" *ngIf="isonbehalf == true">
+                            <mat-form-field
+                                style="width:200px;margin-left:3%;">
+    
+                                <mat-label>Behalfof Branch</mat-label>
+                                <input #bbranchInput placeholder="Select Behalfof branch" matInput formControlName="behalf_branch"
+                                    [matAutocomplete]="bbranchtypeforapp">
+                                <mat-autocomplete #bbranchtypeforapp="matAutocomplete" [panelWidth]="275" [displayWith]="displayFnbbranchapp"
+                                    (opened)="bappbranchScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let branch of Branchlist" [value]="branch" matTooltip=" {{branch.codename}}">
+                                            {{branch.codename}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                           
+                        </div>
+
+                        <div class="col-md-1">
+                            <div style="margin-left: -100%;width: 200px;" class="example-button-container">
+                                <button class="btn btn-outline-primary" type="submit"
+                                    (click)="Approvalsearch_loan_data('')" style="border-radius:40px;margin-left: 15px;"
+                                    color="primary"><i class="fa fa-search"
+                                        aria-hidden="true"></i></button>&nbsp;&nbsp;&nbsp;
+                            </div>
+                        </div>
+
+                        
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button type="button" style="border-radius:40px;margin-left:-115px;"
+                                    class="btn btn-outline-primary" (click)="clear_approvalform()">
+                                    Reset</button>&nbsp;&nbsp;&nbsp;
+                                <!-- <button mat-mini-fab color="warn" aria-label="Example icon button with a menu icon"
+                                    (click)="clear_form()" [disableRipple]="true">
+                                    <mat-icon>search</mat-icon>
+                                </button> -->
+                            </div>
+                           
+                        </div>
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <button  type="button"  style="border-radius:40px;margin-left: -185px;"
+                                class="btn btn-outline-success" (click)="applosexceldownload()"
+                               >
+                               <i matTooltip="Download Excel" class="fa fa-download"></i>
+                            </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-1">
+                            <div class="example-button-container">
+                                <!-- <button type="button" style="border-radius:40px;margin-left: 5px;"
+                                    class="btn btn-outline-success" (click)="create_los('','Y')">
+                                    <span class="fa fa-plus"></span>
+                                </button> -->
+                                <!-- <button mat-mini-fab color="basic" (click)="create_los('','Y')">
+                                    <mat-icon>person_add</mat-icon>
+                                </button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+
+                <h2>LOS Invoice Approval Summary</h2>
+
+                <div style="margin-top: 2%;width: 100%;">
+                    <table class="table table-bordered table-responsive" fixed-header>
+                        <thead>
+                            <tr class="table_header" fixed-header>
+                                <th>S.No
+                                    <span  (click)="Approvalsearch_loan_data('DESC')"><i
+                                        class="fa fa-arrow-down"></i></span>
+                                <span (click)="Approvalsearch_loan_data('ASC')"><i
+                                        class="fa fa-arrow-up"></i></span>
+                                </th>
+                                <th>Application No</th>
+                                <th>ECF Number</th>
+                                <!-- <th>Branch Code</th> -->
+                                <th>Branch</th>
+                                <th>Behalfof Branch</th>
+                                <th>Invoice No</th>
+                                <!-- <th>Vendor Name</th> -->
+                                <th>Charge Type</th>
+                                <th>Invoice Date</th>
+                                <!-- <th>Invoice Amount</th>
+                                <th>Invoice GST Amount</th> -->
+                                <th>Invoice Total Amount</th>
+                                <th>Status</th>
+                                <th>AP Status</th>
+                                <th>UTR No</th>
+                                <th>Action</th>
+                                <th>Transaction History</th>
+                                <th>Cover Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let los of los_invoice_approval_summary_data; index as i">
+                                <td> {{(this.losapproverpresentpage - 1)*losapproverpagesize +i+1 }} </td>
+                                <td>{{los?.Loan_Application}}</td>
+                                <!-- <td (click)="view_los_data(los)" style="cursor: pointer;color:blue;"> {{los.ApplNo}}</td> -->
+                                <td>
+                                    <div *ngIf="los.Ecf_No === null || los.Ecf_No === ''">
+                                        -
+                                    </div>
+                                    <div *ngIf="los.Ecf_No !== null">
+                                        {{los?.Ecf_No}}
+                                    </div>
+                                </td>
+                                <!-- <td> {{los?.Branchcode}}</td> -->
+                                <td> {{los?.Branchcode}}-{{los?.Branchname}}</td>
+                                <td> {{los?.behalfbranch}}</td>
+                                <td>{{ los?.Invoice_No}}</td>
+                                <!-- <td align="center">{{ los.Vendor.name}}</td> -->
+                                <td>{{ los?.Invoice_Charge_type}}</td>
+                                <td style="white-space: nowrap;">
+                                    {{ los?.Invoice_Date}}</td>
+                                <!-- <td >{{ los?.Invoice_Amt | number:'1.2-2'}}</td>
+                                <td >{{ los?.Gst_Amt | number:'1.2-2'}}</td> -->
+                                <td >{{ los?.Invoice_Total_Amt | number:'1.2-2'}}</td>
+                                <td >{{ los?.Status}}</td>
+                                <td >{{ los?.AP_Status}}</td>
+                                <td>{{los?.utrno}}</td>
+                                <td >
+
+                                    <div class="example-button-row">
+                                        <button mat-icon-button matTooltip="view" class="material-icons" style="color: green;margin-top: -60%;"
+                                            (click)="Approverejectviewdata(los)">
+                                            <mat-icon>visibility</mat-icon>
+                                            <!-- <mat-icon>library_books</mat-icon> -->
+                                              
+                                        </button>
+                                        <!-- <button mat-icon-button color="primary">
+                                            <mat-icon class="mat-18">visibility
+                                            </mat-icon>
+                                        </button> -->
+                                        <!-- (click)="edit_los(los,'N')" -->
+
+                                        <!-- <button mat-icon-button matTooltip="Edit" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status === 'Draft'">
+                                            <mat-icon class="mat-18" (click)="edit_los(los,'Y')">update
+                                            </mat-icon>
+                                        </button> -->
+
+                                        <!-- <button mat-icon-button matTooltip="description" class="material-icons" color="#39ac39"
+                                            *ngIf="los.Status != 'Draft'">
+                                            <mat-icon class="mat-18">description
+                                            </mat-icon>
+                                        </button> -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <button mat-icon-button matTooltip="view" class="material-icons" color="#39ac39"
+                                            (click)="gettranshistory(los?.inv_header_id?.id)" style="color: green;margin-top: -60%;"
+                                             data-target="#tranpopups" data-toggle="modal">
+                                            <!-- <mat-icon>visibility</mat-icon> -->
+                                            <mat-icon>library_books</mat-icon>
+                                        </button>
+                                </td>
+                                <td *ngIf="los.Status=='APPROVED'">
+                                    <!-- <span class="material-icons" (click)="download(los)">download</span></td> -->
+                                    <button type="button" class="btn btn-outline-success"
+                                    (click)="download(los)"
+                                    style="border-radius: 40px;margin-left: 3%;" matTooltip="Download CoverNote">
+                                    <span class="fa fa-download"></span>
+                                    </button>
+                                </td>
+                                <td *ngIf="los.Status!='APPROVED'">
+                                    -
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="los_invoice_approval_summary_data ?.length == 0" style="margin-left: 42%;">
+                        <h3>Sorry data not found!.. </h3>
+                    </div>
+
+                    <!-- <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                        <button mat-icon-button [disabled]="Approvalhas_previous === false" color="primary" (click)="previousClick()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button> {{presentpage}}
+                        <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                            <mat-icon>arrow_forward</mat-icon>
+                        </button>
+                    </div> -->
+                    <div *ngIf="isLosApprovalSummaryPagination">
+                        <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                            <button type="button" mat-mini-fab color="primary"
+                                [disabled]="has_losapproverprevious === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="ApprovalpreviousClick()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            &nbsp;&nbsp; {{losapproverpresentpage}}
+                            <button type="button" mat-mini-fab color="primary" [disabled]="has_losapprovernext === false"
+                                style="border-radius:200px;margin-left: 15px;" (click)="ApprovalnextClick()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div *ngIf="isLOGlogform">
+        <app-los-log-summary >
+        </app-los-log-summary>
+    </div>
+</div>
+
+
+
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+        id="tranpopups">
+        <div class="modal-dialog modal-xl " style="width: 93%;">
+            <div class="modal-content">
+                <div class="modal-header"  style="background:rgba(23, 204, 23, 0.288);">
+                    <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">Transaction Details</h2>
+                    <button type="button" class="close" data-dismiss="modal" #closebutton aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 90%;">
+                    <div>
+                        <div class="row">
+                            <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                    <thead class="table_header" style="text-align: left;">
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Raiser/Approver Name</th>
+                                            <th>Date</th>
+                                            <th>Remarks</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody >
+                                        <tr *ngFor="let dtl of transdata; index as i">
+                                            <td>{{i+1}}</td>
+                                            <td>{{dtl?.from_user?.name}}</td>
+                                            <td>{{dtl?.created_date|date:'dd-MMM-yyyy'}}</td>
+                                            <td>{{dtl?.remarks}}</td>
+                                            <td>{{dtl?.status}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div *ngIf="transdata ?.length == 0" style="margin-left: 42%;">
+                                    <h3 >Sorry data not found!.. </h3>
+                                </div>
+                            </div>
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:450px;
+                                    border-color: black; margin-bottom: 20px;
+                                    background-color: white;" (click)="tranback()">Back</button>
+                                </td>
+                            </tr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+        <!-- <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+            <p style="color: white">Loading... </p>
+        </ngx-spinner> -->
+        <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "medium" color = "#fff" type = "square-jelly-box" [fullScreen] = "true">
+            <p style="color: white" > Preparing ... 
+        </p></ngx-spinner>
+
+        

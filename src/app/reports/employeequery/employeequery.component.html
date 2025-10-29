@@ -1,0 +1,313 @@
+<div  class="container">
+    <h2 style="text-align: center; margin-top: 3%;">EMPLOYEE QUERY REPORT</h2>
+
+    <form [formGroup]="employeequery">
+
+    
+      <div class="row">
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>CR No</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter CR No" matInput formControlName="crno">
+            </div>
+          </mat-form-field>
+
+        </div>
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%" (click)="getgrnAssetlists()">
+             <mat-label>Invoice Type</mat-label>
+            <input matInput #assetInput placeholder="Select Invoice Type" formControlName="invoice_type"
+              [matAutocomplete]="assetd"/>
+            <mat-autocomplete [panelWidth]="400" #assetd="matAutocomplete" [displayWith]="displayFngrnasset"
+              (opened)="autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let asset of grnAssetsList" [value]="asset">
+                  {{ asset.asset_id }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+               
+        <!-- <div class="col-md-3">
+           <mat-form-field (click)="getProductTypes()" appearance="outline" style="width:100%">
+            <mat-label>Product Type</mat-label>
+            <input #productInput placeholder="Select Product type" matInput formControlName="product_type"
+              [matAutocomplete]="productauto" (input)="input_getProductTypes()"/>
+            <mat-autocomplete #productauto="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="protype_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                 <mat-option *ngFor="let types of prdTypes" [value]="types">
+                 {{ types.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div> -->
+         <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Supplier Name</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter Supplier Name" matInput formControlName="supplier_name">
+            </div>
+          </mat-form-field>
+
+        </div>
+            <!-- <div class="col-md-3">
+          <mat-form-field (click)="getprappsupplier()" appearance="outline" style="width:100%">
+            <mat-label>Supplier Name</mat-label>
+            <input matInput #supplierInput placeholder="Select vendor" formControlName="supplier_id"
+              [matAutocomplete]="supplier" />
+            <mat-autocomplete [panelWidth]="400" #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+              (opened)="autocompletesupplierScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                  {{ supplier.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div> -->
+
+         <div class="col-md-3">
+          <mat-form-field (click)="getbranchFK()" appearance="outline" style="width:100%">
+            <mat-label> Branch</mat-label>
+            <input #branchInput placeholder="Select Branch Code" matInput formControlName="branchname"
+              [matAutocomplete]="branch"/>
+            <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFnbranch"
+              (opened)="autocompletebranchScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let branch of branchList" [value]="branch">
+                  {{ branch.code }}-{{ branch.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+      </div>
+      <div class="row">
+
+        <!-- <div class="col-md-3">
+
+       
+          <mat-form-field (click)="getproductName()" appearance="outline" style="width:100%">
+            <mat-label>Product Name</mat-label>
+            <input #productInput_type placeholder="select product name" matInput formControlName="product_id"
+              [matAutocomplete]="productauto_type" (input)="input_getproductName()"/>
+            <mat-autocomplete #productauto_type="matAutocomplete" [displayWith]="displayFnitem"
+              (opened)="proname_autocompleteassetScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let types of prdNames" [value]="types">
+                {{ types.name }}
+              </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+
+        </div> -->
+        <!-- <div class="col-md-3">
+          <mat-form-field (click)="getprappsupplier()" appearance="outline" style="width:100%">
+            <mat-label>Supplier Name</mat-label>
+            <input matInput #supplierInput placeholder="Select vendor" formControlName="supplier_id"
+              [matAutocomplete]="supplier" />
+            <mat-autocomplete [panelWidth]="400" #supplier="matAutocomplete" [displayWith]="displayFnsupplier"
+              (opened)="autocompletesupplierScroll()">
+              <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+              <ng-container *ngIf="!isLoading">
+                <mat-option *ngFor="let supplier of supplierList" [value]="supplier">
+                  {{ supplier.name }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div> -->
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Invoice No</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter Invoice No" matInput formControlName="invoice_no">
+            </div>
+          </mat-form-field>
+
+        </div>
+
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Invoice Amount</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter Invoice Amount" matInput formControlName="invoice_amt">
+            </div>
+          </mat-form-field>
+
+        </div>
+
+        <div class="col-md-3">
+             <mat-form-field appearance="outline">
+                                <mat-label>From Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker1" 
+                                    formControlName="fromdate">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field appearance="outline">
+                                <mat-label>To Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker2" 
+                                    formControlName="todate">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                            </mat-form-field>
+        </div>
+      </div>
+      
+
+        <div class="row">
+        <div class="col-md-3">
+<mat-form-field appearance="outline">
+                                <mat-label>Transaction From Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker3" 
+                                    formControlName="trans_from_date">
+                                <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                                <mat-datepicker #picker3></mat-datepicker>
+                            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+ <mat-form-field appearance="outline">
+                                <mat-label>transactin To Date</mat-label>
+                                <input matInput readonly [matDatepicker]="picker4" 
+                                    formControlName="trans_to_date">
+                                <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                                <mat-datepicker #picker4></mat-datepicker>
+                            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+<mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Airway Bill</mat-label>
+            <div class="input-wrapper">
+              <input placeholder="Enter Airway Bill No" matInput formControlName="airwaybill">
+            </div>
+          </mat-form-field>
+        </div>
+        <div class="col-md-3">
+                       <mat-form-field class="example-full-width"  appearance="outline" style="width: 200px;">
+              <mat-label> Status</mat-label>
+            <mat-select formControlName="prheader_status">
+              <mat-option
+                *ngFor="let status of statuslist"
+                [value]="status.text">
+                {{ status.text }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom: 5px;">
+        <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+          color="primary" (click)="searchSummary('search')"><i class="fa fa-search" aria-hidden="true"></i></button>
+        <button (click)="refreshPage()" class="btn btn-outline-primary" type="button" style="border-radius:40px;margin-left: 15px;"
+          color="primary"><i class="fa fa-refresh" aria-hidden="true" ></i></button>
+        <button style="margin-left: 10px;border-radius: 40px;" type="button" class="btn btn-outline-success" (click)="downloadReport()"><i
+            class="fa fa-download" aria-hidden="true"></i> </button>
+      </div>
+    </form>
+
+    <div class="comp-table t-resposive t-bdr-line">
+  <table>
+    <thead>
+      <tr class="th-nowrap">
+        <th>S No</th>
+        <th>CR No</th>
+        <th>Purpose</th>
+        <th>Invoice Type</th>
+        <th>Airway Bill</th>
+        <th>Supplier Name</th>
+        <th>EMployee Name</th>
+        <th>Invoice No</th>
+        <th>Invoice Date</th>
+        <th>Invoice Amount</th>
+        <th>Status</th>
+        <th>Payment Status</th>
+        <th>File</th>
+        <th>Entries</th>
+        <th>Transaction Details</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let d of table_data;let i =index;index as listIndex">
+      <td>{{ (grn_summary_crt)*pageSize+listIndex+1 }}</td>
+        <td class="link-text">{{ d.invoiceheader_crno }}</td>
+      <td>{{ d.invoiceheader_remarks }}</td>
+      <td>{{ d.invoiceheader_invoicetype }}</td>
+      <td>{{ d.inwardheader_awbno }}</td>
+      <td>{{ d.supplier_name }}</td>
+      <td>{{ d.employee_name }}</td>
+      <td>{{ d.invoiceheader_invoiceno }}</td>
+      <td>{{ d.invoiceheader_invoicedate }}</td>
+      <td>{{ d.invoiceheader_amount | number:'1.2-2':'en-IN' }}</td>
+      <td>{{ d.invoiceheader_status }}</td>
+      <td class="link-text"> View Payment </td>
+      <td class="link-text">View Image</td>
+      <td class="link-text">View </td>
+      <td class="link-text">view</td>
+      <td>
+         <!-- <button class="btn btn-sm btn-primary" (click)="openAttributes(d.Other_Attributes)">
+          View
+        </button> -->
+             <button mat-icon-button matTooltip="view" class="iconbutton" color="primary">
+                                <mat-icon >visibility</mat-icon>
+              </button>
+        </td>
+      </tr>  
+    </tbody>
+  </table>
+</div>
+<div style="align-items: center;margin-top: 10px;display: flex;justify-content: center;" *ngIf="table_data?.length ===0">
+  No records Found 
+</div>
+ <div class="paginationDiv" style="text-align: end;margin-top: 5px;">
+            <button mat-icon-button [disabled]="grn_summary_hasprevious === false" color="primary" (click)="grn_previousclick()">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <b style="align-items: center;margin-top: 9px;">{{ grn_summary_crt+1 }}</b>
+            <button mat-icon-button [disabled]="grn_summary_hasnext === false" color="primary" (click)="grn_nextclick()">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+          <!-- <div *ngIf="InwardDocResponseSummaryList?.length==0; else paginationresponse" class="NodataAlign">No Records
+        Found...</div>
+
+<ng-template #paginationresponse>
+        <div class="row" *ngIf="issummarypagedocres" style="width: 85%;">
+            <div  class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                <p style="color:black;font-size: 18px;font-weight: 500;margin-left: -190px;">
+                    Total Count:{{totalcountdocres}}
+                </p> 
+            </div>
+            <div  class="col-sm-9" style="margin-bottom: 5%;font-size: small;text-align:right;left:15%">
+                <mat-paginator
+                                            (page)="handlePageEvent3($event)"
+                                            [length]="length_docres"
+                                            [pageSize]="pageSize_docres"
+                                            [showFirstLastButtons]="showFirstLastButtonsdocres"
+                                            [pageSizeOptions]="pageSizeOptionsdocres"
+                                            [pageIndex]="pageIndexdocres"
+                                            [hidePageSize]="true"
+                                            aria-label="Select page">
+                                          
+                </mat-paginator>
+            </div>
+            </div>
+    </ng-template> -->
+    
+  </div>

@@ -1,0 +1,317 @@
+<div>
+    <mat-card style="margin-top: 13px;margin-left: 20px;margin-right: 20px;margin-bottom: 20px;">
+<h2 style="margin-left: 30px;">Expense Type Search</h2>
+<div>
+    <form [formGroup]="searcexptype">
+        <tr style="margin-top: 30px" >
+            <td>
+                <mat-form-field
+                    style="margin-left: 30px;width: 200px;">
+
+
+                    <mat-label>Commodity Name</mat-label>
+                    <input #commodityInput placeholder="Select commodity" matInput
+                        formControlName="commodity_id" [matAutocomplete]="commoditytype" id="expense-create-0003">
+                    <mat-autocomplete [panelWidth]="250" #commoditytype="matAutocomplete"
+                        [displayWith]="displayFncommodity" (opened)="commodityScroll()">
+                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option *ngFor="let commodity of commodityList" [value]="commodity" 
+                            matTooltip="{{commodity.name}}" matTooltipClass="custom-tooltipnew">
+                                {{commodity.name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+
+               </mat-form-field>
+            </td>
+            <td>
+                    <mat-form-field appearance="legacy" style="width: 200px;margin-left: 15px;"> 
+                        <mat-label>Expense Type</mat-label>
+                        <input type="text" matInput formControlName="expence_type"  
+                        matTooltip="{{searcexptype.value.expence_type}}" matTooltipClass="custom-tooltipnew" id="expense-create-0004">
+                    </mat-form-field>
+                </td>
+            <td style="margin-left: 15px;">
+                <mat-slide-toggle *ngIf="active == false"  formControlName="type" (change)="active =true;search(1)" matTooltip="Slide here for Active Expense Types"
+                matTooltipClass="custom-tooltipnew" color="primary">
+                    InActive Expense Types
+                </mat-slide-toggle>
+                <mat-slide-toggle *ngIf="active == true"  formControlName="type" (change)="active =false;search(0)" matTooltip="Slide here for InActive Expense Types"
+                matTooltipClass="custom-tooltipnew" color="primary">
+                    Active Expense Types
+                </mat-slide-toggle>
+                <button class="btn btn-outline-primary" type="submit" matTooltip="Search"
+                style="border-radius:40px;margin-left: 50px;" color="primary"
+                (click)="search(1)" id="expense-create-0005"><i matTooltipClass="custom-tooltipnew" class="fa fa-search"
+                    aria-hidden="true"></i></button>
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;" matTooltip="Reset"
+                    (click)="Clear()" id="expense-create-0006">Reset</button>
+                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;" 
+                matTooltip="Add Expense Type" matTooltipClass="custom-tooltipnew" (click)="showAddExpType()"
+                     data-toggle="modal" data-target="#expense-create-0002"  id="expense-create-0007"><span
+                     class="fa fa-plus"></span>&nbsp;Expense Type</button>
+            </td>
+        </tr>
+    </form>
+</div>
+<h2 style="margin-left: 30px;margin-top: 1%;">Expense Type Summary</h2>
+<div   style="margin-top: 1%;margin-left: 30px; width: 95%;">
+    <table class="table table-bordered scrolltable"  style="text-align:center;" >	        
+        <thead fixed-header>
+            <tr class="table_header " fixed-header style="text-align: center;margin-left: 3%;background: #a7e4ab;">
+
+                    <th>S No</th>
+                    <th>Expense Code</th>
+                    <th>Expense Type</th>
+                    <th>Commodity</th>
+                    <th>Category</th>
+                    <th>Sub Category</th>
+                    <th>Add Column</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody style="text-align: center;">
+                <tr *ngFor="let expt of expencetypelist; index as i" style="height: 20px;">
+                    <td>{{(presentpageexp - 1)*10 +i+1 }} </td>
+                    <td>{{expt?.expense_code}}</td>
+                    <td>{{expt?.expense_name}}</td>
+                    <td>{{expt?.commodity_id?.name}}</td>
+                    <td>{{expt?.category_code?.name}}</td>
+                    <td>{{expt?.subcategory_code?.name}}</td>
+                    <td>
+                        <button type="button"  class="btn btn-outline-primary"
+                        style="border-radius:40px;margin-left: 10px;margin-top:2px;font-weight: bold; color: black;" (click)="getexpencecolumn(expt)" 
+                        matTooltip="Add Column" matTooltipClass="custom-tooltipnew" data-toggle="modal" data-target="#expense-create-0001" id="expense-create-0008">
+                        <span class="fa fa-plus"></span>
+                        </button>
+                    </td>
+                    <td class="cursor">
+                        <div *ngIf="expt?.status === 1 ; else lock">
+                            <mat-icon (click)="foractInactiveexpty(expt)" matTooltip="Click to Inactive" disabled matTooltipClass="custom-tooltipnew"
+                                style="color: green; cursor: pointer;margin-top:2px;" aria-label="inactive">wb_sunny</mat-icon>
+                        </div>
+                        <ng-template #lock>
+                            <mat-icon (click)="foractInactiveexpty(expt)" matTooltip="Click to Active" disabled matTooltipClass="custom-tooltipnew"
+                                style="color: crimson; cursor: pointer;margin-top:2px;" aria-label="inactive">wb_sunny</mat-icon>
+                        </ng-template>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</div>
+<div *ngIf="!isexppage" class="NodataAlign" style="margin-left: 35%;">No Records Found...</div>
+
+<div class="row" *ngIf="isexppage" style="width: 90%;margin-left: 30px;">
+    
+    <div class="col-md-3" style="margin-bottom: 10px;font-size: small;font-weight:bold;margin-top: 15px;">
+        Page: {{presentpageexp}}
+    </div>
+    <div class="col-md-9" style="margin-bottom: 0%;font-size: small;right:10px">
+           
+        <mat-paginator  
+                                    (page)="handlePageEvent($event)"
+                                    [length]="length_exp"
+                                    [pageSize]="pageSize_exp"
+                                    [showFirstLastButtons]="showFirstLastButtons"
+                                    [pageSizeOptions]="pageSizeOptions"
+                                    [pageIndex]="pageIndex"
+                                    [hidePageSize]="true"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                               
+    </div>
+    </div>
+    </mat-card>
+</div>
+    <!-- <div class="col-md-6 col-lg-6 col-sm-6 table-responsive">
+        <table class="table">
+            <thead class="table_header">
+                <tr>
+                    <td>S.no</td>
+                    <td>Column Name</td>
+                    <td>Input Type</td>
+                    <td>Delete</td>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div> -->
+<div class="modal fade" #manualpaidModal tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabels" aria-hidden="true"
+    id="expense-create-0001">
+    <form [formGroup]="columntype" (ngSubmit)="finalsubmit()">
+        <div class="modal-dialog modal-xl" style="width:50%;height:100%;overflow: auto;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#a7e4ab;text-align:center">
+                    <h2 class="modal-title" style="text-align:center;">{{exptype?.expense_name}} - Add Column</h2>
+                    <button  type="button" class="btn btn-outline-primary"
+                    (click)="addcolumnDetail()" style="border-radius:40px;margin-left: 50px;background-color:#35b0cf;color: black;" id="expense-create-0009"><span
+                        class="fa fa-plus"></span>
+                    Add</button>
+                    <button type="button" #closebuttons class="close" data-dismiss="modal" aria-label="Close" id="expense-create-0010">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+              
+                  
+                <table class="table">
+                    <thead class="table_header" style="text-align: center;background:#a7e4ab;">
+                        <tr>
+                            <th style="width: 70px;">S NO</th>
+                            <th>Column Name</th>
+                            <th>Input Type</th>
+                            <th>Action</th>
+    
+                        </tr>
+                    </thead>
+                    <tbody style="text-align: center;">
+                        <tr  *ngFor="let assetcat of expencetypecolumnlist; index as i"   >
+                            <td>{{i+1}}</td>
+                            <td style="width: 300px;" formArrayName="productname"  >
+                                <div  [formGroupName]="i">
+                                    <mat-form-field appearance="legacy">
+                                        <mat-label>Column Name<label style="color:red">&nbsp;*</label></mat-label>
+                                        <input type="text" autocomplete="off" matInput (input)="onInputChange($event)" formControlName="column_name"  id="expense-create-0011">
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td style="width: 300px;" formArrayName="productname"  >
+                                <div  [formGroupName]="i">  
+                                    <mat-form-field style="width: 11rem; margin-left: 5px;">
+                                        <mat-label>Input Type<label style="color:red">&nbsp;*</label></mat-label>
+                                        <mat-select placeholder="Input Type" formControlName="column_type" (selectionChange)="onSelectChange($event)" id="expense-create-0012">
+                                            <mat-option *ngFor="let sta of dropdownlist" (onSelectionChange)="selectionChangeType($event)"  
+                                            matTooltip="{{sta.text}}" matTooltipClass="custom-tooltipnew"
+                                             [value]="sta.id">{{sta.text}}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </td>
+                            <td class="cursor">
+                                <div *ngIf="assetcat.status === 1 ; else lock">
+                                    <mat-icon (click)="foractInactiveclumn(assetcat)" title="Click to Inactive" disabled
+                                        style="color: green; cursor: pointer;margin-top: 2px;" aria-label="inactive">wb_sunny</mat-icon>
+                                </div>
+                                <ng-template #lock>
+                                    <mat-icon (click)="foractInactiveclumn(assetcat)" title="Click to Active" disabled
+                                        style="color: crimson; cursor: pointer;margin-top: 2px;" aria-label="inactive">wb_sunny</mat-icon>
+                                </ng-template>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- <div class="modal-footer"> -->
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" style="border-radius: 40px;margin-left: 10px;margin-bottom: 30px;" (click)="submitclmtype()" 
+                       [disabled]="addColEnab == false && is_column != false && is_inputtype != false" class="btn btn-outline-primary"   id="expense-create-0013">Submit</button>
+
+                        <button type="button" class="btn btn-outline-primary"
+                        style="border-radius: 40px;margin-left: 10px;margin-bottom: 30px;" data-dismiss="modal"  id="expense-create-0014">Back</button>
+
+                    </div>
+                <!-- </div> -->
+            </div>
+           
+        </div>
+    </form>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+    id="expense-create-0002">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#a7e4ab;text-align:center; height: 55px;">
+                <h2 class="modal-title" style="text-align:center;">Add Expense Type</h2>
+                <button class="close" type="button" data-dismiss="modal"  #closedbuttons id="expense-create-0015">x</button>
+            </div>
+            <form [formGroup]="expenseccreateform">
+                <div class="row col-md-12" style="margin-top: 20px;margin-left: 20px;" >
+                    <div class="col-md-3">
+                        <mat-form-field appearance="legacy" style="width:200px;">
+                            <mat-label>Expense Name<label style="color:red">&nbsp;*</label></mat-label>
+                            <input placeholder="Enter Name" type="text" matInput formControlName="exp_type" autocomplete="off"  (keypress)="only_alpha($event)" (keyup)="toUpperName($event);chkFormValid()" maxlength="68" id="expense-create-0016">
+                        </mat-form-field>
+                    </div>  
+                    <div class="col-md-3">
+                        <mat-form-field appearance="legacy" style="margin-left: 15px;width:200px;">
+                            <mat-label>Expense Code<label style="color:red">&nbsp;*</label></mat-label>
+                            <input placeholder="Enter Code" type="text" matInput formControlName="exp_code" autocomplete="off" (keypress)="only_alpha($event)" maxlength="3"  (keyup)="toUpperCode($event);chkFormValid()" id="expense-create-0017">
+                        </mat-form-field>
+                    </div> 
+                    <div class="col-md-3">
+                        <mat-form-field
+                                    style="width: 200px;margin-left:20px;">
+                                    <mat-label>Commodity Name<label style="color:red">&nbsp;*</label></mat-label>
+                                    <input #commodityInput placeholder="Select commodity" matInput
+                                        formControlName="commodity_id" [matAutocomplete]="commoditytype"  id="expense-create-0018">
+                                    <mat-autocomplete [panelWidth]="400" #commoditytype="matAutocomplete"
+                                        [displayWith]="displayFncommodity" (opened)="commodityScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let commodity of commodityListt" [value]="commodity"  
+                                            matTooltip="{{commodity.name}}" matTooltipClass="custom-tooltipnew" (click)="chkFormValid()">
+                                                {{commodity.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+
+                                </mat-form-field>   
+                    </div>
+
+                </div>
+                <div class="row col-md-12" style="margin-top: 20px;margin-left: 20px;" >
+                    <div class="col-md-3">
+                        <mat-form-field
+                                        style="width:200px;"
+                                        (click)="getcat('')">
+                                        <mat-label>Category<label style="color:red">&nbsp;*</label></mat-label>
+                                        <input #categoryInput placeholder="Category" matInput 
+                                            formControlName="category_code" [matAutocomplete]="cattype" id="expense-create-0019">
+                                        <mat-autocomplete #cattype="matAutocomplete"
+                                            [displayWith]="displaycatFn" (opened)="categoryScroll()">
+                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                            </mat-option>
+                                            <ng-container *ngIf="!isLoading">
+                                                <mat-option *ngFor="let categoryname of categoryNameData" matTooltip="{{categoryname.code}}" matTooltipClass="custom-tooltipnew"
+                                                    (click)="cid(categoryname);chkFormValid()" [value]="categoryname">
+                                                    {{categoryname.code}}
+                                                </mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field
+                                        style="width: 200px;;font-size:15px; margin-left: 20px;">
+                                        <mat-label>Sub Category<label style="color:red">&nbsp;*</label></mat-label>
+                                        <input #subcategoryInput placeholder="Sub Category" matInput 
+                                            formControlName="subcategory_code"
+                                            [matAutocomplete]="subcategorytype"  id="expense-create-0020">
+                                        <mat-autocomplete #subcategorytype="matAutocomplete"
+                                            [displayWith]="displaysubcatFn" (opened)="subcategoryScroll()">
+                                            <mat-option *ngIf="isLoading" class="is-loading">Loading...
+                                            </mat-option>
+                                            <ng-container *ngIf="!isLoading">
+                                                <mat-option *ngFor="let subcategoryname of subcategoryNameData" matTooltip="{{subcategoryname.code}}" matTooltipClass="custom-tooltipnew" (click)="chkFormValid()"
+                                                    [value]="subcategoryname">
+                                                    {{subcategoryname.code}}
+                                                </mat-option>
+                                            </ng-container>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" style="border-radius: 40px;margin-left: 20px;margin-bottom: 30px;" matTooltip="Submit" 
+                         (click)="CreateNeww()" class="btn btn-outline-primary" [disabled]="!expFormValid" id="expense-create-0021">Submit</button>
+
+                        
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal" (click)="addexpBack()" matTooltip="Back"
+                        style="border-radius: 40px;margin-left: 10px;margin-bottom: 30px;"  id="expense-create-0022">Back</button>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>

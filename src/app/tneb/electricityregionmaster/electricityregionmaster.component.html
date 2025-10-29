@@ -1,0 +1,138 @@
+<br>
+<div *ngIf="tnebshareservice.summaryscreen"  >
+    <div class="spacearound" >
+    <h2 style="margin-left: 50px;">
+       Electricity Region Summary
+    </h2>
+
+    <!-- <button type="button" style="border-radius: 40px;margin-left: 1%;"  routerLink="/tneb/electricityexpensemaster"
+             class="btn btn-outline-primary"  >Back</button> -->
+    </div>
+
+    <div class="main-content" >
+        <div [formGroup]="regionsummary" >
+
+        
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field style="margin-right:20px;width:250px" >
+                            <mat-label>Region Name</mat-label>
+                            <input matInput formControlName="region_name">
+                        </mat-form-field>
+                    </td>
+    
+                    <td  >
+                        <button class="btn btn-outline-success aroudmargin" (click)="add()"
+                        style="border-radius:40px;margin-top: 0px;" color="primary">Add</button>
+                    </td>
+                    
+                    <td  >
+                        <button  class="btn btn-outline-primary aroudmargin" (click)="regionget(regionsummary.value.region_name,this.board_currentpage=1)"
+                        style="border-radius:40px;margin-top: 0px;" color="primary">search</button>
+                    </td>
+                </tr>
+            </table>
+    
+            <div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="table_header">
+                           
+                            <th>S.No</th>
+                            <th>Region Name</th>
+                            <th>Region Code</th>
+                            <th>Edit</th> 
+    
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let list of regiondata; index as i">
+                            <td> {{(board_currentpage - 1)*10 +i+1 }} </td>
+                            <td>{{list.region_name}}</td>
+                            <td>{{list.region_code}}</td>
+    
+                            <td (click)="edit(list.id)" >
+                                <button mat-icon-button  (click)="edit(list.id)"  >
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <div *ngIf="boarddata?.length == 0; " style="text-align:center" >
+                    <p>No data</p>
+                </div>
+                <div *ngIf="boarddata?.length != 0" #pagination style="float:right" >
+                    <button type="button" mat-icon-button (click)="previousregion()" [disabled]="!board_hasprevious" color="primary"><mat-icon>arrow_back</mat-icon></button>
+                    {{board_currentpage}}
+                    <button type="button" mat-icon-button (click)="nextregion()" [disabled]="!board_hasnext" color="primary"><mat-icon> arrow_forward</mat-icon></button>
+                </div>
+            </div>
+    
+        </div>
+    </div>
+    
+</div>
+<div *ngIf="!tnebshareservice.summaryscreen"  >
+<h2 style="margin-left: 50px;">
+    Add Electricity Region
+</h2>
+<div class="main-content">
+    <div>
+        <form [formGroup]="regionform" >
+            <table style="width:50%" >
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Region Name</mat-label>
+                            <input matInput formControlName= "region_name"  autocomplete="off">
+                            <!-- <mat-select formControlName="consumer_state">
+                                <mat-option *ngFor="let state of stateName" [value]="state.name">
+                                    {{state.name}}
+                                </mat-option>
+                            </mat-select> -->
+                        </mat-form-field>
+                    </td>
+
+                    <!-- <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Region Code</mat-label>
+                            <input matInput formControlName= "region_code"  autocomplete="off">
+                          
+                        </mat-form-field>
+                    </td> -->
+
+                    <td>
+                        <mat-form-field style="width: 250px;" (click)="boardget('',board_currentpage=1)">
+                            <mat-label>EB Board</mat-label>
+                            <input type="text" (keyup)="boardget($event.target.value,board_currentpage=1)" #typeinput matInput formControlName="eb_board"
+                                [matAutocomplete]="typeauto" 
+                               >
+                            <mat-autocomplete [panelWidth]="300" #typeauto="matAutocomplete"
+                                [displayWith]="displayboard" (opened)="statescroll()">
+                             
+                                    <mat-option *ngFor="let type of boarddata" [value]="type">
+                                        {{type.name}}</mat-option>
+                                
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <div>
+
+        <button type="submit"  class="btn btn-outline-primary" (click)="regionsubmit()"
+            style="border-radius: 40px;">Submit</button>
+
+        <button type="button" style="border-radius: 40px;margin-left: 1%;"  (click)="backtosummary()"
+             class="btn btn-outline-primary"  >Cancel</button>
+                  
+    </div>
+</div>
+</div>

@@ -1,0 +1,742 @@
+<div style="margin-top: 15px; margin-left: 25px">
+  <!--IOM -->
+  <form [formGroup]="memoSearchForm" (ngSubmit)="SearchClick()">
+    <div class="row">
+      <div class="col-12">
+        <mat-form-field
+          (click)="enmpname()"
+          style="margin-left: 7px; width: 250px"
+        >
+          <mat-label>Look AT</mat-label>
+          <input
+            #pinCodeInput
+            placeholder="Select Employee"
+            matInput
+            formControlName="memoemployee"
+            autocomplete="off"
+            [matAutocomplete]="pintype"
+          />
+
+          <mat-autocomplete
+            #pintype="matAutocomplete"
+            [displayWith]="displayFnpin"
+            (opened)="employescroll()"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let pin of employelist"
+                title="{{ pin.full_name }}"
+                [value]="pin"
+                (click)="empselect(pin)"
+              >
+                {{ pin.full_name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <br />
+        <mat-form-field id="deptdatefrom" style="width: 8rem; margin-left: 7px">
+          <mat-label>Date From</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker1"
+            placeholder="Date From"
+            formControlName="memodatefrom"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker1"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field id="deptdateto" style="width: 8rem; margin-left: 7px">
+          <mat-label>Date To</mat-label>
+          <input
+            matInput
+            readonly
+            [matDatepicker]="picker2"
+            placeholder="Date To"
+            formControlName="memodateto"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker2"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field id="deptsubject" style="width: 8rem; margin-left: 7px">
+          <mat-label>Subject</mat-label>
+          <input
+            matInput
+            placeholder="Subject"
+            formControlName="memosubject"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field id="deptcat" style="width: 7rem; margin-left: 7px">
+          <mat-label>Category</mat-label>
+          <input
+            placeholder="Category"
+            matInput
+            formControlName="memocategory"
+            [matAutocomplete]="autocategory"
+          />
+          <mat-autocomplete
+            #autocategory="matAutocomplete"
+            [displayWith]="displayCategory"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                (onSelectionChange)="OnCategoryChange($event)"
+                *ngFor="let cat of categoryList"
+                [value]="cat"
+                >{{ cat.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field id="deptsubcat" style="width: 8rem; margin-left: 7px">
+          <mat-label>Sub Category</mat-label>
+          <input
+            placeholder="Sub Category"
+            matInput
+            formControlName="memosubcategory"
+            [matAutocomplete]="autosubcategory"
+          />
+          <mat-autocomplete
+            #autosubcategory="matAutocomplete"
+            [displayWith]="displaysubCategory"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let sub of sub_categoryList" [value]="sub"
+                >{{ sub.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- <mat-form-field style="width:8rem; margin-left: 7px;">
+                    <mat-label>CC</mat-label>
+                    <mat-chip-list #chipList>
+                        <mat-chip *ngFor="let employeecc of chipSelectedEmployeeCC" [selectable]=true [removable]=true
+                            (removed)="removeEmployeeCC(employeecc)">
+                            {{employeecc.full_name}}
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                        <input placeholder="CC" #employeeccInput [formControl]="employeeccControl"
+                            [matAutocomplete]="auto" [matChipInputFor]="chipList"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]=true>
+                    </mat-chip-list>
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="employeeccSelected($event)">
+                        <mat-option *ngFor="let thisEmployeeCC of allEmployeeList" [value]="thisEmployeeCC">
+                            {{thisEmployeeCC.full_name}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field> -->
+
+        <mat-form-field id="deptsignee" style="width: 28rem; margin-left: 7px">
+          <mat-label>Signee</mat-label>
+          <mat-chip-list #chipListapprover>
+            <mat-chip
+              *ngFor="let employeeapprover of chipSelectedEmployeeApprover"
+              [selectable]="true"
+              [removable]="true"
+              (removed)="removeEmployeeApprover(employeeapprover)"
+            >
+              {{ employeeapprover.full_name }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              #employeeApproverInput
+              [formControl]="employeeApproverControl"
+              [matAutocomplete]="autoapprover"
+              [matChipInputFor]="chipListapprover"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="true"
+            />
+          </mat-chip-list>
+          <mat-autocomplete
+            #autoapprover="matAutocomplete"
+            (optionSelected)="employeeApproverSelected($event)"
+          >
+            <mat-option
+              *ngFor="let thisEmployeeCC of allEmployeeList"
+              [value]="thisEmployeeCC"
+            >
+              {{ thisEmployeeCC.full_name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <mat-form-field
+          id="deptfromdept"
+          style="width: 18rem; margin-left: 3px"
+        >
+          <mat-label>From Dept</mat-label>
+          <input
+            placeholder="From Dept"
+            matInput
+            (focus)="focusFromDept($event)"
+            #fromDeptInput
+            formControlName="memofromdept"
+            [matAutocomplete]="automemofromdept"
+          />
+          <mat-autocomplete
+            #automemofromdept="matAutocomplete"
+            [displayWith]="displayFromDept"
+            [panelWidth]="500"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let dep of departmentList"
+                title="{{ dep?.name }}"
+                [value]="dep"
+                >{{ dep.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field id="depttodept" style="width: 18rem; margin-left: 3px">
+          <mat-label>To Dept</mat-label>
+          <input
+            placeholder="To Dept"
+            matInput
+            (focus)="focusToDept($event)"
+            #toDeptInput
+            formControlName="memotodept"
+            [matAutocomplete]="automemotodept"
+          />
+          <mat-autocomplete
+            #automemotodept="matAutocomplete"
+            [displayWith]="displayToDept"
+            [panelWidth]="500"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let dep of departmentList"
+                title="{{ dep?.name }}"
+                [value]="dep"
+                >{{ dep.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+        <!-- <mat-form-field style="width:150px !important;margin-left: 7px;">
+                    <mat-label>Priority</mat-label>
+                    <mat-select (click)="getPriority()" formControlName="memopriority" style="font-size: small;">
+                        <mat-option *ngFor="let des of priorityList" [value]="des.id">
+                            {{des.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field> -->
+        <mat-form-field
+          id="deptpriority"
+          style="width: 100px; margin-left: 10px"
+          (click)="getPriorityList()"
+        >
+          <input
+            #rmInput
+            placeholder="Priority"
+            matInput
+            formControlName="memopriority"
+            [matAutocomplete]="priorityValue"
+          />
+          <mat-autocomplete
+            #priorityValue="matAutocomplete"
+            [displayWith]="displayFnPriority"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let des of priorityList" [value]="des">
+                {{ des.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <button
+          id="deptsearch"
+          type="submit"
+          class="btn btn-outline-primary"
+          style="border-radius: 40px; margin-left: 12px"
+        >
+          Search
+        </button>
+        <button
+          id="deptclear"
+          type="button"
+          class="btn btn-outline-primary"
+          style="border-radius: 40px; margin-left: 12px"
+          (click)="Clear($event)"
+        >
+          Clear
+        </button>
+        <button
+          id="deptadd"
+          type="button"
+          class="btn btn-outline-primary"
+          style="border-radius: 40px; margin-left: 12px"
+          (click)="CreateNew($event)"
+        >
+          Add
+        </button>
+<!--  [disabled]="
+            !this.memoSearchForm.get('memodatefrom')?.value ||
+            !this.memoSearchForm.get('memodateto')?.value
+          " -->
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          style="border-radius: 40px; margin-left: 12px"
+          [disabled]="memoSearchForm.get('memoemployee')?.value?.full_name != 'For Me'"
+          (click)="dashboard_datas()"
+         
+        >
+          Approver Dashboard
+        </button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <mat-form-field
+          id="deptfilter1"
+          style="width: 20rem; margin-left: 700px"
+        >
+          <mat-label>Filter1</mat-label>
+          <mat-select formControlName="memosendreceive" id="id_memosendreceive">
+            <mat-option
+              title="{{ type1 }}"
+              (click)="ChangeHeaderName(type1);OnSendReceiveChange(type1)"
+              *ngFor="let type1 of sendreceivetype"
+              [value]="type1"
+              >{{ type1 }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field
+          id="deptfilter2"
+          style="width: 300px; margin-left: 10px"
+          (click)="filterlist()"
+          *ngIf="this.memotype1 !== undefined"
+        >
+          <input
+            #filter2
+            placeholder="Filter2"
+            matInput
+            formControlName="mydept"
+            [matAutocomplete]="DeptfilterValue"
+          />
+          <mat-autocomplete
+            #DeptfilterValue="matAutocomplete"
+            [displayWith]="displayFnFilter"
+          >
+            <mat-option *ngIf="isLoading" class="is-loading"
+              >Loading...</mat-option
+            >
+            <ng-container *ngIf="!isLoading">
+              <mat-option
+                *ngFor="let dept of mydeptlist"
+                [value]="dept"
+                (click)="OnSendReceivedeptChange(dept.id)"
+              >
+                {{ dept.name }}
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-bordered" style="width: 99%; font-size: 14px">
+      <thead class="table_header" style="text-align: left">
+        <tr>
+          <th style="width: 150px">
+            <span>{{ TableHeaderName }}</span
+            ><br />
+            <span
+              *ngIf="DateSortType === 'ascending' || DateSortType === ''"
+              (click)="DateSortDescending()"
+              ><i class="fa fa-arrow-down"></i
+            ></span>
+            <span
+              *ngIf="DateSortType === 'descending' || DateSortType === ''"
+              (click)="DateSortAscending()"
+              ><i class="fa fa-arrow-up"></i
+            ></span>
+          </th>
+          <th>Sender (From)</th>
+          <th style="width: 190px">To</th>
+          <th style="width: 100px">MemoNo</th>
+          <th style="width: 100px">Subject</th>
+          <th style="width: 120px">
+            Priority
+            <span
+              *ngIf="
+                PrioritySortType === 'ascending' || PrioritySortType === ''
+              "
+              (click)="PrioritySortDescending()"
+              ><i class="fa fa-arrow-down"></i
+            ></span>
+            <span
+              *ngIf="
+                PrioritySortType === 'descending' || PrioritySortType === ''
+              "
+              (click)="PrioritySortAscending()"
+              ><i class="fa fa-arrow-up"></i
+            ></span>
+          </th>
+          <th style="width: 120px">Status</th>
+          <th style="width: 120px">Current Approver/Recommender/Opinion</th>
+        </tr>
+      </thead>
+      <tbody class="table-tb">
+        <tr *ngFor="let data of memolist; index as i" style="text-align: left">
+          <td style="width: 150px">
+            {{ formatDate(data.created_date) | date : "dd-MMM-yyyy hh:mm a" }}
+          </td>
+          <td>
+            <div *ngIf="data.sender.branch_code">
+              ({{ data.sender.branch_code }} - {{ data.sender.branch }})
+            </div>
+            <div *ngIf="data.sender.name">{{ data.sender.name }}</div>
+          </td>
+          <td style="width: 190px">
+            <span class="wrap">
+              <span class="overflow" style="float: left; width: 190px">
+                <span
+                  *ngFor="
+                    let toemp of data.to_emp;
+                    first as isFirst;
+                    last as isLast
+                  "
+                >
+                  <ng-container *ngIf="!isFirst">,</ng-container>
+                  {{ toemp.full_name }}
+                  <ng-container *ngIf="isLast">,</ng-container>
+                </span>
+                <span *ngFor="let dept of data.to_dept; first as isFirst">
+                  <ng-container *ngIf="!isFirst">, </ng-container>
+                  <div *ngIf="dept.branch_code">
+                    ({{ dept.branch_code }} - {{ dept.branch }})
+                  </div>
+                  <div *ngIf="dept.name">{{ dept.name }}</div>
+                </span>
+              </span>
+              <span class="tooltip">
+                <ng-container>
+                  <ol>
+                    <li *ngFor="let toemp of data.to_emp">
+                      {{ toemp.full_name }}
+                    </li>
+                    <li *ngFor="let dept of data.to_dept">
+                      <div *ngIf="dept.branch_code">
+                        ({{ dept.branch_code }} - {{ dept.branch }})
+                      </div>
+                      <div *ngIf="dept.name">{{ dept.name }}</div>
+                    </li>
+                  </ol>
+                </ng-container>
+              </span>
+            </span>
+          </td>
+          <td style="width: 100px">
+            <div>{{ data.ion }}</div>
+          </td>
+          <td
+            style="width: 240px; cursor: pointer"
+            (click)="memoStatus(data.memo_status, data.id)"
+            [ngStyle]="
+              data.confidential == true ? { color: 'red' } : { color: 'blue' }
+            "
+          >
+            <span class="wrap">
+              <span class="overflow" style="float: left; width: 240px">
+                {{ data.subject }}
+              </span>
+              <span class="tooltip">
+                <span class="nowrap">{{ data.subject }}</span>
+              </span>
+            </span>
+          </td>
+          <td style="width: 30px">
+            <div *ngIf="data.priority">{{ data.priority.name }}</div>
+          </td>
+          <td style="width: 100px">{{ status(data) }}</td>
+          <td style="width: 30px">
+            <div *ngIf="data.current_approver">
+              <div *ngIf="data.current_approver.full_name">
+                {{ data.current_approver.full_name }}
+              </div>
+              <div *ngIf="data.current_approver == 'Approved'">
+                {{ data.current_approver }}
+              </div>
+              <div *ngIf="data.current_approver == 'Parallel delivery'">
+                {{ data.current_approver }}
+              </div>
+              <div *ngIf="data.current_approver == 'Under review'">
+                {{ data.current_approver }}
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="codes == 'INVALID_REQUEST_ID'" style="margin-left: 42%">
+      <h3>Data not found!..</h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div
+      class="col-sm-12"
+      style="font-size: small; text-align: right; margin-bottom: 3%"
+    >
+      <button
+        mat-icon-button
+        [disabled]="has_previous === false"
+        color="primary"
+        (click)="previousClick()"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      {{ currentpage }}
+      <button
+        mat-icon-button
+        [disabled]="has_next === false"
+        color="primary"
+        (click)="nextClick()"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  id="my-modal-test"
+  class="modal fade"
+  aria-labelledby="my-modalLabel"
+  aria-hidden="true"
+  tabindex="-1"
+  role="dialog"
+  data-keyboard="false"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; margin: 10px">
+        <button
+          class="modal-title"
+          id="my-modalLabel"
+          class="btn btn-outline-primary"
+          style="border-radius: 40px; margin-left: 12px"
+          (click)="exceldown()"
+        >
+          Download Excel
+        </button>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- approved -->
+        <div>
+          <p style="display: flex; justify-content: center">Approved</p>
+          <div class="approved-txt">
+            <div class="main-txt">
+              <h4 style="font-size: 17px; color: #5c5b5b">Approver</h4>
+              <p style="font-size: 16px; color: black">
+                {{ dictname?.name }}
+              </p>
+            </div>
+            <div class="main-txt">
+              <h4 style="font-size: 16px; color: #5c5b5b">Branch</h4>
+              <p style="font-size: 14px; color: black">
+                {{ dictname?.branchname }}
+              </p>
+            </div>
+            <div class="main-txts">
+  <h4 class="title">Period</h4>
+  <p class="dates">
+    Start date:{{dictname?.approve_startdate | date: "dd-MM-yyyy"}}<br>
+    End date:{{dictname?.approve_enddate | date: "dd-MM-yyyy"}}
+  </p>
+</div>
+            <!-- <div class="main-txt">
+              <h4 style="font-size: 16px; color: #5c5b5b">Period</h4>
+              <p style="font-size: 14px; color: black">
+                Start date :&nbsp;{{ dictname?.approve_startdate | date : "dd-MM-yyyy" }}
+                -
+                End date:&nbsp;{{ dictname?.approve_enddate | date : "dd-MM-yyyy" }}
+              </p>
+            </div> -->
+            <!-- <div class="total-txt">
+              <h4>Total Approved</h4>
+              <p>{{ dashboardlist?.total }}</p>
+            </div> -->
+              <div class="totals-container">
+                      <div class="total-txts1">
+                        <h4 class="margtotals">Total Received</h4>
+                        <p>{{ dashboardlist?.total_recived_se_date }}</p>
+                      </div>
+                      <div class="total-txts">
+                        <h4 class="margtotal">Total Approved</h4>
+                        <p>{{ dashboardlist?.total }}</p>
+                      </div>
+                    </div>
+
+          </div>
+          <div class="approved-txt">
+            <div
+              class="new-txts"
+              style="color: white; background-color: #01a85a"
+            >
+              <h4>0 Days</h4>
+              <p>
+                {{ dashboardlist?.zero_days }}
+              </p>
+            </div>
+            <div
+              class="new-txts"
+              style="color: white; background-color: #01a85aa1"
+            >
+              <h4>1-2 Days</h4>
+              <p>
+                {{ dashboardlist?.one_two_days }}
+              </p>
+            </div>
+            <div
+              class="new-txts"
+              style="color: white; background-color: #FF8282"
+            >
+              <h4>3-5 Days</h4>
+              <p>
+                {{ dashboardlist?.three_five_days }}
+              </p>
+            </div>
+            <div class="new-txts" style="color: white; background-color: #FF4D4D">
+              <h4>>5 Days</h4>
+              <p>
+                {{ dashboardlist?.greater_five_days }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- pending -->
+        <div>
+          <p style="display: flex; justify-content: center">Pending</p>
+          <div class="approved-txt">
+            <div class="main-txt">
+              <h4 style="font-size: 17px; color: #5c5b5b">Approver</h4>
+              <p style="font-size: 16px; color: black">
+                {{ dictname?.name }}
+              </p>
+            </div>
+            <div class="main-txt">
+              <h4 style="font-size: 16px; color: #5c5b5b">Branch</h4>
+              <p style="font-size: 14px; color: black">
+                {{ dictname?.branchname }}
+              </p>
+            </div>
+             <div class="main-txt">
+                      <h4 style="font-size: 16px; color: #5c5b5b">As on Date</h4>
+                      <p style="font-size: 14px; color: black">
+                        <!-- Start Date :&nbsp;{{ dictname?.pending_startdate | date : "dd-MM-yyyy" }} -->
+                        <!-- - -->
+                        &nbsp;{{ dictname?.pending_enddate | date : "dd-MM-yyyy" }}
+                      </p>
+                    </div>
+            <!-- <div class="main-txt">
+              <h4 style="font-size: 16px; color: #5c5b5b">Period</h4>
+              <p style="font-size: 14px; color: black">
+               Start Date :&nbsp;{{ dictname?.pending_startdate | date : "dd-MM-yyyy" }}
+                -
+                End Date :&nbsp;{{ dictname?.pending_enddate | date : "dd-MM-yyyy" }}
+              </p>
+            </div> -->
+            <div class="total-txt">
+              <h4>Total Pending</h4>
+              <p>{{ pendingres?.total }}</p>
+            </div>
+          </div>
+          <div class="approved-txt">
+            <div
+              class="new-txts"
+              style="color: white; background-color: #01a85a"
+            >
+              <h4>0 Days</h4>
+              <p>
+                {{ pendingres?.zero_days }}
+              </p>
+            </div>
+            <div
+              class="new-txts"
+              style="color: white; background-color: #01a85aa1"
+            >
+              <h4>1-2 Days</h4>
+              <p>
+                {{ pendingres?.one_two_days }}
+              </p>
+            </div>
+            <div
+              class="new-txts"
+              style="color: white; background-color: #FF8282"
+            >
+              <h4>3-5 Days</h4>
+              <p>
+                {{ pendingres?.three_five_days }}
+              </p>
+            </div>
+            <div class="new-txts" style="color: white; background-color: #FF4D4D">
+              <h4>>5 Days</h4>
+              <p>
+                {{ pendingres?.greater_five_days }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-spinner
+  bdColor="rgba(51, 51, 51, 0.8)"
+  size="default"
+  [fullScreen]="true"
+  type="ball-spin-clockwise"
+>
+  <p style="color: white">Loading...</p>
+</ngx-spinner>

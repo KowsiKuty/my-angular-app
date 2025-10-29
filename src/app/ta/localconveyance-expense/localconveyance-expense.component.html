@@ -1,0 +1,293 @@
+<div id="tamain">
+  <h2 style="margin-left: 44px;margin-top: 30px; font-size: 22px;font-weight: 500;">
+    eClaim Local Conveyance Expense
+  </h2>
+  <div *ngIf="isonbehalf">
+    <h3 style="margin-left: 44px;color:rgb(0, 0, 0);font-size: 18px; font-weight: 400;">
+      On Behalf Employee - {{onbehalf_empName}}
+    </h3>
+  </div>
+  <hr>
+  <div style="margin-left: 50px;margin-right: 80%;margin-top: 3%;width: 100%;margin-bottom: 50px;">
+    <h3 style="color:rgb(0, 0, 0);font-size: 18px; font-weight: 500;">
+      Tour Details
+    </h3>
+
+    <div>
+      <form [formGroup]="localform">
+        <table>
+          <tr>
+            <td>
+              <mat-form-field style="width: 175px;">
+                <mat-label style="font-size: 20px;">Tour No</mat-label>
+                <input matInput class="disabled11" placeholder="Tour No" formControlName="tourreqno" [readonly]="true">
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label style="font-size: 20px;">Employee Name</mat-label>
+                <input matInput class="disabled11" placeholder="Employee Name" formControlName="employeename"
+                  [readonly]="true">
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label style="font-size: 20px;">Designation</mat-label>
+                <input matInput class="disabled11" placeholder="Designation" formControlName="designation"
+                  [readonly]="true">
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label style="font-size: 20px;">Employee Grade</mat-label>
+                <input class="disabled11" matInput placeholder="Employee Grade" formControlName="employeegrade"
+                  [readonly]="true">
+              </mat-form-field>
+            </td>
+
+            <td>
+
+
+              <button type="button" *ngIf="!approver && !enb_all_exbdetails" class="btn btn-outline-success" (click)="adddata()"
+                style="border-radius:40px;margin-left: 50px"><span class="fa fa-plus"></span>
+                </button>
+
+            </td>
+          </tr>
+        </table>
+
+        <div class="table-responsive" style="width:98%;margin-top: 1%;">
+          <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <tr class="table_header" style="text-align: left;">
+              <th>S.No</th>
+              <th>Mode of Travel<label style="color: red;">*</label></th>
+              <th>Subcategory<label style="color: red;">*</label></th>
+              <th>Center<label style="color: red;">*</label></th>
+              <th>From Place<label style="color: red;">*</label></th>
+              <th>To Place<label style="color: red;">*</label></th>
+              <th  *ngIf="showdistance" >Distance<label style="color: red;">*</label></th>
+              <th>Onward/Return<label style="color: red;">*</label></th>
+              <th>Eligible Amount</th>
+              <th>Claim Amount<label style="color: red;">*</label></th>
+              <th>Remarks<label style="color: red;">*</label></th>
+              <th *ngIf="enb_all_exbdetails">GST No</th>
+              <th *ngIf="enb_all_exbdetails">Invoice Date</th>
+              <th *ngIf="enb_all_exbdetails">Invoice No</th>
+              <th *ngIf="!approver">Action</th>
+              <th *ngIf="approver && applevel == 2">Approver Amount<label style="color: red;">*</label></th>
+
+            </tr>
+            <tbody formArrayName="data"
+              *ngFor="let item of localform.get('data')['controls'] | paginate: { itemsPerPage: pageSize, currentPage: p } index as i">
+              <tr [formGroupName]="GlobalIndex(i)">
+                <td>{{((p-1)*pageSize)+i+1}}</td>
+                <td>
+                  <fieldset>
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+
+                      <mat-select required placeholder="Mode of Travel" [disabled]="approver || enb_all_exbdetails"
+                        formControlName="modeoftravel">
+
+                        <mat-option *ngFor="let mode of trvlmodeList" (focusout)="modeoftravel(mode)"
+                          [value]="mode.value">
+                          {{mode.name}}
+                          <!-- (click)="gettrvl(mode,ind,dtl)" -->
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td *ngIf="localform.value.data[GlobalIndex(i)].modeoftravel==null">
+                  <fieldset>
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <mat-select placeholder="Subcategory" [disabled]="approver || enb_all_exbdetails" (click)="getsubcatogorychange(i)"
+                        formControlName="subcatogory">
+                        <mat-option *ngFor="let subcat of emptyarray" [value]="subcat.value">
+                          {{subcat.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td *ngIf="localform.value.data[GlobalIndex(i)].modeoftravel=='Train'">
+                  <fieldset>
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <mat-select placeholder="Subcategory" [disabled]="approver || enb_all_exbdetails" (click)="getsubcatogorychange(i)"
+                        formControlName="subcatogory">
+                        <mat-option *ngFor="let subcat of trainlist" [value]="subcat.value">
+                          {{subcat.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td *ngIf="localform.value.data[GlobalIndex(i)].modeoftravel=='Road'">
+                  <fieldset>
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <mat-select placeholder="Subcategory" [disabled]="approver || enb_all_exbdetails" (click)="getsubcatogorychange(i)"
+                        formControlName="subcatogory">
+                        <mat-option *ngFor="let subcat of roadlist" [value]="subcat.value">
+                          {{subcat.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td *ngIf="localform.value.data[GlobalIndex(i)].modeoftravel=='ROAD'">
+                  <fieldset>
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <mat-select placeholder="Subcategory" [disabled]="approver || enb_all_exbdetails" (click)="getsubcatogorychange(i)"
+                        formControlName="subcatogory">
+                        <mat-option *ngFor="let subcat of roadlist" [value]="subcat.value">
+                          {{subcat.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset>
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <mat-select placeholder="Center" [disabled]="center_check(i) || approver || enb_all_exbdetails"
+                        formControlName="center">
+                        <mat-option *ngFor="let center of centerList" (focusout)="centerselect(center,i)"
+                          [value]="center.value">
+                          {{center.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput required placeholder="From Place" (keypress)="omit_special_char($event)"
+                        formControlName="fromplace">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput required placeholder="To Place" (keypress)="omit_special_char($event)"
+                        formControlName="toplace">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td  *ngIf="showdistance" >
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput type="text" required placeholder="Distance" appNumberOnly (keypress)="omit_special_char($event)"  (change)="centerselect($event,i)" maxlength="3"
+                        formControlName="distance">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 125px;">
+                      <mat-select required placeholder="Onward/Return" [disabled]="approver || enb_all_exbdetails"
+                        formControlName="onwardreturn">
+                        <mat-option *ngFor="let onward of onwardLists" [value]="onward.value">
+                          {{onward.name}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="true">
+                    <mat-form-field floatLabel="never" style="width: 125px;">
+                      <input required matInput placeholder="Eligibleamount" formControlName="eligibleamount">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput required placeholder="Claim Amount" appNumberOnly 
+                       formControlName="claimedamount">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td>
+                  <fieldset [disabled]="approver || enb_all_exbdetails">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput required placeholder="Remarks" (keydown)="space($event)"
+                        formControlName="remarks">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+                <td *ngIf="enb_all_exbdetails">
+                  <mat-form-field  style="width: 250px;">
+                    <input matInput placeholder="GST No"  (keydown)="kyenbdata($event)"
+                       formControlName="gstno"  required>
+                  </mat-form-field>
+                </td>
+                <td *ngIf="enb_all_exbdetails">
+                 
+                  <mat-form-field style="width: 300px;">
+                    <mat-label>Invoice Date</mat-label>
+                    <input matInput [matDatepicker]="picker_n"  formControlName="invoicedate">
+                    
+                    <mat-datepicker-toggle matSuffix [for]="picker_n"></mat-datepicker-toggle>
+                    <mat-datepicker #picker_n></mat-datepicker>
+                  </mat-form-field>
+                </td>
+                <td *ngIf="enb_all_exbdetails">
+                  <mat-form-field style="width: 125px;" >
+                    <input matInput placeholder="Invoice No"  (keydown)="kyenbdata($event)"
+                       formControlName="invoiceno"  required>
+                  </mat-form-field>
+                </td>
+                <td *ngIf="!approver && !enb_all_exbdetails">
+                  <button mat-icon-button
+                    (click)="removeSection(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+                <td *ngIf="approver && applevel == 2">
+                  <fieldset [disabled]="statusid > 2">
+                    <mat-form-field floatLabel="never" style="width: 120px;">
+                      <input matInput formControlName="approvedamount" (keydown)="nospace($event);zero($event)"
+                        placeholder="ApproverAmount">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+
+              </tr>
+            </tbody>
+
+            <tr *ngIf="showdistance">
+            
+            <th class="totaldisplay" colspan="8"  ></th>
+           
+
+            <td>Total Eligible Amount:{{total_eligibleamt}}</td>
+            </tr>
+       
+          </table>
+          <div class="pagination">
+            <pagination-controls responsive="true" (pageChange)="p = $event"></pagination-controls>
+          </div>
+        </div>
+        <div style="margin-top: 50px;" class="col-md-12 text-center">
+          <button *ngIf='!approver' type="submit" [disabled]="localform.get('data')['controls'].length== 0"
+            style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary"
+            (click)="submitcall()">Submit</button>
+
+          <button *ngIf='applevel == 2 && statusid == 2 ' class="btn btn-outline-primary"
+            style="border-radius: 40px;margin-left: 10px;" (click)="localconveyance()">Approve</button>
+          <button type="button" class="btn btn-outline-primary" (click)="back()"
+            style="border-radius: 40px;margin-left: 10px;">Back</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+<!-- <pre>
+      {{tourmodel|json}}
+  </pre> -->
+<ngx-spinner bdColor="rgba(0, 0, 0, 1.5)" size="default" type="la-ball-scale-multiple la-3x">
+  <p style="color: white">Please Wait. </p>
+</ngx-spinner>

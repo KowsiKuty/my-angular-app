@@ -1,0 +1,212 @@
+<nav>
+    <div class="nav nav-tabs">
+        <span class="nav-item nav-link "  id="subname" data-toggle="tab" 
+                (click)="subModuleData(sub,i)" role="tab" *ngFor="let sub of submodules;let i =index"
+                [class.active]="active_tab==i">
+                {{sub.name}}
+            </span>
+    </div>
+</nav>
+<div class="summary_content">
+    <div *ngIf="isAssetgroupid">
+            <h1 class="heading_tag">Asset Group Id Create Screen</h1>
+    <div>
+        <form [formGroup]="group_id_form">
+            <mat-form-field class="col-md-3">
+                <mat-label>Enter the Barcode</mat-label>
+                <input matInput placeholder="Enter the Barcode" formControlName="barcode">
+            </mat-form-field>
+            <mat-form-field class="col-md-3">
+                <mat-label>Enter the Cr number</mat-label>
+                <input matInput placeholder="Enter the Cr number" formControlName="cr_number">
+            </mat-form-field>
+            <button class="btn btn-outline-primary btnsearch" type="submit" matTooltip="search" (click)="get_non_groupid_summary()"
+            color="primary"><i class="fa fa-search"
+                aria-hidden="true"></i></button>
+                <button class="btn btn-outline-primary btnsearch" matTooltip="Reset" (click)="reset_non_gid()"
+                color="primary">Reset
+                  </button>    
+                  <!-- <div class="col-md-2"> -->
+               
+                    <button type="button" routerLink="/fa/fa" class="btn btn-outline-success" style="border-radius:30px;height:40px;margin-left:10px"><span
+                        class="fa fa-arrow-left">Go Back</span></button>  
+            <!-- </div>   -->
+        </form>
+    </div>
+    <div class="table-responsive table-bordered">
+        <table class="table">
+            <thead class="table_header">
+                <th>SI no</th>
+                <th>Cr number</th>
+                <th>AssetID</th>
+                <th>Capdate</th>
+                <th>Enddate</th>
+                <th>Asset value</th>
+                <th>Branch</th>
+                <th>Category</th>
+                <th>Subcategory</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of non_groupid_summary;index as i">
+                    <!-- <td>{{(pagesize+i+1)*ngid_present_page-1}}</td> -->
+                    <td>{{(ngid_present_page-1) * pagesize+i+1}}</td>
+                    <td>{{data?.crnum}}</td>
+                    <td>{{data?.barcode}}</td>
+                    <td>{{data?.capdate}}</td>
+                    <td>{{data?.enddate | date :'yyyy-mm-dd'}}</td>
+                    <td>{{data?.assetdetails_value}}</td>
+                    <td>{{data?.branch_id?.name}}</td>
+                    <td>{{data?.apcat?.name}}</td>
+                    <td>{{data?.subcat?.name}}</td>
+                    <td><button class="btn btn-outline-success btncreate" matTooltip="Create" (click)="to_crateassetid(data)">To Create</button></td>
+                    </tr>
+                <tr  *ngIf="non_groupid_summary?.length==0 else pagination_non">
+                    <td class="norecords" colspan="10">No Records Found....</td>
+
+                </tr>
+                <ng-template #pagination_non>
+                    <tr>
+                        <td colspan="10">
+                            <div style="text-align: right;">
+                                <button mat-icon-button [disabled]="has_prevoius === false" style="font-size: small;" color="primary"
+                                (click)="g_id_haspre()">
+                                <mat-icon >arrow_back</mat-icon>
+                                </button>
+                                {{ngid_present_page}}
+                                <button mat-icon-button [disabled]="has_next === false" style="font-size: small;" color="primary"
+                                (click)="g_id_hasnext()">
+                                <mat-icon >arrow_forward</mat-icon>
+                                </button>
+                            </div>    
+                        </td>
+                    </tr>
+
+                </ng-template>
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <div *ngIf="isactvive_inactive">
+        <h1 class="heading_tag">Asset Active and Inactive summary Screen</h1>
+        <form [formGroup]="asset_inactiveform">
+            <mat-form-field>
+                <mat-label>Reason</mat-label>
+                <input matInput placeholder="search the reason" formControlName="reason">
+            </mat-form-field>
+            <button class="btn btn-outline-primary btnsearch" type="submit" matTooltip="search" (click)="get_active_inactive_summary()"
+                color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <button class="btn btn-outline-primary btnsearch" matTooltip="Reset" (click)="reset_active_inactive()" color="primary">Reset
+            </button>
+            <button type="button" class="btn btn-outline-success" style="border-radius:40px;margin-left: 10px"
+                        routerLink="/fa/assetactive_inactive"><span class="fa fa-plus"></span>Add</button>
+        </form>
+
+        <div class="table-responsive table-bordered">
+            <table class="table">
+                <thead class="table_header">
+                    <th>SI no</th>
+                    <th>Reason to raised</th>
+                    <th>Type of request raise</th>
+                    <th>Request Raised Date</th>
+                    <th>Approver Status</th>
+                    <th>View</th>
+                   
+                    <!-- <th>Branch</th>
+                    <th>Category</th>
+                    <th>Subcategory</th> -->
+                    <!-- <th>Action</th> -->
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of active_summary;index as i">
+                        <!-- <td>{{(pagesize+i+1)*ngid_present_page-1}}</td> -->
+                        <td>{{(ngid_present_page-1) * pagesize+i+1}}</td>
+                        <td>{{data?.reason}}</td>
+                        <td>{{data?.type}}</td>
+                        <td>{{data?.date | date :'yyyy-mm-dd'}}</td>
+                        <!-- <td>{{data?.enddate | date :'yyyy-mm-dd'}}</td> -->
+                        <td>{{data?.approve_status}}</td>
+                        <!-- <td>{{data?.branch_id?.name}}</td>
+                        <td>{{data?.apcat?.name}}</td>
+                        <td>{{data?.subcat?.name}}</td> -->
+                        <td> <button mat-flat-button type="button" mat-flat-button color="outline" data-toggle="modal"
+                               (click)="view_raised_assets(data)"  data-target="#exampleModal">
+                                <mat-icon>visibility</mat-icon>
+                            </button></td>
+                        <!-- <td>< class="btn btn-outline-success btncreate" matTooltip="Create" (click)="to_crateassetid(data)"></td> -->
+                        </tr>
+                    <tr  *ngIf="active_summary?.length==0 else pagination_act_in">
+                        <td class="norecords" colspan="10">No Records Found....</td>
+    
+                    </tr>
+                    <ng-template #pagination_act_in>
+                        <tr>
+                            <td colspan="10">
+                                <div style="text-align: right;">
+                                    <button mat-icon-button [disabled]="active_summary_has_previous === false" style="font-size: small;" color="primary"
+                                    (click)="active_in_haspre()">
+                                    <mat-icon >arrow_back</mat-icon>
+                                    </button>
+                                    {{active_in_presentpage}}
+                                    <button mat-icon-button [disabled]="active_summary_has_next === false" style="font-size: small;" color="primary"
+                                    (click)="active_in_hasnext()">
+                                    <mat-icon >arrow_forward</mat-icon>
+                                    </button>
+                                </div>    
+                            </td>
+                        </tr>
+    
+                    </ng-template>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+<div>
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" data-backdrop="static" data-keyboard="false" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog modal-xl" role="document">
+          <div class="modal-content">
+            <div class="modal-header" style="background-color: #DDEFDD;">
+              <h2 class="modal-title" id="exampleModalLabel" >Raise Summary</h2>
+              <button type="button" class="close" #closebutton data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead class="table_header">
+                            <th>Asset_ID</th>
+                            <th>Asset Transaction ID</th>
+                            <!-- <th>Gl</th>
+                            <th>Enter the amount</th> -->
+                            <!-- <th>Total of class wise</th> -->
+                        </thead>
+                        <tbody>
+                            <tr>
+                        
+                                <td>{{list_barcode['detail']?.barcode}}</td>
+                                <td>
+                                <ul *ngFor="let ass of list_barcode['detail']?.assetdetails_id; index as i">
+                                    <li>{{ass}}</li>
+                                </ul>
+                            </td>
+                            </tr>
+                        
+                        
+                        </tbody>
+                        </table>
+                <div>
+                    <button type="button"  class="btn btn-outline-success" [disabled]="list_barcode['approve_status']=='Approved' || list_barcode['approve_status']=='Rejected'" style="border-radius:30px;height:40px;margin-left:10px" (click)="approve_reject('toiactive',1,list_barcode)">
+                        To Inactivate Asset</button>
+                        <button type="button"  class="btn btn-outline-success" [disabled]="list_barcode['approve_status']=='Approved' || list_barcode['approve_status']=='Rejected'" style="border-radius:30px;height:40px;margin-left:10px" (click)="approve_reject('toinactive',2,list_barcode)">
+                            Reject</button>
+                </div>
+                
+            </div>
+           
+          </div>
+        </div>
+      </div>              
+    
+</div>

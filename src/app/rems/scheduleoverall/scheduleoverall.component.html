@@ -1,0 +1,210 @@
+<div style="margin-top: 2%;width: 150%;margin-left: 20px;">
+    <span
+        style="margin-left: 1px;margin-top:1%; font-family:'Times New Roman', Times, serif;font-size:25px;font-weight:lighter;"><b>
+            Bulk Schedule Details </b></span>
+</div>
+<form [formGroup]="overallSchFrm" (ngSubmit)="getOverallSch(1)">
+<div style="margin-top:1%;width: 150%;margin-left: 20px;">
+    <div class="row">
+        <div class="col-12">
+            <mat-form-field style="width:10rem; margin-left: 6px;">
+                <input matInput readonly [matDatepicker]="picker1" placeholder="Schedule From" formControlName="from_date" id="scheduleoverall-0002">
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field style="width:10rem; margin-left: 6px;">
+                <input matInput readonly [matDatepicker]="picker2" placeholder="Schedule To" formControlName="to_date" [max]="lastDay" id="scheduleoverall-0003">
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field style="width:10rem; margin-left: 6px;">
+                <mat-label>Premises Name</mat-label>
+                <input matInput placeholder="Premises Code" autocomplete="off" formControlName="premisesName" id="scheduleoverall-0004">
+            </mat-form-field>
+            <button style="border-radius:40px;margin-left: 10px;" color="primary" type="submit" matTooltip="Search"
+                class="btn btn-outline-primary" id="scheduleoverall-0005"><i class="fa fa-search"
+                aria-hidden="true"></i></button>
+            <button class="btn btn-outline-primary" (click)="resetClick()" type="button" matTooltip="Reset"
+                style="border-radius:40px;margin-left: 10px;" color="primary" id="scheduleoverall-0006">Reset</button>
+            <button class="btn btn-outline-primary" style="height: 60px;" style="border-radius:40px;margin-left: 10px;" matTooltip="Back"
+                (click)="backToRemsSummary()" id="scheduleoverall-0007">Back</button>                
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <label class="checkbox-inline"> <input type="checkbox" [checked]="chk_registered"
+                    (change)="chk_registered = !chk_registered;"  id="scheduleoverall-0008" />Registered
+
+            </label>
+            <label class="checkbox-inline" style="margin-left: 20px;"> <input type="checkbox"
+                    [checked]="chk_unregistered" (change)="chk_unregistered = !chk_unregistered;"  id="scheduleoverall-0009" />UnRegistered
+            </label>
+            <label class="checkbox-inline" style="margin-left: 20px;"> <input type="checkbox" [checked]="chk_upfront" [disabled]="chk_regular"
+                    (change)="chk_upfront = !chk_upfront; chk_regular = false"  id="scheduleoverall-0010" />Upfront
+
+            </label>
+            <label class="checkbox-inline" style="margin-left: 20px;"> <input type="checkbox" [checked]="chk_regular" [disabled]="chk_upfront"
+                    (change)="chk_regular = !chk_regular; chk_upfront = false"  id="scheduleoverall-0011" />Regular
+            </label>
+
+            <button style="border-radius:40px;margin-left: 10px;" color="primary" type="button" (click)="BulkScheduleRunClick()" matTooltip="Bulk Run"
+                [disabled]="bulkRunDisable" class="btn btn-outline-primary" id="scheduleoverall-0012">BULK RUN</button>
+            <button style="border-radius:40px;margin-left: 10px;" color="primary" type="button" (click)="BulkRunDownload()" matTooltip="Report Download"
+            data-target="#scheduleoverall-0001" data-toggle="modal" class="btn btn-outline-primary" id="scheduleoverall-0013">Report Download</button>
+        </div>
+
+    </div>
+</div>
+</form>
+<div class="table-responsive" style="margin-top: 2%;width: 150%;margin-left: 20px;">
+    <div class="row" *ngIf="OverallSchedule_PaginationAvailable">
+        <div class="col-sm-11" style="margin-bottom:0%;font-size: small;text-align:left;">
+            <pre><span style="font-family:Times New Roman;font-size: 18px;font-weight:bold">  Record Count : {{OverallScheduleList[0]?.overallschedule_count}} </span></pre>
+            <button mat-icon-button [disabled]="has_previousOS === false" color="primary" (click)="previousClickOS()" id="scheduleoverall-0014">
+                <mat-icon>arrow_back
+                </mat-icon>
+            </button>
+            {{presentpageOS}}
+            <button mat-icon-button [disabled]="has_nextOS === false" color="primary" (click)="nextClickOS()" id="scheduleoverall-0015">
+                <mat-icon>arrow_forward
+                </mat-icon>
+            </button>
+        </div>
+    </div>
+    <table class="table  table-bordered" fixed-header>
+        <thead class="table_header">
+            <tr>
+                <th>Premises</th>
+                <th>Agreement</th>
+                <th>Period</th>
+                <th>Current Term Rent Payable Amount</th>
+                <th>Rent to be Paid Amount</th>
+                <th>Schedule Status</th>
+                <th>Landlord Name</th>
+                <th>Share Amount</th>
+                <th>Balance Amount</th>
+                <th>Landlord Status</th>
+            </tr>
+        </thead>
+        <ng-container *ngFor="let schedule of OverallScheduleList; index as i">
+            <tr>
+                <td class="text-style">{{schedule.premise_name}}</td>
+                <td class="text-style">{{schedule.agreement_code}}</td>
+                <td class="text-style">{{ schedule.from_date |
+                    date:'dd-MMM-yyyy' }} - {{
+                    schedule.to_date | date:'dd-MMM-yyyy'}}</td>
+                <td class="text-style">{{ schedule.rentpaid_amount}}</td>
+                <td class="text-style">{{schedule.rent_to_be_paid_amount}}</td>
+                <td class="text-style">{{schedule.schedule_status}}</td>
+                <td class="text-style">{{ schedule.landlord_name}}</td>
+                <td class="text-style">{{ schedule.landlord_share_amount}}</td>
+                <td class="text-style">{{ schedule.Balance_Amount}}</td>
+                <td class="text-style">{{schedule.landlord_staus}}</td>
+            </tr>
+        </ng-container>
+    </table>
+    <div *ngIf="OverallScheduleList ?.length == 0  || '' || undefined; else paginationpar">
+        <h3 style="margin-left: 42%;">Data not found!.. </h3>
+    </div>
+    <ng-template #paginationpar>
+        <div class="row" *ngIf="OverallSchedule_PaginationAvailable">
+            <div class="col-sm-11" style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previousOS === false" color="primary"
+                    (click)="previousClickOS()" id="scheduleoverall-0016">
+                    <mat-icon>arrow_back
+                    </mat-icon>
+                </button>
+                {{presentpageOS}}
+                <button mat-icon-button [disabled]="has_nextOS === false" color="primary" (click)="nextClickOS()" id="scheduleoverall-0017">
+                    <mat-icon>arrow_forward
+                    </mat-icon>
+                </button>
+            </div>
+        </div>
+    </ng-template>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" 
+        id="scheduleoverall-0001">
+        <div class="modal-dialog modal-lg " style="width: 70%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+                    <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">Bulk Run Files
+                    </h2>
+                    <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close" id="scheduleoverall-0018">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+
+                <div style="margin-left: 65px;margin-right: 80%;margin-top: 2%; width: 80%;">
+
+                    <div class="container">
+                        <div class="row">
+                            <div style="width:100%;margin-top: 1%;">
+                                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                    <thead class="table_header" style="text-align: left;">
+
+                                        <tr>
+                                            <th style="text-align: center;">S.No</th>
+                                            <th style="text-align: center;">File Name</th>
+                                            <th style="text-align: center;">Created Date</th>
+
+                                            <th style="text-align: center;">Download</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let file of BulkFilesList; index as i">
+                                            <td style="text-align: center;">{{i+1}}</td>
+                                            <td>{{file.file_name}}</td>
+                                            <td>{{file.created_date | date:'dd-MMM-yyyy'}}</td>
+
+                                            <td style="text-align: center;">
+                                                <button class="btn btn-outline-primary" type="submit"
+                                                    (click)="DownloadBulkfile(file)"
+                                                    style="border-radius:40px;margin-left: 15px;" color="primary" id="scheduleoverall-0019">
+                                                    <i matTooltip="Download" matTooltipClass="custom-tooltipnew" class="fa fa-download"
+                                                     matTooltipClass="custom-tooltipnew"
+                                                        aria-hidden="true"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div *ngIf="BulkFilesList ?.length == 0  || '' || undefined; else part1">
+                                    <h3 style="margin-left: 42%;">Data not found!.. </h3>
+                                </div>
+                                <ng-template #part1>
+                                    <div class="row" *ngIf="BulkFilesList?.length >0">
+                                        <div class="col-sm-12" style="margin-bottom: 10px;font-size: small;text-align:right;">
+                                            <button mat-icon-button [disabled]="has_previousFiles === false" color="primary"
+                                                (click)="previousClickBulkFiles()" id="scheduleoverall-0020">
+                                                <mat-icon>arrow_back
+                                                </mat-icon>
+                                            </button>
+                                            {{presentpageFiles}}
+                                            <button mat-icon-button [disabled]="has_nextFiles === false" color="primary" (click)="nextClickBulkFiles()" id="scheduleoverall-0021">
+                                                <mat-icon>arrow_forward
+                                                </mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-template>
+
+                            </div>
+                            <tr>
+                                <td>
+
+                                    <button type="button" class="btn btn-light" style="border-radius:7px;margin-left:255px;
+                                                            border-color: black; margin-bottom: 20px;
+                                                            background-color: white;"  data-dismiss="modal" id="scheduleoverall-0022">Back</button>
+
+                                </td>
+                            </tr>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+</div>

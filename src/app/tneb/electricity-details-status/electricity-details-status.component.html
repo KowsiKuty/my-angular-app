@@ -1,0 +1,139 @@
+<div>
+    <h1 style="font-family: 'Times New Roman', Times, serif;font-size: 23px;color: blue;">Electricity Details Status
+        Summary</h1>
+</div>
+<hr>
+<div>
+    <form [formGroup]="codosearchform">
+        <div class=" col-md-12 row">
+            <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Consumer No</mat-label>
+                    <input type="text" matInput formControlName="consumerno">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <!-- <mat-form-field style="width: 250px;">
+                    <mat-label>Choose Branch</mat-label>
+                    <input type="text" matInput formControlName="branch">
+                </mat-form-field> -->
+
+                <mat-form-field style="width: 250px;" (click)="getbranchdata('',branch_currentpage=1)">
+                    <mat-label>Choose Branch</mat-label>
+                    <input placeholder="branch" matInput
+                        (keyup)="getbranchdata($event.target.value,branch_currentpage=1)" formControlName="branch"
+                        #branchContactInput [matAutocomplete]="branchtype">
+                    <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaydiss2"
+                        (opened)="autocompletebranchnameScroll()">
+
+                        <mat-option *ngFor="let branch of branchdata" [value]="branch">
+                            ({{branch.code}}){{branch.name}}
+
+                            <!-- {{branch.name}} -->
+                        </mat-option>
+
+                    </mat-autocomplete>
+                </mat-form-field>
+
+            </div>
+
+            <div class="col-md-3" >
+                <mat-form-field style="width: 250px;" (click)="getoccupancydropdowndata('')">
+                    <mat-label>Occupancy</mat-label>
+                    <input placeholder="Occupancy"  matInput (keyup)="getoccupancydropdowndata($event.target.value)" formControlName="occupancy" #occupancyinput
+                        [matAutocomplete]="occupancyautocomplete">
+                    <mat-autocomplete  [panelWidth]="400" #occupancyautocomplete="matAutocomplete" [displayWith]="displayocc">
+                     
+                            <mat-option *ngFor="let occ of occupancydata" [value]="occ">
+                                ({{occ?.occupancy_code}}) - {{occ.occupancy_name}}
+                            </mat-option>
+                        
+                    </mat-autocomplete>
+                </mat-form-field> 
+            </div>
+            <!-- <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Status</mat-label>
+                    <input type="text" matInput formControlName="branch">
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-2">
+                <!-- <button mat-mini-fab type="button" style="background-color: rgb(130, 182, 130);"><mat-icon>search</mat-icon></button> -->
+                <!-- <button mat-mini-fab type="button" style="background-color:rgb(130, 182, 130) ;margin-left: 10px;" (click)="navigaredata()"><mat-icon>add</mat-icon></button> -->
+                <button class="btn btn-outline-primary" type="submit" (click)="searchdata()"
+                    style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                        aria-hidden="true"></i></button>
+
+                <button class="btn btn-outline-danger" (click)="resetdata()" type="button"
+                    style="border-radius:40px;margin-left: 15px;" color="primary">Reset</button>
+            </div>
+        </div>
+        <div style="margin: 1% 0%;" >
+            <button type="button"  [disabled]='disablemanualrun' style="height: 40px;float: left;" class="btn btn-success" (click)="manualrundata()">MANUAL
+                RUN</button>
+        </div>
+      
+    </form>
+    <br>
+    <div style="margin: 2% 0%;width:100%" class="table-responsive">
+       
+        <table class="table table-bordered" style="width: 95%;font-size: 14px;">
+            <thead class="table_header">
+                <tr>
+                    <th>S.No</th>
+                    <th>Consumer No </th>
+                    <th>Consumer Name</th>
+                    <th>Branch Name</th>
+                    <th>Occupancy</th>
+                    <th>State</th>
+                    <th>Board Name</th>
+                    <th>Last Paid Date</th>
+                    <th>Last Paid Amount</th>
+                    <th>Last Run Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let d of summarydata;let i=index">
+                    <td>{{(presentpage-1)*pagesize+i+1}}</td>
+                    <td>{{d.consumer_no}}</td>
+                    <td>{{d.consumer_name}}</td>
+                    <td>({{d.branch?.code}})-{{d.branch?.name}}</td>
+                    <td>({{d?.occupancy?.code}})-{{d?.occupancy?.occupancy_name}}</td>
+
+                    <td>{{d.consumer_state?.name}}</td>
+                    <td>{{d.consumer_board?.name}}</td>
+                    <td>{{d.paid_details?.last_paid_date}}</td>
+                    <td>{{d.paid_details?.last_paid_amount}}</td>
+                    <td>{{d.paid_details?.last_run_date}}</td>
+                    <td>{{d.bill_status}}</td>
+                </tr>
+                <tr *ngIf="summarydata.length==0">
+                    <td colspan="11" style="text-align:  center">
+                        No Records Found..
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="7"></td>
+                    <td colspan="2" >Count: <code>{{count}}</code></td>
+                    <td colspan="2">
+                        <div style="float:center">
+                            <button type="button" (click)="previouspage()" mat-icon-button [disabled]="!has_previous"
+                                color="primary">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+                            {{presentpage}}
+                            <button type="button" mat-icon-button (click)="nextpage()" [disabled]="!has_next"
+                                color="primary">
+                                <mat-icon> arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                    <!-- <td colspan="2">
+                    Total Count:
+                </td> -->
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

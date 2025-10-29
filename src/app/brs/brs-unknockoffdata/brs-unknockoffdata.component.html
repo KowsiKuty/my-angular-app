@@ -1,0 +1,223 @@
+<div >
+  <form [formGroup]="brssummary">
+    <div class="row" style="margin-top: 2%; margin-left: 1%; width: 99%;">
+      <div class="col-md-2" style="margin-right: 3%;">
+        <mat-form-field appearance="outline" style="width: auto">
+          <mat-label>Choose a date<label style="color: red;">*</label></mat-label>
+          <input matInput formControlName="summarydate" [matDatepicker]="picker1" [max]="endDate"
+                 >
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div  class="col-md-2">
+        <mat-form-field (click)="unkoffdrop()" appearance="outline" style="width:auto">
+            <mat-label>Branch</mat-label>
+            <input matInput  formControlName="summarybranch" [matAutocomplete]="branch">
+            <mat-autocomplete #branch="matAutocomplete" [displayWith]="displaybranch">
+                <mat-option *ngFor="let data of brscode" [value]="data">
+                    {{data.branch}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div  class="col-md-1" style="margin-right:2%;margin-top:0.5%; margin-left: 2%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -30%;" type="submit"  (click)="summary_search()">Search</button>
+      </div>
+      <div  class="col-md-1" style="margin-right:2%;margin-top:0.5%; margin-left: 2%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -100%;" type="submit"  (click)="summary_clear()">Clear</button>
+      </div>
+    </div>
+  </form>
+  
+</div>
+
+<div class="mat-elevation-z5" class="table-row">
+  <div style="margin-left: 2%;">
+    <div
+      style="overflow-x: auto; max-height: 500px;"
+      infiniteScroll
+      [infiniteScrollDistance]="1"
+     
+      (scrolled)="onscroll()" 
+      [scrollWindow]="false"
+      >
+      <table class="table table-bordered mat-elevation-z8" id="boxlevel" >
+        <thead class="table_header" style="position: sticky;top: 0;z-index: 1;text-align: center;">
+          <th>S.No</th>
+          <th>Branch</th>
+          <th>Gl Code</th>
+          <th>Ledger Balance</th>
+          <th>Statement Balance</th>
+          <th>Difference</th>
+          <th>Status</th>
+          <th>Action</th>
+        </thead>
+        <tbody *ngFor="let sum of Knocksummary; let i=index">
+          <td style="text-align: center;">{{i+1}}</td>
+          <td style="text-align: center;">
+          <a data-toggle="modal" href="#myModal" style="cursor:pointer;text-decoration: none;" (click)="branch_click(sum)">{{sum.kd_branchcode}}</a>
+          </td>
+          <td style="text-align: center;">{{sum.kd_accountno}}</td>
+          <td style="text-align: right;">{{sum.kd_runningbalancegl | currency:"INR":'symbol'}}</td>
+          <td style="text-align: right;">{{sum.kd_running_balance_bs | currency:"INR":'symbol'}}</td>
+          <td style="text-align: right;">{{sum.kd_differenceamount | currency:"INR":'symbol'}}</td>
+          <td style="text-align: center;"><button  data-toggle="modal"  data-target="#myModal2"  class="btn btn-outline-success" style="border-radius: 25px;" (click)="arsststua(sum.kd_branchcode,sum.kd_accountno)" [disabled]="sum.flag == 0">status</button></td>
+          <td style="text-align: center;">
+            <button class="btn btn-outline-primary" style="border-radius:25px;font-size: 95%;margin-left: 10%;" type="submit"  (click)="Ars_run(sum.kd_branchcode,sum.kd_accountno)" [disabled]="sum.flag == 0">Run</button>
+            <button mat-icon-button matTooltip="view"  data-toggle="modal"  data-target="#myModal1"  class="iconbutton" color="primary" style="color: green;margin-left: 10%;" (click)="arsfilesummary(sum.kd_branchcode,sum.kd_accountno)">
+              <mat-icon class="enabled_icon" aria-label="view">visibility</mat-icon>
+            </button>
+          </td>
+      </tbody>
+      </table>
+      <div>
+        <p *ngIf="!data_found" style="text-align: center;">Data Not Found..</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+          <div class="modal-header" style="height: 55px;background-color: #DDEFDD;" >
+              <h4 class="modal-title" style="font-size: larger;">Transaction upload</h4>
+              <button type="button" class="close" #popupclose data-dismiss="modal">×</button>
+          </div>
+          <div class="modal-body">
+          <form [formGroup]="documentform">
+                  <div class="row">
+                    <div style="margin-left:10px;margin-right: -1%;" class="col-md-3">
+                      <mat-form-field appearance="outline">
+                          <mat-label>Upload Type<label style="color: red;">*</label></mat-label>
+                          <mat-select placeholder="" appearance="outline" formControlName="ctrl_uploadtype" (selectionChange)="uploadtype($event)">
+                          <mat-option *ngFor="let obj of typeValues" [value]="obj.id">
+                            {{ obj.viewoption }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                  </div>
+                      <div class="col-md-3">
+                        <input id="sect" style="border-bottom-style:none;color:black;margin-left: 13%;
+                          font-size: smaller;
+                          margin-top: 8%;" type="file" accept=".xlsx" (change)="uploadchooses($event)" name="filedata" formControlName="ctrl_upload">
+                    </div>
+                      <div class="col-md-3">
+                          <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;" type="submit"  (click)="documentupload()">Upload</button>
+                      </div>
+              </div>
+          </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+          <div class="modal-header" style="height: 55px;background-color: #DDEFDD;" >
+              <h4 class="modal-title" style="font-size: larger;">Uploaded Documents</h4>
+              <button type="button" class="close" #popupclose data-dismiss="modal">×</button>
+          </div>
+          <div class="modal-body">
+          <form >
+              <div class="row">
+                <div class="col-md-6">
+                  <mat-card>
+                    <mat-card-title class="mat-card-title">EXTERNAL</mat-card-title>
+                    <mat-card-actions>
+                 
+                          <table class="table table-bordered" >
+                            <thead class="table_header">
+                                <th>S.No</th>
+                                <th>Date</th>
+                                <th>File Name</th>
+                                <th>Action</th>
+                            </thead>
+                            <tbody >
+                              <ng-container *ngFor="let obj of externalFiles; let i = index">
+                                <td >{{i+1}}</td>
+                                <td >{{obj.date}}</td>
+                                <td >{{obj.file_name}}</td>
+                                <td>
+                                  <mat-icon matTooltip="Download" style="cursor: pointer;" [ngStyle]="{'color': 'green'}" (click)="arsdownload(obj.id,obj.file_name)">file_download</mat-icon>
+
+                                  <mat-icon   (click)="status_modify(obj.id)" style="margin-left: 20%; cursor: pointer;" >delete</mat-icon>
+                                </td>
+                            </ng-container>
+                            </tbody>
+                          </table>
+                          <p *ngIf="!data_found" style="text-align: center;">Data Not Found..</p>
+                       
+                    </mat-card-actions>
+                  </mat-card>
+                  
+                </div>
+  
+                <div class="col-md-6">
+                  <mat-card>
+                    <mat-card-title class="mat-card-title">WISEFIN</mat-card-title>
+                    <mat-card-actions>
+                        
+                          <table class="table table-bordered" >
+                            <thead class="table_header">
+                                <th>S.No</th>
+                                <th>Date</th>
+                                <th>File Name</th>
+                                <th>Action</th>
+                            </thead>
+                            <tbody>
+                              <ng-container *ngFor="let obj of cbsFiles; let i = index">
+                                  <td>{{ i + 1 }}</td>
+                                  <td>{{obj.date}}</td>
+                                  <td>{{ obj.file_name }}</td>
+                                  <td>
+                                    <mat-icon matTooltip="Download" style="cursor: pointer;" [ngStyle]="{'color': 'green'}" (click)="arsdownload(obj.id,obj.file_name)">file_download</mat-icon>
+                                    <mat-icon   (click)="status_modify(obj.id)" style="margin-left: 20%; cursor: pointer;" >delete</mat-icon>
+                                  </td>
+                            </ng-container>
+                            </tbody>
+                          </table>
+                          <p *ngIf="!data_found" style="text-align: center;">Data Not Found..</p>
+                        
+                    </mat-card-actions>
+                  </mat-card>
+                  
+                </div>   
+              </div>
+          </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal2" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+          <div class="modal-header" style="height: 55px;background-color: #DDEFDD;" >
+              <h4 class="modal-title" style="font-size: larger;">ARS Status</h4>
+              <button type="button" class="close" #popupclose data-dismiss="modal">×</button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-bordered" >
+              <thead class="table_header">
+                  <th>S.No</th>
+                  <th>Date</th>
+                  <th>File Name</th>
+                  <th>Status</th>
+              </thead>
+              <tbody *ngFor="let obj of Arsstatus; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{obj.date}}</td>
+                    <td>{{obj.file_name }}</td>
+                    <td>{{(obj.status == 1? "Active": (obj.status == 0? "Inactive": (obj.status == 4? "Success": (obj.status == 3? "Processing": (obj.status == 2? "Started":(obj.status == 5? "Rule failed":obj.status))))))}}</td>
+                  </tbody>
+            </table>
+            <p *ngIf="!data_found1" style="text-align: center;">Data Not Found..</p>
+          </div>
+        </div>
+  </div>
+</div>
+
+

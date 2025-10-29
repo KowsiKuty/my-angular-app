@@ -1,0 +1,492 @@
+<main>
+    <mat-grid-list cols="1" style="margin-left:35px;">
+       <div>
+        <span  (click)="backtosummary()" style="cursor: pointer;" ><mat-icon>arrow_back</mat-icon></span>
+        <span style="font-size: 16px;font-weight:bold;margin-left: 5px;">Rule Mapping</span>
+       </div>
+    </mat-grid-list>
+
+    
+<div class="row" style="text-align:center;">
+    <button type="button"  class="btn btn-basic" (click)="showwisefin()" style="margin-left:35px;">WISEFIN</button>
+    
+    <button type="button"  class="btn btn-basic" (click)="showbnkstmtss()">CBS</button>
+    </div>
+
+    <div *ngIf="shownwisefin">
+    <form [formGroup]="rulemapss">
+        <h3 style="margin-left:20px;">WISEFIN RULE MAPPING</h3>
+        <section class="row">
+
+            <div class="col-sm-2">
+                <mat-form-field style="margin-left:35px">
+                    <mat-label>Rule Mapping Name</mat-label>
+                    <input matInput formControlName="description" required>
+                </mat-form-field>
+
+            </div>
+
+            <div class="col-sm-2" style="margin-left:35px">
+
+                <mat-form-field style="margin-left:35px" >
+                    <mat-label>Template Name</mat-label>
+                    <mat-select matInput formControlName="gltemplate_id">
+                        <mat-option *ngFor="let item of templatess" [value]="item.id">
+                            {{item.template_name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+
+                
+            </div>
+
+            <div class="col-sm-2" style="margin-left:35px">
+
+                <mat-form-field style="margin-left:35px">
+                    <mat-label>Rule Name</mat-label>
+                    <mat-select matInput formControlName="rule_id">
+                        <mat-option *ngFor="let item of rulesL" [value]="item.id">
+                            {{item.description}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+
+                
+            </div>
+
+            <div class="col-sm-2" style="margin-left:35px">
+                <mat-form-field style="margin-left:35px">
+                    <mat-label>Rule Applying Order</mat-label>
+                    <input matInput formControlName="order" required>
+                </mat-form-field>
+
+            </div>
+
+            
+           
+
+
+        </section>
+        <div class="row">
+            <div class="col-sm-2" style="margin-left:35px">
+                <mat-form-field >
+                    <mat-label>GL Column Name</mat-label>
+                    <!-- <input matInput formControlName="gl_ledger_column" required> -->
+                    <mat-select formControlName="gl_ledger_column">
+                        <mat-option value="pv_no">PV Number</mat-option>
+                        <mat-option value="line_description">Line Description</mat-option>
+                        <mat-option value="source">Source</mat-option>
+                        <mat-option value="category">Category</mat-option>
+                        <mat-option value="gl_doc_no">GL Doc No.</mat-option>
+                        <mat-option value="user_name">User Name</mat-option>
+                        <mat-option value="invoice_no">Invoice Number</mat-option>
+                        <mat-option value="journal_name">Journal Name</mat-option>
+                      </mat-select>
+                </mat-form-field>
+
+            </div>
+
+            <!-- <div class="col-sm-2">
+                <mat-form-field style="margin-left:35px">
+                    <mat-label>CBS Column Name</mat-label>
+                    
+                    <mat-select formControlName="bank_statement_column">
+                        <mat-option value="pv_no">PV Number</mat-option>
+                        <mat-option value="description">Description</mat-option>
+                        <mat-option value="cheque_no">Cheque No.</mat-option>
+                        <mat-option value="customer_ref_no">Cus Ref No.</mat-option>
+                        
+                      </mat-select>
+                </mat-form-field>
+
+            </div> -->
+
+            <!-- <div class="col-md-3">
+                <mat-form-field>
+                    <mat-label>Bank Column Name</mat-label>
+                    <input matInput formControlName="bank_statement_column" required>
+                </mat-form-field>
+
+            </div> -->
+
+            <div class="col-sm-4" style="margin-left:35px">
+                <button type="button" class="btn btn-outline-success" (click)="Nmappingsubmit()" style="border-radius:25px;">Submit Rule</button>
+                <!-- <button class="btn btn-outline-primary" type="submit" (click)="goback()" style="margin-left:20px;border-radius:25px;">Back</button> -->
+             </div>
+
+        </div>
+    </form>
+
+    <div>
+        <div class="table-responsive">
+
+            <table class="table" id='commonstyle'>
+                <thead class="table_header">
+                    <tr>
+                        <th>S.no</th>
+                        <th>Rule mapping</th>
+                        <th>Template</th>
+                        <th>Rule</th>
+                        <th>Order</th>
+                        <th>GL Column</th>
+                        <!-- <th>Bank Column</th> -->
+                        <th>edit</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sums of summarylistsL;index as ind" >
+                        <td>{{ind+1}}</td>
+                        <td>{{sums.description}}</td>
+                        <td>{{sums.gl_template_name}}</td>
+                        <td>{{sums.rule_name}}</td>
+                        <td>{{sums.order}}</td>
+                        <td>{{sums.gl_ledger_column}}</td>
+                        <!-- <td>{{sums.bank_statement_column}}</td> -->
+                        <td>
+                            <button mat-icon-button matTooltip="Click to Edit" class="iconbutton"
+                            (click)="rulemapedit(sums)" color="primary" data-toggle="modal"
+                            data-target="#editmodalforrulemap">                            
+                            <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                        </button>
+                        
+                        </td>
+                        <!-- <td><mat-icon (click)="deletemapping(sums.id)">delete</mat-icon></td>  
+                                                   -->
+                                                   <td>
+                                                   <mat-slide-toggle [(ngModel)]="sums.status" color="secondary" (click)="deletemapping(sums.id);"></mat-slide-toggle>
+
+                                                </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+    </div>
+    </div>
+
+
+    <div *ngIf="showbnkstmt">
+        <form [formGroup]="rulemaps">
+            <h3 style="margin-left:20px;">CBS RULE MAPPING</h3>
+            <section class="row">
+    
+                <div class="col-sm-2" style="margin-left:35px">
+                    <mat-form-field >
+                        <mat-label>Rule Mapping Name</mat-label>
+                        <input matInput formControlName="description" required>
+                    </mat-form-field>
+    
+                </div>
+    
+                <div class="col-sm-2" style="margin-left:35px">
+    
+                    <mat-form-field>
+                        <mat-label>Template Name</mat-label>
+                        <mat-select matInput formControlName="template_id">
+                            <mat-option *ngFor="let item of templates" [value]="item.id">
+                                {{item.template_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+    
+    
+                    
+                </div>
+    
+                <div class="col-sm-2" style="margin-left:35px">
+    
+                    <mat-form-field>
+                        <mat-label>Rule Name</mat-label>
+                        <mat-select matInput formControlName="rule_id">
+                            <mat-option *ngFor="let item of rulesB" [value]="item.id">
+                                {{item.description}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+    
+    
+                    
+                </div>
+    
+                <div class="col-sm-2" style="margin-left:35px">
+                    <mat-form-field style="margin-left:35px">
+                        <mat-label>Rule Applying Order</mat-label>
+                        <input matInput formControlName="order" required>
+                    </mat-form-field>
+    
+                </div>
+    
+                
+               
+    
+    
+            </section>
+            <div class="row">
+                <!-- <div class="col-md-3">
+                    <mat-form-field style="margin-left:35px">
+                        <mat-label>GL Column Name</mat-label>
+                        <input matInput formControlName="gl_ledger_column" required>
+                    </mat-form-field>
+    
+                </div> -->
+    
+                <div class="col-sm-2" style="margin-left:35px">
+                    <!-- <mat-form-field> -->
+                        <mat-form-field >
+                            <mat-label>CBS Column Name</mat-label>
+                            <!-- <input matInput formControlName="gl_ledger_column" required> -->
+                            <mat-select formControlName="bank_statement_column">
+                                <mat-option value="pv_no">PV Number</mat-option>
+                                <mat-option value="description">Description</mat-option>
+                                <mat-option value="cheque_no">Cheque No.</mat-option>
+                                <mat-option value="customer_ref_no">Cus Ref No.</mat-option>
+                                <!-- <mat-option value="gl_doc_no">GL Doc No.</mat-option>
+                                <mat-option value="user_name">User Name</mat-option>
+                                <mat-option value="invoice_no">Invoice Number</mat-option>
+                                <mat-option value="journal_name">Journal Name</mat-option> -->
+                              </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-label>Bank Column Name</mat-label>
+                        <input matInput formControlName="bank_statement_column" required> -->
+                    <!-- </mat-form-field> -->
+    
+                </div>
+                <!-- <div class="col-sm-2">
+                    <mat-form-field style="margin-left:35px">
+                        <mat-label>GL Column Name</mat-label>
+                       
+                        <mat-select formControlName="gl_ledger_column">
+                            <mat-option value="pv_no">PV Number</mat-option>
+                            <mat-option value="line_description">Line Description</mat-option>
+                            <mat-option value="source">Source</mat-option>
+                            <mat-option value="category">Category</mat-option>
+                            <mat-option value="gl_doc_no">GL Doc No.</mat-option>
+                            <mat-option value="user_name">User Name</mat-option>
+                            <mat-option value="invoice_no">Invoice Number</mat-option>
+                            <mat-option value="journal_name">Journal Name</mat-option>
+                          </mat-select>
+                    </mat-form-field> -->
+    
+                <!-- </div> -->
+    
+                <div class="col-sm-4" style="margin-left:35px">
+                    <button type="button" class="btn btn-outline-success"
+                     (click)="mappingsubmit()" style="border-radius:25px;">Submit Rule</button>
+                    <!-- <button class="btn btn-outline-primary" (click)="goback()" style="margin-left:20px;border-radius: 25px;">Back</button> -->
+                 </div>
+    
+            </div>
+        </form>
+    
+        <div>
+            <div class="table-responsive">
+    
+                <table class="table" id='commonstyle'>
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.no</th>
+                            <th>Rule mapping</th>
+                            <th>Template</th>
+                            <th>Rule</th>
+                            <th>Order</th>
+                            <!-- <th>GL Column</th> -->
+                            <th>Bank Column</th>
+                            <th>edit</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let sums of summarylistsB;index as ind" >
+                            <td>{{ind+1}}</td>
+                            <td>{{sums.description}}</td>
+                            <td>{{sums.template_name}}</td>
+                            <td>{{sums.rule_name}}</td>
+                            <td>{{sums.order}}</td>
+                            <!-- <td>{{sums.gl_ledger_column}}</td> -->
+                            <td>{{sums.bank_statement_column}}</td>
+                            <!-- <td><mat-icon (click)="deletemapping(sums.id)">delete</mat-icon></td>  
+                                
+                                                       -->
+                                                       <td>
+                                                        <button mat-icon-button matTooltip="Click to Edit" class="iconbutton"
+                                                        (click)="rulemapedit(sums)" color="primary" data-toggle="modal"
+                                                        data-target="#editmodalforrulemaps">                            
+                                                        <mat-icon style="color: gray;" aria-label="Edit">edit</mat-icon>
+                                                    </button>
+                                                    
+                                                    </td>
+                                                       <td>
+                                                       <mat-slide-toggle [(ngModel)]="sums.status" color="secondary" (click)="deletemapping(sums.id);"></mat-slide-toggle>
+    
+                                                    </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+        </div>
+        </div>
+
+
+
+
+</main>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+        id="editmodalforrulemap">
+        <div class="modal-dialog modal-xl" style="width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);">
+                    <h2 class="modal-title" style="color:black ;">Rule Mapping</h2>
+                    <button type="button" #closebuttons class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left: 70px;margin-right: 80%;margin-top: 2%; width: 40%;">
+
+                    <form [formGroup]="rulemapeditform">
+                        <table>
+                            <div>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 175px;">
+                                            <mat-label>Rule Mapping Name</mat-label>
+                                            <input matInput placeholder="account name" name="acc_name"
+                                            formControlName="description" autocomplete="off">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field style="width: 175px;margin-left: 50px;">
+                                            <mat-label>Template Name</mat-label>
+                                            <input matInput  name="acc_no"
+                                            formControlName="gl_template_name" autocomplete="off">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field style="width: 175px;margin-left: 50px;">
+                                            <mat-label>Rule Name</mat-label>
+                                            <input matInput  name="rule_name"
+                                            formControlName="rule_name" autocomplete="off">
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <mat-form-field style="width: 175px;">
+                                            <mat-label>Rule Applying Order</mat-label>
+                                            <input matInput  name="order"
+                                            formControlName="order" autocomplete="off">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field style="width: 175px;margin-left: 50px;">
+                                            <mat-label>GL Column</mat-label>
+                                            <input matInput  name="ledger column"
+                                            formControlName="gl_ledger_column" autocomplete="off">
+                                        </mat-form-field>
+                                    </td>
+                                
+                                
+                                </tr>
+                               
+                            </div>
+                        </table>
+
+                        <!-- <h3 style="margin-left:20px;">WISEFIN RULE MAPPING</h3> -->
+                        
+                   
+                        <tr>
+                            <div style="margin-bottom: 5%;">
+                                <button type="submit" style="border-radius: 40px;margin-left: 10px;"
+                                    class="btn btn-outline-primary" (click)="editForm()">Update</button>
+                                <button type="button" class="btn btn-outline-primary" 
+                                    data-dismiss="modal" style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+                            </div>
+                        </tr>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+id="editmodalforrulemaps">
+<div class="modal-dialog modal-xl" style="width: 60%;">
+    <div class="modal-content">
+        <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);">
+            <h2 class="modal-title" style="color:black ;">Rule Mapping</h2>
+            <button type="button" #closebuttons class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div style="margin-left: 70px;margin-right: 80%;margin-top: 2%; width: 40%;">
+
+            <form [formGroup]="rulemapeditform">
+                <table>
+                    <div>
+                        <tr>
+                            <td>
+                                <mat-form-field style="width: 175px;">
+                                    <mat-label>Rule Mapping Name</mat-label>
+                                    <input matInput placeholder="account name" name="acc_name"
+                                    formControlName="description" autocomplete="off">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 175px;margin-left: 50px;">
+                                    <mat-label>Template Name</mat-label>
+                                    <input matInput  name="acc_no"
+                                    formControlName="template_name" autocomplete="off">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 175px;margin-left: 50px;">
+                                    <mat-label>Rule Name</mat-label>
+                                    <input matInput  name="rule_name"
+                                    formControlName="rule_name" autocomplete="off">
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <mat-form-field style="width: 175px;">
+                                    <mat-label>Rule Applying Order</mat-label>
+                                    <input matInput  name="order"
+                                    formControlName="order" autocomplete="off">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 175px;margin-left: 50px;">
+                                    <mat-label>Bank Column</mat-label>
+                                    <input matInput  name="ledger column"
+                                    formControlName="bank_statement_column" autocomplete="off">
+                                </mat-form-field>
+                            </td>
+                        
+                        
+                        </tr>
+                       
+                    </div>
+                </table>
+
+                <!-- <h3 style="margin-left:20px;">WISEFIN RULE MAPPING</h3> -->
+                
+           
+                <tr>
+                    <div style="margin-bottom: 5%;">
+                        <button type="submit" style="border-radius: 40px;margin-left: 10px;"
+                            class="btn btn-outline-primary" (click)="editForm()">Update</button>
+                        <button type="button" class="btn btn-outline-primary" 
+                            data-dismiss="modal" style="border-radius: 40px;margin-left: 10px;">Cancel</button>
+                    </div>
+                </tr>
+            </form>
+        </div>
+    </div>
+</div>
+</div>

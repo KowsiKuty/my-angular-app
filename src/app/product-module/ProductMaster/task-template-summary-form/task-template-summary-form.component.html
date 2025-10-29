@@ -1,0 +1,271 @@
+<div class="crmcontent">
+    <label class="heading">
+        {{title}}
+    </label>
+
+    <div *ngIf="showSummary ;else showForm">
+        <form [formGroup]="searchForm">
+            <mat-grid-list [cols]="4" rowHeight="100px">
+                <mat-grid-tile class="xoverflow">
+                    <mat-label>Name
+                        <br>
+                        <mat-form-field>
+                            <input matInput formControlName="template_name" [placeholder]="'Credit Card Tasks'">
+                        </mat-form-field>
+                    </mat-label>
+                </mat-grid-tile>
+                <!-- <mat-grid-tile class="xoverflow">
+                    <mat-label>No of Tasks
+                        <br>
+                        <mat-form-field>
+                            <input matInput formControlName="count" [placeholder]="'10'">
+                        </mat-form-field>
+                    </mat-label>
+                </mat-grid-tile> -->
+                <mat-grid-tile class="xoverflow">
+                    <mat-label>Actions
+                        <br>
+                        <mat-button-toggle-group style="margin-top:5%;align-items: center;height:2em">
+                            <mat-button-toggle (click)="searchSummary()">
+                                <mat-icon>search</mat-icon>
+                            </mat-button-toggle>
+                            <mat-button-toggle (click)="createform()">
+                                <mat-icon>add_box</mat-icon>
+                            </mat-button-toggle>
+                            <mat-button-toggle (click)="searchForm.reset()">
+                                <mat-icon> clear_all</mat-icon>
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </mat-label>
+                </mat-grid-tile>
+            </mat-grid-list>
+        </form>
+        <!-- <table class="table table-bordered">
+            <thead class="table_header">
+                <th>S.No</th>
+                <th>Task Name</th>
+                <th>No of Tasks</th>
+                <th>Update</th>
+                <th>Remove</th>
+            </thead>
+        </table> -->
+
+        <mat-table class="table table-bordered" #table [dataSource]="dataSource">
+            <!-- Position Column -->
+            <!-- <ng-container matColumnDef="ind">
+                <mat-header-cell *matHeaderCellDef> S.No </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.ind}} </mat-cell>
+            </ng-container> -->
+            <ng-container matColumnDef="template_name">
+                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.template_name}}</mat-cell>
+            </ng-container>
+            <!-- <ng-container matColumnDef="product_id">
+                <mat-header-cell *matHeaderCellDef>Product</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.product_id}}</mat-cell>
+            </ng-container> -->
+            <!-- <ng-container matColumnDef="no_of_task">
+                <mat-header-cell *matHeaderCellDef>No of Task</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.product_id}}</mat-cell>
+            </ng-container> -->
+
+            <ng-container matColumnDef="view">
+                <mat-header-cell *matHeaderCellDef>View</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button mat-icon-button (click)="openModal(element)">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="update">
+                <mat-header-cell *matHeaderCellDef>Update</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button mat-icon-button (click)="editTask(element.id)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="delete">
+                <mat-header-cell *matHeaderCellDef>Remove</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button mat-icon-button (click)="removeTemplate(element.id)">
+                        <mat-icon>delete_forever</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+
+            <mat-header-row class="table_header" *matHeaderRowDef="ColumnList"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ColumnList;"></mat-row>
+        </mat-table>
+        <mat-paginator #paginator [length]="100" [pageSize]="10" showFirstLastButtons="true"
+            (page)="onChangePage($event)">
+        </mat-paginator>
+    </div>
+
+    <ng-template #showForm>
+
+        <form [formGroup]="templateForm">
+            <mat-grid-list [cols]="3" rowHeight="100px">
+
+                <mat-grid-tile>
+                    <section>
+                        <mat-label class="subheading">Template Name</mat-label><br>
+                        <mat-form-field>
+                            <input formControlName="template_name" matInput [placeholder]="'Loan Process'">
+                        </mat-form-field>
+                    </section>
+                </mat-grid-tile>
+
+                <mat-grid-tile>
+                    <section>
+                        <mat-label class="subheading" style="margin-left:6%">Description</mat-label>
+                        <br>
+                        <mat-form-field style="margin-left:6%">
+                            <input formControlName="details" matInput [placeholder]="'Enter Desc...'">
+                        </mat-form-field>
+                        <br>
+                    </section>
+
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <!-- <section>
+                        <mat-label class="subheading">Template Type</mat-label>
+                        <br>
+                    </section> -->
+
+                </mat-grid-tile>
+
+            </mat-grid-list>
+            <hr>
+            <section class="row">
+
+                <div class="col-md-4">
+                    <mat-label class="subheading"> Activity Name
+                    </mat-label>
+                    <br>
+                    <mat-form-field>
+                        <input matInput #activityName [placeholder]="'Activity 1'">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-5">
+                    <td>
+                        <mat-label class="subheading" style="margin-left:-24%">Activity Details
+                        </mat-label>
+                        <br>
+
+                        <mat-form-field style="width:33em;margin-left:-24%">
+                            <textarea rows="1" cols="1" matInput [placeholder]="'Activity Detail 1'" #activity
+                                autocomplete="off" required></textarea>
+                        </mat-form-field>
+                    </td>
+
+                </div>
+
+                <div class="col-md-3">
+                    <mat-label class="subheading">Duration</mat-label>
+                    <br>
+                    <mat-form-field style="width:60px;">
+                        <input type="number" #duration matInput [placeholder]="'1'">
+                    </mat-form-field>
+
+                    <button (click)="createTask()" mat-icon-button>
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </section>
+
+            <div cdkDropList (cdkDropListDropped)="drop($event)" formArrayName="task" class="yoverflow"
+                style="max-height:20em">
+                <mat-label class="subheading">Activities List
+                </mat-label>
+                <div cdkDrag cdkDragHandle style="cursor:move"
+                    *ngFor="let tasks of templateForm.get('task')['controls'] ;index as ind" [formGroupName]="ind">
+
+                    <mat-form-field>
+                        <input formControlName="name" readonly matInput>
+                    </mat-form-field>
+                    <mat-form-field style="width:500px;margin-left: 5%;">
+                        <input formControlName="details" readonly matInput [placeholder]="'Activity Detail 1'">
+                    </mat-form-field>
+
+                    <span style="margin-left:20px">{{tasks.value.duration}} Days</span>
+
+
+                    <button data-toggle='modal' data-target="#activityModal" (click)="getActivity(ind)" mat-icon-button>
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="removeTask(ind)">
+                        <mat-icon> clear</mat-icon>
+                    </button>
+
+                    <br>
+                </div>
+            </div>
+
+
+            <div style="text-align:center;margin-top: 1%;margin-bottom: 1%;">
+
+                <button type="button" class="btn btn-light" style="border-radius: 7px;margin-left: 10px;
+                                                border-color: black;
+                                                background-color: white;"
+                    (click)="showSummary = true;title=summary">Cancel</button>
+
+                <button type="button" (click)="submitdata()" style="border-radius: 10px;margin-left: 10px;
+                                            border-color: #f5c68b; background-color: #f5c68b;"
+                    class="btn btn-light">Submit</button>
+
+            </div>
+
+
+        </form>
+
+    </ng-template>
+</div>
+<!-- Edit Sub Task -->
+<div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title heading">Edit Activity</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="col-md-9">
+                    <mat-label class="subheading">Activity Name
+                    </mat-label>
+                    <br>
+                    <mat-form-field style="width: 31em">
+                        <input [(ngModel)]="updateActivityName" matInput [placeholder]="'Activity1'">
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-9">
+                    <mat-label class="subheading">Enter Activity
+                    </mat-label>
+                    <br>
+                    <mat-form-field style="width: 31em">
+                        <input [(ngModel)]="updateActivity" matInput [placeholder]="'Activity Detail 1'">
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-3">
+                    <mat-label class="subheading">Duration</mat-label>
+                    <br>
+                    <mat-form-field style="width:60px;margin-left: 2%;">
+                        <input [(ngModel)]="updateDuration" type="number" matInput [placeholder]="'2.5'">
+                    </mat-form-field>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" #activityModal class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" (click)="updateActivities()" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

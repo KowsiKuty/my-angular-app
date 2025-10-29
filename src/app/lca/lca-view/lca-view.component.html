@@ -1,0 +1,313 @@
+<mat-card>
+
+      <h2 style="margin-left: 20px; font-family:'Times New Roman'; font-weight:bold;">LCA Header</h2>
+     
+<!-- <div class="row"> -->
+    <tr>
+        <td><div style="color: #808080; margin-left: 20px;"> LCA Raised date :</div></td>
+        <td><div style="color: black;">{{listlcadetails?.lcatransactiondate | date:'dd-MMM-yyyy'}} </div></td>
+        <td><div style="color: #808080;margin-left:20%"> Branch :</div></td>
+        <td><div style="color: black;">{{listlcadetails?.lcabranch?.code}}-{{listlcadetails?.lcabranch?.name}} </div></td>
+    </tr>
+    <tr>
+        <td>
+         <p style="color: #808080;margin-left: 35px;"> Commotidy Name :<span
+            style="color: black;margin-left: 22px;">{{listlcadetails?.commodity_name}}
+        </span></p>
+        </td>
+        <td>
+        <p style="color: #808080;margin-left: 30%;"> Employee :<span
+            style="color: black;margin-left: 22px;">{{listlcadetails?.lcatransactiondate}}
+        </span></p>
+        </td>
+    </tr>   
+    <tr>
+        <td>
+        <p style="color:#808080;margin-left: 20px;"><b>File details</b></p>
+        <span matTooltip="View" class=" fa fa-eye create "
+        style="color: green;cursor: pointer;margin-left: 20px;" data-target="#showattachmentpopup" data-toggle="modal"></span>  
+        </td>
+    </tr>
+ 
+   
+
+<br><br>
+<mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+      <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">LCA Details</h2>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div class="table-responsive">
+    <table class="table  table-bordered" style="width: 99%;margin-top: 10px;">
+    <thead class="table_header" fixed-header style="background: #a7e4ab;">
+        <tr>
+            <th style="width: 80px;">S.No</th>
+            <th style="text-align: center;">LCA Type</th>
+            <!-- <th style="text-align: center;width: 120px;">From Date</th>
+            <th style="text-align: center;">To Date</th> -->
+            <th style="text-align: center;">Amount</th>
+            <th style="text-align: center;">Category</th>
+            <th style="text-align: center;">Sub Category</th>
+            <th style="text-align: center;">GL No</th>
+            <th style="text-align: center;">BS</th>
+            <th style="text-align: center;">CC</th>
+            <th style="text-align: center;">Purpose</th>
+            <ng-container *ngFor="let column of dynamiccolumns">
+                <th style="text-align: center;">{{ column.column_name }}</th>
+                
+              </ng-container>
+        </tr>
+    </thead>
+    <tbody> 
+        <tr *ngFor="let cc of tableviewdata; index as i;">
+            <td style="text-align: center;">
+                {{i+1}}
+            </td>
+            <td>
+                {{lcamode}}
+            </td>
+            <td>
+                {{cc?.lcadamount}}
+            </td>
+            <td>
+                {{cc?.lcadcat_code?.name}}
+            </td>
+            <td>
+                {{cc?.lcadsubcat_code?.name}}
+            </td>
+            <td>
+                {{cc?.lcadglno}}
+            </td>
+            <td>
+                {{cc?.lcadbs_code?.name}}
+            </td>
+            <td>
+                {{cc?.lcadcc_code?.name}}
+            </td>
+            <td  matTooltip="{{ cc?.lcaddescription }}">
+                {{cc?.lcaddescription}}
+            </td>
+            <ng-container *ngFor="let column of dynamiccolumns">
+                <td>{{ column?.column_value }}</td>
+              </ng-container>
+          
+        </tr>
+    </tbody>
+    </table>
+<div *ngIf="tableviewdata?.length==0"  style="margin-left: 40%;">No Records Found...</div>
+
+<div class="row" *ngIf="isdetpage" style="width: 85%;">
+
+<div class="col-sm-3" style="margin-bottom: 0%;font-size: small;text-align: right;margin-top: 18px;left: -16%;font-weight:bold">
+    Page: {{presentpagedet}}
+</div>
+<div  class="col-sm-9" style="margin-bottom: 0%;font-size: small;text-align: right;left: 20%;">
+       
+    <mat-paginator  
+                                (page)="pophandlePageEvent($event)"
+                                [length]="length_det"
+                                [pageSize]="pageSize_det"
+                                [showFirstLastButtons]="showFirstLastButtons"
+                                [pageSizeOptions]="pageSizeOptions"
+                                [pageIndex]="pageIndex"
+                                [hidePageSize]="true"
+                                aria-label="Select page">
+                            </mat-paginator>
+                           
+</div>
+</div>
+
+</div>
+</mat-expansion-panel>
+<br><br>
+<!-- <mat-expansion-panel [expanded]="beneficiarydata.lenght>1"> -->
+<mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+      <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">Beneficiary Details</h2>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div class="table-responsive">
+    <table class="table  table-bordered" style="width: 99%;margin-top: 10px;">
+    <thead class="table_header" fixed-header style="background: #a7e4ab;">
+        <tr>
+            <th style="width: 80px;">S.No</th>
+            <th style="width: 80px;">PayMode</th>
+            <th style="text-align: center;width: 120px;">Account No</th>
+            <th style="text-align: center;">Bank Name</th>
+            <th style="text-align: center;">Branch Name</th>
+            <th style="text-align: center;">IFSC Code</th>
+            <th style="text-align: center;">Beneficiary Name</th>
+            <th style="text-align: center;">Amount</th>
+        </tr>
+    </thead>
+    <tbody> 
+        <tr *ngFor="let cc of beneficiarydata; index as i;">
+            <td>
+                {{i+1}}
+            </td>
+             <td style="text-align: center;">
+                ERA
+             </td>
+            <td style="text-align: center;">
+                {{cc.account_number}}
+            </td>
+            <td style="text-align: center;">
+                {{cc?.bank_name}}
+            </td>
+            <td style="text-align: center;">
+                {{cc?.bankbranch?.bank?.name}}
+            </td>
+            <td style="text-align: center;">
+                {{cc?.bankbranch?.ifsccode}}
+            </td>
+            <td style="text-align: center;">
+                {{cc?.beneficiary_name}}
+            </td>
+            <td style="text-align: right;">
+                {{amt}}
+            </td>
+           
+        </tr>
+    </tbody>
+</table>
+<div *ngIf="beneficiarydata?.length==0" style="margin-left: 40%;">No Records Found...</div>
+
+<div class="row" *ngIf="isdetpage" style="width: 85%;">
+
+<div class="col-sm-3" style="margin-bottom: 0%;font-size: small;text-align: right;margin-top: 18px;left: -16%;font-weight:bold">
+    Page: {{presentpagedet}}
+</div>
+<div  class="col-sm-9" style="margin-bottom: 0%;font-size: small;text-align: right;left: 20%;">
+       
+    <mat-paginator  
+                                (page)="pophandlePageEvent($event)"
+                                [length]="length_det"
+                                [pageSize]="pageSize_det"
+                                [showFirstLastButtons]="showFirstLastButtons"
+                                [pageSizeOptions]="pageSizeOptions"
+                                [pageIndex]="pageIndex"
+                                [hidePageSize]="true"
+                                aria-label="Select page">
+                            </mat-paginator>
+                           
+</div>
+</div>
+
+   </div>
+</mat-expansion-panel>
+<br><br>
+<div *ngIf="!eyecrete">
+
+
+<td>
+  
+    <button type="button" class="btn btn-light" style="border-radius:7px;
+    border-color: black; margin-bottom: 20px;margin-left: 550px;
+    background-color: white;" (click)="filepopback()">Back</button>
+
+</td>
+</div>
+<div *ngIf="eyecrete" class="d-flex align-items-center">
+    <form [formGroup]="apprejform" class="d-flex align-items-center">
+      <div style="margin-left: 250px;">
+        <mat-form-field style="width:200px;">
+          <mat-label>Remarks<label style="color:red">*</label></mat-label>
+          <input matInput formControlName="remark" autocomplete="off">
+        </mat-form-field>
+      </div>
+      <button type="button" style="border-radius:40px;margin-left: 50px;" class="btn btn-outline-primary" (click)="Approve()">
+        Approve
+      </button>
+  
+      <button type="button" style="border-radius:40px;margin-left: 30px;" class="btn btn-outline-danger" (click)="Reject()">
+        Reject
+      </button>
+   
+  
+      <button type="button" class="btn btn-outline-primary" style="border-radius:40px; margin-left: 30px;" (click)="filepopappback()">
+        Back
+      </button>
+    </form>
+  </div>
+  
+
+</mat-card>
+
+
+<div >
+    <div class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true"
+      id="showattachmentpopup">
+      <div class="modal-dialog modal-xl " style="width: 70%;">
+        <div class="modal-content">
+          <div class="modal-header" style="background: rgba(23, 204, 23, 0.288);">
+            <h2 class="modal-title" style="color:black ;text-align: center;font-weight: bold;">File Details</h2>
+            <button type="button" class="close" data-dismiss="modal" #closedbuttons aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+  
+          <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 80%;">
+            <div class="container">
+              <div class="row">                  
+            
+                <!-- <h2 style="margin-left: 1px; font-family:'Times New Roman'; font-weight:bold;">File Details</h2> -->
+                      
+                      <div class="table-responsive">
+                        <table class="table  table-bordered" style="width: 99%;margin-top: 10px;">
+                        <thead class="table_header" fixed-header style="background: #a7e4ab;">
+                            <tr>
+                                <th style="width: 80px;">S.No</th>
+                                <th style="text-align: center;">File Name</th>
+                                <th style="text-align: center;">View</th>
+                                <th style="text-align: center;">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let cc of fileDetailsArray;index as i">
+                                <td style="text-align: center;">{{i+1}}</td>
+                                <td style="text-align: center;">{{cc?.file_name}}</td>
+                                <td style="text-align: center;">
+                                    <span matTooltip="View" class=" fa fa-eye create "
+                                    style="color: green;cursor: pointer;"data-target="#viewfile" data-toggle="modal" (click)="downloadfiles(cc)"></span>  
+                                </td>
+                                <td style="text-align: center;" (click)="downloadfiles(cc)">
+                                    <span matTooltip="Download">
+                                      <mat-icon>download</mat-icon>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr *ngIf="fileDetailsArray?.length == 0">
+                                No Records Found...
+                            </tr>
+                        </tbody>
+                        </table>
+                     </div>
+                 
+                 
+              </div>
+            </div>
+  
+  
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div #myModal id="viewfile" class="modal bd-fileupload-modal-lg" aria-labelledby="myLargeModalLabels"
+    tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl pordes pordes" data-dismiss="modal">
+        <div class="modal-content">
+            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button> -->
+            <button type="button" class="btn btn-outline-primary "  data-dismiss="modal">Close</button>
+            <div class="modal-body">
+                <img src="{{jpgUrls}}" class="img-responsive hundr" >
+
+            </div>
+        </div>
+    </div>
+</div>

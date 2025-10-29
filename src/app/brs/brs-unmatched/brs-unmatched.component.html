@@ -1,0 +1,131 @@
+<div >
+    <form [formGroup]="docsummary">
+    <div class="row" style="margin-top: 2%;margin-left: 1%;width: 99%;">
+       <div class="col-md-2" style="margin-right:3%;">
+           <mat-form-field  appearance="outline" style="width:auto">
+             <mat-label>Start Date<label style="color: red;">*</label></mat-label>
+             <input matInput formControlName="summarydate" [matDatepicker]="picker1" >
+             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+             <mat-datepicker #picker1></mat-datepicker>
+           </mat-form-field>
+        </div>
+        <div class="col-md-2" style="margin-right:3%;">
+            <mat-form-field  appearance="outline" style="width:auto">
+              <mat-label>End Date<label style="color: red;">*</label></mat-label>
+              <input matInput formControlName="summarydate2" [matDatepicker]="picker2" >
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+         </div>
+        <div  class="col-md-2">
+            <mat-form-field appearance="outline">
+                <mat-label>Type<label style="color: red;">*</label></mat-label>
+                <mat-select placeholder="" appearance="outline" formControlName="summarytype" (selectionChange)="uploadtype($event)">
+                <mat-option *ngFor="let obj of typeValues" [value]="obj.id">
+                  {{ obj.viewoption }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div>
+       <div  class="col-md-2">
+        <mat-form-field (click)="brachserach()" appearance="outline" style="width:auto">
+            <mat-label>Branch</mat-label>
+            <input matInput  formControlName="branch" [matAutocomplete]="branch">
+            <mat-autocomplete #branch="matAutocomplete" [displayWith]="displaybranch">
+                <mat-option *ngFor="let data of brscode" [value]="data">
+                    {{data.branch}}
+                
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div  class="col-md-2">
+        <mat-form-field (click)="brachserach()" appearance="outline" style="width:auto">
+            <mat-label>GL ACCNO</mat-label>
+            <input matInput  formControlName="GLACCNO" [matAutocomplete]="glno">
+            <mat-autocomplete #glno="matAutocomplete" [displayWith]="displaygl">
+                <mat-option *ngFor="let data of brscode" [value]="data">
+                    {{data.gl_code}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+      </div>
+       <div  class="col-md-1" style="margin-right:2%;margin-top:0.5%; margin-left: 2%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -30%;" type="submit"  (click)="summary_search()">Search</button>
+       </div>
+       <div  class="col-md-1" style="margin-top:0.5%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -50%;" type="submit"  (click)="summary_clear()">Clear</button>
+       </div>
+       <div  class="col-md-1">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 14.5%;margin-left: -30%;" type="submit"  (click)="summary_report()">Report</button>
+       </div>
+    </div>
+   </form>
+</div>
+<div class="mat-elevation-z8" class="table-row">
+    <div style="overflow-x: auto; max-height: 500px;margin-top:2%;" infiniteScroll [infiniteScrollDistance]="1" (scrolled)="onscroll()" [scrollWindow]="false">
+        <div style=" margin-left: 4%;">
+            <table class="table table-bordered mat-elevation-z8" id="boxlevel" style="margin-left: -2%;">
+                <thead class="table_header" style="position: sticky;top: 0;z-index: 1;text-align: center;">
+                    <th >S.No</th>
+                    <th >Branch</th>
+                    <th >Gl Code</th>
+                    <th >Debit Amount</th>
+                    <th >Credit Amount</th>
+                    <th >Type</th>
+                    <th *ngIf="typeselect == 2">Action<mat-checkbox style="margin-left: 15%;" [(ngModel)]="selectAll" (change)="selectAllRows()"></mat-checkbox></th>   
+                </thead>
+                <tbody *ngFor="let sum of unmatched_summery; let i=index" >
+                  <tr  [ngStyle]="(sum.color_id == 1) ? {'background-color': '#E0F4FF'} : (sum.color_id == 2) ? {'background-color': '#E4EFE7'}: (sum.color_id == 3) ? {'background-color': 'aliceblue'}: (sum.color_id == 4) ? {'background-color': '#F5EFE7'}: (sum.color_id == 5) ? {'background-color': '#F6DFEB'}: {}">
+                    <td style="text-align: center;">{{i+1}}</td>
+                    <td style="text-align: center;">{{sum.branch}}</td>
+                    <td style="text-align: center;">{{sum.gl_code}}</td>
+                    <td style="text-align: right;">{{(sum.d_or_c == "D" ? (sum.amount | currency:"INR")  : "" )}}</td>
+                    <td style="text-align: right;">{{(sum.d_or_c ==  "C" ? (sum.amount | currency:"INR") : "")}}</td>
+                    <td style="text-align: center;">{{(sum.flag == 1 ? "WISEFIN":"EXTERNAL")}}</td> 
+                    <td style="text-align: center;" *ngIf="typeselect == 2"><mat-checkbox [(ngModel)]="sum.isSelected" (change)="checkboxClicked(sum)"></mat-checkbox></td> 
+                </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!data_found" style="text-align: center;">Data Not Found..</p>
+            </div>
+            <!-- <div style="font-size: small;text-align:right;margin-right: 1%;">
+                <button mat-icon-button [disabled]="has_previoustab === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpagetab}}
+                <button mat-icon-button [disabled]="has_nexttab === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+<div >
+    <form [formGroup]="Actionsummary">
+    <div class="row" style="margin-top: 2%;margin-left: 1%;width: 99%;">
+       <div  class="col-md-2">
+        <mat-form-field (click)="arsdroupdowntype()" appearance="outline" style="width:auto">
+            <mat-label>Actions<label style="color: red;">*</label></mat-label>
+            <input matInput  formControlName="arstype" [matAutocomplete]="action">
+            <mat-autocomplete #action="matAutocomplete" [displayWith]="displayaction" >
+                <mat-option *ngFor="let data of arstype" [value]="data" >
+                    {{data.type}}
+                
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="col-md-2">
+        <mat-form-field>
+            <textarea matInput placeholder="Remark"  formControlName="description"></textarea>
+        </mat-form-field>
+      </div>
+
+       <div  class="col-md-1" style="margin-right:2%;margin-top:0.5%; margin-left: 2%;">
+        <button class="btn btn-outline-success" style="border-radius:25px;font-size: 95%;margin-top: 6%;margin-left: -30%;" type="submit"  (click)="Actionsubmit()">Submit</button>
+       </div>
+    </div>
+   </form>
+</div>

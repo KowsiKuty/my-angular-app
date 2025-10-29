@@ -1,0 +1,1921 @@
+<section class="screen-padding screen-lm">
+    <div class="comp-header">
+      <p  class="comp-header-p">
+        <i class="fa fa-arrow-left back-button" (click)="routeback()"></i>
+        <span>Proofing Mapping</span>
+      </p>
+    </div>
+    <div class="filter-flex-wrap mt-4">
+      <div class="filter-aling">
+        <lib-vs-search-cmp class="npm-mat-edit" [SearchArr]="mapsearch" (dataoutput)="getautoknockoff($event)"
+          [SeparateReset]="true" (ResetOutput)="ClearAll($event)" [DefaultNoreset]="true" [ButtonArr]="rulebutton">
+        </lib-vs-search-cmp>
+      </div>
+  
+      <!-- <div class="col-md-3" style="margin-left: -2%;">
+              <mat-label>From Date</mat-label><br>
+              <mat-form-field class="matformfieldstyle datewidth" appearance="outline">
+                  <input readonly matInput [matDatepicker]="picker1" [(ngModel)]="from_Date"
+                      (dateChange)="fromDatechange($event.value)" class="matformfieldinputstyle">
+                  <mat-datepicker-toggle matSuffix class="maticonsize" [for]="picker1">
+                  </mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+              </mat-form-field>
+          </div> -->
+      <!-- 
+      <app-account-selection-dropdown></app-account-selection-dropdown>
+  
+      <div class="npm-mat-edit">
+        <mat-form-field appearance="outline">
+          <mat-label>Proofing Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            [(ngModel)]="selectedDate"
+            disabled="true"
+          />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+  
+      <div class="npm-mat-edit">
+        <mat-form-field appearance="outline">
+          <mat-label>Filter1</mat-label>
+          <mat-select
+            [(value)]="mapfiltervalue"
+            (selectionChange)="mapfilterchanged()"
+          >
+            <mat-option
+              *ngFor="let ddlist of transactionMapFilter"
+              [value]="ddlist"
+              >{{ ddlist }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+  
+      <div class="npm-mat-edit">
+        <mat-form-field appearance="outline">
+          <mat-label>Description Search</mat-label>
+          <input matInput [formControl]="partially" />
+        </mat-form-field>
+      </div>
+  
+      <div class="npm-mat-edit">
+        <mat-form-field appearance="outline">
+          <mat-label>Reference No</mat-label>
+          <input matInput [formControl]="unmap" />
+        </mat-form-field>
+      </div>
+  
+      <div class="mt-2">
+        <mat-radio-group [(ngModel)]="selectedType">
+          <mat-radio-button
+            *ngFor="let n of typelist"
+            [value]="n.id"
+            (click)="accountype(n.id, $event)"
+            style="margin-left: 10px"
+          >
+            {{ n.name }}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div> -->
+  
+      <!-- <div style="display: flex; align-items: center; gap: 16px"> -->
+      <!-- <button
+          matTooltip="search"
+          class="btn btn-outline-success"
+          style="border-radius: 40px"
+          (click)="getautoknockoff()"
+          aria-label="Search"
+        >
+          Search
+        </button> -->
+  
+      <!-- <button
+          matTooltip="clear"
+          class="btn btn-outline-success"
+          style="border-radius: 40px"
+          (click)="ClearAll($event)"
+        >
+          Clear
+        </button> -->
+      <!-- </div> -->
+  
+      <!-- <button mat-fab matTooltip="ageing report"
+                          style="border-radius:40px;margin-left:15px;background-color: white;"
+                          routerLink="/proofing/ar">Ageing</button> -->
+  
+      <!-- <div class="col-md-2" style="margin-top: 1rem;
+          margin-left: -14%;"> -->
+      <!-- <button mat-fab [matMenuTriggerFor]="menu" matTooltip="download list"  
+              style="border-radius:40px;margin-left:15px;background-color: white;"><mat-icon>get_app</mat-icon></button> -->
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item style="font-size: 12px" (click)="downloadxl(1)">
+          Auto knockoff
+        </button>
+        <button mat-menu-item style="font-size: 12px" (click)="downloadxl(2)">
+          Partially Mapped
+        </button>
+        <button mat-menu-item style="font-size: 12px" (click)="downloadxl(3)">
+          unmapped
+        </button>
+        <button mat-menu-item style="font-size: 12px" (click)="downloadxl(4)">
+          Partially & unmapped
+        </button>
+        <button mat-menu-item style="font-size: 12px" (click)="downloadxl(5)">
+          All
+        </button>
+      </mat-menu>
+      <!-- </div> -->
+  
+      <button class="btn btn-outline-dark" type="submit" *ngIf="displaydownload == true" style="border-radius: 40px"
+        matTooltip="Download" (click)="downloadexlsearch()">
+        <span class="fa fa-download"> </span>
+      </button>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <mat-card *ngIf="closingbalanceshown" style="width: 100%; margin-top: 16px">
+        <div class="labelpatch">
+          <div>
+            <p>
+              <b>GL Balance: </b>
+              <span>{{ closingbalance | number : "1.2-2" }}</span>
+            </p>
+          </div>
+          <div>
+            <p>
+              <b>Net Balance Unmapped: </b>
+              <span>{{ unmapped_net_balance | number : "1.2-2" }}</span>
+            </p>
+          </div>
+          <div>
+            <p>
+              <b>Net Balance Partiallymapped: </b>
+              <span>{{ partially_net_balance | number : "1.2-2" }}</span>
+            </p>
+          </div>
+          <div>
+            <p>
+              <b>Total Unmapped Balance: </b>
+              <span>{{ total_unmapped_balance | number : "1.2-2" }}</span>
+            </p>
+          </div>
+        </div>
+      </mat-card>
+      <!-- <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 10px;
+        "
+      >
+        <button
+          matTooltipClass="custom-tooltip"
+          [matTooltipPosition]="'above'"
+          style="margin-left: 75px"
+          matTooltip="Click To Initiate Auto Knockoff"
+          (click)="knockoff()"
+          style="border-radius: 40px"
+          class="btn btn-outline-success"
+        >
+          Knockoff
+          <mat-icon matSuffix [ngClass]="iconclass" [class]="iconcondiction === true ? 'autoicon icnwithname' : 'icnwithname' "
+            >autorenew
+          </mat-icon>
+        </button>
+        
+      <button class="btn btn-outline-success"  style="border-radius: 40px" (click)="rule_update()"    matTooltipClass="custom-tooltip"
+      [matTooltipPosition]="'above'"   matTooltip="Click To Proceed Rule Update">
+        RULE_UPDATE
+       <span *ngIf="showdisableicon"> <mat-icon matSuffix [ngClass]="iconclass" [class]="iconcondiction === true ? 'autoicon icnwithname' : 'icnwithname' "
+        >autorenew
+      </mat-icon></span>
+      <span *ngIf="disableshowicon" ><i class="fa fa-upload" aria-hidden="true"></i></span>
+        
+      </button>
+      </div> -->
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color: #DDEFDD;">
+            <p class="modal-title mb-0 header_font" id="exampleModalLabel">
+              Knock-Off Status
+            </p>
+  
+            <button type="button" class="close" data-dismiss="modal" #closeaddpopup aria-label="Close"
+              (click)="closepopup()">
+              <i aria-hidden="true">&times;</i>
+            </button>
+          </div>
+  
+          <div class="modal-body">
+          <div class="resetalign">
+           <div>
+            GL No: <span style="font-weight: bold">{{ accoutnumber }}</span>
+           </div>
+            <div>
+              <button type="button" (click)="refresh()" matTooltip="Refresh" class="btn btn-outline-success"
+              style="border-radius: 40px;">
+              <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+            </div>
+          </div>
+            <lib-vs-cbox-summary [SummaryDetails]="statusData" [SummaryApiObj]="statussummary"></lib-vs-cbox-summary>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal fade" id="exampleModalrule" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color: #DDEFDD;">
+            <p class="modal-title mb-0 header_font" id="exampleModalLabel">
+              Rule update Processing..
+            </p>
+  
+            <button type="button" class="close" data-dismiss="modal" #closeaddpopup aria-label="Close"
+              (click)="closepopupprocess()">
+              <i aria-hidden="true">&times;</i>
+            </button>
+          </div>
+  
+          <div class="modal-body">
+            <div class="resetalign">
+              <div>
+                GL No: <span style="font-weight: bold">{{ accoutnumber }}</span>
+              </div>
+              <div>
+                <button type="button" (click)="refresh1()" matTooltip="Refresh" class="btn btn-outline-success"
+                  style="border-radius: 40px;">
+                  <i class="fa fa-refresh" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            
+            
+            <lib-vs-cbox-summary [SummaryDetails]="statusData" [SummaryApiObj]="statussummary"></lib-vs-cbox-summary>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div *ngIf="balanceObject">
+        <div class="col-md-3">
+          <div class="card padding" style="height: 50px; margin-top: -15px">
+            Sum of Debit <br />
+            <label class="fontbold">
+              {{ balanceObject?.dayentry_sumdebitamt | number : "1.2-2" }}
+            </label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card padding" style="height: 50px; margin-top: -15px">
+            Sum of Credit <br />
+            <label class="fontbold">
+              {{ balanceObject?.dayentry_sumcreditamt | number : "1.2-2" }}
+            </label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card padding" style="height: 50px; margin-top: -15px">
+            Opening Balance <br />
+            <label class="fontbold">
+              {{ balanceObject?.dayentry_openingbalc }}
+            </label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card padding" style="height: 50px; margin-top: -15px">
+            Closing Balance <br />
+            <label class="fontbold">
+              {{ balanceObject?.dayentry_closingbalc }}
+            </label>
+          </div>
+        </div>
+      </div>
+  
+      <!-- <mat-expansion-panel *ngIf="showautoknockoff && autoknocklist?.length" (opened)="showautoknockbtn = true"
+              (closed)="panelclosed(autoarrayname,autodiv)">
+              <mat-expansion-panel-header>
+                  <section class="row" style="width:100%">
+                      <section class="col-md-3">
+                          <mat-label class="exp-header">{{titles.title1 | titlecase}}</mat-label>
+                      </section>
+                      <section class="col-md-6" style="text-align:center;">
+                          <button matTooltipClass="custom-tooltip" [matTooltipPosition]="'left'"
+                              (mouseenter)="iconclass = 'rotate'" *ngIf="showautoknockbtn" (mouseleave)="iconclass = null"
+                              matTooltip="Click To Initiate Auto Knockoff" (click)="knockoff()"
+                              class="btn btn-outline-success">
+                              Knockoff
+                              <mat-icon matSuffix class="autoicon icnwithname" [ngClass]="iconclass">autorenew
+                              </mat-icon>
+                          </button>
+                      </section>
+                      <section class="col-md-3">
+                          <mat-label class="exp-header">
+                              Total : <b>
+                                  {{autoknocklist?.length | number}}
+                              </b>
+                          </mat-label> -->
+      <!-- <button mat-icon-button (click)="downloadxl(autoarrayname)">
+                              <mat-icon style="vertical-align:sub;color:blue;margin-left:10%">download</mat-icon>
+                          </button> -->
+  
+      <!-- </section>
+                  </section>
+  
+              </mat-expansion-panel-header>
+  
+              <div> -->
+      <!-- <mat-checkbox color="primary" [(ngModel)]="autohighlight">
+                      Highlight
+                  </mat-checkbox> -->
+  
+      <!-- <div class="tableFixHead" #autodiv (scroll)="tablescrolled($event,autoarrayname)">
+                      <table class="table table-bordered">
+                          <thead class="table_header tableHeadFixed">
+                              <tr>
+                                  <th class="left">S.No</th>
+                                  <th class="left">Age (days)</th>
+                                  <th class="left">
+                                          <mat-form-field style="margin-bottom:-6%;width:70%"> -->
+      <!-- <mat-label>{{headerarray[0]?.column_name}}</mat-label> -->
+      <!-- <mat-label class="font-weight-bold">Cr NO</mat-label>
+                                              <input matInput [(ngModel)]="refnoinput" placeholder="Cr No">
+                                          </mat-form-field> -->
+      <!-- </th>
+                                  <th class="left"> -->
+      <!-- <mat-form-field style="margin-bottom:-6%;width:70%">
+                                          <mat-label>{{headerarray[1].column_name}}</mat-label>
+                                      </mat-form-field> -->
+      <!-- <label>Date</label>
+                                      {{headerarray[1]?.column_name}}
+                              </th>
+                              <th class="left">
+                                  <mat-form-field style="margin-bottom:-6%;width:70%"> -->
+      <!-- <mat-label>{{headerarray[2]?.column_name}}</mat-label> -->
+      <!-- <mat-label class="font-weight-bold">Description</mat-label>
+                                      <input matInput [(ngModel)]="autoinput" placeholder="Description">
+                                  </mat-form-field>
+                              </th>
+                          <th class="left">
+                              <mat-form-field style="margin-bottom:-6%;width:70%"> -->
+      <!-- <mat-label>{{headerarray[3]?.column_name}}</mat-label> -->
+      <!-- <mat-label class="font-weight-bold">Debit</mat-label>
+                                  <input matInput [(ngModel)]="debitinput"  placeholder="Debit">
+                              </mat-form-field>
+                          </th>
+                      <th class="left">
+                          <mat-form-field style="margin-bottom:-6%;width:70%"> -->
+      <!-- <mat-label>{{headerarray[4]?.column_name}}</mat-label> -->
+      <!-- <mat-label class="font-weight-bold">Credit</mat-label>
+                              <input matInput [(ngModel)]="creditinput"  placeholder="Credit">
+                          </mat-form-field>
+                      </th>
+                                  <th class="center">
+                                      Select All
+                                      <mat-checkbox (change)="selectallcheckbox(autoarrayname)"
+                                          [(ngModel)]="autoselectall" color="primary">
+                                      </mat-checkbox>
+                                  </th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr *ngFor="let temp of autoknocklist | FilterPipe:[{name:'description',value:autoinput,length:autolength,highlight:autohighlight}] | FilterPipe:[{name:'reference_no',value:refnoinput,length:autolength,highlight:autohighlight}]
+                              | FilterPipe:[{name:'debitamount',value:debitinput,length:autolength,highlight:autohighlight}] | FilterPipe:[{name:'creditamount',value:creditinput,length:autolength,highlight:autohighlight}]|slice:0:autoendlimit; let i = index"
+                                 [ngStyle]="temp?.rowstyle"  >
+  
+                                  <td style="font-size: small;">
+                                      {{ i+1 }} 
+                                  </td> -->
+      <!-- <td data-toggle="modal" data-target="#myModal" data-placement="bottom"
+                                          title="Description" style="font-size: small;cursor: pointer;"
+                                          (click)="tableId(temp)">
+                                          {{ temp?.txn_branch }}</td> -->
+      <!-- <td style="font-size: small;">{{ temp?.user_id }}</td> -->
+      <!-- <td style="font-size: small;">{{temp.aging}}</td>
+                                  <td >
+                                      {{temp.reference_no}}
+                                  </td>
+                                  <td style="font-size: small;">{{ temp?.trans_date | date:'dd-MMM-yyyy' }}</td>
+                                  <td style="font-size: small;">{{ temp?.description}}
+                                  </td> -->
+      <!-- <td style="font-size: small;">{{ temp?.value_date |  date:'dd-MMM-yyyy' }} -->
+      <!-- </td>
+                                      <td style="font-size: small;">{{ temp?.ref_no }}</td>
+                                      <td style="font-size: small;">{{ temp?.user_ref }} & {{temp?.id}}</td>
+                                      <td style="font-size: small;" data-toggle="tooltip" data-placement="bottom"
+                                          title={{temp?.user_description}}>
+                                          {{ temp?.description}}
+  
+                                          <button style="float:right;margin-top: -2%;" *ngIf="temp.label"
+                                              matTooltip="Delete" mat-icon-button class="btn btn-outline-success"
+                                              (click)="OnUnMap(tS.Noemp,$event)">
+                                              <mat-icon>delete_outline</mat-icon>
+                                          </button>
+  
+  
+                                      </td> -->
+      <!-- <td style="font-size: small;text-align: right;">
+                                      <div *ngIf=" temp.creditamount=='0.0'">{{ temp.debitamount|
+                                          currency:"INR":'symbol':'0.2-6'}}
+                                      </div>
+                                  </td>
+  
+                                  <td style="font-size: small;text-align: right;">
+                                      <div *ngIf="temp.debitamount=='0.0'">{{ temp.creditamount|
+                                          currency:"INR":'symbol':'0.2-6'}}
+                                      </div>
+                                  </td>
+  
+  
+                                  <td style="text-align:center">
+                                      <div>
+                                          <mat-checkbox (change)="mapcheckboxchanged(temp,autoarrayname)"
+                                              [(ngModel)]="temp.selected" color="primary">
+                                          </mat-checkbox>
+                                      </div>
+                                      <ng-template #elseBlock>
+                                          <label>{{ temp.label ? temp.label.id: null}}</label>
+                                      </ng-template>
+                                  </td> -->
+      <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                          <div *ngFor="let attachment of temp.attachments" title="{{attachment.file_name }}"
+                              (click)="transactionDownload(attachment.file_id,attachment.file_name )"
+                              class=" btn-link"><i class="fa fa-download"></i>
+                              {{attachment.file_name }}
+                          </div>
+                      </td> -->
+      <!-- </tr>
+                          </tbody>
+                      </table>
+  
+                      <div *ngIf="!proofingList?.length && !autoknocklist?.length" style="text-align:center;">
+                          Sorry No data Found...!
+                      </div>
+                  </div><br>
+                  <div class="row col-md-12">
+                      <div class="col-md-3">
+                          <div class="card padding">
+                              Count of Debit <br>
+                              <label class="fontbold"> {{length_of_debit_autoknockoff }} </label>
+                          </div>
+          
+                      </div>
+                      <div class="col-md-3">
+                          <div class="card padding">
+                              Count of Credit <br>
+                              <label class="fontbold"> {{length_of_credit_autoknockoff }} </label>
+                          </div>
+          
+                      </div>
+                      <div class="col-md-3">
+          
+                          <div class="card padding">
+                              Sum of Debit <br>
+                              <label class="fontbold"> {{sum_of_debit_autoknockoff | number : '1.2-2' }} </label>
+                          </div>
+          
+                      </div>
+                      <div class="col-md-3">
+                          <div class="card padding">
+                              Sum of Credit <br>
+                              <label class="fontbold"> {{sum_of_credit_autoknockoff | number : '1.2-2' }} </label>
+                          </div>
+          
+                      </div>
+                  </div>
+              </div>
+  
+          </mat-expansion-panel> -->
+  
+      <mat-expansion-panel (closed)="panelclosed(pardiv, partialarrayname)"
+        *ngIf="showpartiallymapped && partiallymappedlist?.length">
+        <mat-expansion-panel-header>
+          <div class="expansion-head">
+            <h3>
+              {{ titles.title3 | titlecase }}
+            </h3>
+            <p>
+              Total: <b>{{ totalcount_partial | number }}</b>
+            </p>
+            <!-- Total: <b>{{ partiallymappedlist?.length | number }}</b> -->
+            <!-- <button mat-icon-button (click)="downloadxl(partialarrayname)">
+              <mat-icon style="vertical-align: sub; color: blue; margin-left: 10%"
+                >download</mat-icon
+              >
+            </button> -->
+          </div>
+        </mat-expansion-panel-header>
+        <div>
+          <!-- <mat-checkbox color="primary" (change)="enablecolors($event,partialarrayname)">
+                      Highlight
+                  </mat-checkbox> -->
+          <div class="tableFixHead" #pardiv (scroll)="tablescrolled($event, partialarrayname)">
+            <table class="table table-bordered">
+              <thead class="table_header tableHeadFixed">
+                <tr>
+                  <th>S.No</th>
+                  <th>Age (days)</th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[0]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">CR No</mat-label>
+                      <input matInput [(ngModel)]="prefnoinput" placeholder="Cr No" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <!-- <mat-form-field style="margin-bottom:-6%;width:70%">
+                                      <mat-label>{{headerarray[1].column_name}}</mat-label>
+                                  </mat-form-field> -->
+                    <label>Date</label>
+                    {{ headerarray[1]?.column_name }}
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[2]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Description</mat-label>
+                      <input matInput [(ngModel)]="pautoinput" placeholder="Description" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[3]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Debit</mat-label>
+                      <input matInput [(ngModel)]="pdebitinput" placeholder="Debit" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[4]?.column_name}}</mat-label> -->
+                      <!-- <mat-label>{{headerarray[4]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Credit</mat-label>
+                      <input matInput [(ngModel)]="pcreditinput" placeholder="Credit" />
+                    </mat-form-field>
+                  </th>
+  
+                  <th>Closing Balance</th>
+                  <th>User Description</th>
+                  <th>Label</th>
+                  <th>Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="
+                    let temp of partiallymappedlist
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'description',
+                              value: pautoinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'rule_reference_no',
+                              value: prefnoinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'debitamount',
+                              value: pdebitinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'creditamount',
+                              value: pcreditinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | slice : 0 : parmapendlimit;
+                    let i = index
+                  ">
+                  <!-- <tr *ngIf="i ===  0 || temp.reference_no !== partiallymappedlist[i - 1].reference_no" > -->
+                  <tr>
+                    <!-- <td style="font-size: small;" [ngStyle]="{'color':(temp.user_description!=null)?getRandomColor():''}"> -->
+                    <td style="font-size: small" [ngStyle]="{ 'background-color': temp.badge }">
+                      <!-- {{ (parmappage-1)*partial_map_size+i+1 }} -->
+                      {{ (partiallycurrentpage - 1) * pageSize + i + 1 }}
+                    </td>
+                    <!-- <td data-toggle="modal" data-target="#myModal" data-placement="bottom"
+                                           title="Description" style="font-size: small;cursor: pointer;"
+                                           (click)="tableId(temp)">
+                                           {{ temp?.txn_branch }}</td> -->
+                    <!-- <td style="font-size: small;">{{ temp?.user_id }}</td> -->
+                    <td style="font-size: small" [ngStyle]="{ 'background-color': temp.badge }">
+                      {{ temp.aging }}
+                    </td>
+                    <td [ngStyle]="{ 'background-color': temp.badge }">
+                      {{ temp.rule_reference_no }}
+                    </td>
+                    <td style="font-size: small" [ngStyle]="{ 'background-color': temp.badge }">
+                      {{ temp?.trans_date | date : "dd-MMM-yyyy" }}
+                    </td>
+                    <td style="font-size: small" [ngStyle]="{ 'background-color': temp.badge }">
+                      {{ temp?.description }}
+                    </td>
+                    <!-- <td
+                      style="font-size: small"
+                      [ngStyle]="{ 'background-color': temp.badge }"
+                    >
+                      {{ temp.label_name }}
+                    </td>
+                    <td
+                      style="font-size: small"
+                      [ngStyle]="{ 'background-color': temp.badge }"
+                    >
+                      {{ temp.user_description }}
+                    </td> -->
+  
+                    <!-- <td style="font-size: small;">{{ temp?.value_date |  date:'dd-MMM-yyyy' }} -->
+                    <!-- </td>
+                                       <td style="font-size: small;">{{ temp?.ref_no }}</td>
+                                       <td style="font-size: small;">{{ temp?.user_ref }} & {{temp?.id}}</td>
+                                       <td style="font-size: small;" data-toggle="tooltip" data-placement="bottom"
+                                           title={{temp?.user_description}}>
+                                           {{ temp?.description}}
+   
+                                           <button style="float:right;margin-top: -2%;" *ngIf="temp.label"
+                                               matTooltip="Delete" mat-icon-button class="btn btn-outline-success"
+                                               (click)="OnUnMap(temp,$event)">
+                                               <mat-icon>delete_outline</mat-icon>
+                                           </button>
+   
+   
+                                       </td> -->
+                    <td style="font-size: small; text-align: right" [ngStyle]="{ 'background-color': temp.badge }">
+                      <div *ngIf="temp.creditamount == '0.0'">
+                        {{
+                        temp.debitamount | currency : "INR" : "symbol" : "0.2-6"
+                        }}
+                      </div>
+                    </td>
+  
+                    <td style="font-size: small; text-align: right" [ngStyle]="{ 'background-color': temp.badge }">
+                      <div *ngIf="temp.debitamount == '0.0'">
+                        {{
+                        temp.creditamount
+                        | currency : "INR" : "symbol" : "0.2-6"
+                        }}
+                      </div>
+                    </td>
+  
+                    <td style="
+                        font-size: small;
+                        vertical-align: middle;
+                        text-align: center;
+                      " [ngStyle]="{ 'background-color': temp.badge }">
+                      {{ temp.balanceamount }}
+                    </td>
+  
+                    <td style="font-size: small; text-align: right" [ngStyle]="{ 'background-color': temp?.badge }">
+                      <div *ngIf="
+                          temp?.lable_name &&
+                          temp.lable_name != partiallymappedlist[i + 1]
+                        ">
+                        {{ temp?.user_description }}
+                      </div>
+                    </td>
+                    <td style="font-size: small; text-align: right" [ngStyle]="{ 'background-color': temp?.badge }">
+                      <div *ngIf="
+                          temp?.lable_name &&
+                          temp.lable_name != partiallymappedlist[i + 1]
+                        ">
+                        {{ temp?.lable_name }}
+                      </div>
+                    </td>
+  
+                    <td style="font-size: small; text-align: right" [ngStyle]="{ 'background-color': temp?.badge }">
+                      <!-- <div *ngIf!="temp?.label_name && (temp.label_name != partiallymappedlist[i+1]?.label_name)"> -->
+                      <mat-checkbox (change)="mapcheckboxchanged(temp, partialarrayname,$event)" 
+                      [checked]="Selectedid.includes(temp?.id)"
+                        color="primary" >
+                      </mat-checkbox>
+  
+                      <ng-template #elseBlock>
+                        <label>{{ temp.label ? temp.label.id : null }}</label>
+                      </ng-template>
+                    </td>
+  
+                    <!-- <td
+                    style="font-size: small"
+                    [ngStyle]="{ 'background-color': temp.badge }" rowspan="1">
+                    <ng-container *ngIf="temp?.label_name && temp.label_name !== partiallymappedlist[i + 1]?.label_name" >
+                      {{ temp?.user_description }}
+                    </ng-container>
+                  </td> -->
+  
+                    <!-- </div> -->
+                  </tr>
+  
+                  <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                           <div *ngFor="let attachment of temp.attachments" title="{{attachment.file_name }}"
+                               (click)="transactionDownload(attachment.file_id,attachment.file_name )"
+                               class=" btn-link"><i class="fa fa-download"></i>
+                               {{attachment.file_name }}
+                           </div>
+                       </td> -->
+  
+                  <!-- <tr> -->
+  
+                  <!-- </tr> -->
+                  <!-- <tr
+                    style="background-color: #edf8fa"
+                    *ngIf="
+                      temp?.label_name &&
+                      temp.label_name != partiallymappedlist[i + 1]?.label_name
+                    "
+                  > -->
+                  <!-- *ngIf="temp.label_name && (temp.label_name!= partiallymappedlist[i+1].label_name)"> -->
+  
+                  <!-- <td colspan="13"> -->
+                  <!-- {{data.label}}:{{data[data.label].Description ? data[data.label].Description.description :null}} -->
+                  <!-- <div *ngFor="let attachment of data[data.label].transaction;"> -->
+  
+                  <!-- <span> Label: </span>{{ temp?.label_name }} &nbsp;&nbsp; -->
+  
+                  <!-- <span>
+                                          User Description:
+                                      </span>{{temp?.user_description}} -->
+  
+                  <!-- </div> -->
+                  <!-- </td>
+                  </tr> -->
+                </ng-container>
+              </tbody>
+            
+            </table>
+            <div style="display: flex;justify-content: end;">
+              <span class="items-per-page">
+                Items per page:
+             
+                <mat-form-field style="width: 45px;">
+                  <input matInput [formControl]="partiallymapped" type="number" (input)="getpartiallymappedsize($event)">
+                </mat-form-field>
+              </span>
+            <span style="margin-top: 5px;">
+              <button mat-icon-button color="primary" [disabled]="partial_hasprevious === false"
+              (click)="previousClick('partialprevious')">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span>{{ parmappage }}</span>
+  
+            <button mat-icon-button color="primary" [disabled]="partial_hasnext === false"
+              (click)="nextClick('partialnext')">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+            </span>
+            </div>
+  
+            <div *ngIf="!partiallymappedlist?.length" style="text-align: center">
+              Sorry No data Found...!
+            </div>
+          </div>
+          <br />
+          <div class="row" style="gap: 50px; margin-left: 10px">
+            <!-- <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Count of Debit <br />
+              <label class="fontbold"> {{ length_of_debit_partial }} </label>
+            </div>
+  
+            <!-- </div>
+                      <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Count of Credit <br />
+              <label class="fontbold"> {{ length_of_credit_partial }} </label>
+            </div>
+  
+            <!-- </div>
+                      <div class="col-md-3"> -->
+  
+            <div class="card card-pading">
+              Sum of Debit <br />
+              <label class="fontbold">
+                {{ sum_of_debit_partial | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div>
+                      <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Sum of Credit <br />
+              <label class="fontbold">
+                {{ sum_of_credit_partial | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div>
+                      <br>
+                      <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Closing balance Partially<br />
+              <label class="fontbold">
+                {{ partially_closingbalance | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div> -->
+          </div>
+        </div>
+      </mat-expansion-panel>
+  
+      <mat-expansion-panel (closed)="panelclosed(mapdiv, mappedarrayname)" *ngIf="showmapped && mappedlist?.length">
+        <!-- <mat-expansion-panel-header>
+        <section class="row" style="width: 100%">
+          <section class="col-md-3">
+            <mat-label class="exp-header">{{
+              titles.title5 | titlecase
+            }}</mat-label>
+          </section>
+          <section class="col-md-6" style="text-align: center"></section>
+          <section class="col-md-3">
+            <mat-label class="exp-header">
+              Total :
+              <b>
+                {{ mappedlist?.length | number }}
+              </b>
+            </mat-label>
+          </section>
+        </section>
+      </mat-expansion-panel-header> -->
+        <mat-expansion-panel-header>
+          <div class="expansion-head">
+            <h3>{{ titles.title1 | titlecase }}</h3>
+            <p>
+              Total :
+              <b>
+                {{ knockofftotal | number }}
+              </b>
+            </p>
+          </div>
+        </mat-expansion-panel-header>
+        <!-- <button type="button" class="btn btn-outline-success" style="border-radius:40px;">Purge
+                <mat-icon class="icnwithname">done_all</mat-icon>
+            </button> -->
+        <div>
+          <div #mapdiv class="tableFixHead" (scroll)="tablescrolled($event, mappedarrayname)">
+            <!-- <mat-checkbox color="primary" (change)="enablecolors($event,mappedarrayname)">
+                        Highlight
+                    </mat-checkbox> -->
+            <table class="table table-bordered">
+              <thead class="table_header tableHeadFixed">
+                <tr>
+                  <th>S.No</th>
+                  <th>Age (days)</th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[0]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">CR NO</mat-label>
+                      <input matInput [(ngModel)]="knockrefnoinput" placeholder="Cr No" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <!-- <mat-form-field style="margin-bottom:-6%;width:70%">
+                                    <mat-label>{{headerarray[1].column_name}}</mat-label>
+                                </mat-form-field> -->
+                    <label> Date</label>
+                    {{ headerarray[1]?.column_name }}
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[2]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Descriptipn</mat-label>
+                      <input matInput [(ngModel)]="knockautoinput" placeholder="Descriptipn" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[3]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Debit</mat-label>
+                      <input matInput [(ngModel)]="knockdebitinput" placeholder="Debit" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[4]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Credit</mat-label>
+                      <input matInput [(ngModel)]="knockcreditinput" placeholder="Credit" />
+                    </mat-form-field>
+                  </th>
+                  <th>Tag Number</th>  
+                  <th>Select</th>
+                  <!-- <th>Age (days)</th> -->
+                  <!-- <th
+                  [ngStyle]="{
+                    'text-align': headerarray.length - 1 == i ? 'right' : 'left'
+                  }"
+                  *ngFor="let item of headerarray; index as i"
+                  [ngClass]="item?.class"
+                >
+                  <span
+                    *ngIf="item.sys_col_name != 'Description'; else formfield"
+                  >
+                    {{ item.column_name }}
+                  </span>
+                  <ng-template #formfield>
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <mat-label>{{ item.column_name }}</mat-label>
+                      <input matInput [(ngModel)]="mapinput" />
+                    </mat-form-field>
+                    <mat-form-field
+                      style="width: 20%; margin-bottom: -6%; margin-left: 5%"
+                    >
+                      <mat-label>Length</mat-label>
+                      <input matInput [(ngModel)]="maplength" />
+                    </mat-form-field>
+                  </ng-template>
+                </th> -->
+                  <!-- <th>Select</th> -->
+                </tr>
+              </thead>
+              <tbody *ngFor="
+                  let temp of mappedlist
+                    | FilterPipe
+                      : [
+                          {
+                            name: 'description',
+                            value: knockautoinput,
+                            length: autolength,
+                            highlight: autohighlight
+                          }
+                        ]
+                    | FilterPipe
+                      : [
+                          {
+                            name: 'rule_reference_no',
+                            value: knockrefnoinput,
+                            length: autolength,
+                            highlight: autohighlight
+                          }
+                        ]
+                    | FilterPipe
+                      : [
+                          {
+                            name: 'debitamount',
+                            value: knockdebitinput,
+                            length: autolength,
+                            highlight: autohighlight
+                          }
+                        ]
+                    | FilterPipe
+                      : [
+                          {
+                            name: 'creditamount',
+                            value: knockcreditinput,
+                            length: autolength,
+                            highlight: autohighlight
+                          }
+                        ]
+                    | slice : 0 : unmapendlimit;
+                  let i = index
+                " [ngStyle]="temp?.rowstyle">
+                <tr [ngStyle]="temp?.rowstyle">
+                  <td style="font-size: small">
+                    {{ (knockoffpage - 1) * 10 + i + 1 }}
+                  </td>
+                  <!-- <td data-toggle="modal" data-target="#myModal" data-placement="bottom"
+                                         title="Description" style="font-size: small;cursor: pointer;"
+                                         (click)="tableId(temp)">
+                                         {{ temp?.txn_branch }}</td> -->
+                  <!-- <td style="font-size: small;">{{ temp?.user_id }}</td> -->
+                  <td style="font-size: small">{{ temp.aging }}</td>
+                  <td>
+                    {{ temp.rule_reference_no }}
+                  </td>
+  
+                  <td style="font-size: small">
+                    {{ temp?.trans_date | date : "dd-MMM-yyyy" }}
+                  </td>
+                  <td style="font-size: small">{{ temp?.description }}</td>
+  
+                  <!-- <td style="font-size: small;">{{ temp?.value_date |  date:'dd-MMM-yyyy' }} -->
+                  <!-- </td>
+                                     <td style="font-size: small;">{{ temp?.ref_no }}</td>
+                                     <td style="font-size: small;">{{ temp?.user_ref }} & {{temp?.id}}</td>
+                                     <td style="font-size: small;" data-toggle="tooltip" data-placement="bottom"
+                                         title={{temp?.user_description}}>
+                                         {{ temp?.description}}
+  
+                                         <button style="float:right;margin-top: -2%;" *ngIf="temp.label"
+                                             matTooltip="Delete" mat-icon-button class="btn btn-outline-success"
+                                             (click)="OnUnMap(temp,$event)">
+                                             <mat-icon>delete_outline</mat-icon>
+                                         </button>
+  
+  
+                                     </td> -->
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.creditamount == '0.0'">
+                      {{
+                      temp.debitamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+  
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.debitamount == '0.0'">
+                      {{
+                      temp.creditamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+                  <td style="text-align: center">{{temp?.ref_no | number:'1.0-0' }}</td>
+                  <td>
+                    <div>
+                      <mat-checkbox (change)="mapcheckboxchanged(temp, mappedarrayname,$event)" 
+                        color="primary"  [checked]="Selectedid.includes(temp?.id)" >
+                      </mat-checkbox>
+                    </div>
+                    <ng-template #elseBlock>
+                      <label>{{ temp.label ? temp.label.id : null }}</label>
+                    </ng-template>
+                  </td>
+                  <!-- <td style="font-size: small" >
+                  <div *ngIf="temp.ProofedDate !== 'None' || temp.ProofedDate !== null || temp.ProofedDate !== '' " >
+                  {{ temp?.ProofedDate | date : "dd-MMM-yyyy" }}
+                  </div>
+                </td>
+                <td style="font-size: small">{{ temp?.batch_code }}</td>
+                <td style="font-size: small">
+                  {{ temp?.label_id }} -->
+  
+                  <!-- <td>
+                                        <div>
+                                            <mat-checkbox [(ngModel)]="temp.selected" color="primary">
+                                            </mat-checkbox>
+                                        </div>
+                                        <ng-template #elseBlock>
+                                            <label>{{ temp.label ? temp.label.id: null}}</label>
+                                        </ng-template>
+                                    </td> -->
+                  <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                         <div *ngFor="let attachment of temp.attachments" title="{{attachment.file_name }}"
+                             (click)="transactionDownload(attachment.file_id,attachment.file_name )"
+                             class=" btn-link"><i class="fa fa-download"></i>
+                             {{attachment.file_name }}
+                         </div>
+                     </td> -->
+                  <!-- </td> -->
+                </tr>
+  
+                <!-- <tr
+                style="background-color: #edf8fa"
+                *ngIf="
+                  temp?.label_name &&
+                  temp?.label_name != mappedlist[i + 1]?.label_name
+                "
+              > -->
+                <!-- <td colspan="8"> -->
+                <!-- {{data.label}}:{{data[data.label].Description ? data[data.label].Description.description :null}} -->
+                <!-- <div *ngFor="let attachment of data[data.label].transaction;"> -->
+  
+                <!-- <span> Label: </span>{{ temp?.label_name }} &nbsp;&nbsp;
+  
+                  <span> User Description: </span>{{ temp?.user_description }} -->
+  
+                <!-- </div> -->
+                <!-- </td> -->
+                <!-- </tr> -->
+              </tbody>
+          
+            </table>
+            <div style="display: flex;justify-content: end;">
+              <span class="items-per-page">
+                Items per page:
+             
+                <mat-form-field style="width: 45px;">
+                  <input matInput [formControl]="knockoffform" type="number" (input)="getknockoffsize($event)">
+                </mat-form-field>
+              </span>
+            <span style="margin-top: 5px;">
+              <button mat-icon-button color="primary" [disabled]="knockoff_hasprevious === false"
+              (click)="knockoffclick('knockffprevious')">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span>{{ knockoffpage }}</span>
+  
+            <button mat-icon-button color="primary" [disabled]="knockoff_hasnext === false"
+              (click)="knockoffnextclick('knockoffnext')">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+            </span>
+            </div>
+            <div *ngIf="!mappedlist?.length" style="text-align: center">
+              Sorry No data Found...!
+            </div>
+          </div>
+          <br />
+          <div class="row" style="gap: 50px; margin-left: -7px">
+            <!-- <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Count of Debit <br />
+              <label class="fontbold"> {{ length_of_debit_autoknockoff }} </label>
+              <!-- </div> -->
+            </div>
+            <!-- <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Count of Credit <br />
+              <label class="fontbold">
+                {{ length_of_credit_autoknockoff }}
+              </label>
+            </div>
+  
+            <!-- </div>
+                    <div class="col-md-3"> -->
+  
+            <div class="card card-pading">
+              Sum of Debit <br />
+              <label class="fontbold">
+                {{ sum_of_debit_autoknockoff | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div>
+                    <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Sum of Credit <br />
+              <label class="fontbold">
+                {{ sum_of_credit_autoknockoff | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div>
+                    <br>
+                    <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Closing Balance Unmapped<br />
+              <label class="fontbold">
+                {{ knockoff_closingbalance | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div> -->
+          </div>
+        </div>
+      </mat-expansion-panel>
+  
+      <mat-expansion-panel *ngIf="showunmapped && unmappedlist?.length">
+        <mat-expansion-panel-header>
+          <div class="expansion-head">
+            <h3>{{ titles.title4 | titlecase }}</h3>
+            <p>
+              Total:<b>{{ totalcount_unmap | number }}</b>
+            </p>
+          </div>
+  
+          <!-- Total :
+              <b>
+                {{ unmappedlist?.length | number }}
+              </b> -->
+          <!-- <button mat-icon-button (click)="downloadxl(unmappedarrayname)">
+                <mat-icon
+                  style="vertical-align: sub; color: blue; margin-left: 10%"
+                  >download</mat-icon
+                >
+              </button> -->
+        </mat-expansion-panel-header>
+        <div>
+          <div *ngIf="title4" class="tableFixHead" (scroll)="tablescrolled($event, unmappedarrayname)">
+            <!-- <mat-checkbox color="primary" (change)="enablecolors($event,unmappedarrayname)">
+                          Highlight
+                      </mat-checkbox> -->
+            <table class="table table-bordered">
+              <thead class="table_header tableHeadFixed">
+                <tr>
+                  <th>S.No</th>
+                  <th>Age (days)</th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[0]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">CR NO</mat-label>
+                      <input matInput [(ngModel)]="urefnoinput" placeholder="Cr No" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <!-- <mat-form-field style="margin-bottom:-6%;width:70%">
+                                      <mat-label>{{headerarray[1].column_name}}</mat-label>
+                                  </mat-form-field> -->
+                    <label> Date</label>
+                    {{ headerarray[1]?.column_name }}
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[2]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Descriptipn</mat-label>
+                      <input matInput [(ngModel)]="uautoinput" placeholder="Descriptipn" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[3]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Debit</mat-label>
+                      <input matInput [(ngModel)]="udebitinput" placeholder="Debit" />
+                    </mat-form-field>
+                  </th>
+                  <th class="left">
+                    <mat-form-field style="margin-bottom: -6%; width: 70%">
+                      <!-- <mat-label>{{headerarray[4]?.column_name}}</mat-label> -->
+                      <mat-label class="font-weight-bold">Credit</mat-label>
+                      <input matInput [(ngModel)]="ucreditinput" placeholder="Credit" />
+                    </mat-form-field>
+                  </th>
+                  <th>User Description</th>
+                  <th>Label</th>
+                  <th>Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="
+                    let temp of unmappedlist
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'description',
+                              value: uautoinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'rule_reference_no',
+                              value: urefnoinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'debitamount',
+                              value: udebitinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | FilterPipe
+                        : [
+                            {
+                              name: 'creditamount',
+                              value: ucreditinput,
+                              length: autolength,
+                              highlight: autohighlight
+                            }
+                          ]
+                      | slice : 0 : unmapendlimit;
+                    let i = index
+                  " [ngStyle]="temp?.rowstyle">
+                  <td style="font-size: small">
+                    {{ (unmappage - 1) * 10 + i + 1 }}
+                  </td>
+                  <!-- <td data-toggle="modal" data-target="#myModal" data-placement="bottom"
+                                           title="Description" style="font-size: small;cursor: pointer;"
+                                           (click)="tableId(temp)">
+                                           {{ temp?.txn_branch }}</td> -->
+                  <!-- <td style="font-size: small;">{{ temp?.user_id }}</td> -->
+                  <td style="font-size: small">{{ temp.aging }}</td>
+                  <td>
+                    {{ temp.rule_reference_no }}
+                  </td>
+                  <td style="font-size: small">
+                    {{ temp?.trans_date | date : "dd-MMM-yyyy" }}
+                  </td>
+                  <td style="font-size: small">{{ temp?.description }}</td>
+                  <!-- <td style="font-size: small;">{{ temp?.value_date |  date:'dd-MMM-yyyy' }} -->
+                  <!-- </td>
+                                       <td style="font-size: small;">{{ temp?.ref_no }}</td>
+                                       <td style="font-size: small;">{{ temp?.user_ref }} & {{temp?.id}}</td>
+                                       <td style="font-size: small;" data-toggle="tooltip" data-placement="bottom"
+                                           title={{temp?.user_description}}>
+                                           {{ temp?.description}}
+   
+                                           <button style="float:right;margin-top: -2%;" *ngIf="temp.label"
+                                               matTooltip="Delete" mat-icon-button class="btn btn-outline-success"
+                                               (click)="OnUnMap(temp,$event)">
+                                               <mat-icon>delete_outline</mat-icon>
+                                           </button>
+   
+   
+                                       </td> -->
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.creditamount == '0.0'">
+                      {{
+                      temp.debitamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+  
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.debitamount == '0.0'">
+                      {{
+                      temp.creditamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+                  <td style="font-size: small; text-align: right" [ngStyle]="{ 'background-color': temp?.badge }">
+                    <div *ngIf="
+                        temp?.lable_name &&
+                        temp.lable_name != partiallymappedlist[i + 1]
+                      ">
+                      {{ temp?.user_description }}
+                    </div>
+                  </td>
+                  <td style="font-size: small; text-align: right" [ngStyle]="{ 'background-color': temp?.badge }">
+                    <div *ngIf="
+                        temp?.lable_name &&
+                        temp.lable_name != partiallymappedlist[i + 1]
+                      ">
+                      {{ temp?.lable_name }}
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <mat-checkbox (change)="mapcheckboxchanged(temp, unmappedarrayname,$event)"  [checked]="Selectedid.includes(temp?.id)"
+                        color="primary" >
+                      </mat-checkbox>
+                    </div>
+                    <ng-template #elseBlock>
+                      <label>{{ temp.label ? temp.label.id : null }}</label>
+                    </ng-template>
+                  </td>
+                  <!-- <td style="font-size: small;width: 150px;cursor: pointer;">
+                           <div *ngFor="let attachment of temp.attachments" title="{{attachment.file_name }}"
+                               (click)="transactionDownload(attachment.file_id,attachment.file_name )"
+                               class=" btn-link"><i class="fa fa-download"></i>
+                               {{attachment.file_name }}
+                           </div>
+                       </td> -->
+                </tr>
+              </tbody>
+           
+            </table>
+            <div style="display: flex;justify-content: end;">
+              <span class="items-per-page">
+                Items per page:
+             
+                <mat-form-field style="width: 45px;">
+                  <input matInput [formControl]="unmappedform" type="number" (input)="getunmappedsize($event)">
+                </mat-form-field>
+              </span>
+            <span style="margin-top: 5px;">
+              <button mat-icon-button color="primary" [disabled]="unmap_hasprevious === false"
+              (click)="unmappreviousclick('unmapprevious')">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span>{{ unmappage }}</span>
+  
+            <button mat-icon-button color="primary" [disabled]="unmap_hasnext === false"
+              (click)="unmapnextclick('unmapnext')">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+            </span>
+            </div>
+  
+            <div *ngIf="!unmappedlist?.length" style="text-align: center">
+              Sorry No data Found...!
+            </div>
+          </div>
+          <br />
+          <div class="row" style="gap: 50px; margin-left: -7px">
+            <!-- <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Count of Debit <br />
+              <label class="fontbold"> {{ length_of_debit_unmap }} </label>
+              <!-- </div> -->
+            </div>
+            <!-- <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Count of Credit <br />
+              <label class="fontbold"> {{ length_of_credit_unmap }} </label>
+            </div>
+  
+            <!-- </div>
+                      <div class="col-md-3"> -->
+  
+            <div class="card card-pading">
+              Sum of Debit <br />
+              <label class="fontbold">
+                {{ sum_of_debit_unmap | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div>
+                      <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Sum of Credit <br />
+              <label class="fontbold">
+                {{ sum_of_credit_unmap | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div>
+                      <br>
+                      <div class="col-md-3"> -->
+            <div class="card card-pading">
+              Closing Balance Unmapped<br />
+              <label class="fontbold">
+                {{ unmapped_closingbalance | number : "1.2-2" }}
+              </label>
+            </div>
+  
+            <!-- </div> -->
+          </div>
+        </div>
+      </mat-expansion-panel>
+  
+      <mat-expansion-panel *ngIf="showpatternsuggestion && patternlist?.length">
+        <mat-expansion-panel-header>
+          <div class="expansion-head">
+            <h3>{{ titles.title7 | titlecase }}</h3>
+            <p>
+              Total :
+              <b>
+                {{ patterntotal | number }}
+              </b>
+            </p>
+          </div>
+        </mat-expansion-panel-header>
+  
+        <div class="comp-table t-resposive t-bdr-box" *ngIf="title7" (scroll)="tablescrolled($event, patternarrayname)">
+          <table>
+            <thead>
+              <tr>
+                <th class="font-weight-bold">S.No</th>
+                <th>
+                  <div>
+                    <mat-form-field>
+                      <mat-label class="font-weight-bold">Account Number</mat-label>
+                      <input matInput [(ngModel)]="patternaccountinput" placeholder="Account No" />
+                    </mat-form-field>
+                  </div>
+                </th>
+                <th>
+                  <div>
+                    <mat-form-field>
+                      <mat-label class="font-weight-bold">Description</mat-label>
+                      <input matInput [(ngModel)]="patterndesinput" placeholder="Description" />
+                    </mat-form-field>
+                  </div>
+                </th>
+                <th>
+                  <div>
+                    <mat-form-field>
+                      <mat-label class="font-weight-bold">Date</mat-label>
+                      <input matInput [(ngModel)]="patternDateinput" placeholder="Date" />
+                    </mat-form-field>
+                  </div>
+                </th>
+                <th>
+                  <div>
+                    <mat-form-field>
+                      <mat-label class="font-weight-bold">Debit</mat-label>
+                      <input matInput [(ngModel)]="patterndebitinput" placeholder="Debit" />
+                    </mat-form-field>
+                  </div>
+                </th>
+                <th>
+                  <div>
+                    <mat-form-field>
+                      <mat-label class="font-weight-bold">Credit</mat-label>
+                      <input matInput [(ngModel)]="patterncreditinput" placeholder="Credit" />
+                    </mat-form-field>
+                  </div>
+                </th>
+                <th class="font-weight-bold">Label</th>
+                <th class="font-weight-bold">User Description</th>
+                <th class="font-weight-bold">Select</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="
+                let list of patternlist
+                  | FilterPipe
+                    : [
+                        {
+                          name: 'account',
+                          value: patternaccountinput,
+                          length: autolength,
+                          highlight: autohighlight
+                        }
+                      ]
+                  | FilterPipe
+                    : [
+                        {
+                          name: 'description',
+                          value: patterndesinput,
+                          length: autolength,
+                          highlight: autohighlight
+                        }
+                      ]
+                  | FilterPipe
+                    : [
+                        {
+                          name: 'trans_date',
+                          value: patternDateinput,
+                          length: autolength,
+                          highlight: autohighlight
+                        }
+                      ]
+                  | FilterPipe
+                    : [
+                        {
+                          name: 'debitamount',
+                          value: patterndebitinput,
+                          length: autolength,
+                          highlight: autohighlight
+                        }
+                      ]
+                  | FilterPipe
+                    : [
+                        {
+                          name: 'creditamount',
+                          value: patterncreditinput,
+                          length: autolength,
+                          highlight: autohighlight
+                        }
+                      ]
+                  | slice : 0 : unmapendlimit;
+                let i = index
+              ">
+              <tr (click)="opensubtab(i)">
+                <td>
+                  {{ (patterenpage - 1) * 10 + i + 1 }}
+                </td>
+                <td>{{ list.account }}</td>
+                <td>
+                  {{ list.description }}
+                </td>
+                <td>{{ list.trans_date }}</td>
+                <td>{{ list.debitamount }}</td>
+                <td>{{ list.creditamount }}</td>
+                <td>{{ list.lable_name }}</td>
+                <td>{{ list.user_description }}</td>
+                <td>
+                  <mat-checkbox
+    [checked]="selectedCheckboxState.get(list.id)"
+    (change)="partternmapcheckboxchanged(list, patternarrayname, $event, 'single', list.id)"
+  >
+  </mat-checkbox>
+              
+                </td>
+  
+              </tr>
+              <tr *ngIf="list?.match_cases.length != 0">
+                <td colspan="8" class="comp-table t-branch-box">
+                  <span class="line-01"></span>
+                  <span class="line-02"></span>
+                  <span class="line-03"></span>
+                  <ng-container *ngFor="
+                      let matchCase of list?.match_cases || [];
+                      let j = index
+                    ">
+                    <table [ngClass]="{
+                        't-branch-base': j === 0,
+                        't-branch-secondary': j > 0
+                      }">
+                      <thead>
+                        <tr>
+                          <th>S.no</th>
+                          <th>Gl Number</th>
+                          <th>Date</th>
+                          <th>Description</th>
+                          <th>Debit</th>
+                          <th>Credit</th>
+                          <th>User Description</th>
+                          <th>Label</th>
+                          <th>Select</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="
+                            let branch of matchCase;
+                            let isFirst = first;
+                            let p = index
+                          ">
+                          <td>{{ p + 1 }}</td>
+                          <td>{{ branch.gl_number }}</td>
+                          <td>{{ branch.trans_date }}</td>
+                          <td>{{ branch.description }}</td>
+                          <td>{{ branch.debitamount }}</td>
+                          <td>{{ branch.creditamount }}</td>
+                          <td>{{ branch.user_description }}</td>
+                          <td>{{ branch.label_name }}</td>
+                          <td *ngIf="isFirst" [attr.rowspan]="matchCase?.length">
+                            <mat-checkbox
+                            [checked]="selectedCheckboxState.get(branch.id + '_' + list.id)"
+                            (change)="partternmapcheckboxchanged(matchCase, patternarrayname, $event, 'multiple', branch.id + '_' + list.id)"
+                          >
+                          </mat-checkbox>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="patternlist?.length > 0" style="display: flex;justify-content: end;">
+            <span class="items-per-page">
+              Items per page:
+           
+              <mat-form-field style="width: 45px;">
+                <input matInput [formControl]="patternform" type="number" (input)="getpattersize($event)">
+              </mat-form-field>
+            </span>
+          <span style="margin-top: 5px;">
+            <button mat-icon-button color="primary" [disabled]="pattern_hasprevious === false"
+              (click)="partternpreviousclick('patternprevious')">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+          <span>{{ patterenpage }}</span>
+  
+          <button mat-icon-button color="primary" [disabled]="pattern_hasnext === false"
+          (click)="partternnextclick('patternnext')">
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+          </span>
+          </div>
+          <!-- <div *ngIf="patternlist?.length > 0" style="font-size: small; text-align: right; margin-left: 46px"
+            class="col-sm-12">
+            <button mat-icon-button color="primary" [disabled]="pattern_hasprevious === false"
+              (click)="partternpreviousclick('patternprevious')">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span>{{ patterenpage }}</span>
+            <button mat-icon-button color="primary" [disabled]="pattern_hasnext === false"
+              (click)="partternnextclick('patternnext')">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div> -->
+        </div>
+      </mat-expansion-panel>
+  
+      <div *ngIf="autotopartialflag" class="card">
+        <div class="card-body">
+          <h2>{{ titles.title6 | titlecase }}</h2>
+          <!-- <div class="row">
+                          <section class="col-md-6">
+                              <div class="row">
+                                  <div class="col-md-6">
+                                      <span> No of Debit</span> <span> = {{noofDebit}} </span> <br>
+                                      <label class="valign"> Sum of Debit =
+                                          <span> {{sumofDebit |
+                                              currency:"INR":'symbol':'0.2-6'}}
+                                          </span> </label>
+                                  </div>
+                                  <div class="col-md-6">
+                                      <span> No of Credit</span> <span>= {{noofCredit}} </span> <br>
+                                      <label class="valign"> Sum of Credit <span> = {{sumofCredit |
+                                              currency:"INR":'symbol':'0.2-6'}} </span> </label>
+                                  </div>
+                              </div>
+                          </section>
+  
+                          <section class="col-md-2">
+                              <mat-label>Label / RefNo</mat-label>
+                              <br>
+                              <mat-form-field style="width:90%" class="matformfieldstyle" appearance="outline">
+  
+                                  <input matInput class="matformfieldinputstyle" placeholder="Label / RefNo"
+                                      [(ngModel)]="refno" autocomplete="off">
+                              </mat-form-field>
+                          </section>
+  
+                          <section class="col-md-2">
+                              <mat-label>Remarks</mat-label>
+                              <br>
+                              <mat-form-field style="width:90%" class="matformfieldstyle" appearance="outline">
+  
+                                  <input class="matformfieldinputstyle" matInput placeholder="Remarks"
+                                      [(ngModel)]="remarks" autocomplete="off">
+                              </mat-form-field>
+                          </section>
+  
+                          <section class="col-md-2">
+                              <mat-label *ngIf="ShowMatchedFlag"
+                                  style="color: rgb(7, 126, 23);font-size: 19px;font-weight: bold;">
+                                  MATCHED</mat-label>
+                              <mat-label *ngIf="!ShowMatchedFlag"
+                                  style="color: rgb(207, 19, 19);font-size: 19px;font-weight: bold;">
+                                  NOT MATCHED</mat-label>
+                              <br>
+                              <button type="button" class="btn btn-outline-success" style="border-radius:40px;"
+                                  (click)="knockoff()">Map</button>
+                          </section>
+  
+                      </div> -->
+  
+          <button type="button" class="btn btn-outline-success" style="border-radius: 40px">
+            Move to Partial Mapping
+          </button>
+  
+          <div class="tableFixHead">
+            <table class="table table-bordered">
+              <thead style="font-size: small">
+                <tr>
+                  <th>S.No</th>
+                  <th>Selected From</th>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Debit</th>
+                  <th>Credit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let temp of autotopartialarray; let i = index">
+                  <td style="font-size: small; width: 50px">
+                    {{ i + 1 }}
+                  </td>
+                  <td>{{ temp.arrayname | titlecase }}</td>
+                  <td style="font-size: small">
+                    {{ temp.date | date : "dd-MMM-yyyy" }}
+                  </td>
+                  <td style="font-size: small">{{ temp.description }}</td>
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.creditamount == '0.0'">
+                      {{
+                      temp.debitamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.debitamount == '0.0'">
+                      {{
+                      temp.creditamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  
+      <div *ngIf="ShowMappingFlag" class="card">
+        <div class="card-body">
+          <h2>{{ titles.title2 | titlecase }}</h2>
+  
+          <label class="difference">
+            <span>Difference =</span>
+            <span class="difference__amount {{
+                sumofDebit - sumofCredit < 0
+                  ? 'difference--negative'
+                  : sumofDebit - sumofCredit > 0
+                  ? 'difference__positive'
+                  : 'difference--zero'
+              }}">
+              <strong>
+                {{
+                sumofDebit - sumofCredit | currency : "INR" : "symbol" : "0.2-6"
+                }}</strong>
+            </span>
+          </label>
+  
+          <div class="row">
+            <section class="col-md-6">
+              <div class="row">
+                <div class="col-md-6">
+                  <span> No of Debit</span> <span> = {{ noofDebit }} </span>
+                  <br />
+                  <label class="valign">
+                    Sum of Debit =
+                    <span>
+                      {{ sumofDebit | currency : "INR" : "symbol" : "0.2-6" }}
+                    </span>
+                  </label>
+                </div>
+                <div class="col-md-6">
+                  <span> No of Credit</span> <span>= {{ noofCredit }} </span>
+                  <br />
+                  <label class="valign">
+                    Sum of Credit
+                    <span>
+                      = {{ sumofCredit | currency : "INR" : "symbol" : "0.2-6" }}
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </section>
+  
+            <section class="col-md-2">
+              <mat-label>Label / RefNo</mat-label>
+              <br />
+              <mat-form-field style="width: 90%" class="matformfieldstyle" appearance="outline">
+                <input matInput class="matformfieldinputstyle" placeholder="A..B" [(ngModel)]="refno"
+                  autocomplete="off" />
+              </mat-form-field>
+            </section>
+  
+            <section class="col-md-2">
+              <mat-label>Remarks</mat-label>
+              <br />
+              <mat-form-field style="width: 90%" class="matformfieldstyle" appearance="outline">
+                <input class="matformfieldinputstyle" matInput placeholder="Entry 1" [(ngModel)]="remarks"
+                  autocomplete="off" />
+              </mat-form-field>
+            </section>
+  
+            <section class="col-md-2">
+              <mat-label *ngIf="ShowMatchedFlag" style="color: rgb(7, 126, 23); font-size: 19px; font-weight: bold">
+                MATCHED</mat-label>
+              <mat-label *ngIf="!ShowMatchedFlag" style="
+                  color: rgb(207, 19, 19);
+                  font-size: 19px;
+                  font-weight: bold;
+                ">
+                NOT MATCHED</mat-label>
+              <br />
+              <button type="button" class="btn btn-outline-success" style="border-radius: 40px"
+                (click)="popupopenrmapping()">
+                Map
+                <mat-icon class="icnwithname"> merge_type</mat-icon>
+              </button>
+            </section>
+          </div>
+  
+          <div class="tableFixHead">
+            <table class="table table-bordered">
+              <thead class="table_header tableHeadFixed">
+                <tr>
+                  <th>S.No</th>
+                  <th>Selected From</th>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Debit</th>
+                  <th>Credit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let temp of selectedList; let i = index">
+                  <td style="font-size: small; width: 50px">
+                    {{ i + 1 }}
+                  </td>
+                  <td>{{ temp.arrayname | titlecase }}</td>
+                  <td style="font-size: small">
+                    {{ temp.trans_date | date : "dd-MMM-yyyy" }}
+                  </td>
+                  <td style="font-size: small">{{ temp.description }}</td>
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.creditamount == '0.0'">
+                      {{
+                      temp.debitamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+                  <td style="font-size: small; text-align: right">
+                    <div *ngIf="temp.debitamount == '0.0'">
+                      {{
+                      temp.creditamount | currency : "INR" : "symbol" : "0.2-6"
+                      }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- </mat-card> -->
+  </section>
+  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
+    <p style="color: white">Please Wait.</p>
+  </ngx-spinner>
+  
+  <div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>Do you want to map this items?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal" #closefilepopup (click)="closepopupmapping()">
+            Back
+          </button>
+          <button type="button" class="btn btn-success" (click)="manualknockoff()">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

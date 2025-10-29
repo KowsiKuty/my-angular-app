@@ -1,0 +1,212 @@
+<nav>
+    <div class="nav nav-tabs">
+        <a class="nav-item nav-link" data-toggle="tab" role="tab" (click)="assetBtn2()">Employee Mobile No Summary </a>
+
+
+    </div>
+</nav>
+
+<div *ngIf="mobilesummary">
+    <div style="width: 100%;">
+        <div style="margin-left: 2%;">
+                <form [formGroup]="searchmob">
+                    <div class="row col-md-12" style="margin-top: 30px" >
+                        <div class="col-md-3">
+                            <mat-form-field style="width: 300px;">
+                                <mat-label>Employee Name</mat-label>
+                                <input type="text" matInput formControlName="name" [matAutocomplete]="nameref">
+                                <mat-autocomplete #nameref="matAutocomplete" [displayWith]="ownerdatainterface"
+                                    (opened)=" autocompletesupname()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option title="{{d.code+' - '+d.name}}" *ngFor="let d of ownerList" [value]="d">
+                                            {{d.code+' - '+d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field><br><br>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-form-field class="example-full-width" style="margin-left: 20px;width: 300px;">
+                                <mat-label>Branch</mat-label>
+                                <input class="toolbar-search" type="text" matInput autocomplete="off" #branchidInput [matAutocomplete]="branchref" formControlName="branch" style="width: 250px;" (keypress)="kyenbdata($event)"/>
+                                <mat-autocomplete #branchref="matAutocomplete" [displayWith]="branchintreface" (opened)="autocompletebranchname()">
+                                    <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option  title="{{d.code+' - '+d.name}}" *ngFor="let d of branchList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-2" style="margin-left: 20px;">
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Mobile Number</mat-label>
+                                <input type="text" matInput formControlName="mobile_number" maxlength="10" (keypress)="numberOnly($event)">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3" style="margin-left: 20px;">
+                                <button type="submit" class="btn btn-outline-primary"
+                                style="border-radius:40px;margin-left: 12px;" (click)="Search()">Search</button>
+                                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;"
+                                    (click)="Clear()">Clear</button>
+                                <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;"
+                                     data-toggle="modal" data-target="#entry" >Add</button>
+                        </div>
+                    </div>
+                </form>
+            <div class="table-responsive" style="margin-top: 4%;width: 90%; overflow-x: hidden;">
+                <table class="table">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Branch Name</th>
+                            <th>Mobile No</th>
+                            <th>Action</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let bs of mobileList; index as i">
+                            <td scope="row">{{(presentpagebs-1)*pagesize+i+1}}</td>
+                            <td>{{ bs.code}}</td>
+                            <td>{{bs?.name}}</td>
+                            <td>{{bs?.branch}}</td>
+                            <td>{{ bs.mobile_number}}</td>
+                            <td class="cursor">
+                                <div *ngIf="bs.status === 1 ; else lock">
+                                    <mat-icon (click)="forInactivebs(bs)" title="Click to Inactive" disabled
+                                        style="color: green; cursor: pointer;" aria-label="inactive">lock_open</mat-icon>
+                                </div>
+                                <ng-template #lock>
+                                    <mat-icon (click)="foractivebs(bs)" title="Click to Active" disabled
+                                        style="color: crimson; cursor: pointer;" aria-label="inactive">lock</mat-icon>
+                                </ng-template>
+                            </td>
+                            <td><button type="button" style="border:none;background:none" matTooltip="Edit" (click)="mobilenoedit(bs)" data-toggle="modal" data-target="#editmobileno"><mat-icon>edit</mat-icon></button></td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div *ngIf="mobileList?.length==0; else paginationbs" class="NodataAlign">No Records Found...</div>
+                <ng-template #paginationbs>
+                    <div style="font-size: small;text-align:right; margin-bottom:100px;">
+                        <button mat-icon-button [disabled]="has_previousbs === false" color="primary"
+                            (click)="previousClickbs()">
+                            <mat-icon>arrow_back
+                            </mat-icon>
+                        </button>
+                        {{presentpagebs}}
+                        <button mat-icon-button [disabled]="has_nextbs === false" color="primary" (click)="nextClickbs()">
+                            <mat-icon>arrow_forward
+                            </mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </div>
+
+
+        </div>
+
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+        id="entry">
+        <div class="modal-dialog modal-xl" style="width:60%;height:100%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);color:rgb(31, 29, 29);text-align:center">
+                    <h2 class="modal-title" style="text-align:center;margin-left:35%">Mobile Number Add</h2>
+                    <button class="close" type="button"  #payementsubmit data-dismiss="modal">x</button>
+                </div>
+                                <div>
+                                
+                                    <form [formGroup]="crtemploymobno">
+                                        <div class=" row col-md-12" style="margin-bottom: 30px;
+                                        margin-top: 30px;">
+                                            <div class="col-md-5" style="margin-left: 20px;">
+                                                
+                                                <mat-form-field style="width: 300px;">
+                                                    <mat-label>Employee Name</mat-label>
+                                                    <input type="text" matInput formControlName="namee" [matAutocomplete]="namereff">
+                                                    <mat-autocomplete #namereff="matAutocomplete" [displayWith]="ownerdatainterfacee"
+                                                        (opened)=" autocompletesupnamee()">
+                                                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                                        <ng-container *ngIf="!isLoading">
+                                                            <mat-option title="{{d.code+' - '+d.name}}" *ngFor="let d of ownerListt" [value]="d">
+                                                                {{d.code+' - '+d.name}}</mat-option>
+                                                        </ng-container>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </div> 
+                                            <div class="col-md-5">
+                                                <mat-form-field appearance="legacy">
+                                                    <mat-label>Mobile Number</mat-label>
+                                                    <input type="text" matInput formControlName="mobile_number" maxlength="10" (keypress)="numberOnly($event)">
+                                                </mat-form-field>
+                                            </div>
+                                                
+                                      </div>
+                                      <div></div>
+                                        <div>
+                                           
+                                            <button type="submit" style="border-radius: 40px;margin-left: 40%;margin-bottom: 30px;"  (click)="CreateNew()" [disabled]="crtemploymobno.invalid" class="btn btn-outline-primary" data-dismiss="modal">Submit</button>
+                                            <button type="button" class="btn btn-outline-primary"
+                                            style="border-radius: 40px;margin-left: 10px;margin-bottom: 30px;" data-dismiss="modal" >Close</button>
+                                        </div>   
+                                    </form>
+                                    
+                                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+    id="editmobileno">
+    <div class="modal-dialog modal-xl" style="width:60%;height:100%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);color:rgb(31, 29, 29);text-align:center">
+                <h2 class="modal-title" style="text-align:center;margin-left:35%">Mobile Number Edit</h2>
+                <button class="close" type="button"  data-dismiss="modal">x</button>
+            </div>
+            <form [formGroup]="mobileupdationform" autocomplete="off">
+                <div class="col-md-12 row">
+                  <div class="col-md-4">
+        
+                    <mat-form-field appearance="legacy">
+                      <mat-label> Name</mat-label>
+                      <input matInput [readonly]="true" formControlName="name">
+        
+                    </mat-form-field>
+                  </div>
+        
+                  <div class="col-md-4">
+        
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Code</mat-label>
+                      <input matInput [readonly]="true" formControlName="code">
+        
+                    </mat-form-field>
+                  </div>
+        
+                  <div class="col-md-4">
+        
+                    <mat-form-field appearance="legacy">
+                      <mat-label>Mobile</mat-label>
+                      <input type="text" matInput formControlName="mobile_number" maxlength="10" (keypress)="empmonochange();numberOnly($event)">
+        
+                    </mat-form-field>
+                  </div>
+        
+                </div>
+        
+                <div>
+                                           
+                    <button type="submit" style="border-radius: 40px;margin-left: 40%;margin-bottom: 30px;" data-dismiss="modal" (click)="employeemobileupdate()" [disabled]="changedmobno" class="btn btn-outline-primary" >Submit</button>
+                    <button type="button"  class="btn btn-outline-primary"
+                    style="border-radius: 40px;margin-left: 10px;margin-bottom: 30px;" data-dismiss="modal" >Close</button>
+                </div> 
+        
+              </form>
+        </div>
+    </div>
+</div>
+</div>

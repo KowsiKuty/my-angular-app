@@ -1,0 +1,318 @@
+<mat-card style="margin-top: 13px;margin-left: 20px;margin-right: 20px;margin-bottom: 20px;">
+    <div >
+        <p style="color:black;font-size: 18px;font-weight: bold;margin-left: 10px;">
+            Payment Queue Search
+        </p>
+        <div>
+            <form [formGroup]="paymentAdviceForm">
+                <table>
+                    <div>
+                        <tr>
+                        <td>
+                            <mat-form-field style="width:170px;margin-left: 10px;">
+                                <mat-label>CR No</mat-label>
+                                <input matInput formControlName="crno" autocomplete="off" id="payment-q-summary-0002">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width:170px;margin-left: 10px;">
+                           
+                                    <mat-label>Invoice Header CR No</mat-label>
+                                    <input matInput formControlName="invoiceheader_crno" autocomplete="off" id="payment-q-summary-0003">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width:170px;margin-left: 10px;">
+                                    <mat-select placeholder="ECF Type" formControlName="aptype" id="payment-q-summary-0004">
+                                        <mat-option *ngFor="let type of TypeList" [value]="type.id">
+                                            {{type.text}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 170px; margin-left: 10px; " (click)="getPaymentAdvRsrbranch()">
+    
+                                    <input #raiserbrInput matInput formControlName="raiserbranch_id"
+                                        [matAutocomplete]="matraiserAutocomplete" placeholder="Employee Branch" id="payment-q-summary-0005">
+                                    <mat-autocomplete [panelWidth]="250" #matraiserAutocomplete="matAutocomplete"
+                                        [displayWith]="displayFnbranchrole" (opened)="raiseBranchScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let branch of Branchlist" [value]="branch"
+                                                matTooltip="{{branch.code}}-{{branch.name}}">
+                                                {{branch.code}}-{{branch.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>                            
+                            </td>
+                            <td>
+                                <mat-form-field  style="width:170px;margin-left: 10px;"  (click)="getPaymentAdvRaiserdropdown()">
+                                    <mat-label>Employee</mat-label>
+                                    <input #raiserInput matInput
+                                        formControlName="raiser_name" [matAutocomplete]="raisertyperole" 
+                                        placeholder="Choose Employee" id="payment-q-summary-0006">
+                                    <mat-autocomplete [panelWidth]="400" #raisertyperole="matAutocomplete"
+                                        [displayWith]="displayFnraiserrole" (opened)="raiserScroll()">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let data of Raiserlist" [value]="data" matTooltip = "{{data.full_name}}">
+                                                {{data.full_name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            
+                        </tr>
+                        <tr>
+                            <td>
+                                <mat-form-field style="width: 170px;margin-left: 10px; ">
+                                    <mat-label>Invoice No</mat-label>
+                                    <input matInput formControlName="invoice_no" autocomplete="off" type="text" id="payment-q-summary-0007">
+                                </mat-form-field>
+                            </td>        
+                            <td>
+                                <mat-form-field style="width: 170px;margin-left: 10px;">
+                                    <mat-label>From Date</mat-label>
+                                    <input matInput readonly [matDatepicker]="picker1" placeholder="From Date"
+                                        formControlName="start_date" id="payment-q-summary-0008">
+                                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 170px;margin-left: 10px;">
+                                    <mat-label>To Date</mat-label>
+                                    <input matInput readonly [matDatepicker]="picker2" placeholder="To Date"
+                                        formControlName="end_date" id="payment-q-summary-0009">
+                                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                </mat-form-field>
+                            </td>
+                            <td >
+                            <mat-form-field style="width:170px;margin-left: 10px;">
+                                <mat-select placeholder="Invoice Status" formControlName="apinvoiceheaderstatus_id" id="payment-q-summary-0010">
+                                    <mat-option *ngFor="let st of ecfStatusList" [value]="st.id" (click)="statusChange(st.id)">
+                                        {{st.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            </td>
+                            
+                            <td colspan="4" style="text-align: end;margin-left: 10px;">
+                                <button class="btn btn-outline-primary" type="submit"
+                                style="border-radius:40px;margin-left: 20px;" color="primary"
+                                (click)="paymentAdviceSearch()" id="payment-q-summary-0011"><i matTooltip="Search" class="fa fa-search"
+                                    aria-hidden="true"></i></button>
+                                <button class="btn btn-outline-primary" type="button"
+                                style="border-radius:40px;margin-left: 10px;"
+                               color="primary" (click)="resetPaymentAdvice()" id="payment-q-summary-0012">Reset</button>
+                               <button class="btn btn-outline-primary" type="button"
+                               style="border-radius:40px;margin-left: 10px;" 
+                              color="primary" (click)="paymentAdvRptDwnld()" id="payment-q-summary-0013">Report Download</button>
+                            </td>
+                        </tr>
+                        <!-- <tr> -->
+                            
+                            <!-- <td>
+                                <mat-form-field style="width: 200px; margin-left: 50px;">
+                                    <mat-label>Minimum Amount</mat-label>
+                                    <input matInput formControlName="minamt" autocomplete="off" type="number" id="payment-q-summary-0014">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field style="width: 200px; margin-left: 50px; ">
+                                    <mat-label>Maximum Amount</mat-label>
+                                    <input matInput formControlName="maxamt" autocomplete="off" type="number" id="payment-q-summary-0015">
+                                </mat-form-field>
+                            </td> -->
+                        <!-- </tr> -->
+                        <!-- <tr>
+                            <td>
+                                <mat-form-field style="width: 200px; margin-left: 20px; ">
+                                <mat-select placeholder="Invoice Header Status" formControlName="apinvoiceheaderstatus_id" id="payment-q-summary-0016">
+                                    <mat-option *ngFor="let type of ecfStatusList" [value]="type.id" matTooltip="{{type.text}}">
+                                        {{type.text}}
+                                    </mat-option>
+                                </mat-select>
+                                </mat-form-field>
+                            </td> -->
+                            
+                            <!-- <td>
+       
+                                <mat-form-field style="width: 200px;margin-left: 50px;">
+                                    <mat-label>Is Original Invoice</mat-label>
+                                    <mat-select  formControlName="is_originalinvoice"  id="payment-q-summary-0017">
+                                        <mat-option *ngFor="let type of yesnolist" [value]="type.id" matTooltip="{{type.text}}">
+                                            {{type.text}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </td> -->
+                           
+                        <!-- </tr> -->
+                    </div>
+                </table>
+            </form>
+        </div>   
+    
+    <!-- <div  style="margin-top: 2%;margin-left: 20px; width: 77%;">
+    <table class="table table-bordered  padsize" style="text-align:center;" >	
+        
+        <thead>
+            <tr class="table_header tableset " style="text-align: center;margin-left: 3%;">
+    
+        -->
+        <p style="color:black;font-size: 18px;font-weight: bold;margin-left: 10px;">
+        Payment Queue Summary
+    </p>
+        <!-- <div class="table-responsive ccbstable"
+        style="margin-top: 2%;margin-left: 20px;overflow: auto;height:250px;margin-bottom: 1%;width:1250px">
+        <table class="table table-bordered scrolltable" fixed-header>
+    
+    
+    
+    
+            <thead  style="text-align: center;margin-left: 3%;">
+                <tr class="table_header " fixed-header> -->
+                    <div class="table-responsive" style="width:100%;margin-top: -1%;">
+                        <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;margin-left: 10px;">
+                            <thead class="table_header" style="text-align: center;">
+                            <tr class="table_header " fixed-header style="text-align: center;">
+    
+    
+                        <th>S.No</th>
+                        <th>Invoice Header CR No</th>
+                        <th>ECF Type</th>
+                        <th>CR No</th>
+                        <th>Supplier</th>
+                        <th>Employee</th>
+                        <th>Employee Branch</th>
+                        <th>Invoice No</th>
+                        <th>Invoice Amount</th>
+                        <th>Invoice Date</th>
+                        <th>Invoice Status</th>
+                        <th>Action
+                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#payment-q-summary-0001"
+                                style="border-radius:40px;margin-left:5px;color: mediumblue;" id="payment-q-summary-0018">
+                                <span class="fa fa-arrow-right"></span>
+                            </button> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let lists of paymentAdvSummary; index as i" style="text-align: center;">
+                        <td> {{(paymentAdvPresentPage - 1)*10 +i+1 }} </td>
+                        <td>{{lists?.apinvoiceheader_crno}}</td>
+                        <td style="white-space: nowrap;">{{lists?.aptype?.text}}</td>
+                        <td>{{lists?.crno}}</td>
+                        <td>{{lists?.supplier_data?.name}} - {{lists?.supplier_data?.code}}</td>
+                        <td>{{lists?.raiser_name}}</td>
+                        <td>{{lists?.raiserbranch_branch?.name_code }}</td>
+                        <td>{{lists?.invoice_no }}</td>
+                        <td style="text-align: right;">{{lists?.ecf_amount|currency:'INR'}}</td>
+                        <td style="white-space: nowrap;">{{lists?.invoicedate | date:'dd-MMM-yyyy'}}</td>
+                        <td>{{lists?.ecf_status?.text}}</td>
+                        <!-- <td *ngIf="lists.payment_details?.data.length >0">
+                            <span matTooltip="View Payment Details" class=" fa fa-eye create " matTooltip="View" data-toggle="modal" data-target="#viewPaymentDetails" 
+                                    style="color: green;cursor: pointer;padding:10px;margin-top: 10px;" (click)="viewPaymentDet(lists.payment_details.data[0])"></span>
+                        </td> 
+                        <td *ngIf="lists.payment_details?.data.length == 0">
+                        </td>   -->
+                        <td>
+                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#payment-q-summary-0001"
+                                style="border-radius:40px;margin-left:5px;color: mediumblue;" id="payment-q-summary-0019">
+                                <span class="fa fa-arrow-right"></span>
+                            </button> 
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+            
+                <div *ngIf="paymentAdvSummary ?.length == 0" style="margin-left: 42%;">
+                    <h3 >Sorry data not found!.. </h3>
+                </div>
+            </div>
+            <div class="row" *ngIf="isPaymentAdvicepage" style="width:85%">
+                <div  class="col-sm-3" style="margin-bottom: 5%;font-size: small;text-align:left;right:-225px;">
+                </div>
+                <div  class="col-sm-9" style="margin-bottom: 5%;font-size: small;text-align:right;left: 18%">
+                    <mat-paginator  
+                    (page)="handlePaymentAdvPageEvent($event)"
+                    [length]="lengthPaymentAdv"
+                    [pageSize]="pageSize_paymentAdvice"
+                    [showFirstLastButtons]="showFirstLastButtons"
+                    [pageSizeOptions]="pageSizeOptions"
+                    [pageIndex]="pageIndex_paymentadv"
+                    [hidePageSize]="true"
+                    aria-label="Select page">
+                    </mat-paginator>
+                </div>
+            </div>
+    </div>
+</mat-card>    
+
+<div >
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" aria-hidden="true" data-backdrop = "static" data-keyboard="false"
+        id="payment-q-summary-0001">
+        <div class="modal-dialog modal-xl " style="width: 50%;">
+            <div class="modal-content">
+                <div class="modal-header text-center" style="background: rgba(23, 204, 23, 0.288);">
+                    <h2 class="modal-title w-100 font-weight-bold" style="color:black ;height:2px;font-family: 'Times New Roman', Times, serif;">Payment Details
+                    </h2>
+                    <button type="button" class="close" #closedpaybutton data-dismiss="modal" aria-label="Close" id="payment-q-summary-0020">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left: 70px;margin-right: 80%;margin-top: 2%; width: 80%;">
+
+                   
+                    <form [formGroup]="PaymentFileForm">
+                        <table>                       
+                                <tr>
+                                    <span><td>
+                                        <mat-form-field
+                                            style="width:250px;font-family: 'Times New Roman', Times, serif;">
+                                            <input matInput placeholder="Name" formControlName="username"
+                                                autocomplete="off"  id="payment-q-summary-0021">
+                                        </mat-form-field>
+                                    </td>
+                                </span>
+                                    <span style="margin-left: 150px;"><td>
+                                        <mat-form-field
+                                            style="width:250px;font-family: 'Times New Roman', Times, serif;">
+                                            <input matInput placeholder="UTR No" formControlName="callbackrefno"
+                                                autocomplete="off"  id="payment-q-summary-0022">
+                                        </mat-form-field>
+                                    </td></span>
+                                    
+                                </tr>
+                        </table>
+                        
+                        <tr>
+                            <div style="margin-top: 30px;margin-left: 180px;">
+                                <td>
+                                    <button type="submit"
+                                    style="border-radius:40px;margin-left: 80px;font-family: 'Times New Roman', Times, serif;"
+                                    class="btn btn-outline-primary" (click)="utrsubmit()" id="payment-q-summary-0023">
+                                    Submit</button>
+
+                            </td>
+
+                            <td>
+                                <button type="button"
+                                style="border-radius:40px;margin-left:10px;font-family: 'Times New Roman', Times, serif;"
+                                class="btn btn-outline-primary" (click)="utrback()" id="payment-q-summary-0024">
+                                Back</button>
+
+                        </td>
+                        </div>
+                    </tr>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

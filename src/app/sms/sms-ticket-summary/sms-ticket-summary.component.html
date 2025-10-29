@@ -1,0 +1,267 @@
+<div class="container">
+    <h1 style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;">Ticket Summary</h1>
+</div><hr>
+<div class="container">
+    <form [formGroup]="searchForm" autocomplete="off">
+        <div class="row" class="col-md-12">
+           <!-- <div class="col-md-3">
+                <mat-form-field style="width: 250px;">
+                    <mat-label>Search by Ticket Code</mat-label>
+                    <input type="text" matInput formControlName="code" (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field style="width:250px">
+                    <mat-label>Search by Issues type</mat-label>
+                    <input type="text" matInput formControlName="issuetype" (keypress)="kyenbdata($event)">
+                </mat-form-field>
+            </div>-->
+            <!-- <div class="col-md-2"> -->
+                    
+                <mat-form-field class="example-full-width" style="margin-left: 10px;width: 200px;" class="col-md-3">
+                    <mat-label>Branch</mat-label>
+                    <input class="toolbar-search" type="text" matInput autocomplete="off" #branchidInput [matAutocomplete]="branchref" formControlName="branch" style="width: 250px;" (keypress)="kyenbdata($event)"/>
+                    <mat-autocomplete #branchref="matAutocomplete" [displayWith]="branchintreface" (opened)="autocompletebranchname()">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option title="{{d.code+' - '+d.name}}" *ngFor="let d of branchList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+            
+           
+                <mat-form-field style="width: 200px; margin-left: 10px;" class="col-md-3">
+                    <mat-label>Ticket Raised By</mat-label>
+                    <input type="text" matInput formControlName="employee_id" [matAutocomplete]="nameref">
+                    <mat-autocomplete  #nameref="matAutocomplete" [displayWith]="ownerdatainterface" (opened)=" autocompletesupname()">
+                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                        <ng-container *ngIf="!isLoading">
+                            <mat-option title="{{d.code+' - '+d.name}}" *ngFor="let d of ownerList" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+            </mat-form-field>
+        
+            <mat-form-field  style="width: 200px;" class="col-md-3">
+                <mat-label>Status </mat-label>
+               <!-- <input matInput placeholder="status" formControlName="status"  />-->
+                <mat-select formControlName="status">
+                    <mat-option value="Open">Open</mat-option>
+                    <mat-option value="Reopen">Reopen</mat-option>
+                    <mat-option value="Close Ticket">Close Ticket</mat-option>
+                    <mat-option value="Duplicated Ticket">Duplicated Ticket</mat-option>
+                    <mat-option value="Updated">Updated</mat-option>
+                </mat-select>
+            </mat-form-field>
+           
+             
+                <button type="button" (click)="searchdata()" class="btn btn-outline-success" style="border-radius: 30px;height: 40px;">Search</button>
+                <button type="reset" (click)="reset()" class="btn btn-outline-danger" style="border-radius: 30px;height: 40px;margin-left:5px">Reset</button>
+                <button type="button" style="margin-left: 10px;border-radius:40px" mat-raised-button class="btn btn-success"
+                matTooltip="Create Ticket" routerLink="/sms/createticket" >NEW TICKET<mat-icon>add</mat-icon></button>
+                <!-- <div class="col-md-1"> -->
+                <button type="reset" class="btn btn-outline-primary" routerLink="/sms/smstransaction" style="margin-left: 10px;border-radius: 40px;height: 40px;">Back</button>
+                <!-- </div> -->
+            <!-- </div> -->
+        </div>
+    </form>
+</div>
+<div class="container">
+    <!-- <div class="box" style="height: 400px;">Lithium
+        <div class="con" style="height: 50px;">
+            Overall Ticket Summary
+        </div>
+        <div class="row">
+        
+            <div class="col-md-3">
+                <div class="box1">
+                    <div >
+                        <mat-icon style="text-align: left;">calendar_today</mat-icon>
+                   
+                        <mat-icon style="text-align: right;">calendar_today</mat-icon>
+                    </div>
+                    <div >
+                        <span>View Tickets</span>
+                   
+                        <mat-icon style="text-align: right;">arrow_forward_ios</mat-icon>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-3">
+                <div class="box2">
+                    <div >
+                        <mat-icon style="text-align: left;">calendar_today</mat-icon>
+                   
+                        <mat-icon style="text-align: right;">calendar_today</mat-icon>
+                    </div>
+                    <div >
+                        <span>View Tickets</span>
+                   
+                        <mat-icon style="text-align: right;">arrow_forward_ios</mat-icon>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-3">
+                <div class="box3">
+                    <div >
+                        <mat-icon style="text-align: left;">calendar_today</mat-icon>
+                   
+                        <mat-icon style="text-align: right;">calendar_today</mat-icon>
+                    </div>
+                    <div >
+                        <span>View Tickets</span>
+                   
+                        <mat-icon style="text-align: right;">arrow_forward_ios</mat-icon>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div> -->
+    <div class="card" style="width: 95%;">
+        <div class="card-header" style="height: 40px;background-color: rgb(61, 168, 204);font-size: 15px;font-family: 'Times New Roman', Times, serif;color: white;" >
+            Overall Ticket Summary
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4" style="width: 200px;">
+                    <div class="card">
+                        <div style="height: 80px;background-color:rgb(208, 230, 164);" >
+                            <div style="display:flex;">
+                               
+                                    <mat-icon style="font-size: 50px;margin-left: 5%;margin-top: 5%;">calendar_today</mat-icon>
+                            
+                                <!--<h1 class="text-right" style="margin-top:-30%" class="text-right">{{initialCount}}</h1>Tickets&lt;30&nbsp;-->
+                                <h3 style="text-align: end;padding-left:15%">Total ticket (<b>{{initialCount}}</b>) Count below 30 Days</h3>
+                            </div>
+                        </div>
+                       
+                        <div>
+                            <button style="background: none; border: none;height: 60px;" (click)="getsummarydata_initial()">
+                                <div class="row">
+                                    <div style="width: 250px;">
+                                        <span style="margin-top: -12%;font-size: 15px;margin-left: 2%;">View Tickets</span>
+                                    </div>
+                                    <div style="width: 50px;">
+                                
+                                        <mat-icon style="text-align: right;">arrow_forward_ios</mat-icon>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" style="width: 100px;height: 160px;">
+                    <div class="card">
+                        <div style="height: 80px;background-color:rgb(231, 215, 141);" >
+                            <div style="display:flex;">
+                               
+                                    <mat-icon style="font-size: 50px;margin-left: 5%;margin-top: 5%;">calendar_today</mat-icon>
+                                
+                            
+                                <!--<h1 class="text-right" style="margin-top:-30%" >{{bwcount}}</h1>-->
+                                <h3 style="text-align: end;padding-left:15%">Total ticket count (<b>{{bwcount}}</b>) 30 to 60 days</h3>
+                            </div>
+                        </div>
+                        <div>
+                            <button style="background: none; border: none;height: 60px;" (click)="getsummarydata_bw()">
+                                <div class="row">
+                                    <div style="width: 200px;">
+                                        <span style="margin-top: -12%;font-size: 15px;margin-left: 2%;">View Tickets</span>
+                                    </div>
+                                    <div style="width: 50px;">
+                                
+                                        <mat-icon style="text-align: right;" class="text-right">arrow_forward_ios</mat-icon>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" style="width: 150px;">
+                    <div class="card">
+                        <div style="height: 80px;background-color:rgb(238, 162, 166);" >
+                            <div style="display:flex;">
+                               
+                                    <mat-icon style="font-size: 50px;margin-left: 5%;margin-top: 5%;">calendar_today</mat-icon>
+                                
+
+                                <!--<h1 class="text-right" style="margin-top:-30%" >{{allcount}}</h1>-->
+                                <h3 style="text-align: end;padding-left:15%">Over all ticket count (<b>{{allcount}}</b>)</h3>
+                            </div>
+                        </div>
+                        <div>
+                            <button style="background: none; border: none;height: 60px;" (click)="getsummarydata_all()">
+                                <div class="row">
+                                    <div style="width: 200px;">
+                                        <span style="margin-top: -12%;font-size: 15px;margin-left: 2%;">View Tickets</span>
+                                    </div>
+                                    <div style="width: 50px;">
+                                
+                                        <mat-icon style="text-align: right;" class="text-right">arrow_forward_ios</mat-icon>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<div class="container">
+    <table class="table table-bordered">
+        <thead>
+            <tr class="table_header">
+                <th>S.No <button mat-icon-button [ngClass]="ticclr==false?'able':'disable'" matTooltip="asce" style="text-align: right;" 
+                    (click)="getticsumascdec('asce',1)"><mat-icon>arrow_upward</mat-icon></button>
+                <button mat-icon-button [ngClass]="ticclr1==false?'able':'disable'" matTooltip="dece" style="text-align: right;" color="primary"
+                    (click)="getticsumascdec('desc',2)"><mat-icon>arrow_downward</mat-icon></button></th>
+                <th>Ticket Code</th>
+                <th>Branch Name</th>
+                <th>Issues Type</th>
+                <th>Nature Of Problem</th>
+                <th>Created Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let d of summatyList;let i=index">
+                <td>{{(presentpage-1)*pagesize+i+1}}</td>
+                <td><button (click)="movetofollowup(d)" type="button" style="color: blue;border: none;background: none;">{{d.ticketheader_code}}</button></td>
+                <td>{{d.branch_code+' - '+d.branch_name}}</td> 
+                <td>{{d.summary}}</td>
+                <td>{{d.errorcategory_name}}</td>
+                <td>{{d.create_date | date:'yyyy-MMM-dd'}}</td>
+                <td>{{d.duedate | date:'yyyy-MMM-dd'}}</td>
+                <td>{{d.status}}</td>
+            </tr>
+            <tr *ngIf="summatyList.length==0">
+                <td colspan="7">
+                    No Records Found
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <!--Total Count:{{totalcount}}-->
+                </td>
+                <td colspan="5">
+                    <div style="float: right;">
+                        <button type="button" mat-icon-button [disabled]="!has_previous" (click)="has_previousdataall()"><mat-icon>arrow_back</mat-icon></button>
+                        {{presentpage}}
+                        <button type="button" mat-icon-button [disabled]="!has_next" (click)="has_nextdataall()"><mat-icon>arrow_forward</mat-icon></button>
+                    </div>
+                </td>
+              
+            </tr>
+            
+            
+        </tbody>
+    </table>
+</div>
+<br />
+<br />

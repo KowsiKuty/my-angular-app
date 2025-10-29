@@ -1,0 +1,216 @@
+<section class="screen-padding screen-lm">
+    <div class="comp-header">
+        <span style="font-weight: 600;">Destroy Documents</span>
+    </div>
+    <!-- <form [formGroup]="destroySearch">
+        <section class="row">
+
+            <div class="col-md-3">
+    
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Product</mat-label>
+                    <input matInput formControlName="producttype">
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+    
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Retention Date</mat-label>
+                    <input matInput [matDatepicker]="picker1" placeholder="Date" autocomplete="off"
+                        formControlName="retent_date">
+                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+            </div> ------kowsicommand------------------------------------>
+            <!-- <div class="col-md-3">
+    
+                <mat-form-field>
+                    <mat-label>Vendor</mat-label>
+                    <mat-select matInput formControlName="vendor">
+                        <mat-option>
+    
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+        <!-- </section>
+        <section class="row"> -->
+            <!-- <div class="col-md-4">
+                <mat-form-field>
+                    <mat-label></mat-label>
+                    <mat-select matInput formControlName="action">
+                        <mat-option>
+    
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+            <!-- <div class="col-md-3">
+    
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Document Number</mat-label>
+                    <input matInput formControlName="documentnum">
+                    
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label> Status</mat-label>
+                    <mat-select matInput formControlName="status">
+                        <mat-option>
+    
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+    
+                <button matTooltip="Search Records" class="btn btn-outline-success" id="rmubtn" 
+                    color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                <button class="btn btn-warning" matTooltip="Clear Entries" style="margin-left:20px"
+                     id="rmubtn">Clear</button> -----kowsicommand------------------------------------>
+    
+                <!--  <button matTooltip="Return Request" type="button" class="btn btn-outline-primary" id="rmubtn"
+                    (click)="returnreq()" style="margin-left: 20px;"><span class="fa fa-plus"></span>
+                    RETURN </button>-->
+            <!-- </div>
+    
+        </section>
+    </form> -----kowsicommand------------------------------------>
+    <div class="filter-aling-2">
+    <lib-vs-search-cmp
+    class="npm-mat-edit"
+    [SearchArr]="destroy_search"
+    [Outputtype]="searchvar"
+    (dataoutput)="getdestroysummary($event)">
+    </lib-vs-search-cmp>
+    </div>
+    <div  class="table-responsive">
+        <table class="table table-bordered" id="destroytable" style="text-align: center;">
+            <thead class="table_header">
+                <th>S.No</th>
+                <th>Product</th>
+                <th>Product Barcode</th>
+                <th>Retention Date</th>
+                <th>Vendor Barcode</th>
+                <th>Status</th>
+                <th>Select All <mat-checkbox [color]="'warn'"  (change)="selectalldocs()" [(ngModel)]="selectall">
+                </mat-checkbox>
+            </th>
+                
+               
+               
+                
+    
+            </thead>
+            <tbody *ngFor="let destroy of destroydoclist;index as ind">
+                
+                <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                <td>{{destroy.product?.name}}</td>
+                <td>{{destroy.product_barcode}}</td>
+                <td>{{destroy.retention_date | date:'dd-MM-yyyy'}}</td>
+                <td>{{destroy.writer_barcode}}</td>
+                <td>{{destroy.archival_status?.value}}</td>
+                <td>
+                    <mat-checkbox 
+                        [color]="'primary'" [(ngModel)]="destroy.select" (change)="adddocs(destroy)"
+                         (click)="destroyed(destroy)">
+                    </mat-checkbox>
+                </td>
+              
+                
+            </tbody>
+        </table>
+        <!-- <div *ngIf="!destroydoclist.length" style="margin-left: 42%;">
+            <h3>Sorry no data found!... </h3>
+        </div> -->
+    
+        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+
+            <section style="text-align:center;">
+                <button *ngIf="showbutton" class="btn btn-primary"  id="rmubtn"  data-toggle="modal" (click)="popupopen()">Request Destroy</button>
+                <!-- <button style="margin-left:15px;" class="btn btn-outline-dark backbtn"  id="rmubtn">Back</button> -->
+                </section> 
+            <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false" color="primary">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{pagination.index}}
+            <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+    
+        </div>  
+    </div>
+
+
+    <div
+    class="modal fade"
+    id="actionpopup"
+    tabindex="-1"
+    aria-labelledby="actionpopup"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="actionpopup" style="font-weight: 600;">Destroy Confirmation</p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closedestroypopup
+            aria-label="Close"
+            (click)="close()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+    
+        <div class="modal-body">
+            <form [formGroup]="destroyform"> 
+                <div class="modal-body">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput formControlName="comment" >
+                    </mat-form-field>
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  class="btn btn-outline-primary" (click)="destroyDoc()">Destroy</button>
+                <button type="button" #closedestroypopup (click)="close()"  class="btn btn-outline-secondary"
+                    data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+    </div>
+
+<!-- 
+    <div class="modal fade" id="actionpopup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header hdrclr">
+                    <h2 class="modal-title" id="exampleModalLongTitle">Destroy Confirmation</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form [formGroup]="destroyform"> 
+                <div class="modal-body">
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>Remarks</mat-label>
+                        <input matInput formControlName="comment" >
+                    </mat-form-field>
+                </div>
+            </form>
+                <div class="modal-footer">
+                    <button type="button" id="rmubtn" class="btn btn-outline-primary" (click)="destroyDoc()">Destroy</button>
+                    <button type="button" #actionclose id="rmubtn" class="btn btn-outline-secondary"
+                        data-dismiss="modal">Close</button>
+    
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+</section>

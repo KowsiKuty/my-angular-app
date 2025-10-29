@@ -1,0 +1,509 @@
+<div *ngIf="firstscreen" style="margin-top: 15px;margin-left: 15px;">
+    <h3 style="color:black;font-size: 20px;font-weight: 500">
+         eClaim Advance Recovery
+   </h3>
+    <div class="row">
+        <div class="col-12">
+            <form [formGroup]="recoveryform">
+                <!-- <mat-form-field style="width:175px;">
+                    <mat-label>Invoice No</mat-label>
+                    <input matInput placeholder="Invoice Number" formControlName="invoiceno"
+                        (keypress)='omit_special_char($event)' >
+                </mat-form-field> -->
+                <mat-form-field style="width:175px;">
+                  <mat-label>CR Number
+
+                  </mat-label>
+                  <input matInput placeholder="CR Number" formControlName="Invoice_crno"
+                      >
+              </mat-form-field>
+
+                <mat-form-field *ngIf="isbranch" style="width:310px;margin-left: 50px;">
+                    <mat-label>Branch</mat-label>
+                    <input type ='text'matInput id ="inputassetid" placeholder="Enter Branch" formControlName="branch" [matAutocomplete]="conoffice"
+                        (keypress)='omit_special_char($event)' >
+                        <button mat-button matSuffix (click)="brclear($event)" mat-icon-button aria-label="Clear">
+                            <mat-icon>close</mat-icon>
+                            </button>
+
+                        <mat-autocomplete #assetid #conoffice="matAutocomplete" (opened)="autocompleteid()">
+                            <mat-option *ngFor="let branch of branchlist" (click)="selectBranch(branch)"
+                              [value]="'('+(branch.code)+') '+(branch.name)">
+                              ({{branch.code}}) {{branch.name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field  style="width:300px;margin-left: 50px;">
+                    <mat-label>Employee</mat-label>
+                    <input matInput placeholder="Enter Employee" id="emplid" #emp formControlName="employee" [matAutocomplete]="empc" 
+                         >
+                         <button mat-button matSuffix (click)="empclear()" mat-icon-button aria-label="Clear">
+                            <mat-icon>close</mat-icon>
+                            </button>
+
+                        <mat-autocomplete #empc="matAutocomplete" [displayWith]="displayFn" (opened)="autocompleteemps()">
+                            <mat-option *ngFor="let emp of employeelist" [value]="emp" (click)='selectemployee(emp)'>
+                            {{emp.full_name}}
+                            </mat-option>
+                          </mat-autocomplete>
+                </mat-form-field>
+
+                <button class="btn btn-outline-success" type="submit" (click)="recoverysearch()"
+                    style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                        aria-hidden="true" matTooltip="Search"></i></button>
+
+                <button class="btn btn-outline-success" type="submit" (click)="reset()"
+                    style="border-radius:40px;margin-left: 15px;" color="primary">Clear</button>
+
+
+            </form>
+        </div>
+    </div>
+    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+        <thead class="table_header" style="text-align: left;">
+    <tr>
+    <th>S.No</th>
+    <th>Employee</th>
+    <th>Advance CR No</th>
+    <th>Expense CR No</th>
+    <th>Invoice No</th>
+    <th>Date</th>
+    <th>Advance by</th>
+    <th>Advance amount</th>
+    <th>Expense amount</th>
+    <th>Balance amount</th>
+    
+    <th>Action</th>
+    
+    </tr>
+    </thead>
+    <tbody> 
+        <tr *ngFor="let sum of summarylist; index as i">
+       <td scope="row"  style="vertical-align: middle;">{{(currentpage - 1)*pagesize +i+1 }}</td>
+        <td>({{sum.Employee_Code}}) {{sum.Employee}}</td>
+        <td>{{sum.Advance_Crno}}</td>
+        <td>{{sum.Expense_Crno}}</td>
+        <td>{{sum.tour_id}}</td>
+        <td style="white-space: nowrap;">{{ (sum?.Date !== "None") ? (sum?.Date | date:'dd-MM-yyyy') : "-" }}</td>
+        <td>{{sum.Employee}}</td>
+        <td>{{sum.Advance_Amount}}</td>
+        <td>{{sum.Expense_Amount}}</td>
+        <td>{{sum.Balance_Amount}}</td>
+        
+        <td><button mat-icon-button matTooltip="Jv Entry" class="iconbutton" color="primary"
+            (click)="jv_maker(sum)">
+            
+            <mat-icon style="color: green;"class="material-icons">
+                edit</mat-icon>
+        </button>
+        </td>
+            
+        </tr>
+    </tbody>
+    </table>
+    <div *ngIf="summarylist ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+    <div class="row" *ngIf="isTourChecker">
+        <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="nextpage()"
+            >
+            <mat-icon >arrow_back</mat-icon>
+            </button>
+            {{currentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="previouspage()"
+            >
+            <mat-icon >arrow_forward</mat-icon>
+            </button>
+            </div>
+    </div>
+
+</div>
+<div *ngIf="secondscreen" style="margin-top: 15px;margin-left: 15px;">
+        <h3 style="margin-left: 44px;margin-top: 30px; font-size: 22px;font-weight: 500;">
+          eClaim Recovery Maker Screen
+        </h3>
+        <hr>
+        <div  style="margin-left: 50px;margin-top: 2%; width: 100%;"> 
+          <h3 style="color:rgb(0, 0, 0);font-size: 18px;font-weight: 500px;margin-top: 1%;">
+            Tour Details
+          </h3>
+          <form [formGroup]="expenceform">
+            <div>
+        
+              <table>
+                <tr>
+                  <td>
+                    <mat-form-field style="width: 175px;">
+                      <mat-label>Tour No</mat-label>
+                      <input matInput placeholder="Tour No" name="requestno" [value]="tourgid" [disabled]="true"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width:250px;padding-left: 50px;">
+                      <mat-label>Tour Reason</mat-label>
+                      <input matInput placeholder="Tour Reason" name="reason" [value]="reason" [disabled]="true"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 175px;padding-left: 50px;">
+                      <mat-label>Start Date</mat-label>
+                      <input matInput placeholder="Start Date" name="startdate" [value]="startdate | date:'dd-MM-yyyy'" [disabled]="true"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 175px;margin-left: 50px;">
+                      <mat-label>End Date</mat-label>
+                      <input [disabled]='true' matInput placeholder="End Date" name="enddate" [value]="requestdate | date:'dd-MM-yyyy'"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+        
+                </tr>
+                <h3 style="color:rgb(0, 0, 0);font-size: 18px;font-weight: 500px;margin-top: 2%;">
+                  Employee Details
+                </h3>
+                <tr>
+                  <td>
+                    <mat-form-field style="width: 175px;">
+                      <mat-label>Employee Code</mat-label>
+                      <input matInput placeholder="Employee Code" name="code" [value]="employee_code" [disabled]="true"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 175px;padding-left: 50px;">
+                      <mat-label>Employee Name</mat-label>
+                      <input matInput placeholder="Employee Name" name="Name" [value]="employee_name" [disabled]="true"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 175px;padding-left: 50px;">
+                      <mat-label>Designation</mat-label>
+                      <input matInput placeholder="Designation" name="designation" [value]="empdesignation" [disabled]="true"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <mat-form-field style="width: 175px;margin-left: 50px;">
+                      <mat-label>Employee Grade</mat-label>
+                      <input disabled matInput placeholder="Employee Grade" name="empgrade" [value]="empgrade"
+                        autocomplete="off" required>
+                    </mat-form-field>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#ccbsModal"
+                      style="border-radius:40px; margin-left: 50px;">
+                      CCBS</button>
+                  </td>
+        
+                </tr>
+        
+        
+        
+              </table>
+              <div class="table-responsive" style="width:100%;margin-top: 1%; overflow-x: hidden;">
+                <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                  <thead class="table_header" style="text-align: left;">
+                    <tr>
+                      <th>S.No</th>
+                      <th>Advance CR No</th>
+                      <th>Expense CR No</th>
+                      <th>Advance Amount</th>
+                      <th>Expense Amount</th>
+                      <th>Balance Amount</th>
+                      <th>Recovery Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let getclaim of advancedetail;index as i">
+                      <td>{{i+1}}</td>
+                      <td>{{getclaim.Advance_Crno}}</td>
+                      <td>{{getclaim.Expense_Crno}}</td>
+                      <td>{{getclaim.Advance_Amount | currency:"INR"}}</td>
+                      <td>{{getclaim.Expense_Amount | currency:"INR"}}</td>
+                      <td>{{getclaim.Balance_Amount | currency:"INR"}}</td>
+                      <td *ngIf="getclaim?.jv_entry_id == 0" style="white-space: nowrap;">Not Created</td>
+                      <td *ngIf="getclaim?.jv_entry_id != 0" style="white-space: nowrap;">Pending</td>
+                  </tbody>
+                  <!-- <tr>
+        
+                    <th class="totaldisplay" colspan="2"></th>
+                    <td>Total Advance Amount:{{claimedamt | currency:"INR"}}</td>
+                    <td>
+                      Total Approved Amount :{{approvedamt | currency:"INR"}}
+                    </td>
+                    <th class="totaldisplay" colspan="5"></th>
+                  </tr> -->
+                </table>
+              </div>
+              <td>
+        
+                <div class="modal fade" tabindex="-1"  data-backdrop="static" role="dialog" aria-labelledby="exampleModalLabels"
+                  aria-hidden="true" id="ccbsModal">
+                  <div class="modal-dialog modal-xl" style="width: 85%;">
+                    <div class="modal-content">
+                      <div  class="modal-header" style="background:#DDEFDD">
+                        <h2 class="modal-title" style="width: 250px;margin-left: 20px;">CCBS (Tour No) : {{this.id}} </h2>
+                        <div style="margin-left:39%">
+                          <h2 class="modal-title" style="width: 250px;margin-left: 50px;">Balance Amount:
+                            {{balance_amount}}</h2>
+                        </div>
+                        <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+        
+                      <div   style="margin-left: 40px;margin-right: 40px;margin-top: 4%; width: 100%; margin-bottom: 2%;">
+                          <div formArrayName='ccbs' style="margin-top: 4%; margin-bottom: 2%;" >
+                            <div class="col-md-1" style="margin-top: -5%;margin-left: 84%; ">
+                           </div>
+                        
+                          <fieldset>
+                            <table>
+                              
+                              <tr *ngFor="let dt2 of expenceform.controls.ccbs['controls'] ;let ind=index;"
+                              [formGroupName]="ind">
+                                <td>
+                                   
+                                  <mat-form-field style="width: 250px;margin-left: 20px;">
+                                    <mat-label>BS</mat-label>
+                                    <input required  id="ccbssearch" type="text" #bsid
+                                      placeholder="Select BS" matInput [matAutocomplete]="bsss"
+                                      formControlName="bsid" [readonly]="true">
+                                    <mat-autocomplete #bssid #bsss="matAutocomplete">
+                
+                                    </mat-autocomplete>
+                                  </mat-form-field>
+                                </td>
+                                <td>
+      
+                                  <mat-form-field style="width: 250px;margin-left: 20px;">
+                                    <mat-label>CC</mat-label>
+                                    <input required  type="text" placeholder="Select CC"
+                                      matInput [matAutocomplete]="csss"
+                                      formControlName="ccid" [readonly]="true">
+                                    <mat-autocomplete #csss="matAutocomplete">
+                                    </mat-autocomplete>
+                                  </mat-form-field>
+                                </td>
+      
+                                <td>
+                                  <mat-form-field style="width: 175px;margin-left: 20px;">
+                                    <mat-label>Claim Amount</mat-label>
+                                    <input matInput placeholder="Amount"
+                                       appNumberOnly autocomplete="off" required [readonly]="true" [value]="balance_amount / 100 * ccbslist[ind]['percentage']">
+                                   <!-- {{this.value1}} -->
+                                  </mat-form-field>
+                                </td>
+                                <td>
+                                  <mat-form-field style="width: 175px;margin-left: 20px;">
+                                    <mat-label>Percentage</mat-label>
+                                    <input matInput placeholder="Percentage"  maxlength="4"
+                                       appNumberOnly formControlName="percentage" 
+                                      pattern="^(?:100|[1-9][0-9]?|[1-9])$" required [readonly]="true">
+                                    <!-- {{this.value}} -->
+                                  </mat-form-field>
+                                </td>
+                                <td>
+                                </td>
+                              </tr>
+                            </table>
+                          </fieldset>
+                          <div class="col-md-11 text-center" style="margin-bottom: 4%;">
+      
+      
+                          </div>
+                          </div>
+      
+                      </div>
+        
+                    </div>
+        
+                  </div>
+                </div>
+              </td>
+              <div>
+        </div>
+        
+        
+        
+        <br>
+        <!-- <div *ngIf="show_approvebtn" class="col-md-12 text-center" style="margin-bottom:2%;margin-top: -1%;">
+        
+          <mat-form-field style="width: 300px;" *ngIf="(actionreject || actionreturn || amtapprove) && !actionapprove">
+            <input matInput type="text" placeholder="Reason" [disabled]="invalidpermission" [value]='reasonchange'
+              (keypress)="omit_special_char($event)" (change)="reasonupdate($event)" required>
+          </mat-form-field>
+        
+          <button type="submit" *ngIf="applevel==2 && amtapprove" matTooltip="Approve"
+            style="border-radius: 40px;margin-left: 30px;" class="btn btn-outline-success"
+            (click)="approveclaim()">Approve</button>
+        
+          <button type="submit"
+            *ngIf="actionreject"
+            [disabled]="reapprove" MatTooltip="Reject" style="border-radius: 40px;margin-left: 30px;" class="btn btn-outline-danger"
+            (click)="rejectclaim()">Reject</button>
+        
+          <button type="submit" matTooltip="Return"
+            *ngIf="actionreturn"
+            [disabled]="reapprove" style="border-radius: 40px;margin-left: 30px;" class="btn btn-outline-secondary"
+            (click)="returnclaim()">Return</button>
+            <button type="button" matTooltip="Submit" (click)="submitForm()" class="btn btn-success"
+            style="border-radius: 40px;margin-left: 20px;">Submit</button>
+      
+        <button type="button" matTooltip="Return"  class="btn btn-outline-secondary"
+          (click)="returnclaim()" style="border-radius: 40px;margin-left: 20px;">Return</button>
+          <button type="button" matTooltip="Back" *ngIf="!actionapprove" (click)="back()" class="btn btn-primary"
+            style="border-radius: 40px;margin-left: 20px;">Back</button>
+        
+        
+        </div> -->
+      <mat-form-field style="width: 300px;" >
+          <input matInput type="text" placeholder="Reason" 
+            (keypress)="omit_special_char($event)" (change)="reasonupdate($event)" required>
+        </mat-form-field>
+        <div class="text-center row">
+          <!-- <button type="button" matTooltip="Return"  class="btn btn-info btn-sm"
+          (click)="returnExpenceCheckerclaim()" style="border-radius: 40px;margin-left: 20px;">Return Expence Approver</button>
+          <button type="button" matTooltip="Return"  class="btn btn-info btn-sm"
+          (click)="returnTourMaker()" style="border-radius: 40px;margin-left: 20px;">Return To Initiater</button>
+          <button type="button" matTooltip="Reject"  class="btn btn-danger btn-sm"
+           style="border-radius: 40px;margin-left: 20px;" (click)="rejectclaim()">Reject</button> -->
+           <button *ngIf="Jv_approve && recovery_checker" type="button" class="btn btn-success btn-sm"
+                    (click)="approve()" data-dismiss="modal" style="border-radius: 40px; margin-left: 20px;">Approve</button>
+                    <button *ngIf="Jv_approve != true && recovery_maker" type="button" class="btn btn-success btn-sm"
+                    (click)="jventry(advancedetail[0])" data-dismiss="modal" style="border-radius: 40px; margin-left: 20px;">Submit</button>
+                    <button type="button" (click)="back()" class="btn btn-primary btn-sm"
+                    style="border-radius: 40px;margin-left: 20px;">Back</button>
+         </div>
+         <br>  
+        </div>
+        
+      
+        </form>
+        </div> 
+</div>
+
+<div *ngIf="monoscreen" style="margin-top: 15px;margin-left: 15px;">
+  <h3 style="color:black;font-size: 20px;font-weight: 500">
+       eClaim Advance Recovery
+ </h3>
+  <div class="row">
+      <div class="col-12">
+          <form [formGroup]="recoveryform">
+              <!-- <mat-form-field style="width:175px;">
+                  <mat-label>Invoice No</mat-label>
+                  <input matInput placeholder="Invoice Number" formControlName="invoiceno"
+                      (keypress)='omit_special_char($event)' >
+              </mat-form-field> -->
+              <mat-form-field style="width:175px;">
+                <mat-label>ECF CRN NO
+
+                </mat-label>
+                <input matInput placeholder="ECF CRN Number" formControlName="Invoice_crno"
+                    >
+            </mat-form-field>
+
+              <mat-form-field *ngIf="isbranch" style="width:310px;margin-left: 50px;">
+                  <mat-label>Branch</mat-label>
+                  <input type ='text'matInput id ="inputassetid" placeholder="Enter Branch" formControlName="branch" [matAutocomplete]="conoffice"
+                      (keypress)='omit_special_char($event)' >
+                      <button mat-button matSuffix (click)="brclear($event)" mat-icon-button aria-label="Clear">
+                          <mat-icon>close</mat-icon>
+                          </button>
+
+                      <mat-autocomplete #assetid #conoffice="matAutocomplete" (opened)="autocompleteid()">
+                          <mat-option *ngFor="let branch of branchlist" (click)="selectBranch(branch)"
+                            [value]="'('+(branch.code)+') '+(branch.name)">
+                            ({{branch.code}}) {{branch.name}}
+                          </mat-option>
+                        </mat-autocomplete>
+              </mat-form-field>
+
+              <mat-form-field  style="width:300px;margin-left: 50px;">
+                  <mat-label>Employee</mat-label>
+                  <input matInput placeholder="Enter Employee" id="emplid" #emp formControlName="employee" [matAutocomplete]="empc" 
+                       >
+                       <button mat-button matSuffix (click)="empclear()" mat-icon-button aria-label="Clear">
+                          <mat-icon>close</mat-icon>
+                          </button>
+
+                      <mat-autocomplete #empc="matAutocomplete" [displayWith]="displayFn" (opened)="autocompleteemps()">
+                          <mat-option *ngFor="let emp of employeelist" [value]="emp" (click)='selectemployee(emp)'>
+                          {{emp.full_name}}
+                          </mat-option>
+                        </mat-autocomplete>
+              </mat-form-field>
+
+              <button class="btn btn-outline-success" type="submit" (click)="recoverysearch()"
+                  style="border-radius:40px;margin-left: 15px;" color="primary"><i class="fa fa-search"
+                      aria-hidden="true" matTooltip="Search"></i></button>
+
+              <button class="btn btn-outline-success" type="submit" (click)="reset()"
+                  style="border-radius:40px;margin-left: 15px;" color="primary">Clear</button>
+
+
+          </form>
+      </div>
+  </div>
+  <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+      <thead class="table_header" style="text-align: left;">
+  <tr>
+  <th>S.No</th>
+  <th>Employee</th>
+  <th>CRN NO</th>
+  <th>ECF CRN NO</th>
+  <th>Date</th>
+  <th>Advance By</th>
+  <th>Amount</th>
+  <th>Balance</th>
+  <th>Action</th>
+  
+  </tr>
+  </thead>
+  <tbody> 
+      <tr *ngFor="let sum of summarylist; index as i">
+     <td scope="row"  style="vertical-align: middle;">{{(currentpage - 1)*pagesize +i+1 }}</td>
+      <td>({{sum.employee_code}}) {{sum.employee_name}}</td>
+      <td>{{sum.ppxheader_crno}}</td>
+      <td>{{sum.invoiceheader_crno}}</td>
+      <td style="white-space: nowrap;">{{ (sum?.ppxheader_date !== "None") ? (sum?.ppxheader_date | date:'dd-MM-yyyy') : "-" }}</td>
+      <td>{{sum.Advance_By}}</td>
+      <td>{{sum.ppxheader_amount}}</td>
+      <td>{{sum.ppxheader_balance}}</td>
+      
+      <td><button mat-icon-button matTooltip="Jv Entry" class="iconbutton" color="primary"
+          (click)="jventry(sum)">
+          
+          <mat-icon style="color: green;"class="material-icons">
+              edit</mat-icon>
+      </button>
+      </td>
+          
+      </tr>
+  </tbody>
+  </table>
+  <div *ngIf="summarylist ?.length == 0" style="margin-left: 42%;">
+      <h3>Sorry data not found!.. </h3>
+  </div>
+  <div class="row" *ngIf="isTourChecker">
+      <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+          <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="nextpage()"
+          >
+          <mat-icon >arrow_back</mat-icon>
+          </button>
+          {{currentpage}}
+          <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="previouspage()"
+          >
+          <mat-icon >arrow_forward</mat-icon>
+          </button>
+          </div>
+  </div>
+
+</div>

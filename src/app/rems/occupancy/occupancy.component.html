@@ -1,0 +1,283 @@
+<br>
+
+<h2 style="margin-left: 40px; ">
+    Occupancy Details
+</h2>
+<div style="margin-left: 100px;margin-right: 80%;margin-top: 1%; width: 100%;">
+
+    <form [formGroup]="occupancyForm" (ngSubmit)="occupanyCreateForm()">
+        <table>
+            <div>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Occupancy Usage</mat-label>
+                            <mat-select formControlName="usage" id="occupancy-0001">
+                                <mat-option *ngFor="let usage of usageList" (click)="usageDropDown(usage)"
+                                    [value]="usage.id">
+                                    {{usage.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Occupancy Usage Code</mat-label>
+                            <input #rmInput placeholder="Occupancy Usage Code" matInput formControlName="usage_code_id"
+                                [matAutocomplete]="rmemp" required id="occupancy-0002">
+                            <mat-autocomplete #rmemp="matAutocomplete" [displayWith]="displayFnRm"
+                                (opened)="autocompleteRMScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let usage of UsageCodeData" [value]="usage">
+                                        {{usage.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Controlling Office</mat-label>
+                            <input #officeInput matInput formControlName="controlling_ofz_id" autocomplete="off"
+                                placeholder=" Controlling Office" [matAutocomplete]="conoffice" required id="occupancy-0003">
+                            <mat-autocomplete #conoffice="matAutocomplete" [displayWith]="displayconoffice"
+                                (opened)="conofficeScroll() ">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let control of controllingData" [value]="control">
+                                       {{control.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Rent Paying Office</mat-label>
+                            <input #office1Input matInput formControlName="primary_ofz_id" autocomplete="off"
+                                placeholder="Select Rent Paying Office" [matAutocomplete]="prioffice" required id="occupancy-0004">
+                            <mat-autocomplete #prioffice="matAutocomplete" [displayWith]="displayPriOff"
+                                (opened)="priOffScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let primary of primaryData" [value]="primary">
+                                        {{primary.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <input matInput readonly [matDatepicker]="picker2" formControlName="date_of_opening"
+                                placeholder="Date Of Opening" id="occupancy-0005">
+                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Floor/s Occupied </mat-label>
+                            <input matInput placeholder="Floor/s Occupied" formControlName="floor_located"
+                                autocomplete="off" id="occupancy-0006">
+                        </mat-form-field>
+                    </td>
+                   
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label style='margin-bottom: 80px;'>Area Occupied Usagewise</mat-label>
+                            <input matInput placeholder="Area Occupied Usagewise" formControlName="area_occupied"
+                                autocomplete="off" (keypress)="numberOnlyandDot($event)" required id="occupancy-0007">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Branch Location</mat-label>
+                            <mat-select formControlName="branch_location" id="occupancy-0008">
+                                <mat-option *ngFor="let branchlocation of branchlocationList"
+                                    [value]="branchlocation.id">
+                                    {{branchlocation.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Classification</mat-label>
+                            <mat-select formControlName="branch_classification" id="occupancy-0009">
+                                <mat-option *ngFor="let branchclassification of branchclassificationList"
+                                    [value]="branchclassification.id">
+                                    {{branchclassification.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Branch Window Type</mat-label>
+                            <mat-select formControlName="branch_window" id="occupancy-0010">
+                                <mat-option *ngFor="let branchwindow of branchwindowList" [value]="branchwindow.id">
+                                    {{branchwindow.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Strong Room As Per RBI Norms</mat-label>
+                            <mat-select formControlName="strong_room" id="occupancy-0011">
+                                <mat-option *ngFor="let strongroom of strongroomList" [value]="strongroom.id">
+                                    {{strongroom.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Safe Room Partion</mat-label>
+                            <mat-select formControlName="saferoom_partition" id="occupancy-0012">
+                                <mat-option *ngFor="let saferoompartition of saferoompartitionList"
+                                    [value]="saferoompartition.id">
+                                    {{saferoompartition.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>Risk category</mat-label>
+                            <mat-select formControlName="risk_category" id="occupancy-0013">
+                                <mat-option *ngFor="let riskcategory of riskcategoryList" [value]="riskcategory.id">
+                                    {{riskcategory.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td *ngIf="isTerminalCount">
+                        <mat-form-field class="input-style2">
+                            <mat-label>ATM / BNRM Terminal ID Count</mat-label>
+                            <input matInput placeholder="ATM / BNRM Terminal ID Count" formControlName="terminal_count"
+                                autocomplete="off" (keypress)="numberOnly($event)" required id="occupancy-0014">
+                        </mat-form-field>
+                    </td>
+                <tr>
+            </div>
+            <table style="margin-top: 35px;">
+                <tbody>
+                    <tr>
+                        <td>
+                            <h3 style="font-weight:500;font-size: 17px;">Address</h3>
+                            <div [formGroup]="occupancyForm.controls.address">
+                    <tr>
+
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>No</mat-label>
+                                <input matInput placeholder="No" formControlName="line1" autocomplete="off" required id="occupancy-0015">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Street</mat-label>
+                                <input matInput placeholder="Street" formControlName="line2" autocomplete="off"
+                                    required id="occupancy-0016">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Area</mat-label>
+                                <input matInput placeholder="Area" formControlName="line3" autocomplete="off" required id="occupancy-0017">
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>Pin Code</mat-label>
+                                <input placeholder="Pin Code" matInput formControlName="pincode_id"
+                                maxlength="6" [matAutocomplete]="pintype" required id="occupancy-0018">
+                                <mat-autocomplete #pintype="matAutocomplete" [displayWith]="displayFnpin">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let pin of pinCodeList" (focusout)="pinCode(pin)"
+                                            [value]="pin">
+                                            {{pin.no}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <input matInput formControlName="city_id" placeholder="City" [matAutocomplete]="autocit"
+                                    style="font-size: small;" required id="occupancy-0019">
+                                <mat-autocomplete #autocit="matAutocomplete" [displayWith]="displaycit">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let city of cityList" (focusout)="citys(city)"
+                                            [value]="city">{{city.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <input matInput formControlName="district_id" placeholder="District"
+                                    [matAutocomplete]="autodis" style="font-size: small;" required id="occupancy-0020">
+                                <mat-autocomplete #autodis="matAutocomplete" [displayWith]="displaydis">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let district of districtList" [value]="district">
+                                            {{district.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>State</mat-label>
+                                <input placeholder="State" matInput formControlName="state_id"
+                                    [matAutocomplete]="statetype" required id="occupancy-0021">
+                                <mat-autocomplete #statetype="matAutocomplete" [displayWith]="displayFnstate">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let state of stateList" [value]="state">
+                                            {{state.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+</table>
+<div style="margin-bottom: 5%;">
+    <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" [disabled]="OccupancyBtn" id="occupancy-0022">Submit</button>
+    <button type="button" (click)="onCancelClick()" class="btn btn-outline-primary"
+        style="border-radius: 40px;margin-left: 10px;" id="occupancy-0023">Cancel</button>
+
+</div>
+</form>
+</div>

@@ -1,0 +1,531 @@
+<div style="margin-left: 3%;margin-top: 1%;margin-bottom:1%  ">
+
+    <nav>
+        <div class="nav nav-tabs" style="margin-top: 1%; height:50px; cursor: pointer;">
+            <a class="nav-item nav-link active" data-toggle="tab">Reports </a>
+            <!-- <a class="nav-item nav-link" data-toggle="tab">Insights
+            </a>
+            <a class="nav-item nav-link" data-toggle="tab" [routerLink]="'/report/query'">Query Screen
+            </a> -->
+        </div>
+    </nav>
+
+    <div class="aligntright">
+
+        <!-- <mat-form-field class="sidemargin" >
+            <input matInput> 
+        </mat-form-field> -->
+        <tr>
+            <td>
+                <mat-label>Module</mat-label><br>
+                <mat-form-field class="sidemargin">
+
+                    <mat-select [(ngModel)]="dropDownTag">
+                        <mat-option (click)="getsubmoduledropdown(modules.id);"
+                            *ngFor="let modules of ModuleList; let i = index" [value]="modules.id">{{modules.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-label>Sub Module</mat-label><br>
+                <mat-form-field class="sidemargin">
+
+                    <mat-select>
+                        <mat-option (click)="getsearchfilters(sub.id);submodulesummary(sub.description)"
+                            *ngFor="let sub of submodulelist" [value]="sub.id">
+                            {{sub?.description}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </td>
+        </tr>
+
+        <!-- <mat-form-field class="sidemargin">
+            <mat-label>Sub Module</mat-label>
+            <mat-select>
+                <div *ngIf="dropDownTag == 'e-Memo'">
+                    <mat-optgroup label="Memo Report">
+                        <mat-option value="Memo" >Memo</mat-option>
+                    </mat-optgroup>
+    
+    
+                  
+                </div>
+    
+                <div *ngIf="dropDownTag == 'REMS'">                
+    
+                    <mat-option value="Provision" >Provision</mat-option>
+                    <mat-option value="Lease">Lease</mat-option> 
+ 
+    
+    
+                </div>
+                <div *ngIf="dropDownTag == 'PO'">
+                    <mat-optgroup label="PO Report">
+                        <mat-option value="PCA Utilization Report" >PCA Utilization Report
+                        </mat-option>
+                    </mat-optgroup>
+    
+    
+                </div>
+                <div *ngIf="dropDownTag == 'TA'">
+    
+    
+                    <mat-optgroup label="Tour Report">
+                        <mat-option value="Tour" >Tour</mat-option>
+                    </mat-optgroup>
+    
+                    <mat-optgroup label="BranchWise Pending Report">
+                        <mat-option value="BranchWise" >BranchWise Pending</mat-option>
+                    </mat-optgroup>
+    
+    
+                    <mat-optgroup label="Employee Report">
+                        <mat-option style="top:1px" value="Employee" >Employee</mat-option>
+                    </mat-optgroup>
+    
+                    <mat-optgroup label="TA Consolidate Report">
+                        <mat-option value="Consolidate" >TA Consolidate</mat-option>
+                    </mat-optgroup>
+    
+    
+                </div>
+                <div *ngIf="dropDownTag == 'Inward'">
+    
+    
+                    <mat-optgroup label="Inward Report">
+                        <mat-option value="Inward" >Inward</mat-option>
+                    </mat-optgroup>
+    
+    
+                </div>
+            </mat-select>
+        </mat-form-field> -->
+
+
+    </div>
+    <div class="contentdiv">
+        <div *ngIf="productandleadbool">
+            <div>
+                <form [formGroup]="productandleadform" >
+                <table>
+                    <tr>
+                        <td>
+                            <mat-label>Product</mat-label><br>
+
+                            <mat-form-field class="inputwidth">
+                                <input  formControlName="product" matInput>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-label class="labelmargin" >Lead</mat-label><br>
+
+                            <mat-form-field class="inputwidth2">
+                                <input formControlName="lead" matInput>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-label class="labelmargin" >Created Date</mat-label><br>
+
+                            <mat-form-field class="inputwidth2">
+                                <!-- <input formControlName="date" matInput> -->
+                                <input matInput [matDatepicker]="picker1" readonly 
+                                placeholder="Start Date"
+                                autocomplete="off" formControlName="date">
+                              <mat-datepicker-toggle  matSuffix [for]="picker1"></mat-datepicker-toggle>
+                              <mat-datepicker #picker1></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-label class="labelmargin" >Lead Status</mat-label><br>
+
+                            <mat-form-field class="inputwidth2">
+                                <input formControlName="leadstatus" matInput>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-label >Converted Date</mat-label><br>
+
+                            <mat-form-field class="inputwidth">
+                                <!-- <input formControlName="converteddate" matInput> -->
+                                <input matInput [matDatepicker]="picker2" readonly 
+                                placeholder="Start Date"
+                                autocomplete="off" formControlName="converteddate">
+                              <mat-datepicker-toggle  matSuffix [for]="picker2"></mat-datepicker-toggle>
+                              <mat-datepicker #picker2></mat-datepicker>
+                            
+                            </mat-form-field>
+                        </td>
+                        <td class="marginpadding" >
+
+                            <button type="button" mat-stroked-button style="margin-left: 20px;background-color: white;"
+                                aria-label="Search" (click)="getreports(this.productlead_current_page=1)" >
+                                <mat-icon>search</mat-icon>
+                            </button>
+
+                            <button type="button" mat-stroked-button (click)="productandleadform.reset();getreports(this.productlead_current_page=1)"
+                                style="margin-left: 20px;background-color: white;">Clear</button>
+                   
+                            <button type="button" mat-stroked-button style="margin-left: 20px;background-color: white;"
+                                aria-label="Search" (click)="getproductleadexcel()">
+                                <mat-icon>download</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            </div>
+
+            <table class="table table-bordered" style="width: 100%;margin-top: 2%;">
+                <tr class="table_header">
+                    <th>S.No</th>
+                    <th>Lead</th>
+                    <th>Product</th>
+                </tr>
+                <tr *ngFor="let list of reportsummarydata;let i=index">
+                    <td>{{(productlead_current_page-1)*10+i+1}}</td>
+                    <td>{{list?.lead?.first_name}}</td>
+                    <td>{{list?.product?.name}}</td>
+                </tr>
+                <tr *ngIf="reportsummarydata?.length == 0">
+                    <td colspan="3">
+                        <div style="text-align: center">
+                            <p>No records Found.. </p>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="reportsummarydata?.length != 0">
+                    <td colspan="3">
+
+                        <div style="text-align:right">
+                            <button mat-icon-button [disabled]="!productlead_has_previous" color="primary"
+                                (click)="productlead_previous()">
+                                <mat-icon>arrow_back
+                                </mat-icon>
+                            </button>
+                            {{productlead_current_page}}
+                            <button mat-icon-button [disabled]="!productlead_has_next" color="primary"
+                                (click)="productlead_nextpage()">
+                                <mat-icon>arrow_forward
+                                </mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div *ngIf="leadbool">
+            <div>
+                <form [formGroup]="leadform" >
+                <table>
+                    <tr>
+                        <td>
+                            <mat-label>Name</mat-label><br>
+
+                            <mat-form-field class="inputwidth">
+
+                                <input formControlName="name" matInput>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-label class="labelmargin" >Code</mat-label><br>
+
+                            <mat-form-field class="inputwidth2">
+
+                                <input formControlName="code" matInput>
+                            </mat-form-field>
+                        </td>
+                        <td class="toppadding" >
+
+                            <button type="button" mat-stroked-button style="margin-left: 20px;background-color: white;"
+                                aria-label="Search" (click)="getlead(leadform.value.name,leadform.value.code,reportlead_current_page=1)" >
+                                <mat-icon>search</mat-icon>
+                            </button>
+
+
+                      
+                            <button type="button" mat-stroked-button
+                                style="margin-left: 20px;background-color: white;" (click)="leadform.reset();getlead(leadform.value.name,leadform.value.code,reportlead_current_page=1)" >Clear</button>
+                      
+                            <button type="button" mat-stroked-button (click)="getleadreport()"
+                                style="margin-left: 20px;background-color: white;" aria-label="Search">
+                                <mat-icon>download</mat-icon>
+                            </button>
+                        </td>
+
+                    </tr>
+                </table>
+            </form>
+            </div>
+
+            <table class="table table-bordered" style="width: 100%;margin-top: 2%;">
+                <tr class="table_header">
+                    <th>S.No</th>
+                    <th>Name</th>
+                    <!-- <th>Middle Name</th>
+                    <th>Last Name</th> -->
+                    <th>DOB</th>
+                    <th>AADHAR No</th>
+                    <th>PAN No</th>
+                    <th>Permanent Address</th>
+                </tr>
+                <tr *ngFor="let list of reportleadsummary;let i=index">
+                    <td>{{(reportlead_current_page-1)*10+i+1}}</td>
+                    <td>{{list?.first_name}}</td>
+                    <!-- <td>{{list?.middle_name}}</td>
+                    <td>{{list?.last_name}}</td> -->
+                    <td>{{list?.dob | date:'dd-MMM-yyyy' }}</td>
+                    <td>{{list?.aadhaar_no}}</td>
+                    <td>{{list?.pan_no}}</td>
+                    <td>{{list?.permanent_address}}</td>
+                </tr>
+                <tr *ngIf="reportleadsummary?.length == 0">
+                    <td colspan="6">
+                        <div style="text-align:center;">
+                            <p>No records Found.. </p>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="reportleadsummary?.length != 0">
+                    <td colspan="6">
+
+                        <div style="text-align:right">
+                            <button mat-icon-button [disabled]="!reportlead_has_previous" color="primary"
+                                (click)="reportlead_previouspage()">
+                                <mat-icon>arrow_back
+                                </mat-icon>
+                            </button>
+                            {{reportlead_current_page}}
+                            <button mat-icon-button [disabled]="!reportlead_has_next" color="primary"
+                                (click)="reportlead_nextpage()">
+                                <mat-icon>arrow_forward
+                                </mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div *ngIf="productbool">
+            <div>
+                <!-- <form [formGroup]="searchform">
+
+                    <div class=" col-md-12 row">
+
+                        <div *ngFor="let control of SelectedDataJson;let i=index">
+
+                            <div class="col-md-2" *ngIf="[ 'text', 'number', 'date'].includes(control.type)">
+                                <mat-label>{{control.name}}</mat-label><br>
+                                <mat-form-field class="inputwidth">
+                                    <input appSearchfiltersApicall [getsearchinfo]="control" [type]="control.type"  [(ngModel)]="control.value" [formControlName]="control.name" matInput>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-md-2" *ngIf="control.type == 'textarea'">
+                                <mat-label>{{control.name}}</mat-label><br>
+                                <mat-form-field class="inputwidth">
+                                    <textarea [type]="control.type" appSearchfiltersApicall [getsearchinfo]="control"  [(ngModel)]="control.value" [formControlName]="control.name"
+                                        matInput></textarea>
+                                </mat-form-field>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-1 searchbutton ">
+                            <button type="button" mat-stroked-button style="margin-left: 20px;background-color: white;"
+                                aria-label="Search">
+                                <mat-icon>search</mat-icon>
+                            </button>
+                        </div>
+
+                        <div class="col-md-1 searchbutton ">
+                            <button type="button" mat-stroked-button (click)="searchform.reset()"
+                                style="margin-left: 20px;background-color: white;">Clear</button>
+                        </div>
+
+                        <div class="col-md-1 searchbutton ">
+                            <button type="button" mat-stroked-button (click)="getleadreport()"
+                                style="margin-left: 20px;background-color: white;" aria-label="Search">
+                                <mat-icon>download</mat-icon>
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                </form> -->
+                <form [formGroup]="productform" >
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-label>Name</mat-label><br>
+    
+                                <mat-form-field class="inputwidth">
+    
+                                    <input formControlName="name" matInput>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-label class="labelmargin" >Code</mat-label><br>
+    
+                                <mat-form-field class="inputwidth2">
+    
+                                    <input formControlName="code" matInput>
+                                </mat-form-field>
+                            </td>
+                            <td class="toppadding" >
+    
+                                <button type="button" mat-stroked-button style="margin-left: 20px;background-color: white;"
+                                    aria-label="Search" (click)="getlead(productform.value.name,productform.value.code,product_current_page=1)" >
+                                    <mat-icon>search</mat-icon>
+                                </button>
+    
+    
+                           
+                                <button type="button" mat-stroked-button
+                                    style="margin-left: 20px;background-color: white;" (click)="productform.reset();getlead(productform.value.name,productform.value.code,product_current_page=1)" >Clear</button>
+                        
+                                <button type="button" mat-stroked-button (click)="getproductexceldownload()"
+                                    style="margin-left: 20px;background-color: white;" aria-label="Search">
+                                    <mat-icon>download</mat-icon>
+                                </button>
+                            </td>
+    
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <table class="table table-bordered" style="width: 100%;margin-top: 2%;">
+                <tr class="table_header">
+                    <th>S.No</th>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Details</th>
+                    <th>Logo</th>
+
+
+                </tr>
+                <tr *ngFor="let list of productsummary;let i=index">
+                    <td>{{(product_current_page-1)*10+i+1}}</td>
+                    <td>{{list?.name}}</td>
+                    <td>{{list?.code}}</td>
+                    <td>{{list?.details}}</td>
+                    <td>{{list?.logo}}</td>
+
+                </tr>
+                <tr *ngIf="productsummary?.length == 0">
+                    <td colspan="5">
+                        <div style="text-align: center">
+                            <p>No records Found.. </p>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="productsummary?.length != 0">
+                    <td colspan="5">
+
+                        <div style="text-align:right">
+                            <button mat-icon-button [disabled]="!product_has_previous" color="primary"
+                                (click)="product_previous()">
+                                <mat-icon>arrow_back
+                                </mat-icon>
+                            </button>
+                            {{product_current_page}}
+                            <button mat-icon-button [disabled]="!product_has_next" color="primary"
+                                (click)="product_next()">
+                                <mat-icon>arrow_forward
+                                </mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    <div *ngIf="sourceboolean">
+        <div>
+            <form [formGroup]="sourceform" >
+            <table>
+                <tr>
+                    <td>
+                        <mat-label>Name</mat-label><br>
+
+                        <mat-form-field class="inputwidth">
+                            <input  formControlName="name" matInput>
+                        </mat-form-field>
+                    </td>
+                   
+                    <td class="toppadding" >
+
+                        <button type="button" mat-stroked-button style="margin-left: 20px;background-color: white;"
+                            aria-label="Search" (click)="getsourcesummary(sourceform.value.name,this.source_current_page=1)" >
+                            <mat-icon>search</mat-icon>
+                        </button>
+
+                        <button type="button" mat-stroked-button (click)="sourceform.reset();getsourcesummary(sourceform.value.name,this.source_current_page=1)"
+                            style="margin-left: 20px;background-color: white;">Clear</button>
+               
+                        <button type="button" mat-stroked-button style="margin-left: 20px;background-color: white;"
+                            aria-label="Search" (click)="getproductleadexcel()">
+                            <mat-icon>download</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        </div>
+
+        <table class="table table-bordered" style="width: 100%;margin-top: 2%;">
+            <tr class="table_header">
+                <th>S.No</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Type</th>
+
+            </tr>
+            <tr *ngFor="let list of sourcesummary;let i=index">
+                <td>{{(productlead_current_page-1)*10+i+1}}</td>
+                <td>{{list?.code}}</td>
+                <td>{{list?.name}}</td>
+                <td>{{list?.type?.text}}</td>
+
+            </tr>
+            <tr *ngIf="sourcesummary?.length == 0">
+                <td colspan="4">
+                    <div style="text-align: center">
+                        <p>No records Found.. </p>
+                    </div>
+                </td>
+            </tr>
+            <tr *ngIf="sourcesummary?.length != 0">
+                <td colspan="4">
+
+                    <div style="text-align:right">
+                        <button mat-icon-button [disabled]="!source_has_previous" color="primary"
+                            (click)="sourceprevious()">
+                            <mat-icon>arrow_back
+                            </mat-icon>
+                        </button>
+                        {{source_current_page}}
+                        <button mat-icon-button [disabled]="!source_has_next" color="primary"
+                            (click)="sourcenext()">
+                            <mat-icon>arrow_forward
+                            </mat-icon>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <app-chart></app-chart>
+    </div>
+
+   
+
+</div>

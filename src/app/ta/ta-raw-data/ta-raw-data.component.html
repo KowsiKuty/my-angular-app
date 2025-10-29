@@ -1,0 +1,190 @@
+<h3 style="font-size: 20px;font-family:'Times New Roman', Times, serif;color:blue">Ta Raw Data</h3>
+
+<div>
+<form [formGroup]="taRawDataForm">
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-left: 20px;">
+        <mat-form-field style="width: 200px;">
+          <mat-label>Select TA</mat-label>
+          <mat-select formControlName="selectedOption" (selectionChange)="onOptionChange()" required>
+            <mat-option value="ALL">ALL</mat-option>
+            <mat-option value="DATERANGE">DATERANGE</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <ng-container *ngIf="daterange()">
+          <mat-form-field style="width: 140px;margin-left: 20px;">
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="fromDate" readonly>
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+      
+          <mat-form-field style="width: 140px;margin-left: 20px;">
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="toDate" readonly>
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field style="width: 200px;margin-left: 20px;" >
+            <mat-label>Tables</mat-label>
+            <input type="text" matInput formControlName="tables" required [matAutocomplete]="tableref" #TableInput (click)="TableLists()">
+            <mat-autocomplete #tableref="matAutocomplete"  [displayWith]="displayFnTable">
+                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let d of TableList" [value]="d">
+                        {{d.name}}
+                    </mat-option>
+                </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
+    
+          
+          <mat-form-field style="width: 200px; margin-left: 20px;">
+            <mat-label>Where Column</mat-label>
+            <mat-select formControlName="columns" multiple (click)="getcolumnslistdata()">
+              <!-- <mat-option *ngIf="isLoading">Loading...</mat-option> -->
+              <ng-container>
+                <mat-option *ngFor="let column of columnList" [value]="column">
+                  {{ column }}
+                </mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+       
+        <mat-form-field style="width: 150px; margin-left: 20px;">
+          <mat-label>Join type</mat-label>
+          <mat-select formControlName="joinType">
+            <ng-container>
+              <mat-option *ngFor="let join of jointype " [value]="join">
+                 {{join.display}}
+              </mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+        <button type="button" class="btn btn-outline-success"(click)="addForm()" style="border-radius:40px;margin-left:10px;" matTooltip="TA Add"><span
+          class="fa fa-plus"></span>
+      </button>
+        <button mat-icon-button  (click)="fileDownload()">
+          <mat-icon style="color: gray;" aria-label="Edit">
+              download</mat-icon>
+      </button>
+          
+         
+        </ng-container>
+
+        
+      <ng-container *ngIf="ALLTA()">
+        <mat-form-field style="width: 250px;margin-left: 60px;" >
+          <mat-label>Tables</mat-label>
+          <input type="text" matInput formControlName="tables" required [matAutocomplete]="tableref" #TableInput (click)="TableLists()">
+          <mat-autocomplete #tableref="matAutocomplete"  [displayWith]="displayFnTable">
+              <mat-option *ngIf="isLoading">Loading..</mat-option>
+              <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let d of TableList" [value]="d">
+                      {{d.name}}
+                  </mat-option>
+              </ng-container>
+          </mat-autocomplete>
+      </mat-form-field>
+  
+        
+        <mat-form-field style="width: 250px; margin-left: 40px;">
+          <mat-label>Where Column</mat-label>
+          <mat-select formControlName="columns" multiple (click)="getcolumnslistdata()">
+            <!-- <mat-option *ngIf="isLoading">Loading...</mat-option> -->
+            <ng-container>
+              <mat-option *ngFor="let column of columnList" [value]="column">
+                {{ column }}
+              </mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+
+        <mat-form-field style="width: 150px; margin-left: 40px;">
+          <mat-label>Join type</mat-label>
+          <mat-select formControlName="joinType">
+            <ng-container>
+              <mat-option *ngFor="let join of jointype " [value]="join">
+                 {{join.display}}
+              </mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+        <button type="button" class="btn btn-outline-success"(click)="addForm()" style="border-radius:40px;margin-left:3%;" matTooltip="TA Add"><span
+          class="fa fa-plus"></span>
+      </button>
+    
+      <button mat-raised-button type="button" class="btn btn-primary"   style="border-radius: 40px;height: 40px;margin-left: 25px;margin-right: 25px;" (click)="fileDownload()">
+        Download
+            <!-- <mat-icon ><mat-spinner color="green" diameter="20">
+            </mat-spinner></mat-icon> -->
+            <mat-icon  inline=true style="color:rgb(245, 245, 245)">download</mat-icon>
+        </button>
+  
+       </ng-container>
+       
+      </div>
+      
+       
+          
+            <div style="text-align: center;">
+              <table class="table scrolltable table-bordered" style="width: 90%; margin-left: 20px;">
+                <thead class="table_header">
+                  <tr>
+                    <th style="width: 50px;">S.No</th>
+                    <th style="width: 200px;">Table Name</th>
+                    <th>Columns</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let table of selectedTables; let i = index">
+                  
+                    <td>{{ i + 1 }}</td>
+                    <td>{{table.name.name}}</td>
+            
+                   
+                    <td colspan="1">
+                      <mat-expansion-panel hideToggle>
+                       
+                        <mat-expansion-panel-header  (click)="click()">
+                          <mat-panel-title><mat-icon>{{icon  ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon></mat-panel-title>
+                        </mat-expansion-panel-header>
+                         
+                      
+                        <div style="padding: 10px;">
+                          <table style="width: 100%;">
+                            <thead>
+                              <tr>
+                                <th style="width: 50px;">Column No</th>
+                                <th>Column Name</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let column of table.column; let j = index">
+                                <td>{{ j + 1 }}</td>
+                                <td>{{ column }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </mat-expansion-panel>
+                    </td>
+            
+                   
+                    <td>
+                      <button mat-icon-button (click)="deletetable(i)">
+                        <mat-icon style="color: red; font-size: 20px;" aria-label="Delete" matTooltip="Delete Table">delete</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            
+     
+            

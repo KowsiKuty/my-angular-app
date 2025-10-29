@@ -1,0 +1,139 @@
+<div style="margin-left: 20px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 50%;">
+                <h2>
+                    Occupancy CCBS Add/Edit
+                </h2>
+            </td>
+        </tr>
+    </table>
+</div>
+<div style="margin-left: 20px;margin-top: 1%;">
+    <form [formGroup]="occupancyccbsForm" (ngSubmit)="OccupancyCCBSFormSubmit()">
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field class="input-style" style="width:400px">
+                        <mat-label>Occupancy</mat-label>
+                        <input placeholder="Select Occupancy" matInput formControlName="occupancy_id" #OccupancyInput
+                            [matAutocomplete]="autoOccupancy" required id="occupancyccbs-0001">
+                        <mat-autocomplete #autoOccupancy="matAutocomplete" [displayWith]="displayFnOccupancy.bind(this)">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let occupany of Occupancylist" [value]="occupany.id">
+                                    {{occupany.code}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="input-style" style="width:400px">
+                        <mat-label>Branch</mat-label>
+                        <input #office1Input matInput formControlName="branch_id" autocomplete="off"
+                            placeholder="Branch" [matAutocomplete]="prioffice" required  id="occupancyccbs-0002">
+                        <mat-autocomplete #prioffice="matAutocomplete" [displayWith]="displayFNPriOff.bind(this)"
+                            (opened)="priOffScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let primary of primaryData" [value]="primary.id">
+                                    {{primary.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <mat-form-field class="input-style" style="width:400px">
+                        <mat-label>BS</mat-label>
+                        <input placeholder="Select BS" matInput formControlName="businesssegment_id" #BSInput
+                            [matAutocomplete]="autobs1" required id="occupancyccbs-0003">
+                        <mat-autocomplete #autobs1="matAutocomplete" [displayWith]="displayFnBS.bind(this)">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let bs of BSList" [value]="bs.id" (click) ="getccList()">
+                                    {{bs.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="input-style" style="width:400px">
+                        <mat-label>CC</mat-label>
+                        <input placeholder="Select CC" matInput formControlName="costcentre_id" #CCInput
+                            [matAutocomplete]="autocc1" required id="occupancyccbs-0004">
+                        <mat-autocomplete #autocc1="matAutocomplete" [displayWith]="displayFnCC.bind(this)">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let cc of CCList" [value]="cc.id">
+                                    {{cc.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr><td>
+                <mat-form-field class="input-style2">
+                    <mat-label>Area</mat-label>
+                    <input matInput placeholder="Area" autocomplete="off"
+                        formControlName="area" id="occupancyccbs-0005">
+                </mat-form-field>
+            </td></tr>
+        </table>
+        <div style="margin-bottom: 5%;">
+            <button type="submit" style="border-radius: 40px;" class="btn btn-outline-primary" id="occupancyccbs-0006">Submit</button>
+            <button type="button" (click)="onCancelClick()" style="border-radius: 40px;margin-left: 10px;"
+                class="btn btn-outline-primary" id="occupancyccbs-0007">Cancel</button>
+        </div>
+    </form>
+</div>
+<div style="margin-left: 20px;margin-top: 1%;">
+    <table class="table table-bordered" fixed-header style="width: 85%;">
+        <thead class="table_header" style="text-align: left;">
+            <tr>
+                <th>Occupancy</th>
+                <th>Branch</th>
+                <th>BS</th>
+                <th>CC</th>
+                <th>Area</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let occupancy of occupancyCCBSList; index as i">
+                <td>{{occupancy.occupancy_details.code}}</td>
+                <td>{{occupancy.branch_id.name}}</td>
+                <td>{{occupancy.businesssegment_details.name}}</td>
+                <td>{{occupancy.costcentre_details.name}}</td>
+                <td>{{occupancy.area}}</td>
+                <td>
+                    <button  mat-icon-button matTooltip=" Edit" class="iconbutton" color="primary" 
+                    (click)="occupancyCCBSedit(occupancy)" id="occupancyccbs-0008">
+                        <mat-icon [class.toolbar-icon-disabled]="true" aria-label="Edit">edit</mat-icon>
+                    </button>
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+    <!-- <div class="row">
+        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                (click)="previousClickOccupancyCCBS()" id="occupancyccbs-0009">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary"
+                (click)="nextClickOccupancyCCBS()" id="occupancyccbs-0010">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div> -->
+</div>
+
+<!-- <pre>{{occupancyccbsForm.value | json}}</pre> -->

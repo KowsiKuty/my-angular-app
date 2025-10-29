@@ -1,0 +1,367 @@
+<div class="container" style="max-width: 1301px;">
+    <div class="col-md-12">
+        <h2 style="margin-left: 2%;font-family:Times New Roman;font-size:20px;color:blue;font-weight:bold;">Asset Sale Summary </h2>
+<form [formGroup]="salesSummarySearch" (ngSubmit)="assetsalesapprove()">
+    <div class=" row col-md-12">
+
+        <!-- Asset category  -->
+        <div class="col-md-3">
+            <mat-form-field (click)="asset_category()" >
+                <mat-label>Asset Category</mat-label>
+                <input #categoryInput placeholder="Select Asset Category" matInput formControlName="category"
+                    [matAutocomplete]="categoryAutoComplete">
+                <!-- <mat-error *ngIf="vendorSearchForm.controls.category.errors?.matchRequired">
+                Please select a character from the list.
+              </mat-error> -->
+                <mat-autocomplete #categoryAutoComplete="matAutocomplete" [displayWith]="displayFnAssest"
+                    (opened)="autocompleteScrollcategory()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let category of category" [value]="category">
+                            {{category.subcatname}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+                <!-- <mat-error *ngIf="vendorSearchForm.controls['category'].hasError('incorrect')">
+            Please select a valid project
+        </mat-error> -->
+
+            </mat-form-field>
+        </div>
+        <!--End Asset category  -->
+
+        <!-- Branch Name -->
+        <div class="col-md-3">
+            <mat-form-field (click)="Branch()">
+                <mat-label>Branch Name</mat-label>
+                <input #BranchInput placeholder="Select Branch Name" matInput formControlName="branch_name"
+                    (focusout)="onFocusOutEvent($event)" [matAutocomplete]="branch">
+                <mat-autocomplete #branch="matAutocomplete" [displayWith]="displayFn"
+                    (opened)="autocompleteScroll()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let employee of employeeList" [value]="employee">{{employee.name}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+
+        <!-- End Branch Name -->
+        <!-- Asset barcode -->
+        <div class="col-md-3">
+            <mat-form-field  >
+                <!-- (click)="Assetbarcode()" -->
+                <mat-label>Select Asset Barcode</mat-label>
+                <input #AssetInput placeholder="Select Asset Barcode" matInput formControlName="barcode" [matTooltip]="salesSummarySearch.get('barcode').value"
+                    >
+                    <!-- [matAutocomplete]="asset" -->
+                <!-- <mat-autocomplete #asset="matAutocomplete" [displayWith]="displayFnAssestId"
+                    (opened)="autocompleteScrollAssetId()">
+                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let details of assetDetails" [value]="details">{{details.barcode}}
+                        </mat-option>
+                    </ng-container>
+                </mat-autocomplete> -->
+            </mat-form-field>
+        </div>
+        <!-- End Asset barcode -->
+        <!-- cap date -->
+
+        <div class="col-md-3">
+            <mat-form-field>
+                <mat-label>Capitalization Date</mat-label>
+                <input matInput [matDatepicker]="excemfrom" formControlName="capdate_Value">
+                <mat-datepicker-toggle matSuffix [for]="excemfrom"></mat-datepicker-toggle>
+                <mat-datepicker #excemfrom disabled="false"></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <!-- end Cap Date -->
+        <!-- Asset Value -->
+        <div class="col-md-3">
+        <mat-form-field>
+            <mat-label>Asset Value</mat-label>
+            <input type="text" formControlName="asset_value" (keypress)="decimalFilter($event)" matInput
+                placeholder="Asset Value">
+        </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field>
+                <mat-label>CR No</mat-label>
+                <input type="text" formControlName="crno"  matInput [matTooltip]="salesSummarySearch.get('crno').value"
+                    placeholder="Cr No.">
+            </mat-form-field>
+            </div>
+        <!-- end Asset Value -->
+
+        <div class="col-md-3">
+            <mat-form-field> 
+                <mat-label>From Date</mat-label>
+                <input [max]="previousDate" [matDatepicker]="fromdate"  matInput formControlName="fromdate" (dateChange)="fromdateSelection($event.value)">
+                <mat-datepicker-toggle matSuffix [for]="fromdate"></mat-datepicker-toggle>
+                <mat-datepicker #fromdate></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field>
+                <mat-label>To Date</mat-label>
+                <input formControlName="todate" [matDatepicker]="todate" matInput [min]="select" [max]="previousDate">
+                <mat-datepicker-toggle matSuffix [for]="todate"></mat-datepicker-toggle>
+                <mat-datepicker #todate></mat-datepicker>
+            </mat-form-field>
+        </div>
+       </div>
+    
+       <div class="row" style="gap: 10px;justify-content:end;margin-right: 25px;">
+        <!-- <div style="text-align: right;"> -->
+        <div>
+        <button type="submit" class="btn btn-outline-primary"
+            style="border-radius:40px;height: 44px; margin-top: 12px;"><i class="fa fa-search" aria-hidden="true">Search</i>
+        </button></div>
+        <div >
+            <button type="button" class="btn btn-outline-primary" (click)="clearSearch()"
+                style="border-radius:40px;height: 44px; margin-top: 12px;">Clear
+            </button>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-primary" [routerLink]='"/fa/Assetsaleadd"'
+            skipLocationChange style="border-radius:40px;height: 44px; margin-top: 12px;"><span class="fa fa-plus"> Add</span>
+            </button></div>
+    <div >
+        <button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;" (click)="salehistorydownload()"
+     >Download</button>
+    
+    </div>
+        <div>
+        <button type="button" class="btn btn-outline-primary"  routerLink="/fa/fa"
+            style="border-radius:40px;height: 44px; margin-top: 12px;">Back</button></div>
+        <!-- <button type="button" data-target="#Accountdetails" data-toggle="modal" (click)="Accountdetails(i)">
+            C/D
+        </button> -->
+    <!-- </div> -->
+   </div>
+   
+</form>
+
+<div class="table-responsive">
+    <table class="table table scrolltable table-bordered" style="width: 172%; margin-top: 20px;">
+        <thead class="table_header " fixed-header>
+            <tr>
+                <th>S.No</th>
+                <th>Asset Barcode</th>
+                <th>CR No.</th>
+                <th>Product Name</th>
+                <th>Asset SubCategory</th>
+                <th>Capitalization Date</th>
+                <th>Asset Value</th>
+                <th>Branch</th>
+                <th>Location</th>
+                <!-- <th>CB Value</th> -->
+                <th>End Date</th>
+                <th>Last Dep Run Date</th>
+                <th>HSN Code</th>
+                <th>SGST Rate</th>
+                <th>CGST Rate</th>
+                <th>IGST Rate</th>
+                <th>Sale Rate</th>
+                <th>Maker</th>
+                <th>Approver</th>
+                <th>Asset Sale Status</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Action</th>
+                <th>Download</th>
+                <!-- <th>Action</th> -->
+
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let value of assetsalesValue; index as i;" style="padding-left: 84px;">
+                <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                <td>{{value.barcode}}</td>
+                <td>{{value?.crnum}}</td>
+                <!-- <td>{{value.assetcat_subcatname}}</td> -->
+                <td>{{value.product_name}}</td>
+                <td>{{value.assetcat_subcatname}}</td>
+                <td style="text-align:center;">{{value.capdate| date:'dd-MMM-yyyy '}}</td>
+                <td style="text-align:end;" ><button data-target="#Accountdetails" data-toggle="modal" (click)="Accountdetails(value)" type="button" style="border: none;background:none" [disabled]="!(value.assetsale_status=='APPROVED')"><b>{{value.assetvalue}}</b></button></td>
+                <td>{{value?.branch?.name}}</td>
+                <td>{{value?.location?.name}}</td>
+                <!-- <td>{{value.cb_value}}</td> -->
+                <td style="text-align:center;">{{value.end_date| date:'dd-MMM-yyyy '}}</td>
+                <td>{{value.last_dep_rundate}}</td>
+                <td style="text-align:end;">{{value.hsn_details.code}} </td>
+                    <td style="text-align:end;">{{value.hsn_details.sgstrate}} </td>
+                <!-- <td>{{value.hsn_details.code}}</td>
+                <td>{{value.hsn_details.sgstrate}}</td>-->
+                <td style="text-align:end;">{{value.hsn_details.cgstrate}}</td>
+                <td style="text-align:end;">{{value.hsn_details.igstrate}}</td> 
+                <td style="text-align:end;">{{value.assetsale_amount}}</td>
+                <td style="text-align:end;">{{value?.maker_name}}</td>
+                <td style="text-align:end;">{{value?.approver_name}}</td>
+                <td  class="text-center"> {{value.assetsale_status}} </td>
+                <td class="text-center">{{value.status}}</td>
+                <td><button (click)="clickreason(value)" style="border: none;background: none;color:rgb(132, 132, 199);"><span [matTooltip]="value.reason">Reason</span></button></td>
+                <td style="text-align: center;cursor: pointer;"><span class="material-icons" 
+                    (click)="pdfpup(value)">
+                    visibility
+                </span>
+            </td><!--data-toggle="modal" data-target=".bd-examplepoppdf-modal-lg"-->
+            <td style="text-align: center; cursor: pointer;"><span class="material-icons" (click)="PDfDownload(value)">
+                picture_as_pdf
+            </span>
+        </td>
+
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="assetsalesValue ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+</div>
+<div class="text-center" style="margin-top: 10px;">
+    <b>Reason:&nbsp;</b>{{reassons}}
+</div>
+<div style="margin-bottom: 5%;font-size: small;text-align:right;">
+    <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+        <mat-icon>arrow_back</mat-icon>
+    </button> {{presentpage}}
+    <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+        <mat-icon>arrow_forward</mat-icon>
+    </button>
+
+</div>
+
+</div>
+</div>
+<div class="modal fade bd-examplepoppdf-modal-lg" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myLargeModalLabels"
+aria-hidden="true">
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header" style="background:#088a61; height: 57px; ">
+            <h2 class="modal-title" >Sale Invoice</h2>
+            <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <!-- <pdf-viewer src="{{pdfSrc}}" [render-text]="true" type="application/pdf" style="display: block; height:100%">pdf</pdf-viewer> -->
+        <div class="loading-dots" *ngIf="pdfSrc ===undefined">
+            Loading<span class="dot one">.</span><span class="dot two">.</span><span class="dot three">.</span>
+          </div>
+        <pdf-viewer *ngIf="pdfSrc !=undefined" [src]="pdfSrc"
+        [render-text]="true"
+        [original-size]="false"
+        style="width: 795px; height: 318px"
+></pdf-viewer>
+    <div class="modal-footer"><button type="button" class="btn btn-outline-dark" data-dismiss="modal">
+        Back
+    </button></div>
+    </div>
+</div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="Accountdetails" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:rgb(160, 211, 160) ;">
+                <h2 class="modal-title" style="margin-left: 32%;font-family:'Times New Roman', Times, serif;color:blue">Accounting Details</h2>
+
+                <button #refclose type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="height: 500px;overflow-y: auto;font-size: 14px;overflow-x: scroll;">
+                    <table class="table table-bordered" >
+                        <thead class="table_header">
+                            <th>S.No</th>
+                            <th>Asset Barcode</th>
+                            <th>Entry Financial Year</th>
+                            <th>Entry Screen</th>
+                            <th>WiseFin GL</th>
+                            <th>Entry Gl</th>
+                            <th>GL Description</th>
+                            <th> C/D Amount</th>
+                            <th>Amount</th>
+
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let d of accountDetailslist;index as i">
+                                <td class="text-center">{{i+1}}</td>
+                                <td>{{d.refno}}</td>
+                                <td class="text-center">{{d.transactiondate | date:'yyyy'}}</td>
+                                <td class="text-left">{{d.screen}}</td>
+                                <td class="text-right">{{d.wisefinmap}}</td>
+                                <td class="text-right">{{d.gl}}</td>
+                                <td>{{d.glremarks}}</td>
+                                <td class="text-center">{{d.type}}</td>
+                                <td class="text-right">{{d.amount | number:'1.2-2'}}</td>
+                            </tr>
+                            <tr *ngIf="accountDetailslist.length==0">
+                                <td colspan="9">No Records Found..</td>
+                            </tr>
+                            <tr >
+                                <td  colspan="7" class="text-right">
+                                    <b>Sum Of Debits:</b>
+                                </td>
+                                <td colspan="2">
+                                    &#8377;{{sumofdebit | number:'1.2-2'}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="7" class="text-right">
+                                    <b>Sum Of Credits:</b>
+                                </td>
+                                <td colspan="2">
+                                    &#8377;{{sumofcredit | number:'1.2-2'}}
+                                </td>
+                            </tr>
+                            <tr >
+                                <td colspan="9">
+                                    <div class="text-right">
+                                        <button (click)="has_previousdata()" mat-icon-button [disabled]="!has_accnext"><mat-icon>arrow_back</mat-icon></button>
+                                        {{has_accpage}}
+                                        <button (click)="has_nextdata()" [disabled]="!has_accprevious" mat-icon-button><mat-icon>arrow_forward</mat-icon></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <!-- <div class="text-right" style="font-family:'Times New Roman', Times, serif">
+                        <tr>
+                            <td style="width: 200px;">
+                                Sum Of Debits:
+                            </td>
+                            <td>&#8377;</td>
+                        </tr>
+                        <br>
+                        <tr>
+                            <td style="width: 200px;">
+                                Sum Of Credits:
+                            </td>
+                            <td>&#8377;</td>
+                        </tr>
+                    </div> -->
+                </div>
+                <div class="modal-footer">
+                    <!-- <button type="submit" class="btn btn-success">Expense</button> -->
+                    <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                </div>
+
+                
+            </div>
+
+        </div>
+    </div>
+</div>
+<ngx-spinner
+            bdColor="rgba(51,51,51,0.8)"
+            size="medium"
+            color="#fff"
+            type="ball-scale-multiple"
+          >
+            <p style="font-size: 20px; color: white">Loading...</p>
+          </ngx-spinner>

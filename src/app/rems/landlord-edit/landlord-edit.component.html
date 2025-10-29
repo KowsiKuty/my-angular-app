@@ -1,0 +1,508 @@
+
+<br>
+
+<h2 style="margin-left: 40px; ">
+    Landlord Details
+</h2>
+<div style="margin-left: 90px;">
+
+
+    <div>
+        <form [formGroup]="LandlordEditForm" (ngSubmit)="landlordEditCreateForm()">
+            <table>
+                <div>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 230%;">
+                                <mat-label>Vendor</mat-label>
+                                <input #lanlordInput placeholder="Vendor" matInput formControlName="vendor"
+                                    [matAutocomplete]="landlord" id="landlord-edit-0001">
+                                <mat-autocomplete #landlord="matAutocomplete" [displayWith]="displayFnLandlord"
+                                (opened)="autocompletelandlordScroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let landlord of landlordList" (focusout)="vendorName(landlord)"
+                                            [value]="landlord">
+                                            {{landlord.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                          <td>
+                            <button class="btn btn-outline-primary" (click)="Reset()" type="button"
+                            style="border-radius:40px;margin-left: 115%;" color="primary" id="landlord-edit-0002">Clear</button>
+                          </td>
+                       
+                       
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>Landlord Name</mat-label>
+                                <input matInput placeholder="Landlord Name" [readonly]="isReadonly" formControlName="name" autocomplete="off"
+                                    required id="landlord-edit-0003">
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left: 60px;">
+                                <mat-label>PAN Number</mat-label>
+                                <input matInput placeholder="PAN Number" formControlName="panno" [readonly]="isReadonly"
+                                    (focusout)="validationPAN($event)" [ngModel]="inputPanValue"
+                                    (ngModelChange)="inputPanValue = $event.toUpperCase()" maxlength="10"
+                                    autocomplete="off" id="landlord-edit-0004">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left: 60px;">
+                                <mat-label>GST Number</mat-label>
+                                <input matInput placeholder="GST Number" formControlName="gstno" [readonly]="isReadonly"
+                                    [ngModel]="inputGstValue" (ngModelChange)="inputGstValue = $event.toUpperCase()"
+                                    autocomplete="off" (focusout)="validationGstNo($event)" maxlength="15" id="landlord-edit-0005">
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>Aadhar Number</mat-label>
+                                <input matInput placeholder="Aadhar Number" (keypress)="numberOnly($event)"
+                                    autocomplete="off" formControlName="aadharno" maxlength="12"  id="landlord-edit-0006">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left: 60px;">
+                                <mat-label>Entity Type</mat-label>
+                                <mat-select formControlName="entity_type" id="landlord-edit-0007">
+                                    <mat-option *ngFor="let entity of entitytypeList" [value]="entity.id">
+                                        {{entity.text}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left: 60px;">
+                                <mat-label>TDS Applicable</mat-label>
+                                <mat-select formControlName="TDS_applicable" id="landlord-edit-0008">
+                                    <mat-option *ngFor="let d of tdsApplicable" [value]="d.id">
+                                        {{d.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </td>
+                        <!-- <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>TDS Section</mat-label>
+                                <input matInput placeholder="TDS Section" autocomplete="off"
+                                    formControlName="TDS_section" required id="landlord-edit-0009">
+
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>TDS Rate Applicable </mat-label>
+                                <input matInput placeholder="TDS Rate Applicable " autocomplete="off" formControlName="TDS_rate"
+                                    required id="landlord-edit-0010">
+                            </mat-form-field>
+                        </td> -->
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field style="width: 200px;">
+                                <mat-label>Mobile No</mat-label>
+                                <input matInput placeholder="Mobile No" autocomplete="off"  formControlName="mobile"
+                                    pattern="\d{10}" (keypress)="numberOnly($event)" maxlength="10" required id="landlord-edit-0011">
+
+                            </mat-form-field>
+                        </td>
+
+                        <td>
+                            <mat-form-field style="width: 200px;margin-left: 60px;">
+                                <mat-label>Email</mat-label>
+                                <input matInput placeholder="Email" [readonly]="isReadonly" autocomplete="off" formControlName="email"
+                                    autocomplete="off" type="email"  id="landlord-edit-0012" />
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-checkbox class="example-margin" formControlName="is_nri" style="padding-left: 30px;" (change)="checkedtrue($event.checked)">NRI
+                            </mat-checkbox>
+                        </td>
+                        <!-- <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>NRI Local Contact</mat-label>
+                                <input matInput placeholder=" id="landlord-edit-0013">NRI Local Contact" formControlName="nri_localcontact"
+                                    autocomplete="off" required>
+                            </mat-form-field>
+                        </td> -->
+                    </tr>
+                </div>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>Address</span>
+                                <div [formGroup]="LandlordEditForm.controls.address">
+                        <tr>
+                            <td>
+                                <mat-form-field class="input-style">
+                                    <mat-label>No</mat-label>
+                                    <input matInput autocomplete="off" [readonly]="isReadonly" formControlName="line1" id="landlord-edit-0014">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>Street</mat-label>
+                                    <input matInput formControlName="line2" [readonly]="isReadonly" autocomplete="off" id="landlord-edit-0015">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>Area</mat-label>
+                                    <input matInput formControlName="line3" [readonly]="isReadonly" autocomplete="off" id="landlord-edit-0016">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>City</mat-label>
+                                    <input placeholder="City" matInput formControlName="city_id" [readonly]="isReadonly"
+                                        [matAutocomplete]="citytype" id="landlord-edit-0017">
+                                    <mat-autocomplete #citytype="matAutocomplete" [displayWith]="displayFncity">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let city of cityList" (focusout)="citys(city)"
+                                                [value]="city">
+                                                {{city.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <mat-form-field class="input-style">
+                                    <mat-label>District</mat-label>
+                                    <input placeholder="District" matInput formControlName="district_id" [readonly]="isReadonly"
+                                        [matAutocomplete]="districttype" id="landlord-edit-0018">
+                                    <mat-autocomplete #districttype="matAutocomplete" [displayWith]="displayFndistrict">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let district of districtList" [value]="district">
+                                                {{district.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>State</mat-label>
+                                    <input placeholder="State" matInput formControlName="state_id" [readonly]="isReadonly"
+                                        [matAutocomplete]="statetype" id="landlord-edit-0019">
+                                    <mat-autocomplete #statetype="matAutocomplete" [displayWith]="displayFnstate">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let state of stateList" [value]="state">
+                                                {{state.name}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field class="input-style2">
+                                    <mat-label>Pincode</mat-label>
+                                    <input placeholder="Pincode" matInput formControlName="pincode_id" [readonly]="isReadonly"
+                                    maxlength="6" [matAutocomplete]="pintype" id="landlord-edit-0020">
+                                    <mat-autocomplete #pintype="matAutocomplete" [displayWith]="displayFnpin">
+                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let pin of pinCodeList" (focusout)="pinCode(pin)"
+                                                [value]="pin">
+                                                {{pin.no}}
+                                            </mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+    </div>
+    </td>
+    </tr>
+    </tbody>
+    </table>
+    <div>
+        <tr>
+            
+            <td>
+                <mat-checkbox class="example-margin" formControlName="is_poa" (change)="checkedtrue1($event.checked)">
+                    POA
+                </mat-checkbox>
+            </td>
+        </tr>
+    </div>
+    <!-- <table>
+        <tbody>
+            <tr>
+                <td *ngIf=isNRI>
+                    <span>NRI Details</span>
+                    <div [formGroup]="LandlordEditForm.controls.contact_and_address">
+            <tr>
+                <td>
+                    <mat-form-field class="input-style">
+                        <mat-label>Contact Name</mat-label>
+                        <input matInput autocomplete="off" formControlName="landlordname" required id="landlord-edit-0021">
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="input-style2">
+                        <mat-label>Contact Number</mat-label>
+                        <input matInput autocomplete="off" formControlName="landlordcontact" required id="landlord-edit-0022">
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="input-style2">
+                        <mat-label>Contact Email</mat-label>
+                        <input matInput autocomplete="off" formControlName="landlordemail" required id="landlord-edit-0023">
+                    </mat-form-field>
+                </td>
+            </tr>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <span> NRI Address</span>
+                            <div [formGroup]="LandlordEditForm.controls.contact_and_address.get('address')">
+                    <tr>
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>No</mat-label>
+                                <input matInput autocomplete="off" formControlName="line1" required id="landlord-edit-0024">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Street</mat-label>
+                                <input matInput formControlName="line2" autocomplete="off" required id="landlord-edit-0025">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Area</mat-label>
+                                <input matInput formControlName="line3" autocomplete="off" required id="landlord-edit-0026">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>City</mat-label>
+                                <input placeholder="City" matInput formControlName="city_id"
+                                    [matAutocomplete]="citytype1" id="landlord-edit-0027">
+                                <mat-autocomplete #citytype1="matAutocomplete" [displayWith]="displayFncity1">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let city of cityList1" (focusout)="citys1(city)"
+                                            [value]="city">
+                                            {{city.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <mat-form-field class="input-style">
+                                <mat-label>District</mat-label>
+                                <input placeholder="District" matInput formControlName="district_id"
+                                    [matAutocomplete]="districttype1" id="landlord-edit-0028">
+                                <mat-autocomplete #districttype1="matAutocomplete" [displayWith]="displayFndistrict1">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let district of districtList1" [value]="district">
+                                            {{district.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>State</mat-label>
+                                <input placeholder="State" matInput formControlName="state_id"
+                                    [matAutocomplete]="statetype1" id="landlord-edit-0029">
+                                <mat-autocomplete #statetype1="matAutocomplete" [displayWith]="displayFnstate1">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let state of stateList1" [value]="state">
+                                            {{state.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-style2">
+                                <mat-label>Pincode</mat-label>
+                                <input placeholder="Pincode" matInput formControlName="pincode_id"
+                                maxlength="6" [matAutocomplete]="pintype1" id="landlord-edit-0030">
+                                <mat-autocomplete #pintype1="matAutocomplete" [displayWith]="displayFnpin1">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let pin of pinCodeList1" (focusout)="pinCode1(pin)"
+                                            [value]="pin">
+                                            {{pin.no}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</td>
+</tr>
+</tbody>
+</table> -->
+
+<table>
+    <tbody>
+        <tr>
+            <td *ngIf=isPOA>
+                <span>POA Details</span>
+                <div [formGroup]="LandlordEditForm.controls.contact_and_address">
+        <tr>
+            <td>
+                <mat-form-field class="input-style">
+                    <mat-label>Contact Name</mat-label>
+                    <input matInput autocomplete="off" formControlName="landlordname" required id="landlord-edit-0031">
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field class="input-style2">
+                    <mat-label>Contact Number</mat-label>
+                    <input matInput autocomplete="off" formControlName="landlordcontact" required id="landlord-edit-0032">
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field class="input-style2">
+                    <mat-label>Contact Email</mat-label>
+                    <input matInput autocomplete="off" formControlName="landlordemail" required id="landlord-edit-0033">
+                </mat-form-field>
+            </td>
+        </tr>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <span> POA Address</span>
+                        <div [formGroup]="LandlordEditForm.controls.contact_and_address.get('address')">
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>No</mat-label>
+                            <input matInput autocomplete="off" formControlName="line1" required id="landlord-edit-0034">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Street</mat-label>
+                            <input matInput formControlName="line2" autocomplete="off" required id="landlord-edit-0035">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Area</mat-label>
+                            <input matInput formControlName="line3" autocomplete="off" required id="landlord-edit-0036">
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>City</mat-label>
+                            <input placeholder="City" matInput formControlName="city_id" [matAutocomplete]="citytype1" id="landlord-edit-0037">
+                            <mat-autocomplete #citytype1="matAutocomplete" [displayWith]="displayFncity1">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let city of cityList1" (focusout)="citys1(city)" [value]="city">
+                                        {{city.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="input-style">
+                            <mat-label>District</mat-label>
+                            <input placeholder="District" matInput formControlName="district_id"
+                                [matAutocomplete]="districttype1" id="landlord-edit-0038">
+                            <mat-autocomplete #districttype1="matAutocomplete" [displayWith]="displayFndistrict1">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let district of districtList1" [value]="district">
+                                        {{district.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>State</mat-label>
+                            <input placeholder="State" matInput formControlName="state_id"
+                                [matAutocomplete]="statetype1" id="landlord-edit-0039">
+                            <mat-autocomplete #statetype1="matAutocomplete" [displayWith]="displayFnstate1">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let state of stateList1" [value]="state">
+                                        {{state.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="input-style2">
+                            <mat-label>Pincode</mat-label>
+                            <input placeholder="Pincode" matInput formControlName="pincode_id"
+                            maxlength="6" [matAutocomplete]="pintype1" id="landlord-edit-0040">
+                            <mat-autocomplete #pintype1="matAutocomplete" [displayWith]="displayFnpin1">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let pin of pinCodeList1" (focusout)="pinCode1(pin)"
+                                        [value]="pin">
+                                        {{pin.no}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        </td>
+        </tr>
+    </tbody>
+</table>
+
+
+</table>
+<div style="margin-bottom: 6%;">
+    <button type="submit" style="border-radius: 40px;margin-left: 10px;" class="btn btn-outline-primary" *ngIf="!landlordView" id="landlord-edit-0041">Submit</button>
+    <button type="button" class="btn btn-outline-primary" style="border-radius: 40px;margin-left: 10px;"
+        (click)="onCancelClick()" id="landlord-edit-0042">Cancel</button>
+
+</div>
+</form>
+</div>
+</div>

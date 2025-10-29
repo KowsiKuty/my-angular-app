@@ -1,0 +1,478 @@
+<div style="margin-top: 10px;margin-left: 50px;">
+    <span style="cursor: pointer;"
+        [ngClass]="{'active-tab': activeTab === 'Payment Report', 'inactive-tab': activeTab !== 'Payment Report'}"
+        (click)="switchtab('Payment Report')">
+        Payment Report
+    </span>&nbsp;&nbsp;
+    <span style="cursor: pointer;"
+        [ngClass]="{'active-tab': activeTab === 'Guard Count', 'inactive-tab': activeTab !== 'Guard Count'}"
+        (click)="switchtab('Guard Count')">
+        Guard Count
+    </span>&nbsp;&nbsp;
+
+    <span style="cursor: pointer;"
+
+        [ngClass]="{'active-tab': activeTab === 'Agency report', 'inactive-tab': activeTab !== 'Agency report'}"
+        (click)="switchtab('Agency report')">
+        Agencies Report
+    </span>
+</div>
+<div *ngIf="payment">
+    <div style="margin-left: 2%;margin-top: 2%;">
+        <form [formGroup]="sgprivisionform">
+            <table>
+                <tr>
+                    <td>
+                        <mat-form-field style="width: 200px;margin-left: 25px;" class="input-style"
+                            (keyup.backspace)="getbranch()">
+                            <mat-label style="    font-size: 17px;">Branch </mat-label>
+                            <input placeholder="Branch " matInput formControlName="branch_id"
+                                [readonly]="forbranch_Readonly" #branchContactInput [matAutocomplete]="branchtype"
+                                (keyup)="brachname()">
+                            <mat-autocomplete #branchtype="matAutocomplete" [displayWith]="displaybranch"
+                                (opened)="autocompletebranchnameScroll()">
+                                <mat-option *ngIf="isLoadingbranch" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoadingbranch">
+                                    <mat-option *ngFor="let brach of branchlist" [value]="brach">
+                                        ({{brach.code}}){{brach.name+ " " }}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 200px;margin-left: 50px;" class="input-style"
+                            (keyup.backspace)="getprimes()">
+
+                            <mat-label style="    font-size: 17px;">Premises </mat-label>
+                            <input placeholder="Premises " matInput formControlName="premise_id" #PremiseContactInput
+                                [matAutocomplete]="primestype" (keyup)="primiesname()">
+                            <mat-autocomplete #primestype="matAutocomplete" [displayWith]="displayprimes"
+                                (opened)="autocompletePremisenameScroll()">
+                                <mat-option *ngIf="isLoadingprimes" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoadingprimes">
+                                    <mat-option *ngFor="let primes of primeslist" [value]="primes">
+                                        ({{primes.code}}){{primes.name+ " " }}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                    </td>
+
+                    <td>
+                        <mat-form-field style="width: 200px;margin-left: 50px;" class="input-style">
+                            <input matInput [matDatepicker]="dp" placeholder="Month and Year"
+                                formControlName="monthdate" readonly [formControl]="monthdate">
+                            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                            <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandler($event)"
+                                (monthSelected)="chosenMonthHandler($event, dp)" panelClass="example-month-picker">
+                            </mat-datepicker>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <!-- <mat-form-field style="width: 200px;margin-left: 50px;" class="input-style" (click)="statename()">
+    
+                            <mat-label>State</mat-label>
+                            <input placeholder="State" matInput formControlName="state_id" #StateContactInput
+                                [matAutocomplete]="producttype1">
+                            <mat-autocomplete #producttype1="matAutocomplete" [displayWith]="displaydis1"
+                                (opened)="autocompleteStatenameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let state of dropdownstate" [value]="state">
+                                        {{state.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+                        <mat-form-field style="width:200px;margin-left: 25px;" (keyup.backspace)="getcatven()">
+
+                            <mat-label>Vendor</mat-label>
+                            <input placeholder="Vendor" matInput formControlName="vendor_id" #VendorContactInput
+                                [matAutocomplete]="vendorid" (keyup)="vendorname()">
+                            <mat-autocomplete #vendorid="matAutocomplete" [displayWith]="displaydis"
+                                (opened)="autocompleteVendornameScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let vendor of vendorlist" [value]="vendor">
+                                        ({{vendor.code}}) {{vendor.name+ " " }}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 200px;margin-left: 50px;">
+                            <mat-label>Status</mat-label>
+                            <mat-select formControlName="status_type">
+                                <mat-option *ngFor="let status of status_arr" [value]="status.id">
+                                    {{status.value}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px; margin-left: 50px;" (click)="onserach()" color="primary"><i
+                                class="fa fa-search" aria-hidden="true"></i></button>
+                        <!-- </td>
+                    <td> -->
+
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px;margin-left: 50px;" (click)="formreset()"
+                            color="primary">Reset</button>
+
+                        <button class="btn btn-outline-primary" type="submit"
+                            style="border-radius:40px;margin-left: 50px;" (click)="sgReport()"
+                            color="primary">Download</button>
+
+
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+    <!-- <div> -->
+
+    <div class="table-responsive" id="styleScroll" style="margin-top: 2%;width: 90%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.no</th>
+                    <th>Month-Year</th>
+                    <th>Branch Name</th>
+                    <th>Premises Name</th>
+                    <!-- <th>State</th> -->
+
+                    <th>Vendor</th>
+                    <th>Status</th>
+                    <!-- <th>Zone</th> -->
+                    <th>ECF No</th>
+                    <th>Payment Status</th>
+                    <th>Paid Date</th>
+                    <th>UTR NO</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let list of privision_list ;index as i">
+                    <td>{{(privipresentpage - 1)*pagesizeprivi +i+1 }} </td>
+                    <td>{{mothfind(list.month,list.year) | date: 'MMM-yyyy'}}</td>
+                    <td> ({{ list.branch.code}}){{" "+list.branch.name}} </td>
+                    <td>({{ list.premise.code}}){{" "+list.premise.name}}</td>
+                    <!-- <td>{{list.state.name}}</td> -->
+                    <td> ({{ list.vendor.code}}){{" "+list.vendor.name}} </td>
+                    <td>
+                        <div *ngIf="list.flow_status.status == 'Rejected' ; else nopopup">
+                            <a style="color: blue;" (click)=getDataForReject(list.flow_status) data-toggle="modal"
+                                data-target="#exampleModal"><span class="material-icons">
+                                    visibility
+                                </span> {{list.flow_status.stage}}-{{list.flow_status.status}} </a>
+                        </div>
+                        <ng-template #nopopup>
+                            {{list.flow_status.stage}}-{{list.flow_status.status}}
+                        </ng-template>
+
+
+
+
+
+
+
+
+                    </td>
+                    <!-- <td>{{list.zone.name}}</td> -->
+                    <th>{{list.no}}</th>
+                    <td>{{list.status}}</td>
+                    <td>{{list.paid_date |date:'dd-MMM-yyyy' }}</td>
+                    <td>{{list.utr_no}}</td>
+                    <!-- <td>{{list.flow_status.status}}</td> -->
+
+
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div *ngIf="privision_list ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+    <div class="row" *ngIf="isProvisionPage">
+        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 50px;">
+            <button mat-icon-button [disabled]="has_priviprevious === false" color="primary"
+                (click)="previousClickprivi()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{privipresentpage}}
+            <button mat-icon-button [disabled]="has_privinext === false" color="primary" (click)="nextClickprivi()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- </div> -->
+
+    <!-- </div> -->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Reject Remarks</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <strong>Reject Remarks:</strong> {{rejectRemarks}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="guardcount">
+    <form [formGroup]="sgguardcountform">
+        <table>
+            <tr>
+                <td>
+                    <mat-form-field style="width: 200px;margin-left: 50px;" class="input-style">
+                        <mat-label style="    font-size: 17px;">Branch </mat-label>
+                        <input placeholder="Branch " matInput formControlName="guard_branch_id" #branchContactInputguard
+                            [matAutocomplete]="branchtypeguard" (keyup)="getguardbranch()">
+                        <mat-autocomplete #branchtypeguard="matAutocomplete" [displayWith]="displaybranch"
+                            (opened)="autocompletebranchnameScrollguard()">
+                            <mat-option *ngIf="isLoadingbranch" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoadingbranch">
+                                <mat-option *ngFor="let brach of branchlist" [value]="brach">
+                                    ({{brach.code}}){{brach.name+ " " }}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px;margin-left: -222px;" class="input-style"
+                        (keyup.backspace)="getprimes()">
+
+                        <mat-label style="    font-size: 17px;">Premises </mat-label>
+                        <input placeholder="Premises " matInput formControlName="guard_premise_id" #PremiseContactInput
+                            [matAutocomplete]="primestype" (keyup)="primiesname()">
+                        <mat-autocomplete #primestype="matAutocomplete" [displayWith]="displayprimes"
+                            (opened)="autocompletePremisenameScroll()">
+                            <mat-option *ngIf="isLoadingprimes" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoadingprimes">
+                                <mat-option *ngFor="let primes of primeslist" [value]="primes">
+                                    ({{primes.code}}){{primes.name+ " " }}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                </td>
+                <td>
+                    <mat-form-field style="width: 200px;margin-left: -222px;" class="input-style">
+
+                        <mat-label>State</mat-label>
+                        <input placeholder="State" matInput formControlName="guard_state_id" #StateContactInput
+                            [matAutocomplete]="producttype1" (keyup)="statename()">
+                        <mat-autocomplete #producttype1="matAutocomplete" [displayWith]="displaydis1"
+                            (opened)="autocompleteStatenameScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let state of dropdownstate" [value]="state">
+                                    {{state.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <mat-form-field style="width:470px;margin-left: 50px;" (keyup.backspace)="getcatven()">
+
+                        <mat-label>Vendor</mat-label>
+                        <input placeholder="Vendor" matInput formControlName="guard_vendor_id" #VendorContactInput
+                            [matAutocomplete]="vendorid" (keyup)="vendorname()">
+                        <mat-autocomplete #vendorid="matAutocomplete" [displayWith]="displaydis"
+                            (opened)="autocompleteVendornameScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let vendor of vendorlist" [value]="vendor">
+                                    ({{vendor.code}}) {{vendor.name+ " " }}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+
+                <td>
+
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px; margin-left: 19px;"
+                        (click)="sgguardsearch(1)" color="primary"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+
+
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                        (click)="sgguardcountreset()" color="primary">Reset</button>
+
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                        (click)="sgguardcountreport()" color="primary">Download</button>
+
+
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="table-responsive" id="styleScroll" style="margin-top: 2%;width: 93%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.no</th>
+                    <th>Vendor</th>
+                    <th>State</th>
+                    <th>Zone</th>
+                    <!-- <th>State</th> -->
+                    <th>Branch</th>
+                    <th>Premises</th>
+                    <!-- <th>Zone</th> -->
+                    <th>Armed</th>
+                    <th>Unarmed</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let list of guardsummarylist ;index as i">
+                    <td>{{(privipresentpageguard - 1)*pagesizepriviguard +i+1 }} </td>
+                    <td>({{list.vendor_code}}){{list.vendor_name}}</td>
+                    <td> {{list.state}}</td>
+                    <td>{{list.zone}}</td>
+                    <td> ({{ list.branch_code}}){{list.branch_name}} </td>
+                    <td>({{list.premise_code}}){{list.premise_name}}</td>
+                    <td>{{list.Armed}}</td>
+                    <td>{{list.Unarmed}}</td>
+
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div *ngIf="guardsummarylist ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+    <div class="row" *ngIf="isProvisionguardPage">
+        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 50px;">
+            <button mat-icon-button [disabled]="guardhas_priviprevious === false" color="primary"
+                (click)="previousClickpriviguard()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{privipresentpageguard}}
+            <button mat-icon-button [disabled]="guardhas_privinext === false" color="primary"
+                (click)="nextClickpriviguard()">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="agencyreport">
+    <form [formGroup]="agencyrepoform">
+        <div class="row" class="col-md-12">
+                                  
+         <mat-form-field style="margin-left: 35px;width:200px">
+            <mat-label>Vendor Name</mat-label>
+            <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="checkersupplier" #vendorInput formControlName="vendor" style="width: 300px;" />
+           
+            <mat-autocomplete #checkersupplier="matAutocomplete" #vendor [displayWith]="vendorinterface" (opened)="autocompletesupname()">
+                <mat-option *ngIf="isLoading">Loading..</mat-option>
+            <ng-container *ngIf="!isLoading">
+                <mat-option title="{{d.code+' - '+d.name}}"*ngFor="let d of vendorList" [value]="d" >
+                    {{d.code+' - '+d.name}}
+                </mat-option>
+            </ng-container> 
+            </mat-autocomplete>
+        </mat-form-field>
+        <button type="button" (click)="searchdataapi()" matTooltip="Search" class="btn btn-outline-success" style="border-radius: 40px;margin-left: 20px;">Search</button>
+           <button type="button" (click)="resetdata()" matTooltip="Reset"  class="btn btn-outline-danger" style="border-radius: 40px;margin-left: 10px;">Reset</button>
+                    <!-- <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 15px;"
+                        (click)="sgagencyreportsummary()" color="primary">Load Summary</button> -->
+                    <button class="btn btn-outline-success" type="submit" style="border-radius:40px;margin-left: 15px;"
+                        (click)="sgagencyreport()" color="primary">Download</button>
+                </div>
+                
+    </form>
+    <div class="table-responsive" id="styleScroll" style="margin-top: 2%;width: 93%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.no</th>
+                    <th>Vendor</th>
+                    <th>State</th>
+                    <th>Zone</th>
+                    <!-- <th>State</th> -->
+                     <th>Shift Name</th>
+                     <th>Risk Categorization</th>
+                    <th>Branch</th>
+                    <th>Premises</th>
+                    <!-- <th>Zone</th> -->
+                    <th>Armed</th>
+                    <th>Unarmed</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let list of agencysummarylistdata ;index as i">
+                    <td>{{(agencypresentpageguard - 1)*pagesizeagency +i+1 }} </td>
+                    <td>({{list.vendor_code}}){{list.vendor_name}}</td>
+                    <td> {{list.state}}</td>
+                    <td>{{list.zone}}</td>
+                    <td>{{list.shift_detail?.shift_name}}</td>
+                    <td>{{list.risk_categorization.text}}</td>
+                    <td> ({{ list.branch_code}}){{list.branch_name}} </td>
+                    <td>({{list.premise_code}}){{list.premise_name}}</td>
+                    <td>{{list.Armed}}</td>
+                    <td>{{list.Unarmed}}</td>
+
+                </tr>
+            </tbody>
+            <tfoot>
+                <td class="text-left" colspan="3">
+                   <span>Total Count:<br/> <b
+                      class="text-centre"> {{agencysummarylistdata[0]?.count}}</b></span>
+                </td>
+           
+          <td class="text-right" colspan="7">
+         
+                <button mat-icon-button [disabled]="agencyhas_priviprevious === false" color="primary"
+                (click)=" agencypreviousClick()">
+                <mat-icon>arrow_back</mat-icon>
+                </button>
+                {{agencypresentpageguard}}
+                <button mat-icon-button [disabled]="agencyhas_privinext === false" color="primary" (click)="agencynextClick()">
+                <mat-icon>arrow_forward</mat-icon>
+                </button>
+               
+          </td>
+          </tfoot>
+        </table>
+    </div>
+    <div *ngIf="agencysummarylist ?.length == 0" style="margin-left: 42%;">
+        <h3>Sorry data not found!.. </h3>
+    </div>
+
+    </div>

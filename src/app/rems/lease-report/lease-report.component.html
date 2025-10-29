@@ -1,0 +1,226 @@
+<h2 style="margin-left: 30px;margin-top: 1%;">Lease Report</h2>
+
+<div style=" margin: auto;">
+    <div class="col-md-12">
+        <div>
+            <form [formGroup]="LeaseSearchForm" (ngSubmit)="LeaseSearch()">
+                <div class="row col-md-12">
+                    <div class="col-md-2">
+                        <mat-form-field class="input-style2">
+                            <mat-label>Branch Code</mat-label>
+                            <input #brInput placeholder="Branch Code" matInput
+                                formControlName="branchcode" [matAutocomplete]="brcode" id="lease-report-0001">
+                            <mat-autocomplete #brcode="matAutocomplete" [displayWith]="displayFnBr"
+                                (opened)="autocompleteBranchScroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let br of BranchCode" [value]="br">
+                                        {{br.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">                 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="premise_name" id="lease-report-0002">
+                            <mat-placeholder>Premises Name</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">                 
+                        <mat-form-field class="input-style2">
+                            <mat-label>Premise Type</mat-label>
+                            <mat-select formControlName="premise_type" id="lease-report-0003">
+                                <mat-option *ngFor="let premise of premisesTypeData" [value]="premise.id">
+                                    {{premise.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="lease_status" id="lease-report-0004">
+                            <mat-placeholder>Lease Status</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="row col-md-12">
+                    <div class="col-md-2">
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="controlling_office" id="lease-report-0005">
+                            <mat-placeholder>Controlling Office</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="occupancy_name" id="lease-report-0006">
+                            <mat-placeholder>Occupancy Name</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style2">
+                            <mat-label>Occupancy Type</mat-label>
+                                <mat-select formControlName="occupancy_type" id="lease-report-0007">
+                                <mat-option *ngFor="let usage of usageType" [value]="usage.id">
+                                    {{usage.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="terminal_id" id="lease-report-0008">
+                            <mat-placeholder>Terminal ID</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="row col-md-12">
+                    <div class="col-md-2">
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="landlord_name" id="lease-report-0009">
+                            <mat-placeholder>Landlord Name</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="landlord_status" id="lease-report-0010">
+                            <mat-placeholder>Landlord Status</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style2">
+                            <mat-label>Landlord Type</mat-label>
+                            <mat-select formControlName="landlord_type" id="lease-report-0011">
+                                <mat-option *ngFor="let landlord of landlordTypeData" [value]="landlord.id">
+                                    {{landlord.text}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                         <mat-form-field class="input-style">
+                            <input class="toolbar-search" matInput [matDatepicker]="picker1" formControlName="vacation_date" autocomplete="off"  [max]="today"  id="lease-report-0012" />
+                            <mat-placeholder>Vacation Date</mat-placeholder>
+                            <mat-datepicker-toggle matSuffix [for]="picker1">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="row col-md-12">
+                    <div class="col-md-2"> 
+                         <mat-form-field class="input-style">
+                            <input class="toolbar-search" matInput [matDatepicker]="picker2" formControlName="lease_start_date" autocomplete="off"  [max]="today"  id="lease-report-0013" />
+                            <mat-placeholder>Lease Start Date</mat-placeholder>
+                            <mat-datepicker-toggle matSuffix [for]="picker2">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" matInput [matDatepicker]="picker3" formControlName="lease_end_date" autocomplete="off"  [max]="today"  id="lease-report-0014" />
+                            <mat-placeholder>Lease End Date</mat-placeholder>
+                            <mat-datepicker-toggle matSuffix [for]="picker3">
+                                <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker3></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                           <input class="toolbar-search" matInput [matDatepicker]="picker4" formControlName="relaxation_start_date" autocomplete="off"  [max]="today"  id="lease-report-0015" />
+                           <mat-placeholder>Relaxation Start Date</mat-placeholder>
+                           <mat-datepicker-toggle matSuffix [for]="picker4">
+                               <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                           </mat-datepicker-toggle>
+                           <mat-datepicker #picker4></mat-datepicker>
+                       </mat-form-field>
+                   </div>
+                   <div class="col-md-2"> 
+                       <mat-form-field class="input-style">
+                           <input class="toolbar-search" matInput [matDatepicker]="picker5" formControlName="relaxation_end_date" autocomplete="off"  [max]="today"  id="lease-report-0016" />
+                           <mat-placeholder>Relaxation End Date</mat-placeholder>
+                           <mat-datepicker-toggle matSuffix [for]="picker5">
+                               <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                           </mat-datepicker-toggle>
+                           <mat-datepicker #picker5></mat-datepicker>
+                       </mat-form-field>
+                   </div>
+                    <div class="col-md-2"> 
+                        <mat-form-field class="input-style">
+                            <input class="toolbar-search" type="text" matInput autocomplete="off"
+                                formControlName="schedule_status" id="lease-report-0017">
+                            <mat-placeholder>Schedule Status</mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <button class="btn btn-outline-primary" style="height: 60px;" style="border-radius:40px;float:right;margin-right: 10px;"
+                    (click)="fileDownload()" [disabled]="downloadDisable" type="button" id="lease-report-0018">Download</button>
+                <button class="btn btn-outline-primary" style="height: 60px;" style="border-radius:40px;float:right;margin-right: 10px;"
+                    (click)="backToRemsSummary()" id="lease-report-0019">Back</button>
+                <button class="btn btn-outline-primary" (click)="reset()" type="button"
+                    style="border-radius:40px;float:right;margin-right: 15px;" color="primary" id="lease-report-0020">Reset</button>
+                <button class="btn btn-outline-primary" type="submit"
+                    style="border-radius:40px;float:right;margin-right: 15px;" color="primary" id="lease-report-0021"><i class="fa fa-search"
+                        aria-hidden="true"></i></button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="table-responsive" style="margin-top: 20px;width: 94%;margin-left: 50px;">
+        <table class="table scrolltable table-bordered" fixed-header>
+            <thead>
+                <tr class="table_header" fixed-header>
+                    <th>S.No</th>
+                    <th>Branch Code</th>
+                    <th>Premises Name</th>
+                    <th>Occupancy Type</th>
+                    <th>Controlling Office</th>
+                    <th>Landlord Name</th>
+                    <th>Lease Start Date</th>
+                    <th>Lease End Date</th>
+                    <th>Lease Status  </th>                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let lease of LeaseList; index as i">
+                    <td> {{(presentpage - 1)*pagesize +i+1 }} </td>
+                    <td>{{ lease.Branch_Code }}</td>
+                    <td>{{ lease.premise_name }}</td>
+                    <td>{{ lease.Occupancy_Type }}</td>
+                    <td>{{ lease.controlling_Office }}</td>
+                    <td>{{ lease.landlord_name }}</td>
+                    <td>{{ lease.Lease_Start_Date}}</td>
+                    <td>{{ lease.Lease_End_Date}}</td>
+                    <td>{{ lease.Lease_Status}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="LeaseList ?.length == 0" style="margin-left: 42%;">
+            <h3>Sorry data not found!.. </h3>
+        </div>
+        <div class="col-sm-12" style="font-size: small;text-align: right; margin-bottom: 100px;" *ngIf="isLeaseList">
+            <button mat-icon-button [disabled]="has_previous === false" color="primary"
+                (click)="previousClick()" id="lease-report-0022">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{presentpage}}
+            <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()" id="lease-report-0023">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

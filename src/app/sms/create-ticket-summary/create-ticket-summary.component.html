@@ -1,0 +1,306 @@
+<div style="margin-left: 2%;">
+    <h1 style="font-size: 23px;font-family: 'Times New Roman', Times, serif;color: blue;">Ticket Raise</h1>
+</div><hr>
+<div style="margin-left: 2%;">
+    <div class="card" style="width: 98%;">
+        <div class="card-header">
+            Create New Ticket
+        </div>
+        <div class="card-body">
+            <form [formGroup]="formTicket">
+                <button (click)="opendialog()" class="bothov"  type="button"  style="margin-left: 50px;background-color: white;border-radius: 5px;"><mat-icon matSuffix>cloud_upload</mat-icon>&nbsp;NOP:&nbsp;&nbsp;<b style="color: blue;">{{parentlist+' - '+childlist}}</b></button>
+                <!-- <button (click)="opendialog()" class="bothov"  type="button"  style="margin-left: 50px;background-color: white;border-radius: 5px;"><mat-icon matSuffix>cloud_upload</mat-icon>&nbsp;NOP:&nbsp;&nbsp;<b style="color: blue;">{{nopform.value.natureop.errorcategory_name | json}}</b></button> -->
+                <mat-form-field appearance="outline" style="width: 90%;">
+                    <mat-label>Summary Of The Problem</mat-label>
+                    <input type="text" matInput formControlName="summaryproblem" required (keypress)="kyenbdata($event)">
+                </mat-form-field><br>
+                <mat-form-field appearance="outline" style="width: 90%;">
+                    <mat-label>Problem Description</mat-label>
+                    <textarea matInput formControlName="problemdesc" rows="5" required (keypress)="kyenbdata($event)"></textarea>
+                </mat-form-field><br>
+                <!--<button (click)="opendialog()" class="bothov"  type="button"  style="margin-left: 50px;background-color: white;border-radius: 5px;"><mat-icon matSuffix>cloud_upload</mat-icon>&nbsp;NOP:&nbsp;&nbsp;<b style="color: blue;">{{nopform.value.natureop.errorcategory_name | json}}</b></button>-->
+            </form>
+            <br />
+            <form [formGroup]="TicketSearch">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field style="width: 250px;">
+                            <mat-label>Branch Name</mat-label>
+                            <input type="text" #branchInput matInput formControlName="branch" [matAutocomplete]="branchdataref" (keypress)="kyenbdata($event)">
+                            <mat-autocomplete #branchdataref="matAutocomplete" [displayWith]="branchinterface" (opened)="autocompletecommoditybranch()">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of branchList" (focusout)="locationdata(d)" [value]="d">{{d.code+' - '+d.name}}</mat-option>
+                                </ng-container>                            
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field style="width: 250px;" (click)="checkbranch()">
+                            <mat-label>Asset Location</mat-label>
+                            <input type="text" #locationInput matInput formControlName="Location" [matAutocomplete]="locationdataref" (keypress)="kyenbdata($event)">
+                            <mat-autocomplete #locationdataref="matAutocomplete" [displayWith]="locationinterface" (opened)="autocompleteassetlocation()">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let d of locationList" [value]="d">{{d.name}}</mat-option>
+                                </ng-container>                            
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <td>
+                           <mat-form-field class="example-full-width" style="margin-left: 50px;width: 200px;">
+                              <mat-label>Product Name</mat-label>
+                           <input class="toolbar-search" type="text" matInput autocomplete="off" matInput (keypress)="kyenbdata($event)" [matAutocomplete]="checkerproduct" formControlName="asset_name" >
+                              <mat-placeholder>Product Name</mat-placeholder>
+                              <mat-autocomplete #checkerproduct="matAutocomplete" #product [displayWith]="assetnameinterface" (opened)="autocompleteproductname()">
+                                 <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                 <ng-container *ngIf="!isLoading">
+                                    <mat-option  title="{{d.name}}"*ngFor="let d of productlist" [value]="d" >
+                                    {{d.name}}
+                                    </mat-option>
+                                 </ng-container> 
+                              </mat-autocomplete> 
+                           </mat-form-field>
+                        </td>
+                     </div>
+                     &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                     <mat-radio-group formControlName="amc" color="primary" (click)="clicktochangedata()">
+                        <mat-radio-button value="AMC">AMC</mat-radio-button>
+                        <mat-radio-button value="WARRANTY">Warranty</mat-radio-button>
+                        <mat-radio-button value="ALL">ALL</mat-radio-button>
+                    </mat-radio-group>
+                            <!-- <mat-checkbox [checked]="sel==1" formControlName="amc">AMC</mat-checkbox>
+                            <mat-checkbox [checked]="sel==2" formControlName="war">Warranty</mat-checkbox>
+                            <mat-checkbox [checked]="sel==3" formControlName="all">ALL</mat-checkbox> -->
+                       
+                    
+                        <!-- <mat-radio-button align="end" style="float: right;" formControlName="paid">PAID</mat-radio-button> -->
+                        <!-- <mat-checkbox (click)="enbdata()" style="float: right;margin-left: 200px;" formControlName="paid">PAID</mat-checkbox> -->
+                    
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field style="width: 250px;">
+                            <mat-label>Asset Barcode</mat-label>
+                            <input type="text" matInput formControlName="assetid" (keypress)="kyenbdata($event)" (keyup)="clicktochange()">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field style="width: 250px;">
+                            <mat-label>Asset Serial No</mat-label>
+                            <input type="text" #branchInput matInput formControlName="assetserialno" [matAutocomplete]="checkerassetserialno" (keypress)="kyenbdata($event)">
+                            <mat-autocomplete #checkerassetserialno="matAutocomplete" [displayWith]="asserialnointerface" (opened)="autocompleteassetserialno()">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option title="{{d.assetserialno}}" *ngFor="let d of assetserialList" [value]="d">{{d.assetserialno}}</mat-option>
+                                </ng-container>                            
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md">
+                   
+                        <mat-form-field class="example-full-width" style="margin-left:15px;width:300px">
+                            <mat-label>Vendor Name</mat-label>
+                            <input class="toolbar-search" type="text" matInput autocomplete="off" [matAutocomplete]="checkerbranchs" #vendorInput formControlName="vendor" style="width: 250px;" />
+                           
+                            <mat-autocomplete #checkerbranchs="matAutocomplete" #branch [displayWith]="vendorinterface" (opened)="autocompletesupname()">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option title="{{d.code +' - '+d.name}}" *ngFor="let d of vendorList" [value]="d" >
+                                    {{d.name}}
+                                </mat-option>
+                            </ng-container> 
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    
+                </div>
+                    <div class="col-md-2">
+                        <button type="button" (click)="getsummarydata()" class="btn btn-outline-success" style="border-radius: 30px;height: 40px;margin-left:5px">Search</button>
+                    </div>
+                </div>
+                <div class="table-responsive" style="width: 98%;">
+                <table class="table table-bordered">
+                    <thead class="table_header">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Branch Name</th>
+                            <th>Asset Location</th>
+                            <th>Vendor Name</th>
+                            <th>Product Name</th>
+                            <th>Asset Barcode</th>
+                            <th>Asset Serial No</th>
+                            <th>AMC/WAR From Date</th>
+                            <th>AMC/WAR To Date</th>
+                            <th>Amount</th>
+                            <th>Header Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let d of nopList;let i=index">
+                            <td>{{(presentpage-1)*pagesize+i+1}}</td>
+                            <td>{{d.branch_id.code+'-'+d.branch_id.name}}</td>
+                            <td>{{d.assetlocation_name ? d.assetlocation_name:'-'}}</td>
+                            <td>{{d.vendorname}}</td>
+                            <td>{{d.asset_name}}</td>
+                            <td>{{d.barcode}}</td>
+                            <td>{{d.assetserialno ? d.assetserialno:'-'}}</td>
+                            <td>{{d.warrenty_from_date ? (d.warrenty_from_date | date:'yyyy-MMM-dd'):'-' }}</td>
+                            <td>{{d.warrenty_to_date ? (d.warrenty_to_date | date:'yyyy-MMM-dd'):'-' }}</td>
+                            <td>{{d.amc_amount ? d.amc_amount:'-' | number:'1.2-2'}}</td>
+                            <td>{{d.amcheader_type ? d.amcheader_type:'-'}}</td>
+                            <td><button type="button" (click)="addata(d,i)" color="success" [ngClass]="d['con']?'active':''" mat-mini-fab style="border-radius: 20px;"><mat-icon>add</mat-icon></button></td>
+                        </tr>
+                        <tr *ngIf="nopList.length==0">
+                            <td colspan="11">No Records Found..</td>
+                        </tr>
+                        <tr >
+                            <td colspan="3">
+                                Total Count:{{totalcount}}
+                            </td>
+                            <td colspan="8">
+                                <div style="float: right;">
+                                    <button type="button" mat-icon-button color="primary" (click)="previousdata()" [disabled]="!has_previous"><mat-icon>arrow_back</mat-icon></button>
+                                    {{presentpage}}
+                                    <button type="button" mat-icon-button color="primary" (click)="nextdata()" [disabled]="!has_next"><mat-icon>arrow_forward</mat-icon></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <h1>Vendor Name</h1>
+                <div class="table-responsive" style="width: 99%;">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Branch Name</th>
+                            <th>Asset Location</th>
+                            <th>Vendor Name</th>
+                            <th>Product Name</th>
+                            <th>Asset Barcode</th>
+                            <th>Asset Serial No</th>
+                            <th>AMC/WAR From Date</th>
+                            <th>AMC/WAR To Date</th>
+                            <th>Amount</th>
+                            <th>Header Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let d of nopListnew;let i=index">
+                            <td>{{(presentpage-1)*pagesize+i+1}}</td>
+                            <td>{{d.branch_id.code+' - '+d.branch_id.name}}</td>
+                            <td>{{d.assetlocation_name ? d.assetlocation_name:'-'}}</td>
+                            <td>{{d.vendorname}}</td>
+                            <td>{{d.asset_name}}</td>
+                            <td>{{d.barcode}}</td>
+                            <td>{{d.assetserialno ? d.assetserialno:"-"}}</td>
+                            <td>{{d.warrenty_from_date ? (d.warrenty_from_date | date:'yyyy-MMM-dd'):'-' }}</td>
+                            <td>{{d.warrenty_to_date ? (d.warrenty_to_date | date:'yyyy-MMM-dd'):'-' }}</td>
+                            <td>{{d.amc_amount ? d.amc_amount:'-' |  number:'1.2-2'}}</td>
+                            <td>{{d.amcheader_type ? d.amcheader_type:'-'}}</td>
+                            <td><button (click)="deletedata(d)" style="text-align: center;" mat-icon-button type="button"><mat-icon>delete</mat-icon></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <div class="row">
+                    <mat-form-field>
+                        <mat-label>Due Date</mat-label>
+                        <input matInput [matDatepicker]="pick" formControlName="date"[min]="latest_date | date:'yyyy-MM-dd'" required/>
+                        <mat-datepicker-toggle [for]="pick" matSuffix></mat-datepicker-toggle>
+                        <mat-datepicker #pick></mat-datepicker>
+                    </mat-form-field>
+                    <!-- <mat-form-field style="width: 250px;margin-left: 50px;">
+                        <mat-label>Nature Of Problem</mat-label>
+                        <input type="text" matInput formControlName="nop" required [matAutocomplete]="nopref">
+                        <mat-autocomplete #nopref="matAutocomplete">
+                            <mat-option *ngIf="isLoading">Loading..</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let d of nopList">{{d}}</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field> 
+                    <button (click)="opendialog()" mat-icon-button type="button" matSuffix style="margin-left: 50px;"><mat-icon>cloud_upload</mat-icon>NOP:&nbsp;&nbsp;{{nopform.value.natureop.errorcategory_name | json}}</button>-->
+                    <div *ngIf="enb">
+                        <mat-form-field style="width: 250px;margin-left: 50px;">
+                            <mat-label>Supplier Name</mat-label>
+                            <input type="text" matInput formControlName="supplier" required [matAutocomplete]="nopref" (keypress)="kyenbdata($event)">
+                            <mat-autocomplete #nopref="matAutocomplete" [displayWith]="vendorinterface">
+                                <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option title="{{d.code+' - '+d.name}}" *ngFor="let d of supplierList" [value]="d">{{d.name}}</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="text-align:center">
+        <button style="border-radius: 40px;height: 40px;margin-top: 20px;" (click)="createdata()" [disabled]="submit_button_disable" class="btn btn-outline-success">Submit</button>&nbsp;&nbsp;&nbsp;
+        <button style="border-radius: 40px;height: 40px;margin-top: 20px;" routerLink="/sms/smsticketsummary" class="btn btn-outline-danger">Cancel</button>
+    </div>
+    <br />
+    <br />
+    <br />
+    <ng-template #nop>
+        
+            <div class="card">
+                <form [formGroup]="nopform">
+                    <div style="height: 400px;overflow-y: auto;">
+                        <div class="card-header" style="text-align: center;">
+                            <h1>Nature Of Problem</h1>
+                        </div>
+                        <form [formGroup]="smsassetcat">
+                            <div class="col-md-6">
+                                <!-- <mat-form-field style="width:250px">
+                                    <mat-label>Asset SubCategory</mat-label>
+                                    <input type="text" #inputcategorys  matInput autocomplete="off" [matAutocomplete]="category" formControlName="subcat">
+                                    <mat-autocomplete #categorys  #category="matAutocomplete" (opened)="autocompletecategory()" [displayWith]="assetcategory">
+                                        <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let d of categorylist" [value]="d['subcategory_id']" (focusout)="getApi()">{{d['subcategory_id'].name}}</mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                </mat-form-field> -->
+                                <mat-form-field class="example-full-width" style="width: 200px;">
+                                    <mat-label>Product Name</mat-label>
+                                 <input class="toolbar-search" type="text" matInput autocomplete="off" matInput (keypress)="kyenbdata1($event)" [matAutocomplete]="product" formControlName="asset_name" >
+                                    <mat-placeholder>Product Name</mat-placeholder>
+                                    <mat-autocomplete #product="matAutocomplete"  [displayWith]="assetname_interface" (opened)="autocompleteproduct()">
+                                       <mat-option *ngIf="isLoading">Loading..</mat-option>
+                                       <ng-container *ngIf="!isLoading">
+                                          <mat-option  title="{{d.name}}"*ngFor="let d of assetnamelist" [value]="d" (focusout)="getApi()">
+                                          {{d.name}}
+                                          </mat-option>
+                                       </ng-container> 
+                                    </mat-autocomplete> 
+                                 </mat-form-field>
+                            </div>  
+                        </form> 
+                        <div *ngFor="let dear of listcomments">
+                            <mat-radio-group class="example-radio-group" formControlName="natureop">
+                                <mat-radio-button color="primary" *ngFor="let det of dear" [value]="det" (click)="addChildClickStart(det)">{{det.errorcategory_name}}</mat-radio-button><br />
+                            </mat-radio-group>
+                            <br />
+                            
+                        </div>
+                        <h1>Nature Of Problem:{{parentlist+' - '+childlist}}</h1>
+                        <!-- <h1>Nature Of Problem:{{nopform.value.natureop.errorcategory_name | json}}</h1> -->
+                        <div class="text-center">
+                            <button type="button" (click)="closedialog()" mat-raised-button color="primary" style="margin-top:20px">Submit</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" (click)="closedialog()" mat-raised-button style="margin-top:20px">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+    </ng-template>
+</div>

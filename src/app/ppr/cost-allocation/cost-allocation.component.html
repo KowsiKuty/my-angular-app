@@ -1,0 +1,413 @@
+<div class="container" *ngIf="allocation_view==false">
+	<br>
+    <h2>Cost Allocation Master</h2>
+    <div [hidden]=summary_tag>
+        <form [formGroup]="cost_allocation" >
+            <div class="col-md-12">
+                <div class="row">
+                    <!-- <div class="col-md-3"> -->
+                        <div class="col-md-3">
+                            <mat-form-field (click)="asset_Bscodesearch()" style="width: 220px;">
+                                <mat-label>Allocation From</mat-label>
+                                <input #allocationfrom_Input  matInput formControlName="allocation_from"
+                                    [matAutocomplete]="allocationfrom_auto" (keyup)="asset_Bscodesearch()">
+                                <mat-autocomplete #allocationfrom_auto="matAutocomplete" [displayWith]="display_allocationfrom"
+                                (opened)="allocationfromscroll()">
+                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let allocation of allocation_from" [value]="allocation" >
+                                            {{allocation.name}}
+                                        </mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                    <!-- </div> -->
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary" (click)="cost_allocation_summary(cost_allocation.value)"
+                            style="border-radius:40px;height: 44px; margin-top: 12px;">Search
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary" (click)="cost_allocation_summary_clear()"
+                            style="border-radius:40px;height: 44px; margin-top: 12px;">Clear
+                        </button>
+                    </div>
+                    <!-- <div class="col-md-2">
+                        <button type="submit" style="border-radius: 40px;height: 44px; margin-top: 12px;"
+                        class="btn btn-outline-primary"  (click)="cost_allocation_Add()">Add</button>
+                    </div> -->
+                    <div class="col-md-1">
+                        <button style="cursor: pointer;border-radius: 40px;height: 44px; margin-top: 12px;"  matTooltip="View"  class="btn btn-outline-primary" (click)='allocation_view=true'>
+                            <mat-icon>visibility</mat-icon>
+                        </button>
+                    </div>
+                    <!-- <div class="col-md-3">
+                        
+                            <label>Master Data:</label> <input type="file"
+                                 class="choose" (change)="Fileupload_master($event)"
+                                style="width:90%" formControlName="allocation_masterfilefrom"
+                                accept=".xlsx,.csv">
+                            
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" style="border-radius: 40px;height: 44px; margin-top: 12px;"
+                        class="btn btn-outline-primary"  (click)="cost_allocation_fileupload()">Submit</button>
+                    </div> -->
+                </div>
+            </div>
+        </form>
+    
+    
+        <div class="table-responsive" class="tablescroll" style="margin-top: 2%;width: 95%;margin-left: 10px;" [hidden]=summary_tag>
+            <table class="table table scrolltable table-bordered">
+                <thead class="table_header" style="text-align: center;">
+                    <tr>
+                        <th>S.No</th>
+                        <th>Allocation From</th>
+                        <th>Reporting Level</th>
+                        <th>Cost Driver</th>
+                        <th>Validity From</th>
+                        <th>Validity To</th>
+                        <th>Status</th>
+                        <th>Views</th>
+                        <th>Action</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>                   
+                    <tr *ngFor="let cost_obj of costallocation_summary; index as i">
+                        <td>{{(presentpage - 1)*identificationSize +i+1 }}</td>
+                        <td>
+                            <div *ngIf="cost_obj?.bscc_data?.length==0">--</div>
+                            <div *ngIf="cost_obj?.bscc_data?.length!=0">{{cost_obj?.bscc_data?.name}}</div>
+                        </td>
+                        <td>
+                            <div *ngIf="cost_obj?.level_data?.length==0">--</div>
+                            <div *ngIf="cost_obj?.level_data?.length!=0">{{cost_obj?.level_data?.name}}</div>
+                        </td>
+                        <td>
+                            <div *ngIf="cost_obj?.cost_driver_data?.length==0">--</div>
+                            <div *ngIf="cost_obj?.cost_driver_data?.length!=0">{{cost_obj?.cost_driver_data?.name}}</div>
+                        </td>
+                        
+                        <td>{{cost_obj.validity_from}}</td>
+                        <td>{{cost_obj.validity_to}}</td>
+    
+                        <td *ngIf="cost_obj.status==1">Active</td>
+                        <td *ngIf="cost_obj.status==2">InActive</td>
+                        <td class="text-center">
+                            <a style="color: green;cursor: pointer;" matTooltip="View" class="ng-binding" (click)='view_allocation(cost_obj.id)'>
+                                <mat-icon>visibility</mat-icon>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a style="color: green;cursor: pointer;" matTooltip="Edit" class="ng-binding"  (click)='editview_allocation(cost_obj.id,cost_obj)'>
+                                <mat-icon>edit</mat-icon>
+                            </a>	&nbsp;	&nbsp;	&nbsp;
+    
+                            <a (click) = "status(cost_obj.id)" >
+                            
+                                <i *ngIf="cost_obj.status==1" style="font-size:24px;color: green;" matTooltip="Delete" class="fa">&#xf014;</i>&nbsp;&nbsp;
+                                                   
+                                <i *ngIf="cost_obj.status==2" style="font-size:24px;color: black;" matTooltip="Delete" class="fa">&#xf014;</i>
+                                                </a>
+                        </td> 
+                        
+                        
+    
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p *ngIf="!isSummaryPagination" style="text-align: center;">Data Not Found...</p>
+            </div>
+            <div style="margin-bottom: 5%;font-size: small;text-align:right;">
+                <button mat-icon-button [disabled]="has_previous === false" color="primary" (click)="previousClick()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> {{presentpage}}
+                <button mat-icon-button [disabled]="has_next === false" color="primary" (click)="nextClick()">
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+    
+            </div>
+        </div>
+    </div>
+    <div [hidden]=!summary_tag>
+        <form [formGroup]="cost_allocationform">
+                
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field (click)="add_or_edit==3 ? '' : allocation_search()" appearance="outline" style="width: 220px;">
+                            <mat-label>Allocation From</mat-label>
+                            <input #allocation_from_Input placeholder="Allocation From" matInput formControlName="allocation_from"
+                                [matAutocomplete]="allocation_from_auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : allocation_search()">
+                            <mat-autocomplete #allocation_from_auto="matAutocomplete" [displayWith]="displayallocation"
+                            (opened)="allocation_from_scroll()" >
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let allocation of Allocation" [value]="allocation">
+                                        {{allocation.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field  appearance="outline" (click)="add_or_edit==3 ? '' : getbranch()">
+                            <mat-label>Branch</mat-label>
+                            <input #branch_Input placeholder="Branch" matInput formControlName="branch_from"
+                                [matAutocomplete]="branch_auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : getbranch()">
+                            <mat-autocomplete #branch_auto="matAutocomplete" [displayWith]="displayfnbranch"
+                                (opened)="branch_Scroll()">
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let branch of branch_List" [value]="branch">
+                                        {{branch.code}}-{{branch.name}} </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field appearance="outline" (click)="add_or_edit==3 ? '' : get_Bs()" style="width: 220px;">
+                            <mat-label>BS</mat-label>
+                            <input #bs_from_Input placeholder="BS" matInput formControlName="bs_from"
+                                [matAutocomplete]="bs_from_Auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : get_Bs()">
+                            <mat-autocomplete #bs_from_Auto="matAutocomplete" [displayWith]="display_bs_from"
+                            (opened)="bs_from_scroll()" >
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let bs of Bs_from" [value]="bs">
+                                        {{bs.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field appearance="outline" (click)="add_or_edit==3 ? '' : get_cc()" style="width: 220px;">
+                            <mat-label>CC</mat-label>
+                            <input #cc_form_Input placeholder="CC" matInput formControlName="cc_from"
+                                [matAutocomplete]="cc_from_Auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : get_cc()">
+                            <mat-autocomplete #cc_from_Auto="matAutocomplete" [displayWith]="display_cc_from"
+                            (opened)="ccfromscroll()" >
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let cc of cc_from" [value]="cc">
+                                        {{cc.name}}
+                                    </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <!-- <mat-form-field (click)="level_dropdown()">
+                            <mat-label>Allocation Level</mat-label>
+                            <input placeholder="Allocation level" matInput formControlName="level_from" #level_input [matAutocomplete]="level_auto">
+                            <mat-autocomplete #level_auto="matAutocomplete" [displayWith]="level_display" (opened)="level_scroll()" >
+                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let level of level_List" [value]="level" > {{level.name}} </mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </mat-form-field> -->
+                        
+                        <mat-form-field class="example-full-width" appearance="outline">
+                            <mat-label>Allocation level</mat-label>
+                            <input type="number" matInput placeholder="Allocation level" formControlName="level_from" autocomplete="off" [readonly]="add_or_edit==3">
+                        </mat-form-field>
+                        
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label>From</mat-label>
+                            <input matInput [matDatepicker]="validityfrom" formControlName="validity_from" [disabled]="add_or_edit==3" readonly (dateChange)="validityto_clear()" [readonly]="add_or_edit==3">
+                            <mat-datepicker-toggle matSuffix [for]="validityfrom"  >
+                                <mat-icon  matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #validityfrom startView="multi-year" ></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field appearance="outline" class="example-full-width">
+                            <mat-label>To</mat-label>
+                            <input matInput [min]="cost_allocationform?.value?.validity_from" [matDatepicker]="validityto" formControlName="validity_to" [disabled]="add_or_edit==3" readonly [min]="cost_allocationform.value.validity_from" >
+                            <mat-datepicker-toggle matSuffix [for]="validityto"  >
+                                <mat-icon  matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #validityto startView="multi-year" ></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <button (click)="newrowadd()" [hidden]="add_or_edit==3" class="btn btn-outline-primary" style="border-radius: 132px; margin-right: 103px; margin-top: 12px;height: 44px;" >
+                            <span class="fa fa-plus"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div>
+            <form [formGroup]="allocation_value">
+
+                <div class="table-responsive" class="tablescroll" style="margin-top: 2%;width: 95%;margin-left: 10px;overflow: auto;">
+                    <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 20px;">
+                        <thead class="table_header"  style="text-align: center;">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Branch</th>
+                                <th>BSCC Code</th>      
+                                <th>BS Name</th>
+                                <th>CC Name</th>
+                                <th>Parameter</th>
+                                <th>Premium Amount</th>
+                                <th>Allocation Amount</th>
+                                <th>Allocation &nbsp;&nbsp; (%)</th>
+                                <th>Multiplier</th>
+                                <th [hidden]="add_or_edit==3">Action</th>
+                            </tr>
+                        </thead>
+                        <ng-container formArrayName="allocation_new_row">
+                            <tbody  *ngFor="let item of allocation_value?.controls?.allocation_new_row['controls']; let i=index"  >
+                                <tr  [formGroupName]="i">
+                                    <td>{{i+1}}</td>
+                                    <td>
+                                        
+                                            <mat-form-field (click)="add_or_edit==3 ? '' : get_branch(i)">
+                                                <mat-label>Branch</mat-label>
+                                                <input  placeholder="Branch" matInput formControlName="to_branch"
+                                                    #to_branch_Input [matAutocomplete]="to_branch_auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : get_branch(i)">
+                                                <mat-autocomplete #to_branch_auto="matAutocomplete" [displayWith]="displayfn_branch"
+                                                    (opened)="to_branch_Scroll(i)">
+                                                    <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                    <ng-container *ngIf="!isLoading">
+                                                        <mat-option *ngFor="let branch of to_branchList" [value]="branch">
+                                                            {{branch.code}}-{{branch.name}} </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        
+                                    </td>
+                                    <td>
+                                        
+                                        <mat-form-field (click)="add_or_edit==3 ? '' : get_Bscc(i)" >
+                                            <mat-label>BSCC Code</mat-label>
+                                            <input #to_bscc_Input placeholder="BSCC" matInput formControlName="to_bscc"
+                                                [matAutocomplete]="to_bscc_auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : get_Bscc(i)">
+                                            <mat-autocomplete #to_bscc_auto="matAutocomplete" [displayWith]="display_to_bscc"
+                                                (opened)="to_bscc_scroll(i)">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let bscc of to_BsccList" [value]="bscc">
+                                                        {{bscc.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                        
+                                    </td>
+                                    <td>
+                                        <mat-form-field (click)="add_or_edit==3 ? '' : getbsDropdown(i)">
+                                            <mat-label>BS Name</mat-label>
+                                            <input #to_bs_input placeholder="Business" matInput formControlName="to_bs"
+                                                [matAutocomplete]="to_bs_auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : getbsDropdown(i)">
+                                            <mat-autocomplete #to_bs_auto="matAutocomplete" [displayWith]="display_to_bs"
+                                            (opened)="to_bs_Scroll(i)">
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let bs of to_bsList" [value]="bs">
+                                                        {{bs.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field (click)="add_or_edit==3 ? '' : getasset_cccode(i)" >
+                                            <mat-label>CC Name</mat-label>
+                                            <input #to_cc_input placeholder="CC Name" matInput formControlName="to_cc"
+                                                [matAutocomplete]="to_cc_auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : getasset_cccode(i)">
+                                            <mat-autocomplete #to_cc_auto="matAutocomplete" [displayWith]="display_to_cc"
+                                            (opened)="cc_Scroll(i)" >
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let cc of to_ccList" [value]="cc">
+                                                        {{cc.name}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                    <td> 
+                                        <mat-form-field (click)="add_or_edit==3 ? '' : getParameter(i)" >
+                                            <mat-label>Parameter</mat-label>
+                                            <input  #to_parameter_input placeholder="Parameter"  matInput formControlName="to_parameter"
+                                                [matAutocomplete]="to_parameter_auto" [readonly]="add_or_edit==3" (keyup)="add_or_edit==3 ? '' : getParameter(i)">
+                                            <mat-autocomplete #to_parameter_auto="matAutocomplete" [displayWith]="display_to_param"
+                                            (opened)="to_param_scroll(i)" >
+                                                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                <ng-container *ngIf="!isLoading">
+                                                    <mat-option *ngFor="let Parameter of to_parameterList"  [value]="Parameter">
+                                                        {{Parameter.sector}}
+                                                    </mat-option>
+                                                </ng-container>
+                                            </mat-autocomplete>
+                                        </mat-form-field>   
+                                    </td>
+                                    <td>
+                                        <mat-form-field>
+                                            <mat-label>Premium Amount</mat-label>
+                                            <input type="number" matInput  min="1" formControlName="to_premium_amount"
+                                                placeholder="Premium Amount" autocomplete="off" [readonly]="add_or_edit==3">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field>
+                                            <mat-label>Allocation Amount</mat-label>
+                                            <input type="number" matInput  min="1" max="100" formControlName="to_input" 
+                                                placeholder="Allocation Amount" autocomplete="off" [readonly]="add_or_edit==3">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field>
+                                            <mat-label>Allocation</mat-label>
+                                            <input type="number" matInput  min="1"  formControlName="to_ratio" 
+                                                placeholder="Allocation" autocomplete="off" [readonly]="add_or_edit==3">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field>
+                                            <mat-label>Multiplier</mat-label>
+                                            <input type="number" matInput  min="1"  formControlName="to_amount"
+                                                placeholder="Multiplier" autocomplete="off" [readonly]="add_or_edit==3">
+                                        </mat-form-field>
+                                    </td>
+                                    <td [hidden]="add_or_edit==3" style="text-align: center;">
+                                        <i (click) = "deleteRow(i)"  matTooltip="Delete" style="font-size:24px;color: black;cursor: pointer;" class="fa">&#xf014;</i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </ng-container>
+                    </table>
+                    
+                </div>
+            </form>
+            <div class="col-md-12">
+                <div class="row" style="margin-left: 50%; margin-top: 2%; margin-bottom: 3%;">
+                    <div >
+                        <button type="submit" *ngIf="add_or_edit!=3" style="border-radius: 40px;" (click)="Allocation_data()"
+                        class="btn btn-outline-primary">Submit</button>
+                    </div> 
+                    <div>
+                        <button type="submit" style="border-radius: 40px;"
+                        class="btn btn-outline-primary" (click)="back_to_summary()" >Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+</div>
+<div>
+    <app-cost-allocation-view (back_allocation)="back_allocation($event)" *ngIf="allocation_view==true"></app-cost-allocation-view> 
+</div>

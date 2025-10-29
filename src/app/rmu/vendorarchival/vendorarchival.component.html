@@ -1,0 +1,497 @@
+<section class="screen-padding screen-lm">
+    <div class="comp-header">
+        <p  (click)="router.navigate(['rmu/rmu_summary'])" class="comp-header-p">
+          <i class="fa fa-arrow-left back-button"></i>
+          <span>Vendor - Archival</span>
+        </p>
+      </div>
+
+      <div class="filter-aling-2">
+        <lib-vs-search-cmp
+        class="npm-mat-edit"
+        [Outputtype]="searchvar"
+        [SearchArr]="vedorarchival_search"
+        (dataoutput)="vendorarchivalsummary($event)"
+      >
+      </lib-vs-search-cmp>
+      </div>
+
+      <lib-vs-cbox-summary
+      [SummaryDetails]="vendor_archival_summary"
+      [SummaryApiObj]="vendorarchieval_summaryapi"
+    ></lib-vs-cbox-summary>
+    <!-- <form [formGroup]="vendorsearch" style="margin-top:1%;margin-left:15px">
+        <section>
+            <div class="row">
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Archival Date</mat-label>
+                    <input matInput [matDatepicker]="picker1" placeholder="Date" autocomplete="off"
+                        formControlName="archival_date">
+                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field appearance="outline">
+                    <mat-label>Archival Status</mat-label>
+                    <mat-select matInput formControlName="archival_status">
+                        <mat-option>
+    
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3" style="margin-top: 1%;">
+                <button matTooltip="Search Records" class="btn btn-outline-success" id="rmubtn"  style=" border-radius: 15px;"
+                color="primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <button class="btn btn-warning" matTooltip="Clear Entries" style="margin-left:20px; border-radius: 15px;" (click)="vendorsearch.reset()"
+                id="rmubtn">Clear</button>
+            </div>
+        </div>
+        </section>
+
+    </form> -->
+
+    <!-- <div id="vendorarch" class="table-responsive">
+
+        <table class="table table-bordered" id="vendorarchsummary">
+            <thead class="table_header">
+                <th>S.No</th>
+                <th>Archival Code</th>
+                <th>Archival Date</th>
+                <th>Contact Person </th>
+                <th>Contact Address</th>
+                <th>Contact Number</th> -->
+                <!-- <th>Branch</th> -->
+                <!-- <th>Status</th>
+                <th>Action</th>
+
+            </thead>
+            <tbody *ngFor="let lists of vendorarchivallist;index as ind">
+                <td>{{(pagination.index-1)*limit+ind+1}}</td>
+                <td>{{lists.archival_code}}</td>
+                <td>{{lists.archival_date | date:'dd-MM-yyyy'}}</td>
+                <td>{{lists.contact_person?.name}}</td>
+                <td>{{lists.contact_address}}</td>
+                <td>{{lists.contact_no}}</td> -->
+                <!-- <td>{{lists.name}}</td> -->
+                <!-- <td>{{lists.archival_status.value}}</td>
+                <td>
+                    <button *ngIf="archstatus[lists.archival_status.value] == 'SCHEDULE'" class="btn btn-outline-primary" id="rmubutton" data-toggle="modal" data-target="#scheduleform" style="width:150px"
+                        (click)="schedules(lists)">{{archstatus[lists.archival_status.value]}}</button>
+                    <button *ngIf="archstatus[lists.archival_status.value] == 'PICK UP'" class="btn btn-outline-primary" id="rmubutton"data-toggle="modal" data-target="#pickedupform" style="width:150px"
+                        (click)="pickedup(lists)">{{archstatus[lists.archival_status.value]}}</button>
+                    <button *ngIf="archstatus[lists.archival_status.value] == 'ARCHIVE'" class="btn btn-outline-primary" id="rmubutton" data-toggle="modal" data-target="#archivedform" style="width:150px"
+                        (click)="archived(lists)">{{archstatus[lists.archival_status.value]}}</button>
+                        <button *ngIf="archstatus[lists.archival_status.value] == 'VIEW'" class="btn btn-outline-primary" id="rmubutton" data-toggle="modal" data-target="#viewform" style="width:150px"
+                        (click)="viewhistory(lists.id)">{{archstatus[lists.archival_status.value]}}</button>
+                       
+
+                </td>
+
+            </tbody>
+        </table> -->
+        <!-- <div *ngIf="!vendorarchivallist.length" style="margin-left: 42%;">
+            <h3>Sorry no data found!... </h3>
+        </div> -->
+
+        <!-- <div class="col-sm-12" style="font-size: small;text-align:right;margin-bottom: 5%;">
+            <button (click)="prevpage()" mat-icon-button [disabled]="pagination.has_previous === false" color="primary">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            {{pagination.index}}
+            <button (click)="nextpage()" mat-icon-button [disabled]="pagination.has_next === false" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+        </div>
+
+
+
+    </div> -->
+    <div
+    class="modal fade"
+    id="scheduleform"
+    tabindex="-1"
+    aria-labelledby="scheduleform"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <p class="modal-title mb-0" id="scheduleform" style="font-weight: 600;">PickUp Schedule Details</p>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            #closeachievalpopup
+            aria-label="Close"
+            (click)="closedpopup()"
+          >
+            <i aria-hidden="true">&times;</i>
+          </button>
+        </div>
+    
+        <div class="modal-body">
+          <div style="margin-left:10px;">
+
+            <form [formGroup]="schedulerequest">
+                <br>
+                <section class="row">
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Archival Code:</mat-label>
+                            <input matInput formControlName="barcode_no" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Pickup Person Name:</mat-label>
+                            <input matInput formControlName="contact_person" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Contact Number</mat-label>
+                            <input matInput formControlName="contact_no" required>
+
+                        </mat-form-field>
+                    </div>
+                </section>                      
+       
+                <div class="row">
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Vehicle Number</mat-label>
+                            <input matInput formControlName="vehicle_no" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Scheduled Date</mat-label>
+                            <!-- <input matInput formControlName="scheduled_date" type="number"> -->
+                            <input matInput [matDatepicker]="datepicker" formControlName="scheduled_date">
+                            <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
+                            <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+                            <mat-datepicker #datepicker>
+                                <mat-datepicker-actions>
+                                    <button mat-button matDatepickerCancel>Cancel</button>
+                                    <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                                </mat-datepicker-actions>
+                            </mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+            <br><br>
+        </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-success" (click)="sendschedule()">Submit</button>
+
+                <button data-dismiss="modal" (click)="closedpopup()" class="btn btn-outline-primary" 
+                      #closeachievalpopup>Close</button>
+
+          </div>
+      </div>
+    </div>
+    </div>
+
+
+
+    <!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="scheduleform" aria-hidden="true"
+        id="scheduleform" #scheduleform>
+        <div class="modal-dialog modal-lg" >
+            <div class="modal-content" >
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">PickUp Schedule Details</h2>
+                    <button type="button" #closeachievalpopup  (click)="closedpopup()" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div style="margin-left:10px;">
+
+                    <form [formGroup]="schedulerequest">
+                        <br>
+                        <section class="row">
+                            <div class="col-sm-4">
+                                <mat-form-field appearance="outline" style="width: 100%;">
+                                    <mat-label>Archival Code:</mat-label>
+                                    <input matInput formControlName="barcode_no" required>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-sm-4">
+                                <mat-form-field appearance="outline" style="width: 100%;">
+                                    <mat-label>Pickup Person Name:</mat-label>
+                                    <input matInput formControlName="contact_person" required>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-sm-4">
+                                <mat-form-field appearance="outline" style="width: 100%;">
+                                    <mat-label>Contact Number</mat-label>
+                                    <input matInput formControlName="contact_no" required>
+
+                                </mat-form-field>
+                            </div>
+                        </section>                      
+               
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <mat-form-field appearance="outline" style="width: 100%;">
+                                    <mat-label>Vehicle Number</mat-label>
+                                    <input matInput formControlName="vehicle_no" required>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-sm-4">
+                                <mat-form-field appearance="outline" style="width: 100%;">
+                                    <mat-label>Scheduled Date</mat-label> -->
+                                    <!-- <input matInput formControlName="scheduled_date" type="number"> -->
+                                    <!-- <input matInput [matDatepicker]="datepicker" formControlName="scheduled_date"> -->
+                                    <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
+                                    <!-- <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #datepicker>
+                                        <mat-datepicker-actions>
+                                            <button mat-button matDatepickerCancel>Cancel</button>
+                                            <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+                                        </mat-datepicker-actions>
+                                    </mat-datepicker>
+                                </mat-form-field>
+                            </div>
+                        </div> -->
+                        <!-- <section class="row">
+                            
+                        </section> -->
+                        <!-- <section class="row" style="text-align:center;margin-left:10px;">
+                            <button class="btn btn-outline-success" id="rmubtn" (click)="sendschedule()">Submit</button>
+
+                            <button data-dismiss="modal" class="btn btn-outline-primary" id="rmubtn"
+                                style="margin-left: 20px;"  #closebtn>Close</button>
+                        </section>
+
+
+
+                    </form>
+                    <br><br>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pickedupform" aria-hidden="true"
+        id="pickedupform" #pickedupform>
+        <div class="modal-dialog" style="width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#DDEFDD;">
+                    <h2 class="modal-title" style="color:black ;">PickedUp Details</h2>
+                    <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div style="margin-left:10px;">
+
+                    <form [formGroup]="pickuprequest">
+                        <section class="row">
+                          <div class="col-sm-4">
+                              <mat-form-field appearance="outline" style="width: 100%;">
+                                  <mat-label>Archival Code:</mat-label>
+                                  <input matInput formControlName="barcode" required>
+                              </mat-form-field>
+                          </div>
+                        </section>
+
+                    </form>
+                
+
+                <div>
+                    Archival Picked Up
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="archivedform" aria-hidden="true"
+    id="archivedform" #archivedform>
+    <div class="modal-dialog" style="width: 60%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#DDEFDD;">
+                <h2 class="modal-title" style="color:black ;">Archived</h2>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="archiverequest">
+                <br><br>
+                
+
+            </form>
+
+            <div>
+                 Archived Successfully.
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div
+class="modal fade"
+id="viewform"
+tabindex="-1"
+aria-labelledby="viewform"
+aria-hidden="true"
+>
+<div class="modal-dialog modal-dialog-centered modal-xl">
+  <div class="modal-content" >
+    <div class="modal-header">
+      <p class="modal-title mb-0" id="viewform" style="font-weight: 600;">View Details</p>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        #closeachievalpopup8
+        aria-label="Close"
+        (click)="closedpopup()"
+      >
+        <i aria-hidden="true">&times;</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="container">                      
+   
+
+        <div class="row">
+            <div class="col">
+                <div class="timeline-steps aos-init aos-animate" data-aos="fade-up">
+                    <div class="timeline-step">
+                        <div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2003">
+                            <div class="inner-circle"></div>
+                            <p class="h6 mt-3 mb-1">REQUESTED</p>
+                            <p class="h6 text-muted mb-0 mb-lg-0">{{singlerecord.maker_data?.date|  date:'dd-MM-yyyy'}}</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2004">
+                            <div class="inner-circle"></div>
+                            <p class="h6 mt-3 mb-1">PICKUP SCHEDULE</p>
+                            <p class="h6 text-muted mb-0 mb-lg-0">Name: {{singlerecord.pick_up_schedule?.contact_person}}</p>
+                            <p class="h6 text-muted mb-0 mb-lg-0">Contact: {{singlerecord.pick_up_schedule?.contact_no}}</p>
+                            <p class="h6 text-muted mb-0 mb-lg-0">Vehicle No:{{singlerecord.pick_up_schedule?.vehicle_no}}</p>
+                            <p class="h6 text-muted mb-0 mb-lg-0">Date :{{singlerecord.pick_up_schedule?.scheduled_date|  date:'dd-MM-yyyy'}}</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2005">
+                            <div class="inner-circle"></div>
+                            <p class="h6 mt-3 mb-1">PICKED UP</p>
+                            <p class="h6 text-muted mb-0 mb-lg-0">{{singlerecord.pickedup_date |  date:'dd-MM-yyyy'}}</p>
+                            
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2010">
+                            <div class="inner-circle"></div>
+                            <p class="h6 mt-3 mb-1">{{singlerecord.archival_status?.value}}</p>
+                            <p class="h6 text-muted mb-0 mb-lg-0">{{singlerecord.archival_date |  date:'dd-MM-yyyy'}}</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+  </div>
+</div>
+</div>
+
+<!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="viewform" aria-hidden="true"
+id="viewform" #viewform>
+<div class="modal-dialog  modal-xl" style="width: 80%;">
+    <div class="modal-content">
+        <div class="modal-header" style="background:#DDEFDD;">
+            <h2 class="modal-title" style="color:black ;">View Details</h2>
+            <button type="button" #closeachievalpopup class="close" (click)="closedpopup()" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        
+
+        <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="timeline-steps">
+                  
+                  
+                  <div class="timeline-step">
+                    <div class="timeline-content" data-toggle="popover" title="Requested">
+                      <div class="inner-circle"
+                           [ngClass]="{
+                             'completed-step': singlerecord?.maker_data?.date,
+                             'upcoming-step': !singlerecord?.maker_data?.date
+                           }">
+                        <i class="fa fa-code-fork" aria-hidden="true"></i>
+                      </div>
+                      <p class="h6 mt-3 mb-1">REQUESTED</p>
+                      <p class="h6 text-muted mb-0">{{singlerecord.maker_data?.date | date:'dd-MM-yyyy'}}</p>
+                    </div>
+                  </div>
+          
+             
+                  <div class="timeline-step">
+                    <div class="timeline-content" data-toggle="popover" title="Pickup Schedule">
+                      <div class="inner-circle"
+                           [ngClass]="{
+                             'in-progress-step': singlerecord?.pick_up_schedule?.scheduled_date,
+                             'upcoming-step': !singlerecord?.pick_up_schedule?.scheduled_date
+                           }">
+                        <i class="fa fa-truck" aria-hidden="true"></i>
+                      </div>
+                      <p class="h6 mt-3 mb-1">PICKUP SCHEDULE</p>
+                      <p class="h6 text-muted mb-0">Name: {{singlerecord.pick_up_schedule?.contact_person}}</p>
+                      <p class="h6 text-muted mb-0">Contact: {{singlerecord.pick_up_schedule?.contact_no}}</p>
+                      <p class="h6 text-muted mb-0">Vehicle No: {{singlerecord.pick_up_schedule?.vehicle_no}}</p>
+                      <p class="h6 text-muted mb-0">Date: {{singlerecord.pick_up_schedule?.scheduled_date | date:'dd-MM-yyyy'}}</p>
+                    </div>
+                  </div>
+          
+                  <div class="timeline-step">
+                    <div class="timeline-content" data-toggle="popover" title="Picked Up">
+                      <div class="inner-circle"
+                           [ngClass]="{
+                             'completed-step': singlerecord?.pickedup_date,
+                             'upcoming-step': !singlerecord?.pickedup_date
+                           }">
+                        <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                      </div>
+                      <p class="h6 mt-3 mb-1">PICKED UP</p>
+                      <p class="h6 text-muted mb-0">{{singlerecord.pickedup_date | date:'dd-MM-yyyy'}}</p>
+                    </div>
+                  </div>
+          
+          
+                  <div class="timeline-step">
+                    <div class="timeline-content" data-toggle="popover" title="Archived">
+                      <div class="inner-circle"
+                           [ngClass]="{
+                             'completed-step': singlerecord?.archival_date,
+                             'upcoming-step': !singlerecord?.archival_date
+                           }">
+                        <i class="fa fa-archive" aria-hidden="true"></i>
+                      </div>
+                      <p class="h6 mt-3 mb-1">{{singlerecord.archival_status?.value || 'ARCHIVED'}}</p>
+                      <p class="h6 text-muted mb-0">{{singlerecord.archival_date | date:'dd-MM-yyyy'}}</p>
+                    </div>
+                  </div>
+          
+                </div>
+              </div>
+            </div>
+          </div>          
+        </div>
+        </div>
+        </div> -->
+</section>

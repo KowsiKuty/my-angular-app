@@ -1,0 +1,543 @@
+<div>
+
+
+
+    <div style="margin-left: 19px;margin-right: 80%;width: 90%;">
+
+        <nav>
+            <div class="nav nav-tabs">
+
+                <a class="nav-item nav-link " [ngClass]="(currenttab == 'GROUP')? 'active':''" data-toggle="tab"
+                    (click)="changetab('GROUP')">GROUP</a>
+                <!-- <a class="nav-item nav-link " [ngClass]="(currenttab == 'GROUP MAPPING')? 'active':''" data-toggle="tab"
+                    (click)="changetab('GROUP MAPPING')">GROUP
+                    MAPPING</a> -->
+                <a class="nav-item nav-link " [ngClass]="(currenttab == 'RULE')? 'active':''" data-toggle="tab"
+                    (click)="changetab('RULE')">RULE</a>
+
+            </div>
+            <button type="button" mat-stroked-button  *ngIf="editbuttonbool" [disabled]="this.limit?.grouplimit?.limit__sum >= this.limit?.limit && currenttab == 'GROUP'"
+                style="margin-left: 20px;background-color: #f5c68b;margin-top:-42px;float: right;" (click)="addgroup()">
+                <mat-icon matTooltip="Add">add</mat-icon>{{currenttab}}
+                 <small>{{(currenttab == 'GROUP' )? '(Limit : '+limit?.limit+')': '' }}</small>
+            </button>
+        </nav>
+        <br>
+
+        <div>
+            <div *ngIf="groupcreate">
+                <form [formGroup]="groupform">
+                    <table>
+                        <tr>
+                            <td>
+                                <mat-form-field class="matformfieldstyle" appearance="outline" style="width: 175px;">
+
+                                    <mat-label>Vendor Name</mat-label>
+                                    <input matInput readonly [value]="vendorname" autocomplete="off"
+                                        class="matformfieldinputstyle" type="text" required>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field (click)="getsupplierdata('')" style="width: 175px;margin-left: 30px;">
+                                    <mat-label>Supplier</mat-label>
+
+                                    <input matInput formControlName="supplier_id" [matAutocomplete]="supplier"
+                                        (keyup)="getsupplierdata(groupform.value.supplier_id)">
+
+                                    <mat-autocomplete #supplier="matAutocomplete" [displayWith]="displayfnsupplier">
+
+                                        <mat-option *ngFor="let value of supplierdata" [value]="value">
+                                            {{value.name}}
+                                        </mat-option>
+
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field (click)="getvendorgroupdropdown('',groupdatapagination.currentpage=1)"
+                                    style="width: 250px;margin-left:30px">
+                                    <mat-label>Group</mat-label>
+                                    <input matInput formControlName="vendorgroup_id"
+                                        (keyup)="getvendorgroupdropdown(groupform.value.vendorgroup_id,groupdatapagination.currentpage=1)"
+                                        [matAutocomplete]="group">
+
+                                    <mat-autocomplete #group="matAutocomplete" [displayWith]="displaygroup">
+
+                                        <mat-option *ngFor="let value of vendorgroupdata" [value]="value">
+                                            {{value.name}}
+                                        </mat-option>
+
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <br>
+                    <button type="button" mat-stroked-button (click)="addgroupmap()"
+                        style="margin:20px 0px;background-color: #f5c68b;float:right">
+                        <mat-icon matTooltip="Add">add</mat-icon>
+                    </button>
+                    <br>
+                    <table class="table" id='commonstyle'>
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Employee</th>
+                                <th>Limit (exist - {{limit?.remaininglimits}}) </th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody formArrayName="groupmapping">
+                            <tr *ngFor="let item of groupform.controls.groupmapping['controls'];let i=index"
+                                [formGroupName]="i">
+                                <td>{{i+1}}</td>
+                                <td>
+                                    <mat-form-field style="width:400px" (click)="getemployee('')">
+                                        <mat-label>Employee</mat-label>
+
+                                        <input matInput #employeeinput formControlName="employee_id"
+                                            [matAutocomplete]="employeechipautocomplete"
+                                            (keyup)="getemployee(groupform.value.groupmapping[i].employee_id)">
+                                        <mat-autocomplete #employeechipautocomplete="matAutocomplete"
+                                            [displayWith]="displayfnemployee">
+                                            <mat-option *ngFor="let value of employeedata" [value]="value">
+                                                {{value.full_name}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </td>
+                                <td>
+
+                                    <mat-form-field class="matformfieldstyle" appearance="outline"
+                                        style="width: 175px;margin-left: 30px">
+                                        <mat-label>Limit
+                                        </mat-label>
+                                        <input (keyup)="calculatelimitofgroup()" matInput type="number"
+                                            formControlName="limit" autocomplete="off" class="matformfieldinputstyle"
+                                            required>
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <button mat-icon-button (click)="deleteparticularemployeeingroupmap(item,i)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </form>
+                <div style="margin-left:12px ;margin-top: 3%;">
+                    <button type="button" class="btn btn-light" (click)="onCancelClick()" style="border-radius: 7px;margin-left: 10px;
+            border-color: black;
+            background-color: white;">Cancel</button>
+                    <button type="submit" style="border-radius: 10px;margin-left: 10px;
+            border-color: #f5c68b;
+            background-color: #f5c68b;" [disabled]="calculatelimitofgroup()" class="btn btn-light" (click)="groupsubmit()">Submit</button>
+             <mat-error style="margin-left: 10px;" *ngIf="calculatelimitofgroup()">
+                Limit Exceeded, Kindly add a limit based on existing limits
+            </mat-error>
+                </div>
+            </div>
+
+            <div *ngIf="groupsummary">
+                <p style="margin-top: 20px;color:black;font-size: 22px;font-weight: 500">Group Summary</p>
+                <div class="table-responsive" style="width: 80%;margin-top: 10px;overflow-x: hidden;">
+                    <!-- <table class="styled-table">
+                        <thead class="tableheader"> -->
+                    <table class="table" id='commonstyle'>
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Vendor Group</th>
+                                <th>Supplier</th>
+                                <!-- <th>Mapping</th> -->
+                                <th>Edit</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of groupsummarydata;let i=index">
+                                <td>{{i+1}}</td>
+                                <td>{{data?.vendorgroup_id?.name}}</td>
+                                <td>{{data?.supplier_id?.name}}</td>
+                                <!-- <td>
+                                    <button mat-stroked-button (click)="groupmap(data.id,group_currentpage=1)">
+                                        Map
+                                    </button>
+
+                                </td> -->
+                                <td>
+                                    <mat-icon (click)="getgroupedit(data)">edit</mat-icon>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div *ngIf="groupsummarydata?.length == 0">
+                        <p style="text-align:center; ">No record found</p>
+                    </div>
+
+                    <div class="row" *ngIf="groupsummarydata?.length  != 0">
+                        <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                            <button mat-icon-button [disabled]="group_hasprevious === false" color="primary"
+                                (click)="getpreviousgroupsummary()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{group_currentpage}}
+                            <button mat-icon-button [disabled]="group_hasnext === false" color="primary"
+                                (click)="getnextgroupsummary()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="groupsummaryform">
+                <form [formGroup]="groupmappingform">
+                    <table class="table" id='commonstyle'>
+                        <thead>
+                            <tr>
+                                <td colspan="4">
+                                    <button type="button" style="float:right" mat-stroked-button (click)="addSection()">
+                                        <mat-icon>add</mat-icon>add
+                                    </button>
+                                </td>
+                            </tr>
+                        </thead>
+                        <thead class="table_header">
+
+                            <tr>
+                                <th>S.No</th>
+                                <th>Employee</th>
+                                <th>Limit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody formArrayName="employee_ids">
+
+
+                            <tr *ngFor="let item of groupmappingform.controls.employee_ids['controls']; index as i"
+                                [formGroupName]="findindex(i)">
+
+                                <td>{{i+1}}</td>
+                                <td>
+
+
+                                    <!-- <mat-form-field style="width:400px;margin-left: 30px;font-size: 20px;" (click)="getemployee('')">
+                                        <mat-chip-list #chiplistemployee>
+                                            <mat-chip *ngFor="let chip of selectedemployees" selectable="true"
+                                                removable="true" (removed)="getremovechip(chip)">
+                                                {{chip.full_name}} <mat-icon matChipRemove *ngIf="true">cancel
+                                                </mat-icon>
+                                            </mat-chip>
+                                        </mat-chip-list>
+                                        <input  matInput #employeeinput formControlName="employee_ids"
+                                            [matAutocomplete]="employeechipautocomplete"
+                                            [matChipInputFor]="chiplistemployee" matChipInputAddOnBlur="true"
+                                            (keyup)="getemployee($event.target.value)">
+                                        <mat-autocomplete #employeechipautocomplete="matAutocomplete"
+                                            [displayWith]="displayfnemployee"
+                                            (optionSelected)="selectedemployee($event)">
+                                            <mat-option *ngFor="let value of employeedata" [value]="value">
+                                                {{value.full_name}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field> -->
+                                    <mat-form-field style="width:400px" (click)="getemployee('')">
+                                        <mat-label>Employee</mat-label>
+
+                                        <input matInput #employeeinput formControlName="employee_id"
+                                            [matAutocomplete]="employeechipautocomplete"
+                                            (keyup)="getemployee(groupmappingform.value.employee_ids[i].employee_id)">
+                                        <mat-autocomplete #employeechipautocomplete="matAutocomplete"
+                                            [displayWith]="displayfnemployee">
+                                            <mat-option *ngFor="let value of employeedata" [value]="value">
+                                                {{value.full_name}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+
+                                </td>
+                                <td>
+                                    <mat-form-field class="matformfieldstyle" appearance="outline"
+                                        style="width: 250px;">
+                                        <mat-label>Limit</mat-label>
+
+                                        <input matInput formControlName="limit" autocomplete="off"
+                                            class="matformfieldinputstyle" type="text">
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-icon (click)="removeSection(i)">delete</mat-icon>
+                                </td>
+
+
+                            </tr>
+                            <tr>
+                                <td colspan="4" *ngIf="groupmappingform.value.employee_ids.length != 0"
+                                    style="vertical-align: middle;">
+                                    <div style="margin-left:12px ;margin-top: 3%;">
+                                        <button type="submit" style="border-radius: 10px;margin-left: 10px;
+                                            border-color: #f5c68b;
+                                            background-color: #f5c68b;" class="btn btn-light"
+                                            (click)="groupmappingsubmit()">Submit</button>
+                                        <button type="button" class="btn btn-light" (click)="backtogroupsummary()"
+                                            style="border-radius: 7px;margin-left: 10px;
+                                        border-color: black;
+                                        background-color: white;">Back</button>
+
+                                    </div>
+                                    <br><br>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </form>
+
+                <p style="margin-top: 20px;color:black;font-size: 22px;font-weight: 500">Group Mapping Summary</p>
+                <div class="table-responsive" style="width: 80%;margin-top: 10px;overflow-x: hidden;">
+                    <!-- <table class="styled-table">
+                            <thead class="tableheader"> -->
+                    <table class="table" id='commonstyle'>
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Group</th>
+                                <th>Employee</th>
+                                <th>Limit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of groupmapsummarydata;let i=index">
+                                <td>{{i+1}}</td>
+                                <td>{{data?.group_id?.name}}</td>
+                                <td>{{data?.employee_ids?.full_name}}</td>
+                                <td>{{data?.limit}}</td>
+                                <td>
+                                    <mat-icon (click)="deletegroupmap(i,data.id)">delete</mat-icon>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="groupsummarydata?.length == 0">
+                        <p style="text-align:center; ">No record found</p>
+                    </div>
+
+                    <!-- <div class="row" *ngIf="groupsummarydata?.length != 0">
+                        <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                            <button mat-icon-button [disabled]="groupmap_hasprevious === false" color="primary"
+                                (click)="getgroupmapprevious()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{groupmap_currentpage}}
+                            <button mat-icon-button [disabled]="groupmap_hasnext === false" color="primary"
+                                (click)="getgroupmapnext()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+
+
+
+
+
+
+
+            <div *ngIf="rulesummary">
+                <p style="margin-top: 20px;color:black;font-size: 22px;font-weight: 500">Rule Summary</p>
+                <div class="table-responsive" style="width: 80%;margin-top: 10px;overflow-x: hidden;">
+                    <!-- <table class="styled-table">
+                            <thead class="tableheader"> -->
+                    <table class="table" id='commonstyle'>
+                        <thead class="table_header">
+                            <tr>
+                                <th>S.No</th>
+                                <th>Group</th>
+                                <th>Product</th>
+                                <th>Rule</th>
+                                <th>Rule Value</th>
+
+                                <th>Edit</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of rulesummarydata;let i=index">
+                                <td>{{i+1}}</td>
+                                <td>{{data?.group_id?.vendorgroup_id?.name}}</td>
+                                <td>{{data?.product_id?.name}}</td>
+                                <td>{{data?.rule_type?.text}}</td>
+                                <td>{{data?.rule_value?.name}}</td>
+
+                                <td>
+                                    <mat-icon (click)="getruleedit(data.id)">edit</mat-icon>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div *ngIf="rulesummarydata?.length == 0">
+                        <p style="text-align:center; ">No record found</p>
+                    </div>
+
+                    <div class="row" *ngIf="rulesummarydata?.length  != 0">
+                        <div class="col-sm-12" style="font-size: small;text-align: right;margin-bottom: 5%;">
+                            <button mat-icon-button [disabled]="rule_hasprevious === false" color="primary"
+                                (click)="getruleprevious()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button> {{rule_currentpage}}
+                            <button mat-icon-button [disabled]="rule_hasnext === false" color="primary"
+                                (click)="getrulenext()">
+                                <mat-icon>arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="rulecreate">
+                <form [formGroup]="ruleform">
+                    <table>
+                        <div>
+                            <tr>
+
+                                <td>
+                                    <!-- <mat-label style="margin-left: 30px">Group<label style="color: red;">*</label>
+                                    </mat-label><br>
+                                    
+                                    <mat-form-field (click)="getgroupdropdown('',1)"
+                                        style="width: 300px;margin-left: 30px;">
+                                        <input matInput formControlName="group_id" [matAutocomplete]="group"
+                                            (keyup)="getgroupdropdown($event.target.value,1)">
+
+                                        <mat-autocomplete #group="matAutocomplete" [displayWith]="displayfnsupplier">
+
+                                            <mat-option *ngFor="let value of groupdata" [value]="value">
+                                                {{value.name}}
+                                            </mat-option>
+
+                                        </mat-autocomplete>
+                                    </mat-form-field> -->
+
+                                    <mat-form-field (click)="getvendorbasedgroup(vendorid,'')"
+                                        style="width: 300px;margin-left:30px">
+                                        <mat-label>Group</mat-label>
+
+                                        <input matInput formControlName="group_id"
+                                            (keyup)="getvendorbasedgroup(vendorid,ruleform.value.group_id)"
+                                            [matAutocomplete]="group">
+
+                                        <mat-autocomplete #group="matAutocomplete"
+                                            [displayWith]="displayvendorbasedgroup">
+
+                                            <mat-option (click)="resetproduct()" *ngFor="let value of vendorbasedgroup"
+                                                [value]="value">
+                                                {{value.vendorgroup_id.name}}
+                                            </mat-option>
+
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </td>
+
+                                <td>
+                                    <fieldset>
+                                        <mat-form-field [ngClass]="ruleform.value.group_id=='' ?  'disabledclick':''"
+                                            (click)="getproduct(ruleform.value.group_id?.vendorgroup_id?.id,'')"
+                                            class="matformfieldstyle" appearance="outline"
+                                            style="width: 300px;margin-left: 30px;">
+                                            <mat-label>Product
+                                            </mat-label>
+                                            <input matInput formControlName="product_id" [matAutocomplete]="product"
+                                                (keyup)="getproduct(ruleform.value.group_id?.vendorgroup_id?.id,ruleform.value.product_id)"
+                                                class="matformfieldinputstyle" type="text">
+                                            <mat-autocomplete #product="matAutocomplete"
+                                                [displayWith]="displayfnproduct">
+
+                                                <mat-option *ngFor="let value of productdata" [value]="value">
+                                                    {{value.name}}
+                                                </mat-option>
+
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </fieldset>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    <mat-form-field class="matformfieldstyle" appearance="outline" tabindex="-1"
+                                        style="width: 300px;margin-left: 30px;" (change)="rulevaluedata=[]">
+                                        <mat-label>Rule Type</mat-label>
+
+                                        <!-- <input matInput  formControlName="rule_type" 
+                                                autocomplete="off" class="matformfieldinputstyle" type="text" required> -->
+                                        <mat-select formControlName="rule_type">
+                                            <mat-option *ngFor="let value of ruledata" [value]="value.id">
+                                                {{value.text}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                </td>
+
+                                <td>
+                                    <!-- <mat-form-field class="matformfieldstyle" appearance="outline"
+                                        style="width: 250px;margin-left: 30px;">
+
+                                        <input matInput formControlName="rule_value" autocomplete="off"
+                                            class="matformfieldinputstyle" type="text" required>
+                                    </mat-form-field> -->
+
+                                    <mat-form-field style="margin-left: 30px;width:300px"
+                                        (click)="getdynamicrulevalues(ruleform.value.rule_type,'')">
+                                        <mat-label>Rule</mat-label>
+
+                                        <input matInput #employeeinput formControlName="rule_value"
+                                            [matAutocomplete]="rulevaluedropdown"
+                                            (keyup)="getdynamicrulevalues(ruleform.value.rule_type,ruleform.value.rule_value)">
+                                        <mat-autocomplete #rulevaluedropdown="matAutocomplete"
+                                            [displayWith]="displayrulevalue">
+                                            <mat-option *ngFor="let value of rulevaluedata" [value]="value">
+                                                {{value.name}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+
+                                </td>
+
+                            </tr>
+                        </div>
+                    </table>
+
+                    <div style="margin-left:12px ;margin-top: 3%;">
+                        <button type="button" class="btn btn-light" (click)="onCancelClick()" style="border-radius: 7px;margin-left: 10px;
+                        border-color: black;
+                        background-color: white;">Cancel</button>
+                        <button type="submit" style="border-radius: 10px;margin-left: 10px;
+                        border-color: #f5c68b;
+                        background-color: #f5c68b;" class="btn btn-light" (click)="grouprulesubmit()">Submit</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<br>
+<br>
+
+
+
+
+
+<!-- <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" [fullScreen]="true" type="ball-spin-clockwise">
+    <p style="color: white">Please Wait. </p>
+</ngx-spinner> -->

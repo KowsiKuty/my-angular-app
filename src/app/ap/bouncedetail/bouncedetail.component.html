@@ -1,0 +1,603 @@
+<div class="container" style="max-width: 100%;">
+    <h2 style="margin-left: 2%;font-family:Times New Roman;font-size:20px;color:rgb(53, 138, 163);font-weight:bold;">
+        Invoice Bounce</h2>
+    <hr>
+    <div style="float: right;margin-right: 140px;margin-bottom: 15px;">
+        <button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;"
+            data-toggle="modal" data-target="#ccbsModal" (click)="audit()"><i class="fa fa-arrow-up" aria-hidden="true">Audit
+                Checklist</i>
+        </button>
+        <button type="button" class="btn btn-outline-primary"
+            style="border-radius:40px;height: 44px; margin-top: 12px;margin-left: 50px;" data-toggle="modal"
+            data-target="#data" (click)="dedup()" ><i class="fa fa-arrow-up" aria-hidden="true">Dedupe Check</i>
+        </button>
+        <button type="button" class="btn btn-outline-primary"
+            style="border-radius:40px;height: 44px; margin-top: 12px;margin-left: 50px;" data-toggle="modal"
+            data-target="#viewtran" (click)="viewtrn()"><i class="fa fa-arrow-up" aria-hidden="true">View Tranasaction </i>
+        </button>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+        id="ccbsModal">
+        <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);color:rgb(31, 29, 29);text-align:center">
+                <h2 class="modal-title" style="text-align:center;margin-left:42%">Audit Checklist</h2>
+            <button class="close" type="button" data-dismiss="modal">x</button>      
+            </div>
+            <div>
+                <table class="table table-bordered" style="width: 100%;text-align: center;">
+                    <thead class="table_header">
+                    <tr>
+                        <th>S.NO</th>
+                        <th>Question</th>
+                        <th>Solution</th>
+                        <th>Ok/Not.Ok</th>
+                    </tr>
+                    </thead>
+                    <tr *ngFor="let dt of data;let i=index">
+                    <td>{{i+1}}</td>
+                    <td>{{dt.question}}</td>
+                    <td>{{dt.solution}}</td>
+                    <!-- <td> <mat-button-toggle-group [value]="dt['value'].id">
+                        <mat-button-toggle [value]="1"  (change)="ok(dt)">
+                        OK
+                        </mat-button-toggle>
+                        <mat-button-toggle  [value]="2" (change)="notok(dt)">
+                        NOT-OK
+                        </mat-button-toggle>
+                        <mat-button-toggle [value]="3" (change)="na(dt)">
+                            N/A
+                            </mat-button-toggle>
+                    </mat-button-toggle-group> </td>   -->
+                    <!-- <td>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons"  > 
+                        <label class="btn btn-outline-success " [ngClass]="(dt.value.id==1)? 'active': ''" >
+                          <input type="radio" name="options" id="option1"  (change)="ok(dt)" > Ok
+                          </label>
+                        <label class="btn btn-outline-danger " [ngClass]="(dt.value.id==2)? 'active': ''">
+                          <input type="radio" name="options" id="option2"  (change)="notok(dt)"> Not-OK
+                        </label>
+                        <label class="btn btn-outline-secondary" [ngClass]="(dt.value.id==3)? 'active': ''">
+                          <input type="radio" name="options" id="option3"  (change)="na(dt)"> N/A
+                        </label>
+                      </div>
+                    </td> -->
+                    <td>{{dt.value.text}}</td>
+                      <!-- <td>
+                       <mat-button-toggle-group [formControl]="fontStylefun" aria-label="Font Style" (change)="ok(i,$event.value,dt)" color="primary">
+                        <mat-button-toggle value="1" color="primary">OK</mat-button-toggle>
+                        <mat-button-toggle class="active" color="warm" value="2">NOT-OK</mat-button-toggle>
+                        <mat-button-toggle value="3" color="accent">N/A</mat-button-toggle>
+                      </mat-button-toggle-group>
+                    </td> -->
+                </tr>
+                </table>
+            </div>
+            <div style="text-align: center; width: 100%;margin-bottom: 1%;" >
+            <!-- <mat-form-field style="width: 20rem;margin-left: 30px; ">
+                <mat-label>Remarks</mat-label>
+                <input matInput [formControl]="rem" autocomplete="off" required>
+            </mat-form-field>
+            
+        </div> -->
+        <!-- <div >    
+        <button  mat-raised-button class="btn btn-success btn-lg float-right"  style="margin-right: 10px;" (click)="submitted()">Submit</button>
+        <button  mat-raised-button data-dismiss="modal" class="btn-lg float-right" style="margin-right: 20px;">Close</button> 
+         </div> -->
+         <button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;text-align:center ;" data-dismiss="modal" >Back</button>
+     </div>
+        </div>
+        </div>
+    </div>
+<!-- start -->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+        id="data" >
+        <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);color:rgb(31, 29, 29)">
+                <h2 class="modal-title" style="text-align:center;margin-left:45%">Dedupe</h2>
+                <button class="close" type="button" data-dismiss="modal">x</button>                
+                </div>
+                <div class="modal-body">
+                    <pre>EXACT_MATCH</pre>
+                    <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;overflow: auto;">
+                        <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                            <thead class="table_header " fixed-header>
+                                <tr>
+                                    <th>S.No</th> 
+                                    <th>Invoice Number</th>                             
+                                    <th>Invoice Header Amount</th>
+                                    <th>Status</th>          
+                                    <th>CR Number</th>                
+                                    <th>Supplier Name</th>
+                                    <th>Branch Name</th>             
+                                    <th>Employee Name</th>                                      
+                                </tr>
+                            </thead>
+                            <tbody>                    
+                                <tr *ngFor="let value of exactList; index as i;">
+                                    <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                    <td>{{value.invoiceno}}</td>
+                                    <td>{{value.invoiceamount}}</td>     
+                                    <td>{{value['status'].text}}</td>
+                                    <td>{{value.crno}}</td>                         
+                                    <td>{{value['supplier'].name}}</td>
+                                    <td>{{value['branch'].name}}</td>
+                                    <td>{{value.raised_empname}}</td>    
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="exactList ?.length == 0" style="margin-left: 42%;">
+                            <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+                        </div>
+                    </div>
+                    <br>
+
+                    <pre>WITHOUT_SUPPLIER</pre>
+                    <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;overflow: auto;">
+                        <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                            <thead class="table_header " fixed-header>
+                                <tr>
+                                    <th>S.No</th> 
+                                    <th>Invoice Number</th>                             
+                                    <th>Invoice Header Amount</th>
+                                    <th>Status</th>          
+                                    <th>CR Number</th>                
+                                    <th>Supplier Name</th>
+                                    <th>Branch Name</th>             
+                                    <th>Employee Name</th>                                      
+                                </tr>
+                            </thead>
+                            <tbody>                    
+                                <tr *ngFor="let value of withoutSuppList; index as i;">
+                                    <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                    <td>{{value.invoiceno}}</td>
+                                    <td>{{value.invoiceamount}}</td>     
+                                    <td>{{value['status'].text}}</td>
+                                    <td>{{value.crno}}</td>                         
+                                    <td>{{value['supplier'].name}}</td>
+                                    <td>{{value['branch'].name}}</td>
+                                    <td>{{value.raised_empname}}</td>    
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="withoutSuppList ?.length == 0" style="margin-left: 42%;">
+                            <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+                        </div>
+                    </div>
+                    <br>
+
+                    <pre>WITHOUT_INVOICE_AMOUNT</pre>
+                    <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;overflow: auto;">
+                        <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                            <thead class="table_header " fixed-header>
+                                <tr>
+                                    <th>S.No</th> 
+                                    <th>Invoice Number</th>                             
+                                    <th>Invoice Header Amount</th>
+                                    <th>Status</th>          
+                                    <th>CR Number</th>                
+                                    <th>Supplier Name</th>
+                                    <th>Branch Name</th>             
+                                    <th>Employee Name</th>                                      
+                                </tr>
+                            </thead>
+                            <tbody>                    
+                                <tr *ngFor="let value of withoutInvAmtList; index as i;">
+                                    <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                    <td>{{value.invoiceno}}</td>
+                                    <td>{{value.invoiceamount}}</td>     
+                                    <td>{{value['status'].text}}</td>
+                                    <td>{{value.crno}}</td>                         
+                                    <td>{{value['supplier'].name}}</td>
+                                    <td>{{value['branch'].name}}</td>
+                                    <td>{{value.raised_empname}}</td>    
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="withoutInvAmtList ?.length == 0" style="margin-left: 42%;">
+                            <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+                        </div>
+                    </div>
+                    <br>
+
+                    <pre>WITHOUT_INVOICE_NUMBER</pre>
+                    <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;overflow: auto;">
+                        <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                            <thead class="table_header " fixed-header>
+                                <tr>
+                                    <th>S.No</th> 
+                                    <th>Invoice Number</th>                             
+                                    <th>Invoice Header Amount</th>
+                                    <th>Status</th>          
+                                    <th>CR Number</th>                
+                                    <th>Supplier Name</th>
+                                    <th>Branch Name</th>             
+                                    <th>Employee Name</th>                                      
+                                </tr>
+                            </thead>
+                            <tbody>                    
+                                <tr *ngFor="let value of withoutInvNoList; index as i;">
+                                    <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                    <td>{{value.invoiceno}}</td>
+                                    <td>{{value.invoiceamount}}</td>     
+                                    <td>{{value['status'].text}}</td>
+                                    <td>{{value.crno}}</td>                         
+                                    <td>{{value['supplier'].name}}</td>
+                                    <td>{{value['branch'].name}}</td>
+                                    <td>{{value.raised_empname}}</td>    
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="withoutInvNoList ?.length == 0" style="margin-left: 42%;">
+                            <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+                        </div>
+                    </div>
+                    <br>
+
+                    <pre>WITHOUT_INVOICE_DATE</pre>
+                    <div class="table-responsive" class="tablescroll" style="margin-top: 10px;width: 100%;margin-left: 10px;overflow: auto;">
+                        <table class="table table scrolltable table-bordered" style="width: 99%; margin-top: 10px;">
+                            <thead class="table_header " fixed-header>
+                                <tr>
+                                    <th>S.No</th> 
+                                    <th>Invoice Number</th>                             
+                                    <th>Invoice Header Amount</th>
+                                    <th>Status</th>          
+                                    <th>CR Number</th>                
+                                    <th>Supplier Name</th>
+                                    <th>Branch Name</th>             
+                                    <th>Employee Name</th>                                      
+                                </tr>
+                            </thead>
+                            <tbody>                    
+                                <tr *ngFor="let value of withoutInvDtList; index as i;">
+                                    <td style="text-align:center;"> {{(presentpage - 1)*identificationSize +i+1 }} </td>
+                                    <td>{{value.invoiceno}}</td>
+                                    <td>{{value.invoiceamount}}</td>     
+                                    <td>{{value['status'].text}}</td>
+                                    <td>{{value.crno}}</td>                         
+                                    <td>{{value['supplier'].name}}</td>
+                                    <td>{{value['branch'].name}}</td>
+                                    <td>{{value.raised_empname}}</td>    
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="withoutInvDtList ?.length == 0" style="margin-left: 42%;">
+                            <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"  class="col-md-12 text-center" style="margin-bottom: 2%;">
+                    <button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;text-align:center ;" data-dismiss="modal" >Back</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+<!-- View Tranasaction -->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+        id="viewtran">
+        <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);color:rgb(31, 29, 29);text-align:center">
+                    <h2 class="modal-title" style="text-align:center;margin-left:42%">View Tranasaction</h2>
+                <button class="close" type="button" data-dismiss="modal">x</button>      
+                </div>
+                <div>
+                    <table class="table table-bordered" style="width: 100%;text-align: center;">
+                        <thead class="table_header">
+                        <tr>
+                            <th>S.NO</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>From Date</th>
+                            <th>Remarks</th>
+                            <th>Employee Name</th>
+                            <th>Approver Name</th>
+                            <th>Approved By</th>
+                        </tr>
+                        </thead>
+                        <tr *ngFor="let dt of viewtrnlist;let i=index">
+                            <td>{{i+1}}</td>
+                            <td>{{dt.type}}</td>
+                            <td>{{dt?.comments}}</td>
+                            <td>{{dt.created_date}}</td>
+                            <td>{{dt.remarks}}</td>
+                            <td>{{dt.from_user.name}}
+                            <br>
+                            <div *ngIf="dt.from_user_id==-1; else deta"></div>
+                                <ng-template #deta>
+                                    <a style="color: green;cursor: pointer;"  (click)="view(dt)">View Details</a>
+                                </ng-template>
+                            </td>
+                            <td>{{dt.to_user.name}}
+                            <br>
+                            <div *ngIf="dt.to_user_id==-1; else det"></div>
+                            <ng-template #det>
+                            <a style="color: green;cursor: pointer;"  (click)="viewto(dt)">View Details</a>
+                            </ng-template></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer" >
+                    <table  style="width: 100%;text-align: center;">
+                        <tr>
+                            <td>Employee Name:{{this.name}}</td>
+                            <td>Branch Code :{{this.branch}}</td>
+                            <td>Designation: {{this.designation}}</td>
+                        </tr>
+                        <tr><td colspan="3"><button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-top: 12px;" data-dismiss="modal" >Back</button></td></tr>
+                    </table>
+                </div>
+                
+            </div>   
+            
+        </div>
+    </div>
+    <!-- </div>  -->
+    <!-- end -->
+
+    <!-- </div> -->
+
+    <table style="width: 80%;margin-left: 2%;font-size:18px;">
+        <tr>
+            <td><label class="bounce">CR Number : </label>{{newDataRouting.crno}}</td>
+            <td><label class="bounce">Invoice Type :</label>{{newDataRouting.invoicetype.text}}</td>
+        </tr>
+        <tr>
+            <td><label class="bounce">Date : </label>{{newDataRouting.invoice_date}}</td>
+            <td><label class="bounce">Invoice Number :</label>{{newDataRouting.invoice_no}}</td>
+        </tr>
+        <tr>
+            <td><label class="bounce">Invoice Amount :</label>{{newDataRouting.invoice_amount}}</td>
+            <td><label class="bounce">Employee Name : </label>{{newDataRouting.raiser_employeename}}</td>
+        </tr>
+        <tr>
+            <td><label class="bounce">Branch Name : </label>{{newDataRouting['branch'].name}}</td>
+            <td><label class="bounce">GST Applicable :</label></td>
+        </tr>
+        <tr>
+            <td><label class="bounce">Supplier Name :</label>{{newDataRouting.supplier.name}}</td>
+        </tr>
+        <tr>
+            <td><label class="bounce">GST Number : </label>{{newDataRouting.supplier.gstno}}</td>
+            <td><label class="bounce">Supplier PAN NO: </label></td>
+        </tr>
+        <tr>
+            <td><label class="bounce">Prepaid Expenses :</label></td>
+            <td><label class="bounce">Capitalized : </label></td>
+        </tr>
+        <tr>
+            <td><label class="bounce">RCM Applicable : </label></td>
+            <td><label class="bounce">PPX PO Number :</label></td>
+        </tr>
+        <tr>
+            <td>
+                <div *ngIf="star">
+                    <a (click)="star=false" style="color: green;cursor: pointer;">View Branch GST Number</a>
+                </div>
+                <div *ngIf='!star'>
+                    <label class="bounce">Branch GST Number :</label>{{newDataRouting.branch.gstin}}
+                </div>
+            </td>
+            <td>
+                <div *ngIf="com">
+                    <a (click)="com=false" style="color: green;cursor: pointer;">View Commodity Details</a>
+                </div>
+                <div *ngIf='!com'>
+                    <label class="bounce">Commodity Name : </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><label class="bounce">Remarks :</label>{{newDataRouting.remarks}}</td>
+            <td><label class="bounce">MEP Number : </label></td>
+        </tr>
+    </table>  
+    <mat-tab-group>
+        <mat-tab label="INVOICE DETAILS"> 
+            <div class="table-responsive" class="tablescroll" style="margin-top: 2%;width: 98%;margin-left: 10px;">
+                <table class="table table-bordered" style="width: 100%;text-align: center;">
+                    <thead class="table_header" style="font-family: 'Times New Roman'; font-size: 16px;">
+                        <tr>
+                            <th>S.no</th>
+                            <th>Particulars</th>
+                            <th>Product Name</th>
+                            <th>UOM</th>
+                            <th>HSN Code</th>
+                            <th>HSN %</th>
+                            <th>Unit Prize</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                            <th>IGST</th>
+                            <th>CGST</th>
+                            <th>SGST</th>
+                            <th>Discount</th>
+                            <th>Tax Amount</th>
+                            <th>Total Amount</th>
+                        </tr> 
+                    </thead>
+                    <tr *ngFor="let ind of invdet; index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{ind.productcode}}</td>
+                        <td>{{ind.productname}}</td>
+                        <td>{{ind.uom.uom}}</td>
+                        <td>{{ind.hsn.code}}</td>
+                        <td>{{ind.hsn_percentage}}</td>
+                        <td>{{ind.unitprice}}</td>
+                        <td>{{ind.quantity}}</td>
+                        <td>{{ind.amount}}</td>
+                        <td>{{ind.igst}}</td>
+                        <td>{{ind.cgst}}</td>
+                        <td>{{ind.sgst}}</td>
+                        <td>{{ind.discount}}</td>
+                        <td>{{ind.taxamount}}</td>
+                        <td>{{ind.totalamount}}</td>
+                    </tr>
+                </table>
+            </div>   
+            <div *ngIf="invdet ?.length == 0" style="margin-left: 42%;">
+                <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+            </div>  
+         </mat-tab>
+        <mat-tab label="DEBIT"> 
+            <div class="table-responsive" class="tablescroll" style="margin-top: 2%;width: 98%;margin-left: 10px;">
+                <table class="table table-bordered" style="width: 100%;text-align: center;">
+                    <thead class="table_header" style="font-family: 'Times New Roman'; font-size: 16px;">
+                        <tr>
+                            <th>S.no</th>
+                            <th>Category Name</th>
+                            <th>Sub Category Name</th>
+                            <th>GLNO</th>
+                            <th>Debit Amount</th>
+                            <th>Adjustment Amount</th>
+                            <th>BSCC</th>
+                        </tr>
+                    </thead>
+                    <tr *ngFor="let db of indbdet;index as i" >
+                      <td>{{i+1}}</td>
+                      <td>{{db.category_code.name}}</td>
+                      <td>{{db.subcategory_code.name}}</td>
+                      <td>{{db.debitglno}}</td>
+                      <td>{{db.amount}}</td>
+                      <td>{{db.deductionamount}}</td>
+                      <td><a style="color: green;cursor: pointer;"  data-toggle="modal" data-target="#bsccmodel" (click)="bscc(indbdet,i)">View BSCC</a></td>
+                    </tr>
+                </table>
+            </div>  
+            <div *ngIf="indbdet ?.length == 0" style="margin-left: 42%;">
+                <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+            </div>  
+        </mat-tab>
+        <mat-tab label="CREDIT">
+            <div class="table-responsive" id="styleScroll" style="margin-top: 2%; width: 95%; margin-left: 5px;">
+                <table class="table scrolltable table-bordered" fixed-header>
+                    <thead class="table_header" style="font-family: 'Times New Roman'; font-size: 16px;">
+                        <tr>
+                            <th>S.no</th>
+                            <th>Pay Mode</th>
+                            <th>Account Detail</th>
+                            <th>Transaction Branch</th>
+                            <th>Refno</th>
+                            <th>Bank Name</th>
+                            <th>Branch Name</th>
+                            <th>IFSC Code</th>
+                            <th>Beneficiary Name</th>
+                            <th>Tax Type</th>
+                            <th>Tax Rate</th>
+                            <th>TDS Excempt</th>
+                            <th>Taxable Amount</th>
+                            <th>GL No</th>
+                            <th>Amount</th>
+                            <th>Amount change</th>
+                        </tr>
+                    </thead>
+                        <tr *ngFor="let  ct of incdet;index as i" >
+                            <td>{{i+1}}</td>
+                            <td>{{ct.paymode.name}}</td>
+                            <td>{{ct.bankdetails.account_no}}</td>
+                            <td>{{ct.bankdetails.bankbranch.bank.name}}</td>
+                            <td>{{ct.creditrefno}}</td>
+                            <td>{{ct.bankdetails.bankbranch.bank.name}}</td>
+                            <td>{{ct.bankdetails.bankbranch.name}}</td>
+                            <td>{{ct.bankdetails.bankbranch.ifsccode}}</td>
+                            <td>0</td>
+                            <td>{{ct.suppliertaxtype}}</td>
+                            <td>{{ct.taxableamount}}</td>
+                            <td>{{ct.taxexcempted}}</td>
+                            <td>{{ct.taxableamount}}</td>
+                            <td>{{ct.creditglno}}</td>
+                            <td>{{ct.amount}}</td>
+                            <td>{{ct.amount}}</td>
+                        </tr>     
+                </table>
+            </div>   
+            <div *ngIf="incdet ?.length == 0" style="margin-left: 42%;">
+                <h3 style="font-family: 'Times New Roman', Times, serif;">Sorry data not found!..</h3>
+            </div>  
+         </mat-tab>
+      </mat-tab-group>
+      <br>
+      <table style="margin-left: 2%;font-size:18px;">
+          <tr>
+              <td colspan="2">
+                <label class="bounce">Other Charges :</label>0
+              </td>
+              <td > 
+                  <label class="bounce" style="margin-left: 100px">Other Adjustment :</label>0
+              </td>
+            </tr>
+            <tr>
+                <td> <label class="bounce" >Invoice Total Amount :</label>{{newDataRouting.invoice_amount}}
+                </td>
+                <td>
+                    <label class="bounce" style="margin-left: 100px">Debit Total Amount :</label>{{newDataRouting.invoice_amount}}
+                </td>
+                <td>
+                    <label class="bounce" style="margin-left: 100px">Credit Total Amount :</label>{{newDataRouting.invoice_amount}} 
+                </td>
+            </tr>
+      </table>  
+   <br>
+    <div class=" row col-md-12">
+            <div class="col-md-6" >
+                <mat-form-field style="width: 20rem;margin-left: 30px; ">
+                    <mat-label>Remarks</mat-label>
+                    <input matInput [formControl]="rem" autocomplete="off" required>
+                </mat-form-field>
+            </div>
+            <div class="col-md-6" >
+                <input type="file" accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,.dotx,.dotm,.docb,
+                                .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" style="width:200px;" 
+                                                 class="inputfile inputfile-4" multiple="multiple">
+            </div>
+    </div>
+    <div style="text-align: center;margin-bottom: 30px;">
+        <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;"
+            [disabled]="rem.invalid==true" (click)="reaudit()">Re-Audit</button>
+        <button type="button" class="btn btn-outline-primary" style="border-radius:40px;margin-left: 12px;"
+            [disabled]="rem.invalid==true" (click)="reject()">Reject</button>
+            
+        <button type="button" routerLink="/ap//commonsummary" class="btn btn-outline-primary" style="border-radius:30px;height:40px; margin-left: 12px;"><span
+                 class="fa fa-arrow-left" (click)="goBack()">Back</span></button>
+    </div>
+    <!-- BSCC -->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabels" aria-hidden="true"
+      id="bsccmodel">
+        <div class="modal-dialog modal-xl" style="width:80%;height:200%;">
+            <div class="modal-content">
+                <div class="modal-header" style="background:rgba(23, 204, 23, 0.288);color:rgb(31, 29, 29);text-align:center">
+                    <h2 class="modal-title" style="text-align:center;margin-left:42%">BSCC DETAILS</h2>
+                <button class="close" type="button" data-dismiss="modal">x</button>      
+                </div>
+                <div>
+                    <table class="table table-bordered" style="width: 100%;text-align: center;">
+                        <thead class="table_header">
+                        <tr>
+                            <th>S.NO</th>
+                            <th>BS Name</th>
+                            <th>CC Name</th>
+                            <th>GL Number</th>
+                            <th>BSCC Detail Amount</th>
+                            <th>BSCC Percentage</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <td>{{1}}</td>
+                            <td>{{bsname}}</td>
+                            <td>{{ccname}}</td>
+                            <td>{{glno}}</td>
+                            <td>{{ccbsamt}}</td>
+                            <td>{{per}}
+                        </tr>
+                    </table>
+                    <div style="text-align: center;"><button type="button" class="btn btn-outline-primary" style="border-radius:40px;height: 44px; margin-bottom: 25px;" data-dismiss="modal" >Back</button></div>
+                </div>
+            </div>   
+         </div>
+    </div>
+</div>
+    

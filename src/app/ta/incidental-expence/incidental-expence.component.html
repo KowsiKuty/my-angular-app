@@ -1,0 +1,313 @@
+<div id="tamain">
+  <h3 style="margin-left: 50px;margin-left: 44px;margin-top: 30px; font-size: 22px;font-weight: 500;">
+    eClaim Incidental Expense
+  </h3>
+
+  <div *ngIf="isonbehalf">
+    <h3 style="margin-left: 44px;color:rgb(0, 0, 0);font-size: 18px; font-weight: 400;">
+      On Behalf Employee - {{onbehalf_empName}}
+    </h3>
+  </div>
+
+
+  <div style="margin-left: 50px;margin-right: 80%;margin-top: 3%; width: 100%;">
+    <h3 style="color:rgb(0, 0, 0);font-size: 18px; font-weight: 500;">
+      Tour Details
+    </h3>
+    <div>
+      <form [formGroup]="incidentalform">
+        <table>
+          <tr>
+
+            <td>
+              <mat-form-field style="width: 175px;">
+                <mat-label>Tour No</mat-label>
+                <input matInput placeholder="Tour No" [disabled]="true" [value]="tourreqno" autocomplete="off" required>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label>Employee Name</mat-label>
+                <input matInput placeholder="Employee Name" [disabled]="true" [value]="employeename" autocomplete="off"
+                  required>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label>Designation</mat-label>
+                <input matInput placeholder="Designation" [disabled]="true" [value]="employeedesignation"
+                  autocomplete="off" required>
+              </mat-form-field>
+            </td>
+            <td>
+              <mat-form-field style="width: 175px;margin-left: 50px;">
+                <mat-label>Employee Grade</mat-label>
+                <input matInput placeholder="Emp grade" [disabled]="true" [value]="employeegrade" autocomplete="off"
+                  required>
+              </mat-form-field>
+            </td>
+
+
+            <td *ngIf="(statuid == -1 || statuid == 1 || statuid == 5) && !enb_all_exbdetails">
+              <button type="button" class="btn btn-outline-success" (click)="addSet()" [disabled]="addIncidentalButton"
+                style="border-radius:40px;margin-left: 50px"><span class="fa fa-plus"></span>
+                </button>
+            </td>
+          </tr>
+        </table>
+
+        <div formArrayName="data" class="table-responsive" style="width:98%;margin-top: 1%;">
+          <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+            <thead class="table_header" style="text-align: left;">
+              <tr>
+                <th>S.No</th>
+                <th>Mode of Travel<label style="color: red;">*</label></th>
+                <th style="width:180px">Onward and Return journey on same Day<label style="color: red;">*</label></th>
+                <th>Travel Time in Hours<label style="color: red;">*</label></th>
+                <th>Single Fare in Rs (₹)<label style="color: red;">*</label></th>
+                <th>Incidental Expense</th>
+                <th>Bank GST No</th>
+                <th>Supplier GST No</th>
+                <th>Vendor Name</th>
+                <th>Vendor Code</th>
+                <th>Address</th>
+                <th>HSN Code</th>
+                <th>Taxable Amount</th>
+                <th>CGST</th>
+                <th>SGST</th>
+                <th>IGST</th>
+                <th>Invoice Amount</th>
+                <th *ngIf="isApprovedAmt && applevel == 2">Approved Amount<label style="color: red;">*</label></th>
+                <!-- <th>GST No</th> -->
+                <!-- <th *ngIf="enb_all_exbdetails">GST No</th> -->
+                <th>Invoice Date</th>
+                <!-- <th *ngIf="enb_all_exbdetails">Invoice Date</th> -->
+                <th>Invoice No</th>
+                <!-- <th *ngIf="enb_all_exbdetails">Invoice No</th> -->
+                <th *ngIf="isMakerAction && !enb_all_exbdetails">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of incidentalform.controls.data['controls']|paginate: { itemsPerPage: pageSize, currentPage: presentpage }; let i = index;"
+                [formGroupName]="fieldGlobalIndex(i)">
+                <!-- <td>{{i+1}}</td>  -->
+                <td scope="row" style="vertical-align: middle;"> {{((presentpage-1)*pageSize)+i+1}} </td>
+                <td>
+
+                  <mat-form-field floatLabel="never" style="width: 120px;">
+                    <mat-label>Select Mode</mat-label>
+                    <mat-select [disabled]="is_modetrvl || enb_all_exbdetails" formControlName="travel_mode"
+                      (selectionChange)="modeoftravelchange(((presentpage-1)*pageSize)+i)">
+                      <mat-option *ngFor="let modeof of ModeOFList" [value]="modeof.value">
+                        {{modeof.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+
+                <td>
+
+
+                  <mat-form-field floatLabel="never" style="width: 120px;">
+                    <mat-label>Select Yes/No</mat-label>
+                    <mat-select [disabled]="is_onwdretn || enb_all_exbdetails" formControlName="same_day_return"
+                      (selectionChange)="onwardreturnchange(((presentpage-1)*pageSize)+i)">
+                      <mat-option *ngFor="let return of onwardList" [value]="return.value">
+                        {{return.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                </td>
+
+                <td>
+                  <mat-form-field floatLabel="never" style="width: 120px;">
+                    <input matInput placeholder="Enter Time in Hours" (keypress)="keyPressAmounts($event)"
+                      (keyup)="limit($event,((presentpage-1)*pageSize)+i)"
+                      (change)="traveltimechange(((presentpage-1)*pageSize)+i)" maxlength="4"
+                      formControlName="travel_hours" [readonly]="is_travelhr == true  || enb_all_exbdetails" autocomplete="off" required>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field floatLabel="never" style="width: 120px;">
+                    <input matInput placeholder="Enter fare in Rs (₹)"
+                      (change)="singlefarechange(((presentpage-1)*pageSize)+i)" maxlength="4" appNumberOnly (keydown)="onKeyDown($event)"
+                      formControlName="single_fare" [readonly]="is_singlefare == true || enb_all_exbdetails" autocomplete="off" required>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field floatLabel="never" style="width: 120px;">
+                    <input matInput placeholder="Amount" formControlName="eligibleamount" autocomplete="off" required>
+                  </mat-form-field>
+
+                </td>
+                <td>
+                  <fieldset [disabled]='true'>
+                    <mat-form-field floatLabel="never" style="width: 130px;">
+                      <input matInput placeholder="Bank GST" formControlName="bankgstno">
+                    </mat-form-field>
+                  </fieldset>
+                </td>
+              <td>
+                <fieldset [disabled]='this.applevel === 1'>
+                  <mat-form-field floatLabel="never" style="width: 130px;">
+                    <input matInput placeholder="Vendor GST No"
+                      (keypress)="omit_special_char($event)" (blur)="gst_calc(i)"
+                      formControlName="vendorgstno" autocomplete="off" >
+                  </mat-form-field>
+                </fieldset>
+                <button  (click)="gst_validate(i)" class="btn btn-outline-success" style="border-radius: 40px;">validate</button>
+              </td>
+
+            <td>
+              <fieldset [disabled]="incidentalform.value.data[i].vendorgstno !== '' || applevel == 1">
+                <mat-form-field floatLabel="never" style="width: 120px;">
+                  <input matInput placeholder="Vendor Name"  matTooltip="{{incidentalform.value.data[i].vendorname}}"
+                    formControlName="vendorname" autocomplete="off">
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]="incidentalform.value.data[i].vendorgstno !== '' || applevel == 1">
+                <mat-form-field floatLabel="never" style="width: 125px;">
+                  <input matInput placeholder="Vendor Code"
+                    formControlName="vendorcode" autocomplete="off">
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]="incidentalform.value.data[i].vendorgstno !== '' || applevel == 1">
+                <mat-form-field floatLabel="never">
+                  <input matInput placeholder="address"  matTooltip="{{incidentalform.value.data[i].address}}"
+                   formControlName="address">
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]="this.applevel === 1">
+                <mat-form-field floatLabel="never" style="width: 125px;">
+
+                  <mat-label>HSN Code</mat-label>
+                  <input (keypress)="hsnsearch(i)" type="text" #hsncodeid 
+                    placeholder="Select HSN" matInput (blur)="gst_calc(i)"
+                    [matAutocomplete]="hsnn" formControlName="hsncode">
+                  <mat-autocomplete #hsnid #hsnn="matAutocomplete" [displayWith]="hsnshow"
+                    (opened)="autocompletehsnid()">
+                    <mat-option *ngFor="let hsn of hsnList" [value]="hsn">
+                      {{hsn.code}}-{{hsn.igstrate}}
+
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]="this.applevel === 1">
+                <mat-form-field floatLabel="never" style="width: 120px;">
+                  <input matInput (blur)="gst_calc(i)" placeholder="Taxable Amount" formControlName="taxableamount"
+                    appNumberOnly autocomplete="off">
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]='true'>
+                <mat-form-field floatLabel="never" style="width: 100px;">
+                  <input matInput placeholder="CGST" formControlName="cgst"
+                    appNumberOnly autocomplete="off">
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]='true'>
+                <mat-form-field floatLabel="never" style="width: 100px;">
+                  <input matInput placeholder="SGST" formControlName="sgst"
+                    appNumberOnly autocomplete="off">
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]='true'>
+                <mat-form-field floatLabel="never" style="width: 100px;">
+                  <input matInput placeholder="IGST" formControlName="igst"
+                    appNumberOnly autocomplete="off">
+                </mat-form-field>
+              </fieldset>
+            </td>
+            <td>
+              <fieldset [disabled]='true'>
+                <mat-form-field floatLabel="never" style="width: 120px;">
+                  <input matInput placeholder="Invoice Amount" formControlName="invoiceamount"
+                    appNumberOnly autocomplete="off">
+                </mat-form-field>
+              </fieldset>
+            </td>
+
+                <td *ngIf="isApprovedAmt && applevel ==2">
+                  <mat-form-field floatLabel="never" style="width: 120px;">
+                    <input matInput placeholder="Approved Amount" appNumberOnly formControlName="amount"
+                      autocomplete="off" required>
+                  </mat-form-field>
+                </td>
+                <!-- <td>
+                <td *ngIf="enb_all_exbdetails">
+                  <mat-form-field  style="width: 165px;">
+                    <input matInput placeholder="GST No"  (keydown)="kyenbdata($event)"
+                       formControlName="gstno">
+                  </mat-form-field>
+                </td> -->
+                <td >
+                  <!-- <td *ngIf="enb_all_exbdetails"> -->
+                    <fieldset [disabled]='this.applevel === 1'>
+                    <mat-form-field style="width: 165px;">
+                      <mat-label>Invoice Date</mat-label>
+                      <input matInput [matDatepicker]="picker_n"  formControlName="invoicedate"> 
+                      <mat-datepicker-toggle matSuffix [for]="picker_n"></mat-datepicker-toggle>
+                      <mat-datepicker #picker_n></mat-datepicker>
+                    </mat-form-field>  
+                  </fieldset>
+                </td>
+                <td >
+                <!-- <td *ngIf="enb_all_exbdetails"> -->
+                  <fieldset [disabled]='this.applevel === 1'>
+                  <mat-form-field style="width: 165px;">
+                    <input matInput placeholder="Invoice No"  (keydown)="kyenbdata($event)"
+                       formControlName="invoiceno">
+                  </mat-form-field>
+                </fieldset>
+                </td>
+                <td *ngIf="isMakerAction && !enb_all_exbdetails">
+                  <button mat-icon-button matTooltip="Delete" class="iconbutton"
+                    (click)="removeSection(i)"
+                    color="primary">
+                    <mat-icon style="color:red;" aria-label="Delete">delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <th colspan="7">
+                  <div class="pagination" style="text-align: center;">
+                    <pagination-controls responsive="true" (pageChange)="presentpage = $event"></pagination-controls>
+                  </div>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-12 text-center" style="margin-top: 15px;margin-bottom: 50px;">
+          <button *ngIf='isApproveButton && applevel == 2' type="submit"
+           style="border-radius: 40px;margin-left: 10px;"
+            class="btn btn-outline-success" (click)="incidentalApproveButton()">Approve</button>
+          <button type="submit"  [disabled]="incidentalform.get('data')['controls'].length== 0" 
+          *ngIf='isSumbitButton && (statuid == -1 || statuid == 1 || statuid == 5)'
+            style="border-radius: 40px;margin-left: 10px;" (click)="submitForm()"
+            class="btn btn-outline-success">Submit</button>
+          <button type="button" class="btn btn-outline-primary" (click)="back()"
+            style="border-radius: 40px;margin-left: 10px;">Back</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+</div>

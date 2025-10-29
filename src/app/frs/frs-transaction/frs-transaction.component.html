@@ -1,0 +1,1091 @@
+<div *ngIf="edit_frs_screen" class="container" style="padding-top: 2%;">
+    <div>
+        <button type="submit" class="btn btn-outline-dark" style="border-radius: 40px; margin-left: 800px;"
+            matTooltip="Back" (click)="back_summary()"> <i class="fa fa-arrow-left"></i></button>
+        <button *ngIf="!view_edit && is_approver && Approv_rejec" type="submit"
+            style="border-radius: 40px; margin-left: 10px;" data-toggle="modal" data-target="#exampleModal"
+            class="btn btn-outline-success" (click)="appr()">Approve</button>
+        <button *ngIf="!view_edit && is_approver && Approv_rejec && reverse_return" type="button"
+            class="btn btn-outline-primary" data-toggle="modal" style="border-radius: 40px; margin-left: 10px;"
+            (click)="appr()" data-target="#exampleModal2">Return</button>
+        <button *ngIf="!view_edit && is_approver && Approv_rejec && reverse_return" type="button"
+            class="btn btn-outline-danger" data-toggle="modal" style="border-radius: 40px; margin-left: 10px;"
+            (click)="appr()" data-target="#exampleModal1">Reject</button>
+        <!-- <button *ngIf="!view_edit && Moveto_approver  " type="button" class="btn btn-outline-primary" 
+                 data-toggle="modal" style="border-radius: 40px; margin-left: 10px;"  data-target="#exampleModal3" 
+                >Move To Approver</button>   -->
+        <button *ngIf="!view_edit && reverse  " type="button" class="btn btn-outline-primary" data-toggle="modal"
+            style="border-radius: 40px; margin-left: 10px;" (click)="appr()"
+            data-target="#exampleModal4">Reverse</button>
+        <!-- <button *ngIf="!view_edit && cbsupload  " type="button" class="btn btn-outline-primary" 
+                 data-toggle="modal" style="border-radius: 40px; margin-left: 10px;"  data-target="#exampleModal5" 
+                >CBS Upload</button>      -->
+
+    </div>
+
+
+    <div>
+        <div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: 1fr, 1fr; gap: 20px ;position: absolute;">
+                <div style="height: 100%;">
+                    <form [formGroup]="frs_payment">
+                        <!-- <section  (keyup)="frs_view(frs_payment,'Payment')"> style="padding-top: 0%;" (click)="frs_edit('income',frs_payment.value)" 
+                                             (optionSelected)="frs_view(frs_payment,'Payment')"  [(ngModel)]="isChecked"
+                                             <button type="submit"  class="btn btn-outline-dark" style="border-radius: 40px;"        
+                                             (click)="nav_summary_page=true"> <i class="fa fa-arrow-circle-left"></i></button>-->
+                        <fieldset style="width: 100%;" class="border">
+                            <legend class="w-auto"><b>1.Income / Payment Details</b>
+                                <!-- <mat-checkbox class="example-margin" *ngIf="!view_edit && is_maker "                                              
+                                                    (change)="frs_edits($event,'income',frs_payment.value)"></mat-checkbox> -->
+                                <!-- <mat-checkbox [(ngModel)]="isChecked" (change)="onCheckboxChange()">Checkbox Label</mat-checkbox> -->
+                            </legend>
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="income_table_header">Branch</th>
+                                        <td class="table_data_income">
+                                            <mat-form-field class="nopadding" 
+                                                matTooltip="{{branchInput.value}}" appearance="outline"  (click)="click_not_allow=='Pending'?'':getbranchcode()">
+                                                <!-- <mat-label >Branch Code</mat-label>  -->
+                                                <input type="text" #branchInput matInput formControlName="branchcode"
+                                                    [matAutocomplete]="branch" [readonly]="frs_payment.value.branchcode?.flag == 1 || Approver_approve_data">
+                                                <mat-autocomplete #branch="matAutocomplete"                                    
+                                                    [displayWith]="branch_code_display">
+                                                    <ng-container *ngIf="frs_payment.value.branchcode?.flag !== 1">
+                                                        <mat-option *ngFor="let branch of branch_code_list" [value]="branch" >
+                                                            {{branch.name}}-{{branch.code}}
+                                                            </mat-option>
+                                                    </ng-container>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                            <!-- <mat-form-field (click)="getbranchcode()">
+                                                                    <mat-label>Branch</mat-label>
+                                                                    <input #branchInput placeholder="Branch" matInput formControlName="branchcode"
+                                                                        (keyup)="getbranchcode()" [matAutocomplete]="branch">
+                                                                    <mat-autocomplete #branch="matAutocomplete" [displayWith]="display_branch"
+                                                                        (opened)="autocompletebranchcodeScroll()">
+                                                                        <mat-option *ngFor="let branch of branch_code_list" [value]="branch">
+                                                                            {{branch.code}}-{{branch.name}}
+                                                                        </mat-option>
+                                                                    </mat-autocomplete>
+                                                                </mat-form-field> -->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="income_table_header">Payment Type*</th>
+                                        <td class="table_data_income">
+                                            <mat-form-field (click)="click_not_allow=='Pending'?'':payment_type()"
+                                                class="nopadding" appearance="outline">
+                                                <!-- <mat-label >Payment Type</mat-label> (optionSelected)="payment_datas($event)" -->
+                                                <input type="text" matInput formControlName="payment_type"
+                                                    [matAutocomplete]="payment" [readonly]="Approver_approve_data"
+                                                    required>
+                                                <mat-autocomplete #payment="matAutocomplete"
+                                                    [displayWith]="payment_display">
+                                                    <mat-option (click)="payment_datas(pay)"
+                                                        *ngFor="let pay of payment_lists" [value]="pay"
+                                                        matTooltip={{pay.name}}>
+                                                        {{pay.name}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="income_table_header">Transaction Type*</th>
+                                        <td class="table_data_income">
+                                            <mat-form-field
+                                                (click)="click_not_allow=='Pending'?'':transcation_type(frs_payment.value)"
+                                                class="nopadding" appearance="outline">
+                                                <!-- <mat-label >Transaction Type</mat-label> (optionSelected)="frs_Gl(frs_payment)"  -->
+                                                <input matInput formControlName="transtype"
+                                                    [matAutocomplete]="transactions" [readonly]="Approver_approve_data"
+                                                    required>
+                                                <mat-autocomplete #transactions="matAutocomplete"
+                                                    [displayWith]="transaction_display">
+                                                    <mat-option (click)="payment_data(transaction)"
+                                                        *ngFor="let transaction of transaction_list"
+                                                        [value]="transaction" matTooltip={{transaction.name}}>
+                                                        {{transaction.name}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="income_table_header">Customer Type*</th>
+                                        <td class="table_data_income">
+                                            <mat-form-field class="nopadding" appearance="outline" *ngIf="readvalue  ">
+                                                <!-- <mat-label >Customer *ngIf="readvalue == true"Type(optionSelected)="frs_Walkin(frs_payment.value)"  (click)="customer_type(frs_payment.value)" </mat-label> -->
+                                                <input matInput formControlName="custype" [matAutocomplete]="customer"
+                                                    [readonly]="customer_type_readonly">
+                                                <mat-autocomplete #customer="matAutocomplete"                                                   
+                                                    [displayWith]="customer_display">
+                                                    <mat-option *ngFor="let cus of customer_list"
+                                                        (click)="customer_type_dd(cus)" [value]="cus">
+                                                        {{cus.name}}
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </fieldset>
+                        <!-- </section> -->
+                    </form>
+
+                </div>
+                <!-- <div *ngIf="!view_edit">
+                                [disabled]="(frs_payment.value.transtype == Cash)? true:false"
+                                <div style="text-align: end;" >
+                                    <button  type="submit" style="margin-left: 10px;" (click)="frs_edit('income',frs_payment.value)"
+                                        class="btn btn-outline-primary">Save</button>
+                                    <button type="button" class="btn btn-outline-dark" (click)="frs_edit_reset('income')"
+                                        style="margin-left: 10px;" >Reset</button>
+                                </div>
+                            </div> -->
+
+
+                <!-- *ngIf="billing_view" -->
+
+
+                <div style="height: 100%;">
+
+                    <form [formGroup]="frs_billing">
+                        <!-- <section (keyup)="frs_view(frs_billing,'Walk_in')"> 
+                                               style="
+                        padding: 250px 10px 10px 0px;    position: absolute; height: 10vh; width: 200px;  top: 5px;  -->
+                        <!-- bootstrap 4 it is much easier to have a border on the fieldset that blends with the legend -->
+                        <fieldset style="width: 100%;"  class="border">
+                            <legend class="w-auto"><b>3.Billing Details</b>
+                                <!-- <mat-checkbox *ngIf="!view_edit && is_maker " class="example-margin"  
+                                                    (change)="frs_edits($event,'billing',frs_billing.value)"></mat-checkbox> -->
+                            </legend>
+                            <table class="table table-bordered w-auto">
+                                <tbody>
+                                    <!-- <tr>
+                                                            <th >Product Type</th>
+                                                            <td class="tabledata">
+                                                                <mat-form-field class="nopadding" appearance="outline">
+                                                                    <mat-label>Product Type</mat-label>
+                                                                    <input type="text" matInput formControlName="prodtype"
+                                                                        [matAutocomplete]="product">
+                                                                    <mat-autocomplete #product="matAutocomplete"
+                                                                        [displayWith]="product_display">
+                                                                        <mat-option *ngFor="let pro of product_list" [value]="pro" >
+                                                                            {{pro.product}}
+                                                                        </mat-option>
+                                                                    </mat-autocomplete>
+                                                                </mat-form-field>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th >GST Code</th>
+                                                            <td class="tabledata" >
+                                                                <mat-form-field appearance="outline" class="nopadding" >
+                                                                    <mat-label>GST Code</mat-label>
+                                                                    <input matInput placeholder="" [readonly]="Gst_value"
+                                                                    formControlName="gstate_code" (keyup)="only_nummber($event)"
+                                                                    maxlength="20" minlength="10"
+                                                                        autocomplete="off"  required>
+
+                                                                </mat-form-field>
+                                                            </td>
+                                                        </tr> -->
+                                    <tr>
+                                        <th>Bill Amt/Charges(excl.GST){{Gst_amt_hide== false ? '*' : ''}}
+                                        </th>
+                                        <td class="tabledata">
+                                            <!-- <mat-form-field class="nopadding" appearance="outline"> -->
+                                            <!-- <mat-label>Bill Amount/Charges(excl.GST)</mat-label>{{ ? '*' : ''}} -->
+                                            <!-- <input  matInput type="number" min="1"  formControlName="billamt" 
+                                                                     (keyup)="gst_value_radio(frs_billing.value)"   (keypress)="only_nummber($event)" 
+                                                                     appTwodecimalvalue required>                                                                      -->
+                                            <!-- <mat-autocomplete #bil="matAutocomplete"  [matAutocomplete]="bil"
+                                                                        [displayWith]="bil_display" readonly> -->
+                                            <!-- [required]="frs_payment.value.payment_type.name=='CustomerServiceCharge'||frs_payment.value.payment_type.name=='Non FA scrapsale'"  <mat-option *ngFor="let bil of bil_list" [value]="bil">
+                                                                            {{bil.product}}
+                                                                        </mat-option> -->
+                                            <!-- </mat-autocomplete> -->
+                                            <!-- </mat-form-field> -->
+                                            <!-- <mat-form-field class="nopadding" appearance="outline">                                                                
+                                                                    <input type="text" matInput  formControlName="billamt"
+                                                                    (keyup)="gst_value_radio(frs_billing.value)"  placeholder="" autocomplete="off"
+                                                                      min="0" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3); }" >
+                                                                </mat-form-field> -->
+                                            <!-- <mat-form-field class="nopadding" appearance="outline">                                                                
+                                                                    <input type="text" matInput   formControlName="billamt"
+                                                                    (keyup)="gst_value_radio(frs_billing.value)" placeholder="" autocomplete="off"
+                                                                      min="0" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3); }" >
+                                                                </mat-form-field> -->
+                                            <mat-form-field class="nopadding" appearance="outline">
+                                                <input type="text" appTwodecimalvalue
+                                                    (keyup)="gst_value_radio(frs_billing.value)"
+                                                    [readonly]="Approver_approve_data" matInput
+                                                    formControlName="billamt" placeholder="" autocomplete="off"
+                                                    oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3);}">
+                                            </mat-form-field>
+                                        </td>
+                                    </tr>
+                                    <tr [hidden]="Gst_amt_hide">
+                                        <th>GST Amount{{Gst_amt_hide== false ? '*' : ''}}</th>
+                                        <td class="tabledata">
+                                            <!-- <mat-form-field appearance="outline" class="nopadding"> -->
+                                            <!-- <mat-label>GST Amount</mat-label>(keyup)="only_nummber($event)" maxlength="5" minlength="1" -->
+                                            <!-- <input matInput placeholder="" 
+                                                                        type="number" formControlName="gstamt" autocomplete="off"  
+                                                                        readonly>
+
+                                                                </mat-form-field> -->
+                                            <mat-form-field appearance="outline" class="nopadding">
+                                                <!-- <mat-label>GST Amount</mat-label>(keyup)="only_nummber($event)" maxlength="5" minlength="1" -->
+                                                <input matInput placeholder="" type="number" formControlName="gstamt"
+                                                    autocomplete="off" readonly>
+                                            </mat-form-field>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total Bill Amt / Charges{{Gst_amt_hide== false? '*' : ''}}
+                                        </th>
+                                        <td class="tabledata">
+                                            <mat-form-field appearance="outline" class="nopadding">
+                                                <!-- <mat-label>Total Bill Amount / Charges</mat-label> (keyup)="only_nummber($event)"  -->
+                                                <input matInput placeholder="" type="number"
+                                                    formControlName="totbillamt" autocomplete="off" readonly>
+                                            </mat-form-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th> Total Amt Payable/Receivable* </th>
+                                        <td class="tabledata">
+                                            <mat-form-field appearance="outline" class="nopadding">
+                                                <!-- <mat-label>Total Amount Payable / Receivable</mat-label>(keyup)="only_nummber($event)"  -->
+                                                <input matInput placeholder="" type="number" formControlName="totpay"
+                                                    autocomplete="off" readonly>
+
+                                            </mat-form-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Narration*</th>
+                                        <td class="tabledata">
+                                            <mat-form-field appearance="outline" class="nopadding">
+                                                <!-- <mat-label>Narration</mat-label> -->
+                                                <input matInput placeholder="" formControlName="narration"
+                                                    maxlength="40" minlength="0" (keyup)="naration_input($event)"
+                                                    autocomplete="off" [readonly]="Approver_approve_data" required>
+
+                                            </mat-form-field>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </fieldset>
+                        <!-- </section> -->
+                    </form>
+
+
+                </div>
+                <!-- <div *ngIf="!Approver_save">
+                                <div style="text-align: end;" >
+                                    <button  type="submit" style="margin-left: 10px;" (click)="frs_edit('billing',frs_billing.value)"
+                                        class="btn btn-outline-primary">Save</button>
+                                    <button type="button" class="btn btn-outline-dark" (click)="frs_edit_reset('billing')"
+                                        style="margin-left: 10px;" >Reset</button>
+                                </div>
+                            </div> -->
+
+
+
+                <!---Transaction-->
+
+                <!-- *ngIf="transaction_view" *ngIf="transaction_view"   style=" padding: 0px 10px 500px 500px;
+                     position: absolute; height: 0vh;  top: 10px;"-->
+
+                <div style="height: 100%;padding-bottom: 3%;" >
+              
+                        <form [formGroup]="frs_transaction">
+                            <!-- <section (keyup)="frs_view(frs_transaction,'transaction')"> -->
+                            <fieldset style="width: 100%;" class="border">
+                                <legend class="w-auto"><b>2.Transaction Details</b>
+                                    <!-- <mat-checkbox *ngIf="!view_edit && is_maker " class="example-margin" 
+                            (change)="frs_edits($event,'transaction',frs_transaction.value)"></mat-checkbox> -->
+                                </legend>
+                                <table class="table table-bordered w-auto">
+                                    <tbody>
+                                        <!-- <ng-container *ngIf="GL_ACC"> -->
+                                        <tr>
+                                            <th class="table_header_width">Debit Account Type *</th>
+                                            <td class="tabledata">
+                                                <mat-form-field class="nopadding" appearance="outline"
+                                                    >
+                                                    <!-- (click)=debit_gl_type() <mat-label>Debit Account Type</mat-label> (click)="debit_acoount_type(deb)"-->
+                                                    <input matInput formControlName="debitacc" [readonly]="depit_acc"
+                                                        [matAutocomplete]="debit"
+                                                        [matTooltip]="frs_payment.value?.custype?.name =='Existing Customer(Loan FCC)'?'Funds Control Account(GST)':''">
+                                                    <mat-autocomplete #debit="matAutocomplete"
+                                                        [displayWith]="debit_display">
+                                                        <mat-option 
+                                                            *ngFor="let deb of debit_list" [value]="deb">
+                                                            {{deb.name}}
+                                                        </mat-option>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="table_header_width">Debit GL/ Account*</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>Debit GL/ Account</mat-label> [disabled]="(debitGL.valid)?true:false"  id="onlyNumbers"-->
+                                                    <input matInput placeholder="" appTwodecimalvalue
+                                                        [readonly]="depit_acc_no" formControlName="debitGL" type="tel"
+                                                        pattern="\d{16}"
+                                                        oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3);}"
+                                                        autocomplete="off" maxlength="16" minlength="16"
+                                                        (change)=" Gstnumber($event,frs_transaction.value,'debit')"
+                                                        [matTooltip]="frs_payment.value?.custype?.name =='Existing Customer(Loan FCC)'?'Funds Control Account(GST)':''">
+                                                </mat-form-field>
+                                                <!-- <mat-checkbox class="example-margin" *ngIf="is_approver==false || check" [disabled]="disable_data"
+                                          style="margin-left: 5%;margin-right: 0;position: absolute;margin-top: 3%;" [hidden]="!checkbox_hide" [checked]="check_value"                                      
+                                        (change)="Gstnumber($event,frs_transaction.value.debitGL)"></mat-checkbox> -->
+                                            </td>
+                                            <!-- <td *ngIf="ninedigit" class="tabledata">
+                                        <mat-form-field  appearance="outline" class="nopadding">
+                                            <input matInput  placeholder="" formControlName="debitGL" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3);}" 
+                                            autocomplete="off"  maxlength="9" minlength="9"  > 
+                                        </mat-form-field>
+                                    </td> -->
+                                        </tr>
+                                        <tr [hidden]="Account_no_hide">
+                                            <th class="table_header_width">Account No</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <input matInput placeholder="" appTwodecimalvalue
+                                                        [readonly]="Approver_approve_data" formControlName="act_no"
+                                                        type="tel" pattern="\d{16}"
+                                                        oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3);}"
+                                                        autocomplete="off" maxlength="16" minlength="16"
+                                                        (change)=" Gstnumber($event,frs_transaction.value,'accont')">
+                                                </mat-form-field>
+
+                                            </td>
+                                        </tr>
+                                        <tr [hidden]="account_walkin_based_hide">
+                                            <th class="table_header_width">Account Title</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>GSTIN</mat-label> -->
+                                                    <input matInput placeholder="" formControlName="customertype"
+                                                        autocomplete="off" readonly>
+                                                </mat-form-field>
+                                            </td>
+
+                                        </tr>     
+                                        <tr [hidden]="account_walkin_based_hide">
+                                            <th class="table_header_width">GSTIN</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>GSTIN</mat-label> -->
+                                                    <input matInput placeholder="" formControlName="gstin"                                                   
+                                                        autocomplete="off" maxlength="15" minlength="15" [readonly]="gst_create">
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="frs_payment.value.custype?.id===4">
+                                            <th class="table_header_width">GST No</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>GSTIN</mat-label> -->
+                                                    <input matInput placeholder="" formControlName="gst"  [readonly]="Approver_approve_data"
+                                                        autocomplete="off" maxlength="15" minlength="15" (change)="Gst_number_validation_api($event)">
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="frs_payment.value.custype?.id===4">
+                                            <th class="table_header_width">GST Address</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding"  matTooltip="{{gst_add.value}}">
+                                                    <!-- <mat-label>GSTIN</mat-label> --> 
+                                                    <textarea matInput placeholder="" #gst_add formControlName="gst_address"
+                                                        autocomplete="off" readonly> </textarea>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>                                       
+                                        <tr>
+                                                                                                <!-- <mat-label>Credit GL/ Account</mat-label>
+                                                        (keyup)="frs_payment.value.payment_type?.id==2 || frs_payment.value.payment_type?.id==3 || click_not_allow=='Pending'?'':Creditgl()" -->
+                                            <th>Credit GL*</th>
+                                            <td class="tabledata">
+                                                 <mat-form-field class="nopadding"
+                                                    (click)="frs_payment.value.payment_type?.id==2 || frs_payment.value.payment_type?.id==3 || click_not_allow=='Pending'?'':Creditgl()"
+                                                    matTooltip="{{credit_data.value}}" appearance="outline">
+
+                                                    <input #credit_data type="text" matInput formControlName="creditGL" autocomplete="off"
+                                                        [matAutocomplete]="creditgls"
+                                                     (keyup)="frs_payment.value.payment_type?.id==2 || frs_payment.value.payment_type?.id==3 || click_not_allow=='Pending'?'':Creditgl()"
+                                                        (keydown.backspace)="frs_payment.value.payment_type?.id==2 || frs_payment.value.payment_type?.id==3 || click_not_allow=='Pending'?'':credit_kydown($event)"
+                                                        [readonly]="credit_intrest_rec_Dep">
+                                                    <mat-autocomplete #creditgls="matAutocomplete"   (opened)="creditgl_datasscroll()" [displayWith]="creditgl_display">
+                                                        <mat-option *ngIf="isLoading"
+                                                            class="is-loading">Loading...</mat-option>
+                                                        <ng-container *ngIf="!isLoading">
+                                                            <mat-option *ngFor="let credit of creditgl_list"
+                                                                (click)="frs_payment.value.payment_type?.id==2?'':subcat_datas(credit)"
+                                                                [value]="credit"
+                                                                matTooltip="{{credit.gl_no}}-{{credit.gl_name}}">
+                                                                {{credit.gl_no}}-{{credit.gl_name}}
+                                                            </mat-option>
+                                                        </ng-container>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>               
+<!--                                                 
+                                                <mat-form-field style="width: 88%;"  (click)="frs_payment.value.payment_type?.id==2 || frs_payment.value.payment_type?.id==3 || click_not_allow=='Pending'?'':Creditgl()"
+
+                                                (selectionChange)="onSelectChange($event.value)"
+                                                [matTooltip]="credit_data.value" appearance="outline"
+                                                    [readonly]="credit_intrest_rec_Dep">
+                                                    <mat-select >
+                                                      <mat-option *ngFor="let create of creditgl_list" [value]="create"
+                                                      (click)="frs_payment.value.payment_type?.id==2?'':subcat_datas(credit)">{{create.gl_no}}-{{create.gl_name}}</mat-option>
+                                                    </mat-select>
+                                                  </mat-form-field> -->
+                                                  <!-- <mat-form-field style="width: 88%;" appearance="outline"    (click)="(frs_payment.value.payment_type?.id == 2 || frs_payment.value.payment_type?.id == 3 || click_not_allow == 'Pending') ? '' : Creditgl()">
+                                                    <mat-select 
+                                                                (selectionChange)="onSelectChange($event.value)"
+                                                                [matTooltip]="credit_data?.value" 
+                                                                [readonly]="credit_intrest_rec_Dep" [panelClass]="'custom-panel'"
+                                                             >
+                                                             <input #credit_data type="text" matInput formControlName="creditGL" autocomplete="off"
+                                                              (keydown)="frs_payment.value.payment_type?.id==2 || frs_payment.value.payment_type?.id==3 || click_not_allow=='Pending'?'':credit_kydown($event)"
+                                                        [readonly]="credit_intrest_rec_Dep">
+                                                        <mat-option>
+                                                            <input matInput formControlName="creditGL" (ngModelChange)="credit_kydown($event)" />
+                                                          </mat-option>
+                                                      <mat-option *ngFor="let create of creditgl_list" [value]="create">
+                                                        {{ create.gl_no }} - {{ create.gl_name }}
+                                                      </mat-option>
+                                                    </mat-select>
+                                                  </mat-form-field> -->
+                                                  
+                                                                                               
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Credit GL Name</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline"
+                                                    matTooltip="{{credit_gl_name_mat.value}}" class="nopadding">
+                                                    <!-- <mat-label>GSTIN</mat-label> -->
+                                                    <input matInput #credit_gl_name_mat placeholder=""
+                                                        formControlName="creditGL_name" autocomplete="off" readonly>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <!-- <tr >
+                                    <th style="width: 3%;">Category Name*</th>
+                                    <td class="tabledata">
+                                        <mat-form-field class="nopadding" (click)="Catagorys()" matTooltip="{{cata_data.value}}" appearance="outline">
+                                            <mat-label>Credit GL/ Account</mat-label>
+                                            <input #cata_data type="text" matInput formControlName="cat"
+                                                [matAutocomplete]="Catagory" (keyup)="only_nummber($event)" readonly>
+                                            <mat-autocomplete #Catagory="matAutocomplete"                                                                   
+                                                [displayWith]="Catagory_display">
+                                                <mat-option *ngFor="let Catagory of Catagory_list" [value]="Catagory"
+                                                matTooltip={{Catagory.name}} >
+                                                    {{Catagory.name}}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th class="table_header_width">Sub Category Name*</th>
+                                    <td class="tabledata">
+                                        <mat-form-field class="nopadding" (click)="Subcats(frs_transaction.value)" matTooltip="{{subcat_data.value}}" appearance="outline">
+                                            <mat-label>Credit GL/ Account</mat-label>
+                                            <input #subcat_data type="text" matInput formControlName="subcat"
+                                                [matAutocomplete]="subcats" (keyup)="only_nummber($event)" readonly>
+                                            <mat-autocomplete #subcats="matAutocomplete"
+                                                [displayWith]="subcats_display">
+                                                <mat-option  *ngFor="let subcats of subcats_list" [value]="subcats"
+                                                matTooltip={{subcats.name}} >
+                                                    {{subcats.name}}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                    </td>
+                                </tr> -->
+                                        <!-- <tr>
+                                    <th class="table_header_width">Credit GL</th>                                                            
+                                    <td>
+                                    <mat-form-field appearance="outline" class="nopadding">                                                             
+                                        <input matInput placeholder="" formControlName="gl"                                                                 
+                                            autocomplete="off" readonly>
+                                    </mat-form-field>
+                                </td> -->
+                                        <!-- </tr> -->
+
+                                        <tr>
+                                            <th class="table_header_width">Product*</th>
+                                            <td class="tabledata">
+                                                <mat-form-field (click)="Product_value()" appearance="outline"
+                                                    matTooltip="{{Productdata.value}}" class="nopadding">
+                                                    <input #Productdata matInput formControlName="Product"
+                                                        [matAutocomplete]="Product_auto" (keyup)="Product_value()"
+                                                        [readonly]="produ_bs_cc" required>
+                                                    <mat-autocomplete #Product_auto="matAutocomplete"
+                                                        [displayWith]="Product_display"
+                                                        (opened)="product_datasscroll()">
+                                                        <!-- <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option> -->
+                                                        <!-- <ng-container *ngIf="!isLoading"> -->
+                                                        <mat-option *ngFor="let Products of product_list_data"
+                                                            [value]="Products" matTooltip={{Products.name}}>
+                                                            {{Products.name}}
+                                                            <!-- </ng-container> -->
+                                                        </mat-option>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <th class="table_header_width">BS*</th>
+                                            <td class="tabledata">
+                                                <mat-form-field (click)="produ_bs_cc_hide=='Pending'?'':bs_dropdown()"
+                                                    matTooltip="{{bsdata.value}}" appearance="outline"
+                                                    class="nopadding">
+                                                    <!-- <mat-label>BS</mat-label>  (keyup)="produ_bs_cc_hide=='Pending'?'':bs_dropdown()" -->
+                                                    <input #bsdata matInput formControlName="business_segment" #bsInput
+                                                        [matAutocomplete]="bs_auto" [readonly]="produ_bs_cc" required>
+                                                    <mat-autocomplete #bs_auto="matAutocomplete"
+                                                        [displayWith]="display_bs"
+                                                        (optionSelected)="produ_bs_cc_hide=='Pending'?'':search_details($event)"
+                                                        (opened)="produ_bs_cc_hide=='Pending'?'':autocompletebsnameScroll()">
+                                                        <mat-option *ngFor="let bs of bs_details" [value]="bs"
+                                                            matTooltip={{bs.name}}>
+                                                            {{bs.name}}
+                                                        </mat-option>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="table_header_width">CC*</th>
+                                            <td class="tabledata">
+                                                <mat-form-field (click)="cc_dropdown()" matTooltip="{{ccdata.value}}"
+                                                    appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>CC</mat-label>  -->
+                                                    <input #ccdata matInput formControlName="cc" #ccInput
+                                                        [matAutocomplete]="cc_auto" (keyup)="cc_dropdown()"
+                                                        [readonly]="produ_bs_cc" required>
+                                                    <mat-autocomplete #cc_auto="matAutocomplete"
+                                                        [displayWith]="display_cc" (opened)="autocompletccnameScroll()">
+                                                        <mat-option *ngFor="let cc of cc_details" [value]="cc"
+                                                            matTooltip={{cc.name}}>
+                                                            {{cc.name}}
+                                                        </mat-option>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+
+                                        <!-- <tr >
+                                    <th class="table_header_width">Loan / FCC Account No</th>
+                                    <td class="tabledata">
+                                        <mat-form-field appearance="outline" class="nopadding">                                                                   
+                                            <input matInput placeholder="" formControlName="loanfcc"
+                                            maxlength="16" minlength="16"   pattern="[0-9.]+"
+                                                autocomplete="off" required>
+
+                                        </mat-form-field>
+                                    </td>
+                                </tr>       -->
+                                        <!-- </ng-container>    
+                              <mat-form-field  class="nopadding" appearance="outline">
+                                            <<mat-label>Customer Type</mat-label>(click)="transtion_customer_type(frs_transaction.value)"
+                                            <input type="text" matInput formControlName="customertype"
+                                                [matAutocomplete]="cus_auto">
+                                            <mat-autocomplete #cus_auto="matAutocomplete"
+                                                [displayWith]="cus_display">pattern="\d{16}"
+                                             <mat-option *ngFor="let cus of customer_data" [value]="cus">
+                                                    {{cus.name}}
+                                                </mat-option> 
+                                            </mat-autocomplete>
+                                        </mat-form-field> -->
+                                        <!-- <tr>
+                                            <th class="table_header_width">State</th>
+                                            <td class="tabledata"> 
+                                                <mat-form-field (click)="State_value()" appearance="outline" class="nopadding">                                                                  
+                                                    <input #statedata  matInput formControlName="states_code"
+                                                        [matAutocomplete]="state_auto" (keyup)="State_value()">
+                                                    <mat-autocomplete #state_auto="matAutocomplete" [displayWith]="display_state"
+                                                    (opened)="state_datasscroll()">
+                                                        <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                                                        <ng-container *ngIf="!isLoading">
+                                                            <mat-option *ngFor="let state of state_code" [value]="state" matTooltip={{state.name}}--{{state.code}}>
+                                                                {{state.name}}--{{state.code}}
+                                                            </mat-option>
+                                                        </ng-container>
+                                                    </mat-autocomplete>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>                                                      -->
+                                        <!-- <tr>
+                                    <th class="table_header_width">Invoice No</th>
+                                    <td class="tabledata">
+                                        <mat-form-field appearance="outline" class="nopadding">
+                                            <mat-label>Invoice No</mat-label>
+                                            <input matInput placeholder="" formControlName="invoiceNum"
+                                            maxlength="16" minlength="16"  pattern="\d{16}" 
+                                                autocomplete="off" required>
+
+                                        </mat-form-field>
+                                    </td>
+                                </tr>                                 -->
+                                    </tbody>
+                                </table>
+                            </fieldset>
+
+                        </form>
+                  
+                </div>
+
+
+                <!-- *ngIf="walk_view" *ngIf="walk_view" -->
+
+                <div style="height: 100%;" *ngIf="walkview" >
+                
+                        <form [formGroup]="frs_Walk_in">
+                            <!-- <section (keyup)="frs_view(frs_Walk_in,'button_hide')"> -->
+                            <fieldset style="width: 100%;" class="border">
+                                <legend class="w-auto"><b>4. Walk-in Details</b>
+                                    <!-- <mat-checkbox *ngIf="!view_edit && is_maker " class="example-margin" 
+                                                    (change)="frs_edits($event,'frs_Walk_in',frs_Walk_in.value)"></mat-checkbox> -->
+                                </legend>
+                                <table class="table table-bordered w-auto">
+                                    <tbody>
+                                        <tr>
+                                            <th class="table_headers">Customer Name  {{frs_payment.value.custype?.name==='Walkin Customer'?'*':''}} </th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding" matTooltip="{{customer_name.value}}">
+                                                    <!-- <mat-label>Customer Name</mat-label> -->
+                                                    <input matInput placeholder="" formControlName="cusname" #customer_name
+                                                        autocomplete="off"  [readonly]="Approver_approve_data || frs_payment.value.custype?.id === 4" >
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="table_headers">Address {{frs_payment.value.custype?.name==='Walkin Customer'?'*':''}}</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>Address</mat-label> -->
+                                                    <textarea matInput placeholder="" formControlName="address"
+                                                        autocomplete="off" [readonly]="Approver_approve_data" >
+                                                                        </textarea>
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="table_headers">Mobile No {{frs_payment.value.custype?.name==='Walkin Customer' || frs_payment.value.custype?.id===4?'*':''}}</th>
+                                            <td>
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>Mobile No</mat-label> -->
+                                                    <input type="tel" pattern="\d{10}" (keyup)="only_nummber($event)"
+                                                        appTwodecimalvalue [readonly]="Approver_approve_data"
+                                                        maxlength="10" minlength="10" matInput placeholder=""
+                                                        oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if (this.value.indexOf('.') !== -1) { let decimalPart = this.value.split('.')[1]; if (decimalPart.length > 2) this.value = this.value.slice(0, this.value.lastIndexOf('.') + 3);}"
+                                                        formControlName="mobnum" autocomplete="off">
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="table_headers">Email Issued {{frs_payment.value.custype?.id===4?'*':''}}</th>
+                                            <td class="tabledata">
+                                                <mat-form-field appearance="outline" class="nopadding">
+                                                    <!-- <mat-label>Email Issued</mat-label> -->
+                                                    <input matInput
+                                                        pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}"
+                                                        type="email" placeholder="" formControlName="email"
+                                                        autocomplete="off" [readonly]="Approver_approve_data" 
+                                                        (change)="email_validation($event)">
+                                                </mat-form-field>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                            <!-- </section> -->
+                        </form>
+                        <div *ngIf="!Approver_save" class="approve_save" style="margin-top: 5%;">
+                            <button type="submit" style="border-radius: 20px;"
+                                (click)="frs_edit(frs_payment.value,frs_transaction.value,frs_billing.value,frs_Walk_in.value)"
+                                class="btn btn-outline-primary">Save</button>
+                            <!-- <button type="button" class="btn btn-outline-dark" (click)="frs_edit_reset('transaction')"
+                                style="margin-left: 10px;" >Reset</button> -->
+                        </div>
+                        <div class="file_style" *ngIf="document_view">
+                            <div class="row">
+                                <form [formGroup]="FileAttachement" class="file_form">
+                                    <div>
+                                        <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                                            #takeInput accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,
+                                        .dotx,.dotm,.docb,
+                                        .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" formControlName="file"
+                                            multiple hidden />
+                                        <!-- <input type="file" id="upload" hidden/> -->
+                                        <label class="filedata" style="background-color: #686fc5;border-radius: 40px;"
+                                            for="upload">Choose file</label>
+                                        <div *ngFor="let files of file_data; let index = index">
+                                            {{index+1}}.{{files?.name}}
+                                            <mat-icon class="enabled_icon" (click)="deleteInlineFile( index)">delete</mat-icon>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div *ngIf="view_edit" class="create_save">
+                                    <div class="center_align">
+                                        <button type="submit" *ngIf="save_btn " style="border-radius: 40px;" [disabled]="isDisabled"
+                                            class="btn btn-outline-primary"
+                                            (click)="frs_transaction_details(frs_payment.value,frs_Walk_in.value,frs_billing.value,frs_transaction.value)">Save</button>
+                                        <button type="button" class="btn btn-outline-danger create_reset"
+                                            (click)="frs_view()">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="!view_edit && is_maker ">
+                            <div style="text-align: end;">
+                                <button type="submit"
+                                    (click)="frs_edit(frs_payment.value,frs_transaction.value,frs_billing.value,frs_Walk_in.value)"
+                                    class="btn btn-outline-primary save_style">Save</button>
+                                <button type="button" class="btn btn-outline-danger reset_style"
+                                    (click)="frs_edit_reset()">Reset</button>
+                            </div>
+                        </div>
+                    
+                </div>
+                <div *ngIf="!Approver_save && !walkview" class="approve_save">
+                    <button type="submit" style="border-radius: 20px;"
+                        (click)="frs_edit(frs_payment.value,frs_transaction.value,frs_billing.value,frs_Walk_in.value)"
+                        class="btn btn-outline-primary">Save</button>
+                    <!-- <button type="button" class="btn btn-outline-dark" (click)="frs_edit_reset('transaction')"
+                        style="margin-left: 10px;" >Reset</button> -->
+                </div>
+                <div class="file_style" *ngIf="document_view && !walkview">
+                    <div class="row">
+                        <form [formGroup]="FileAttachement" class="file_form">
+                            <div>
+                                <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                                    #takeInput accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,
+                                .dotx,.dotm,.docb,
+                                .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" formControlName="file"
+                                    multiple hidden />
+                                <!-- <input type="file" id="upload" hidden/> -->
+                                <label class="filedata" style="background-color: #686fc5;border-radius: 40px;"
+                                    for="upload">Choose file</label>
+                                <div *ngFor="let files of file_data; let index = index">
+                                    {{index+1}}.{{files?.name}}
+                                    <mat-icon class="enabled_icon" (click)="deleteInlineFile( index)">delete</mat-icon>
+                                </div>
+                            </div>
+                        </form>
+                        <div *ngIf="view_edit" class="create_save">
+                            <div class="center_align">
+                                <button type="submit" *ngIf="save_btn " style="border-radius: 40px;" [disabled]="isDisabled"
+                                    class="btn btn-outline-primary"
+                                    (click)="frs_transaction_details(frs_payment.value,frs_Walk_in.value,frs_billing.value,frs_transaction.value)">Save</button>
+                                <button type="button" class="btn btn-outline-danger create_reset"
+                                    (click)="frs_view()">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!view_edit && is_maker ===true  && !walkview">
+                    <div style="text-align: end;">
+                        <button type="submit"
+                            (click)="frs_edit(frs_payment.value,frs_transaction.value,frs_billing.value,frs_Walk_in.value)"
+                            class="btn btn-outline-primary save_style">Save</button>
+                        <button type="button" class="btn btn-outline-danger reset_style"
+                            (click)="frs_edit_reset()">Reset</button>
+                    </div>
+                </div>
+                <!-- <div *ngIf="!view_edit">
+                                <div style="text-align: end;" >
+                                    <button  type="submit" style="margin-left: 10px;border-radius: 40px;margin-top: 10px;" (click)="frs_edit('frs_Walk_in',frs_Walk_in.value)"
+                                        class="btn btn-outline-primary">Save</button>
+                                    <button type="button" class="btn btn-outline-danger" (click)="frs_edit_reset('frs_Walk_in')"
+                                        style="margin-left: 10px;margin-top: 10px;border-radius: 40px;" >Reset</button>
+                                </div>
+                            </div> -->
+
+
+            </div>
+            <div>
+
+             
+            </div>
+
+           
+        </div>
+      
+        <!-- <div *ngIf="!view_edit" style="padding-bottom: 5%;padding-left: 50%;">
+                <div class="center_align">      
+                    <input  type="checkbox" style="border-radius: 40px;margin-left: 10px; margin-top: 10px;"
+                        class="btn btn-outline-primary" (click)="frs_edit(frs_payment.value,frs_Walk_in.value,frs_billing.value,frs_transaction.value)">
+                    <button type="button" class="btn btn-outline-danger" 
+                        style="border-radius: 40px;margin-left: 10px;margin-top: 10px;" (click)="frs_view('','reset')">Reset</button>
+                </div>
+            </div> -->
+    </div>
+
+</div>
+
+<div *ngIf="nav_summary_page">
+    <app-frs-summary></app-frs-summary>
+</div>
+<div *ngIf="query_page">
+    <app-query-page></app-query-page>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content content_width">
+            <div class="modal-header content_width">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;">
+                    <b>Remarks</b>
+                </h5>
+                <button type="button" class="close" #closepopupApp (click)="reversepopclose()" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- <form [formGroup]="Approve"> -->
+                <div class="model_body_style">
+                    <div>
+                        <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                            (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                            [formControl]="Aprovereject">
+                            <!-- <input  formControlName="Aprovereject">   -->
+                        </div>
+                    </div>
+                </div>
+                <form [formGroup]="FileAttachement">
+                    <div class="file_input_div">
+                        <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                            #takeInput accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,
+                        .dotx,.dotm,.docb,
+                        .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" formControlName="file"
+                            multiple hidden />
+                        <!-- <input type="file" id="upload" hidden/> -->
+                        <label class="filedata" style="background-color: #686fc5;border-radius: 40px;"
+                            for="upload">Choose file</label>
+                        <div *ngFor="let files of file_data; let index = index">
+                            {{index+1}}.{{files?.name}}
+                            <mat-icon class="enabled_icon" (click)="deleteInlineFile( index)">delete</mat-icon>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-primary approve_return_btn"
+                        (click)="Approved(Aprovereject)">Approve</button>
+                </div>
+                <!-- </form> -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content content_width">
+            <div class="modal-header content_width">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;">
+                    <b>Remarks</b>
+                </h5>
+                <button type="button" class="close" #closepopups (click)="reversepopclose()" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="model_body_style">
+                    <div>
+                        <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                            (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                            [formControl]="Aprovereject">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <form [formGroup]="FileAttachement">
+                <div class="file_input_div">
+                    <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                        #takeInput accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,
+                .dotx,.dotm,.docb,
+                .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" formControlName="file" multiple
+                        hidden />
+                    <label class="filedata" style="background-color: #686fc5;border-radius: 40px;" for="upload">Choose
+                        file</label>
+                    <div *ngFor="let files of file_data; let index = index">
+                        {{index+1}}.{{files?.name}}
+                        <mat-icon class="enabled_icon" (click)="deleteInlineFile( index)">delete</mat-icon>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary approve_return_btn"
+                    (click)="Return(Aprovereject)">Return</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content content_width">
+            <div class="modal-header content_width">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;">
+                    <b>Remarks</b>
+                </h5>
+                <button type="button" class="close" #closepopupreverse (click)="reversepopclose()" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="model_body_style">
+                    <div>
+                        <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                            (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                            [formControl]="Aprovereject">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form [formGroup]="FileAttachement">
+                <div class="file_input_div">
+                    <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                        #takeInput accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,
+                .dotx,.dotm,.docb,
+                .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" formControlName="file" multiple
+                        hidden />
+                    <label class="filedata" style="background-color: #686fc5;border-radius: 40px;" for="upload">Choose
+                        file</label>
+                    <div *ngFor="let files of file_data; let index = index">
+                        {{index+1}}.{{files?.name}}
+                        <mat-icon class="enabled_icon" (click)="deleteInlineFile( index)">delete</mat-icon>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary approve_return_btn"
+                    (click)="reversed(Aprovereject)">Reverse</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content content_width">
+            <div class="modal-header content_width">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;">
+                    <b>Remarks</b>
+                </h5>
+                <button type="button" class="close" #closepopupdel (click)="reversepopclose()" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="model_body_style">
+                    <div>
+                        <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                            (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                            [formControl]="Aprovereject">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form [formGroup]="FileAttachement">
+                <div class="file_input_div">
+                    <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                        #takeInput accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,
+                .dotx,.dotm,.docb,
+                .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" formControlName="file" multiple
+                        hidden />
+                    <label class="filedata" style="background-color: #686fc5;border-radius: 40px;" for="upload">Choose
+                        file</label>
+                    <div *ngFor="let files of file_data; let index = index">
+                        {{index+1}}.{{files?.name}}
+                        <mat-icon class="enabled_icon" style="margin-top: 2%;"
+                            (click)="deleteInlineFile( index)">delete</mat-icon>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary approve_return_btn"
+                    (click)="Reject(Aprovereject)">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal5" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content content_width">
+            <div class="modal-header content_width">
+                <h5 class="modal-title" id="exampleModalLabel" style="text-align: center; font-size: large;">
+                    <b>Remarks</b>
+                </h5>
+                <button type="button" class="close" #closepopup (click)="reversepopclose()" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="model_body_style">
+                    <div>
+                        <div [ngxSummernote]="config" [ngxSummernoteDisabled]="editorDisabled" (blur)="onBlur()"
+                            (mediaDelete)="onDelete($event)" (summernoteInit)="summernoteInit($event)"
+                            [formControl]="Aprovereject">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form [formGroup]="FileAttachement">
+                <div class="file_input_div">
+                    <input type="file" id="upload" (change)="files($event)" style="border-bottom-style: hidden;"
+                        #takeInput accept=".txt,.doc,.pdf,.ppt,.pot,.pps,.pptx,.odt,.odg,.odp,.ods,.docx,.docm,
+                .dotx,.dotm,.docb,
+                .xlsx,.xls,.xlt,.xlm,.xlsm,.xltx,.xltm,.jpg,.jpeg,.tiff,.tif,.png" formControlName="file" multiple
+                        hidden />
+                    <label class="filedata" style="background-color: #686fc5;border-radius: 40px;" for="upload">Choose
+                        file</label>
+                    <div *ngFor="let files of file_data; let index = index">
+                        {{index+1}}.{{files?.name}}
+                        <mat-icon class="enabled_icon" style="margin-top: 2%;"
+                            (click)="deleteInlineFile( index)">delete</mat-icon>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary approve_return_btn"
+                    (click)="Approved(Aprovereject)">CBS Upload</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,298 @@
+
+<div style="margin-top: 1%; margin-left: 10px; ">
+    <nav>
+        <div class="nav nav-tabs" style="margin-top: 1%;">
+            <span class="nav-item nav-link" data-toggle="tab" (click)="lca(sub)" role="tab"
+                *ngFor="let sub of lca_sub_Menu_list">
+                {{sub.name}}
+            </span>
+        </div>   
+    </nav>
+
+    <div *ngIf="lcaform">
+
+                <p style="color:black;font-size: 22px;font-weight: 500;margin-top: 20px;margin-left: 30px">
+                  LCA Summary Search
+               </p>
+        <form [formGroup]="LcaSummaryForm">
+
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 30px;">
+                        <input matInput placeholder="CR No" formControlName="crno" autocomplete="off">
+                    </mat-form-field>
+                </td>        
+                <td>
+                    <mat-form-field style="margin-left: 10px;" (click)="getbranchdropdown()">
+                        <mat-label> Branch </mat-label>
+                        <input #branchInput matInput formControlName="jebranch" [matAutocomplete]="branchtyperole"
+                            placeholder="Choose Branch">
+                        <mat-autocomplete [panelWidth]="400" #branchtyperole="matAutocomplete" [displayWith]="displayFnbranchrole"
+                            (opened)="branchScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let branch of Branchlist" [value]="branch"
+                                    matTooltip=" {{branch.code}}-{{branch.name}}">
+                                    {{branch.code}}-{{branch.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>        
+                <td>
+                    <mat-form-field style="margin-left: 10px;" (click)="getraiserdropdown()">
+                        <mat-label>Raiser Name</mat-label>
+                        <input #raiserInput matInput formControlName="created_by" [matAutocomplete]="raisertyperole"
+                            placeholder="Choose Raiser">
+                        <mat-autocomplete [panelWidth]="400" #raisertyperole="matAutocomplete" [displayWith]="displayFnraiserrole"
+                            (opened)="raiserScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let data of Raiserlist" [value]="data" matTooltip="{{data.full_name}}">
+                                    {{data.full_name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>        
+                <td>
+                    <mat-form-field style="margin-left: 10px;">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="jestatus">
+                            <mat-option *ngFor="let status of StatusList" [value]="status.id" matTooltip="{{status.text}}">
+                                {{status.text}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+            </tr>
+        
+            <tr>
+                <td>
+                    <mat-form-field style="margin-left: 30px;" (click)="getcommoditydd()">
+                        <input #commodityInput placeholder="Commodity Name" matInput formControlName="commadity"
+                            [matAutocomplete]="commoditytype">
+                        <mat-autocomplete [panelWidth]="300" #commoditytype="matAutocomplete" [displayWith]="displayFncommodity"
+                            (opened)="commodityScroll()">
+                            <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                            <ng-container *ngIf="!isLoading">
+                                <mat-option *ngFor="let commodity of commodityList" [value]="commodity"
+                                    (click)="getcommoditydata(commodity)" matTooltip="{{commodity.name}}"
+                                    matTooltipClass="custom-tooltipnew">
+                                    {{commodity.name}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </td>
+                <td colspan="2"></td>
+                <td style="align-items:end;">
+                    <button class="btn btn-outline-primary" type="submit" style="border-radius:40px;margin-left: 10px;"
+                        color="primary" (click)="search()"><i matTooltip="Search" class="fa fa-search"
+                            aria-hidden="true"></i></button>
+        
+                    <button class="btn btn-outline-danger" matTooltip="Reset" type="button"
+                        style="border-radius:40px;margin-left: 25px;" color="danger" (click)="resetlca()">Reset</button>
+        
+                    <button type="button" class="btn btn-outline-success" matTooltip="LCA Creation"
+                        style="border-radius:40px;margin-left:30px;" (click)="createlca()"><span class="fa fa-plus"></span>
+                    </button>
+                </td>
+            </tr>
+        
+        </form>
+        
+                   <p style="color:black;font-size: 22px;font-weight: 500;margin-top: 20px;margin-left: 30px">
+                     LCA Summary
+                     </p>
+
+                        <div class="table-responsive" style="margin-top: 1%;width: 98%;margin-left: 30px;">
+                            <table class="table scrolltable table-bordered" fixed-header>
+                                <thead>
+                                    <tr class="table_header" fixed-header style="text-align:center;">
+                                        <th>S.No</th>
+                                        <th>CR No</th>
+                                        <th>Branch</th>
+                                        <th>Raiser</th>
+                                        <th>Amount</th>
+                                        <th>Commotidy</th>
+                                        <th>Status</th>
+                                        <th style="justify-content: space-evenly;" colspan="5">Action</th>
+                                        <!-- <th>View</th>
+                                        <th>Edit</th>
+                                        <th>Transaction</th>
+                                        <th>Download</th>
+                                        <th>Delete</th> -->
+                                    </tr>
+                                </thead>
+                     <tbody>
+                        <tr *ngFor="let d of data;index as i" style="text-align: center;">
+                            <!-- <td>{{(presentpage - 1)*pagesize +i+1 }}</td> -->
+                            <td>{{(jvpresentpage - 1)*jvpagesize +i+1 }}</td>
+                            <!-- <td>{{startingRowNumber + i}}</td> -->
+                            <td>{{data[i]?.lcacrno}}</td>
+                            <td>{{data[i]?.lcabranch?.code}}-{{data[i]?.lcabranch?.name}}</td>
+                            <td>{{data[i]?.created_by?.code}}-{{data[i]?.created_by?.name}}</td>
+                            <td>{{data[i]?.lcaamount}}</td>
+                            <td>{{data[i]?.commodity_name}}</td>
+                            <td>{{data[i]?.lcastatus}}</td>                           
+                            <td style="text-align: center;">
+                                <span matTooltip="View" class=" fa fa-eye create "
+                                style="color: green;cursor: pointer;" (click)="showjvsummaryviews(d)"  ></span>  
+                            <!-- data-target="#showattachmentpopup" data-toggle="modal" -->
+                            </td>
+                          <td>
+                            <button mat-icon-button type="button" matTooltip="Edit" style="margin-top:-15px;" (click)="Editlca(i)">
+                                <!-- <mat-icon>E</mat-icon> -->
+                                <mat-icon  style="color: grey;" aria-label="Edit">create</mat-icon>
+                              </button>
+                              
+                          </td>
+                          <td>
+                            <span matTooltip="Transaction" style="color: green; cursor: pointer;"
+                                  data-target="#showtrandetailpopup" data-toggle="modal" (click)="transview(d)">
+                              <mat-icon>library_books</mat-icon>
+                            </span>
+                          </td>
+                          <td>
+                            <span class="fa fa-download" (click)="coverNotedownload(d)" matTooltip="Covernote Download"></span>
+                          </td>
+                            <td >
+                                <button mat-icon-button type="button" matTooltip="Delete" style="margin-top:-15px;" (click)="delete(d)">
+                                    <mat-icon style="color: red;" aria-label="Edit" >
+                                        delete</mat-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody> 
+                            </table>
+                <!-- ----To add pagination--- --> 
+                <div *ngIf="!issummarypage" class="NodataAlign" style="margin-left: 35%;">No Records Found...</div>
+    
+                 <div class="row" *ngIf="issummarypage" style="width: 90%;">
+        
+                    <div class="col-md-3" style="margin-bottom: 10px;font-size: small;font-weight:bold;margin-top: 15px;">
+                         Page: {{presentjvsum}}
+                    </div>
+                    <div class="col-md-9" style="margin-bottom: 0%;font-size: small;right:10px">
+               
+                    <mat-paginator  style="margin-right: -100px;"
+                                        (page)="handlePageEvent($event)"
+                                        [length]="length_jvsum"
+                                        [pageSize]="pageSize_jvsum"
+                                        [showFirstLastButtons]="showFirstLastButtons"
+                                        [pageSizeOptions]="pageSizeOptions"
+                                        [pageIndex]="pageIndexjvsum"
+                                        [hidePageSize]="true"
+                                        aria-label="Select page">
+                    </mat-paginator>
+                    </div>
+                </div>
+                
+              
+                        </div>
+   
+       
+    </div>
+    <div *ngIf="lcacreationform">
+        <app-lca-creation  (onCancel)="create()"></app-lca-creation>
+    </div>
+    <div *ngIf="lcaapproversummary">
+        <app-lca-approval-summary></app-lca-approval-summary>
+    </div>
+    <div *ngIf="lcaexpcreatesummary">
+        <app-lca-expense></app-lca-expense>
+    </div>
+    <!-- <div *ngIf="lcaviewback">
+        <app-lca-view (onCancel)="lcasummaryview()" (onSubmit)="lcaappsumm()"></app-lca-view>
+    </div> -->
+</div>
+    <div>
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false"
+            id="showtrandetailpopup">
+            <div class="modal-dialog modal-xl " style="width: 90%;">
+                <div class="modal-content">
+                    <div class="modal-header text-center" style="background: rgba(23, 204, 23, 0.288);">
+                        <h2 class="modal-title w-100 font-weight-bold" style="color:black ;height:2px">Transaction Details
+                        </h2>
+                        <button type="button" class="close" data-dismiss="modal" #closetranbutton aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+    
+                    <div style="margin-left: 50px;margin-right: 80%;margin-top: 2%; width: 90%;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="table-responsive" style="width:100%;margin-top: 1%;">
+                                    <table class="table table-bordered" fixed-header style="width: 99%;margin-top: 10px;">
+                                        <thead class="table_header" style="text-align: left;">
+        
+        
+                                            <tr>
+        
+                                                <th>S.No</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                                <th>Remarks</th>
+                                                <th>Employee Name</th>
+                                                <th>Approver Name</th>
+                                                <!-- <th>Approved By</th> -->                                        
+        
+        
+                                            </tr>
+                                        </thead>
+                                        <tr *ngFor="let dtl of transdata; index as i">
+                                            <td>{{i+1}}</td>
+                                            <td>{{dtl?.comments}}</td>
+                                            <td>{{dtl?.created_date }}</td>
+                                            <td>{{dtl?.remarks}}</td>
+                                            <td>{{dtl?.from_user_id?.name}}
+                                            <br>
+                                            <div *ngIf="dtl.from_user_id==-1; else deta"></div>
+                                                <ng-template #deta>
+                                                    <a style="color: green;cursor: pointer;"  (click)="view(dtl)">View Details</a>
+                                                </ng-template>
+                                            </td>
+                                            <td>{{dtl?.to_user_id?.name}}
+                                                <br>
+                                                <div *ngIf="dtl.to_user_id==-1; else deta1"></div>
+                                                    <ng-template #deta1>
+                                                        <a style="color: green;cursor: pointer;"  (click)="viewto(dtl)">View Details</a>
+                                                    </ng-template>
+                                                </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                    <div class="modal-footer"  style="width:100%;">
+                                        <table  style="width: 100%;text-align: center;">
+                                            <tr>
+                                                <td><b>Employee Name</b>:&nbsp;{{this.name}}</td>
+                                                <td><b>Designation</b>: &nbsp;{{this.designation}}</td>
+                                                <td><b>Branch Name</b> : &nbsp;{{this.branch}}</td>
+                                             </tr>
+                                             <tr>
+                                                 <td colspan="3" style="text-align: center;">
+                     
+                                                     <button type="button" class="btn btn-light" style="border-radius:7px;
+                                                     border-color: black; margin-bottom: 20px;
+                                                     background-color: white;" (click)="tranback()">Back</button>
+                     
+                                                 </td>
+                                             </tr>
+                                        </table>
+                                    </div>
+                            </div>
+        
+        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+            
+     
+       
+
